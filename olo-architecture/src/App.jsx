@@ -123,6 +123,184 @@ const INTEGRATIONS = [
   { from:"Intermedia", to:"EPA",         what:"Intermedia → EPA (CR y VE) · distribución de datos hacia segmento EPA", status:"partial" },
   { from:"Intermedia", to:"Compiere",    what:"Intermedia → Comerc. Compiere · distribución de datos hacia Comercializadoras Compiere", status:"partial" },
   { from:"Intermedia", to:"OLO System",  what:"Intermedia → Comerc. OLO System · distribución de datos hacia OLO System", status:"partial" },
+  // ── SCO ──────────────────────────────────────────────────────────────────
+  { from:"categorias",            to:"tiendas",                  what:"categorias.tienda_id → tiendas", status:"confirmed" },
+  { from:"categorias_inventario", to:"tiendas",                  what:"categorias_inventario.tienda_id → tiendas", status:"confirmed" },
+  { from:"unidades_medida",       to:"tiendas",                  what:"unidades_medida.tienda_id → tiendas", status:"confirmed" },
+  { from:"inventario",            to:"tiendas",                  what:"inventario.tienda_id → tiendas", status:"confirmed" },
+  { from:"inventario",            to:"unidades_medida",          what:"inventario.unidad_base_id → unidades_medida", status:"confirmed" },
+  { from:"inventario",            to:"tipos_cod_barras",         what:"inventario.tipo_cod_barras → tipos_cod_barras", status:"confirmed" },
+  { from:"inventario",            to:"categorias_inventario",    what:"inventario.categoria_id → categorias_inventario", status:"confirmed" },
+  { from:"productos",             to:"tiendas",                  what:"productos.tienda_id → tiendas", status:"confirmed" },
+  { from:"productos",             to:"categorias",               what:"productos.categoria_id → categorias", status:"confirmed" },
+  { from:"bom_items",             to:"productos",                what:"bom_items.product_id → productos", status:"confirmed" },
+  { from:"bom_items",             to:"inventario",               what:"bom_items.id_componente → inventario · componente del BOM", status:"confirmed" },
+  { from:"bom_items",             to:"unidades_medida",          what:"bom_items.unidad_id → unidades_medida", status:"confirmed" },
+  { from:"inventario_niveles",    to:"inventario",               what:"inventario_niveles.articulo_id → inventario", status:"confirmed" },
+  { from:"inventario_thresholds", to:"inventario",               what:"inventario_thresholds.articulo_id → inventario · puntos de reorden", status:"confirmed" },
+  { from:"inventario_alertas",    to:"inventario",               what:"inventario_alertas.articulo_id → inventario · alertas de stock", status:"confirmed" },
+  { from:"inventario_movimientos",to:"inventario",               what:"inventario_movimientos.articulo_id → inventario", status:"confirmed" },
+  { from:"inventario_movimientos",to:"usuarios",                 what:"inventario_movimientos.usuario_id → usuarios", status:"confirmed" },
+  { from:"replenishment_orders",  to:"inventario",               what:"replenishment_orders.articulo_id → inventario", status:"confirmed" },
+  { from:"replenishment_orders",  to:"usuarios",                 what:"replenishment_orders.generado_por → usuarios", status:"confirmed" },
+  { from:"cantones",              to:"provincias",               what:"cantones.provincia_id → provincias", status:"confirmed" },
+  { from:"distritos",             to:"cantones",                 what:"distritos.canton_id → cantones", status:"confirmed" },
+  { from:"clientes",              to:"tiendas",                  what:"clientes.tienda_id → tiendas", status:"confirmed" },
+  { from:"clientes",              to:"provincias",               what:"clientes.provincia_id → provincias", status:"confirmed" },
+  { from:"clientes",              to:"cantones",                 what:"clientes.canton_id → cantones", status:"confirmed" },
+  { from:"clientes",              to:"distritos",                what:"clientes.distrito_id → distritos", status:"confirmed" },
+  { from:"clientes",              to:"paises",                   what:"clientes.pais_iso → paises.codigo_iso", status:"confirmed" },
+  { from:"clientes",              to:"actividades_economicas",   what:"clientes.codigo_actividad_economica → actividades_economicas", status:"confirmed" },
+  { from:"cotizaciones",          to:"tiendas",                  what:"cotizaciones.tienda_id → tiendas", status:"confirmed" },
+  { from:"cotizaciones",          to:"clientes",                 what:"cotizaciones.cliente_id → clientes", status:"confirmed" },
+  { from:"cotizacion_items",      to:"cotizaciones",             what:"cotizacion_items.cotizacion_id → cotizaciones", status:"confirmed" },
+  { from:"pedidos",               to:"tiendas",                  what:"pedidos.tienda_id → tiendas", status:"confirmed" },
+  { from:"pedidos",               to:"clientes",                 what:"pedidos.cliente_id → clientes", status:"confirmed" },
+  { from:"pedidos",               to:"cotizaciones",             what:"pedidos.referencia_cotizacion_id → cotizaciones", status:"confirmed" },
+  { from:"pedidos",               to:"usuarios",                 what:"pedidos.created_by → usuarios", status:"confirmed" },
+  { from:"pedido_items",          to:"pedidos",                  what:"pedido_items.pedido_id → pedidos", status:"confirmed" },
+  { from:"inventario_reservas",   to:"inventario",               what:"inventario_reservas.id_articulo → inventario", status:"confirmed" },
+  { from:"inventario_reservas",   to:"pedidos",                  what:"inventario_reservas.pedido_id → pedidos", status:"confirmed" },
+  { from:"inventario_reservas",   to:"cotizaciones",             what:"inventario_reservas.cotizacion_id → cotizaciones", status:"confirmed" },
+  { from:"facturas_electronicas", to:"clientes",                 what:"facturas_electronicas.cliente_id → clientes", status:"confirmed" },
+  { from:"facturas_electronicas", to:"pedidos",                  what:"facturas_electronicas.pedido_id → pedidos", status:"confirmed" },
+  { from:"facturas_electronicas", to:"cotizaciones",             what:"facturas_electronicas.cotizacion_id → cotizaciones", status:"confirmed" },
+  { from:"facturas_electronicas", to:"usuarios",                 what:"facturas_electronicas.created_by → usuarios", status:"confirmed" },
+  { from:"factura_items",         to:"facturas_electronicas",    what:"factura_items.factura_id → facturas_electronicas", status:"confirmed" },
+  { from:"comprobantes_recibidos",to:"tiendas",                  what:"comprobantes_recibidos.tienda_id → tiendas", status:"confirmed" },
+  { from:"rol_permisos",          to:"roles",                    what:"rol_permisos.rol_id → roles", status:"confirmed" },
+  { from:"rol_permisos",          to:"permisos",                 what:"rol_permisos.permiso_id → permisos", status:"confirmed" },
+  { from:"usuario_roles",         to:"usuarios",                 what:"usuario_roles.usuario_id → usuarios", status:"confirmed" },
+  { from:"usuario_roles",         to:"roles",                    what:"usuario_roles.rol_id → roles", status:"confirmed" },
+  { from:"usuario_tiendas",       to:"usuarios",                 what:"usuario_tiendas.usuario_id → usuarios", status:"confirmed" },
+  { from:"usuario_tiendas",       to:"tiendas",                  what:"usuario_tiendas.tienda_id → tiendas", status:"confirmed" },
+  { from:"usuario_tienda_actual", to:"usuarios",                 what:"usuario_tienda_actual.usuario_id → usuarios", status:"confirmed" },
+  { from:"usuario_tienda_actual", to:"tiendas",                  what:"usuario_tienda_actual.tienda_id → tiendas", status:"confirmed" },
+  { from:"auditoria_acciones",    to:"usuarios",                 what:"auditoria_acciones.usuario_id → usuarios", status:"confirmed" },
+  { from:"tareas",                to:"tiendas",                  what:"tareas.tienda_id → tiendas", status:"confirmed" },
+  { from:"tareas",                to:"cotizaciones",             what:"tareas.cotizacion_id → cotizaciones", status:"confirmed" },
+  { from:"tareas_config_campos",  to:"tiendas",                  what:"tareas_config_campos.tienda_id → tiendas", status:"confirmed" },
+  { from:"tareas_encargados",     to:"tiendas",                  what:"tareas_encargados.tienda_id → tiendas", status:"confirmed" },
+  { from:"tareas_colaboradores",  to:"tiendas",                  what:"tareas_colaboradores.tienda_id → tiendas", status:"confirmed" },
+  { from:"tareas_personal_asignado",to:"tareas",                 what:"tareas_personal_asignado.tarea_id → tareas", status:"confirmed" },
+  { from:"tareas_personal_asignado",to:"tareas_colaboradores",   what:"tareas_personal_asignado.colaborador_id → tareas_colaboradores", status:"confirmed" },
+  { from:"tareas_consecutivos",   to:"tiendas",                  what:"tareas_consecutivos.tienda_id → tiendas", status:"confirmed" },
+  { from:"tareas_items",          to:"tareas",                   what:"tareas_items.tarea_id → tareas", status:"confirmed" },
+  { from:"tareas_reportes_colaboradores",to:"tareas",            what:"tareas_reportes_colaboradores.tarea_id → tareas", status:"confirmed" },
+  { from:"tareas_reportes_colaboradores",to:"tareas_colaboradores",what:"tareas_reportes_colaboradores.colaborador_id → tareas_colaboradores", status:"confirmed" },
+  { from:"tareas_reportes_colaboradores",to:"tiendas",           what:"tareas_reportes_colaboradores.tienda_id → tiendas", status:"confirmed" },
+  { from:"optimizador_proyectos_temp",to:"tiendas",              what:"optimizador_proyectos_temp.id_tienda → tiendas", status:"confirmed" },
+  { from:"optimizador_proyectos_temp",to:"cotizaciones",         what:"optimizador_proyectos_temp.id_cotizacion → cotizaciones", status:"confirmed" },
+  { from:"correspondencia_plantillas",to:"tiendas",              what:"correspondencia_plantillas.tienda_id → tiendas", status:"confirmed" },
+  { from:"correspondencia_plantillas",to:"usuarios",             what:"correspondencia_plantillas.created_by → usuarios", status:"confirmed" },
+  { from:"correspondencia_reglas",to:"tiendas",                  what:"correspondencia_reglas.tienda_id → tiendas", status:"confirmed" },
+  { from:"correspondencia_reglas",to:"usuarios",                 what:"correspondencia_reglas.created_by → usuarios", status:"confirmed" },
+  { from:"correspondencia_reglas",to:"correspondencia_plantillas",what:"correspondencia_reglas.plantilla_id → correspondencia_plantillas", status:"confirmed" },
+  { from:"correspondencia_historial",to:"tiendas",               what:"correspondencia_historial.tienda_id → tiendas", status:"confirmed" },
+  { from:"correspondencia_historial",to:"correspondencia_reglas",what:"correspondencia_historial.regla_id → correspondencia_reglas", status:"confirmed" },
+  { from:"correspondencia_historial",to:"correspondencia_plantillas",what:"correspondencia_historial.plantilla_id → correspondencia_plantillas", status:"confirmed" },
+  // ── SRO — Sistema de Rastreo de Órdenes ──────────────────────────────────
+  // Core
+  { from:"warehouses",         to:"organizations",       what:"warehouses.org_id → organizations", status:"confirmed" },
+  { from:"warehouses",         to:"countries",           what:"warehouses.country_id → countries", status:"confirmed" },
+  { from:"countries",          to:"organizations",       what:"countries.org_id → organizations", status:"confirmed" },
+  // Auth / RBAC
+  { from:"role_permissions",   to:"roles",               what:"role_permissions.role_id → roles", status:"confirmed" },
+  { from:"role_permissions",   to:"permissions",         what:"role_permissions.permission_id → permissions", status:"confirmed" },
+  { from:"user_org_roles",     to:"organizations",       what:"user_org_roles.org_id → organizations", status:"confirmed" },
+  { from:"user_org_roles",     to:"roles",               what:"user_org_roles.role_id → roles · asignación por organización", status:"confirmed" },
+  // Docks
+  { from:"dock_categories",    to:"organizations",       what:"dock_categories.org_id → organizations", status:"confirmed" },
+  { from:"dock_statuses",      to:"organizations",       what:"dock_statuses.org_id → organizations", status:"confirmed" },
+  { from:"docks",              to:"organizations",       what:"docks.org_id → organizations", status:"confirmed" },
+  { from:"docks",              to:"warehouses",          what:"docks.warehouse_id → warehouses", status:"confirmed" },
+  { from:"docks",              to:"dock_categories",     what:"docks.category_id → dock_categories", status:"confirmed" },
+  { from:"docks",              to:"dock_statuses",       what:"docks.status_id → dock_statuses", status:"confirmed" },
+  { from:"dock_time_blocks",   to:"docks",               what:"dock_time_blocks.dock_id → docks · bloqueo de horario", status:"confirmed" },
+  { from:"dock_time_blocks",   to:"organizations",       what:"dock_time_blocks.org_id → organizations", status:"confirmed" },
+  // Reservaciones
+  { from:"reservation_statuses",to:"organizations",      what:"reservation_statuses.org_id → organizations", status:"confirmed" },
+  { from:"reservations",       to:"organizations",       what:"reservations.org_id → organizations", status:"confirmed" },
+  { from:"reservations",       to:"docks",               what:"reservations.dock_id → docks", status:"confirmed" },
+  { from:"reservations",       to:"reservation_statuses",what:"reservations.status_id → reservation_statuses", status:"confirmed" },
+  { from:"reservations",       to:"clients",             what:"reservations.client_id → clients", status:"confirmed" },
+  { from:"reservation_files",  to:"reservations",        what:"reservation_files.reservation_id → reservations · archivos adjuntos", status:"confirmed" },
+  { from:"reservation_files",  to:"organizations",       what:"reservation_files.org_id → organizations", status:"confirmed" },
+  { from:"reservation_activity_log", to:"reservations",  what:"reservation_activity_log.reservation_id → reservations · auditoría de cambios", status:"confirmed" },
+  { from:"reservation_activity_log", to:"organizations", what:"reservation_activity_log.org_id → organizations", status:"confirmed" },
+  { from:"reservation_consolidated_providers", to:"reservations", what:"reservation_consolidated_providers.reservation_id → reservations", status:"confirmed" },
+  { from:"reservation_consolidated_providers", to:"providers",    what:"reservation_consolidated_providers.provider_id → providers", status:"confirmed" },
+  // Clientes
+  { from:"clients",            to:"organizations",       what:"clients.org_id → organizations", status:"confirmed" },
+  { from:"client_rules",       to:"clients",             what:"client_rules.client_id → clients · reglas de negocio", status:"confirmed" },
+  { from:"client_rules",       to:"organizations",       what:"client_rules.org_id → organizations", status:"confirmed" },
+  { from:"client_docks",       to:"clients",             what:"client_docks.client_id → clients · muelles asignados", status:"confirmed" },
+  { from:"client_docks",       to:"docks",               what:"client_docks.dock_id → docks", status:"confirmed" },
+  { from:"client_docks",       to:"organizations",       what:"client_docks.org_id → organizations", status:"confirmed" },
+  { from:"warehouse_clients",  to:"warehouses",          what:"warehouse_clients.warehouse_id → warehouses", status:"confirmed" },
+  { from:"warehouse_clients",  to:"clients",             what:"warehouse_clients.client_id → clients", status:"confirmed" },
+  { from:"warehouse_clients",  to:"organizations",       what:"warehouse_clients.org_id → organizations", status:"confirmed" },
+  { from:"user_clients",       to:"clients",             what:"user_clients.client_id → clients · acceso por usuario", status:"confirmed" },
+  { from:"user_clients",       to:"organizations",       what:"user_clients.org_id → organizations", status:"confirmed" },
+  { from:"client_pickup_rules",to:"clients",             what:"client_pickup_rules.client_id → clients", status:"confirmed" },
+  { from:"client_pickup_rules",to:"docks",               what:"client_pickup_rules.dock_id → docks · reglas pickup", status:"confirmed" },
+  { from:"client_pickup_rules",to:"organizations",       what:"client_pickup_rules.org_id → organizations", status:"confirmed" },
+  // Proveedores
+  { from:"providers",          to:"organizations",       what:"providers.org_id → organizations", status:"confirmed" },
+  { from:"cargo_types",        to:"organizations",       what:"cargo_types.org_id → organizations", status:"confirmed" },
+  { from:"provider_cargo_time_profiles", to:"providers",    what:"provider_cargo_time_profiles.provider_id → providers · perfil de tiempo", status:"confirmed" },
+  { from:"provider_cargo_time_profiles", to:"cargo_types",  what:"provider_cargo_time_profiles.cargo_type_id → cargo_types", status:"confirmed" },
+  { from:"provider_cargo_time_profiles", to:"warehouses",   what:"provider_cargo_time_profiles.warehouse_id → warehouses", status:"confirmed" },
+  { from:"client_providers",   to:"clients",             what:"client_providers.client_id → clients", status:"confirmed" },
+  { from:"client_providers",   to:"providers",           what:"client_providers.provider_id → providers · proveedores de cliente", status:"confirmed" },
+  { from:"provider_warehouses",to:"providers",           what:"provider_warehouses.provider_id → providers", status:"confirmed" },
+  { from:"provider_warehouses",to:"warehouses",          what:"provider_warehouses.warehouse_id → warehouses", status:"confirmed" },
+  { from:"cargo_type_warehouses",to:"cargo_types",       what:"cargo_type_warehouses.cargo_type_id → cargo_types", status:"confirmed" },
+  { from:"cargo_type_warehouses",to:"warehouses",        what:"cargo_type_warehouses.warehouse_id → warehouses", status:"confirmed" },
+  { from:"user_providers",     to:"providers",           what:"user_providers.provider_id → providers · acceso por usuario", status:"confirmed" },
+  { from:"provider_clusters",  to:"organizations",       what:"provider_clusters.org_id → organizations", status:"confirmed" },
+  { from:"provider_cluster_items",to:"provider_clusters",what:"provider_cluster_items.cluster_id → provider_clusters", status:"confirmed" },
+  { from:"provider_cluster_items",to:"providers",        what:"provider_cluster_items.provider_id → providers", status:"confirmed" },
+  { from:"user_provider_clusters",to:"provider_clusters",what:"user_provider_clusters.cluster_id → provider_clusters", status:"confirmed" },
+  { from:"origen_proveedores", to:"providers",           what:"origen_proveedores.provider_id → providers · origen/fuente", status:"confirmed" },
+  // Acceso de usuarios
+  { from:"user_warehouse_access",to:"warehouses",        what:"user_warehouse_access.warehouse_id → warehouses", status:"confirmed" },
+  { from:"user_countries",     to:"countries",           what:"user_countries.country_id → countries", status:"confirmed" },
+  { from:"user_warehouses",    to:"warehouses",          what:"user_warehouses.warehouse_id → warehouses", status:"confirmed" },
+  { from:"user_country_access",to:"countries",           what:"user_country_access.country_id → countries", status:"confirmed" },
+  // Colaboradores
+  { from:"work_types",         to:"organizations",       what:"work_types.org_id → organizations", status:"confirmed" },
+  { from:"collaborators",      to:"organizations",       what:"collaborators.org_id → organizations", status:"confirmed" },
+  { from:"collaborators",      to:"work_types",          what:"collaborators.work_type_id → work_types", status:"confirmed" },
+  { from:"collaborator_warehouses",to:"collaborators",   what:"collaborator_warehouses.collaborator_id → collaborators", status:"confirmed" },
+  { from:"collaborator_warehouses",to:"warehouses",      what:"collaborator_warehouses.warehouse_id → warehouses", status:"confirmed" },
+  // Casetilla
+  { from:"casetilla_ingresos", to:"organizations",       what:"casetilla_ingresos.org_id → organizations", status:"confirmed" },
+  { from:"casetilla_ingresos", to:"reservations",        what:"casetilla_ingresos.reservation_id → reservations · ingreso vehicular", status:"confirmed" },
+  { from:"casetilla_salidas",  to:"organizations",       what:"casetilla_salidas.org_id → organizations", status:"confirmed" },
+  { from:"casetilla_salidas",  to:"reservations",        what:"casetilla_salidas.reservation_id → reservations · salida vehicular", status:"confirmed" },
+  // Correspondencia
+  { from:"correspondence_rules",to:"organizations",      what:"correspondence_rules.org_id → organizations", status:"confirmed" },
+  { from:"correspondence_rules",to:"reservation_statuses",what:"correspondence_rules.status_from/to_id → reservation_statuses · trigger", status:"confirmed" },
+  { from:"correspondence_rules",to:"warehouses",         what:"correspondence_rules.warehouse_id → warehouses", status:"confirmed" },
+  { from:"correspondence_logs", to:"organizations",      what:"correspondence_logs.org_id → organizations", status:"confirmed" },
+  { from:"correspondence_logs", to:"correspondence_rules",what:"correspondence_logs.rule_id → correspondence_rules", status:"confirmed" },
+  { from:"correspondence_logs", to:"reservations",       what:"correspondence_logs.reservation_id → reservations · log de envíos", status:"confirmed" },
+  { from:"correspondence_outbox",to:"organizations",     what:"correspondence_outbox.org_id → organizations", status:"confirmed" },
+  { from:"correspondence_outbox",to:"warehouses",        what:"correspondence_outbox.warehouse_id → warehouses", status:"confirmed" },
+  { from:"gmail_accounts",     to:"organizations",       what:"gmail_accounts.org_id → organizations · cuenta Gmail por org", status:"confirmed" },
+  // Auditoría
+  { from:"admin_audit_log",    to:"organizations",       what:"admin_audit_log.org_id → organizations", status:"confirmed" },
+  { from:"activity_log",       to:"organizations",       what:"activity_log.org_id → organizations", status:"confirmed" },
+  // Conocimiento / IA
+  { from:"knowledge_document_roles",       to:"knowledge_documents", what:"knowledge_document_roles.document_id → knowledge_documents · acceso por rol", status:"confirmed" },
+  { from:"knowledge_document_permissions", to:"knowledge_documents", what:"knowledge_document_permissions.document_id → knowledge_documents · permisos", status:"confirmed" },
+  { from:"knowledge_document_tags",        to:"knowledge_documents", what:"knowledge_document_tags.document_id → knowledge_documents · etiquetas", status:"confirmed" },
+  { from:"knowledge_document_versions",    to:"knowledge_documents", what:"knowledge_document_versions.document_id → knowledge_documents · versiones", status:"confirmed" },
+  // Chat
+  { from:"chat_messages",      to:"chat_sessions",       what:"chat_messages.session_id → chat_sessions", status:"confirmed" },
+  // Configuración
+  { from:"org_settings",       to:"organizations",       what:"org_settings.org_id → organizations · config por organización", status:"confirmed" },
 ];
 
 const BPA_PROCESSES = {
@@ -215,6 +393,28 @@ const STATUS_VIS = {
 };
 const MATURITY_TINTS = { 0:"#c0392b", 1:"#e67e22", 2:"#f39c12", 3:"#27ae60", 4:"#16a085", 5:"#2980b9" };
 const PRIORITY_LABEL = { 1:"Alta", 2:"Media", 3:"Baja" };
+const SRO_COLORS = {
+  organizations:"#0891b2",profiles:"#0891b2",warehouses:"#0891b2",countries:"#0891b2",
+  roles:"#7c3aed",permissions:"#7c3aed",role_permissions:"#7c3aed",user_org_roles:"#7c3aed",
+  dock_categories:"#0d9488",dock_statuses:"#0d9488",docks:"#0d9488",dock_time_blocks:"#0d9488",
+  reservation_statuses:"#dc2626",reservations:"#dc2626",reservation_files:"#dc2626",
+  reservation_activity_log:"#dc2626",reservation_consolidated_providers:"#dc2626",
+  clients:"#2563eb",client_rules:"#2563eb",client_docks:"#2563eb",warehouse_clients:"#2563eb",
+  user_clients:"#2563eb",client_pickup_rules:"#2563eb",client_same_day_bypass_users:"#2563eb",
+  providers:"#d97706",cargo_types:"#d97706",provider_cargo_time_profiles:"#d97706",
+  client_providers:"#d97706",provider_warehouses:"#d97706",cargo_type_warehouses:"#d97706",
+  user_providers:"#d97706",provider_clusters:"#d97706",provider_cluster_items:"#d97706",
+  user_provider_clusters:"#d97706",origen_proveedores:"#d97706",
+  user_warehouse_access:"#6366f1",user_countries:"#6366f1",user_warehouses:"#6366f1",user_country_access:"#6366f1",
+  work_types:"#16a34a",collaborators:"#16a34a",collaborator_warehouses:"#16a34a",
+  casetilla_ingresos:"#92400e",casetilla_salidas:"#92400e",
+  correspondence_rules:"#9333ea",correspondence_logs:"#9333ea",correspondence_outbox:"#9333ea",gmail_accounts:"#9333ea",
+  admin_audit_log:"#475569",activity_log:"#475569",
+  knowledge_documents:"#10b981",knowledge_document_roles:"#10b981",knowledge_document_permissions:"#10b981",
+  knowledge_document_tags:"#10b981",knowledge_document_versions:"#10b981",
+  chat_sessions:"#0284c7",chat_messages:"#0284c7",chat_audit_logs:"#0284c7",chat_prompt_configs:"#0284c7",
+  org_settings:"#64748b",
+};
 const CLUSTER_COLORS = {
   "Intermedia":"#6B7280","OLO API":"#059669","ePRAC":"#D97706","Middleware":"#7B1FA2",
   "Suite OLO":"#185FA5","GoRamp":"#059669","Trade":"#d35400","Liq. Viajes":"#185FA5",
@@ -311,7 +511,7 @@ function ClusterTag({ label, color, outline }) {
 // VISTA · ARQUITECTURA OLO — TO-BE (Solución Propuesta)
 // ═══════════════════════════════════════════════════════════════════════════
 
-function OLOArchView() {
+function OLOArchView({ searchQuery="" }) {
   const [selectedNode, setSelectedNode] = useState(null);
   const [hoveredNode,  setHoveredNode]  = useState(null);
 
@@ -426,14 +626,62 @@ function OLOArchView() {
   const dragRef = useRef(null);   // {type, id, ox, oy, [ow, oh, handle], mx0, my0, moved}
   const svgRef  = useRef(null);
 
+  // ── Zoom / Pan ────────────────────────────────────────────────────────────
+  const [zoom,  setZoom]  = useState(1);
+  const [panXY, setPanXY] = useState({x:0, y:0});
+  const zoomRef    = useRef(1);
+  const panRef     = useRef({x:0, y:0});
+  const panDragRef = useRef(null);   // {mx0,my0,px0,py0}
+
+  const setZoomPan = useCallback((z, p) => {
+    zoomRef.current = z; panRef.current = p; setZoom(z); setPanXY(p);
+  }, []);
+  const resetView = useCallback(() => setZoomPan(1,{x:0,y:0}), [setZoomPan]);
+
   const svgPt = useCallback((e) => {
     const r = svgRef.current?.getBoundingClientRect();
     if (!r) return {x:0,y:0};
-    return { x:(e.clientX-r.left)*(1160/r.width), y:(e.clientY-r.top)*(620/r.height) };
+    const rx=(e.clientX-r.left)*(1160/r.width), ry=(e.clientY-r.top)*(620/r.height);
+    const p=panRef.current, z=zoomRef.current;
+    return { x:(rx-p.x)/z, y:(ry-p.y)/z };
+  }, []);
+
+  // ── Export ────────────────────────────────────────────────────────────────
+  const exportDiagram = useCallback((fmt) => {
+    const svg = svgRef.current; if (!svg) return;
+    let str = new XMLSerializer().serializeToString(svg);
+    if (!str.includes('xmlns=')) str = str.replace('<svg','<svg xmlns="http://www.w3.org/2000/svg"');
+    if (fmt === 'svg') {
+      const a = Object.assign(document.createElement('a'), {
+        href: URL.createObjectURL(new Blob([str],{type:'image/svg+xml'})),
+        download: 'olo-architecture.svg'
+      }); a.click();
+    } else {
+      const vb = svg.viewBox.baseVal, sc = 2;
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement('canvas');
+        c.width = vb.width*sc; c.height = vb.height*sc;
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        c.toBlob(b => {
+          const a = Object.assign(document.createElement('a'), {href:URL.createObjectURL(b), download:'olo-architecture.png'});
+          a.click();
+        });
+      };
+      img.src = URL.createObjectURL(new Blob([str],{type:'image/svg+xml'}));
+    }
   }, []);
 
   useEffect(() => {
     const onMove = (e) => {
+      // Pan (non-edit mode)
+      const pd = panDragRef.current;
+      if (pd) {
+        const r = svgRef.current?.getBoundingClientRect(); if (!r) return;
+        const rx=(e.clientX-r.left)*(1160/r.width), ry=(e.clientY-r.top)*(620/r.height);
+        const np={x:pd.px0+(rx-pd.mx0), y:pd.py0+(ry-pd.my0)};
+        panRef.current=np; setPanXY(np); return;
+      }
       const d = dragRef.current; if (!d) return;
       const pt = svgPt(e);
       const dx=pt.x-d.mx0, dy=pt.y-d.my0;
@@ -454,6 +702,7 @@ function OLOArchView() {
       }
     };
     const onUp = () => {
+      panDragRef.current = null;
       if (!dragRef.current) return;
       dragRef.current = null;
       setNodeOverrides(prev => { localStorage.setItem('olo-node-ov',JSON.stringify(prev)); return prev; });
@@ -468,6 +717,22 @@ function OLOArchView() {
       window.removeEventListener('keydown',   onKey);
     };
   }, [svgPt]);
+
+  // Wheel zoom (nativo para poder prevenir default)
+  useEffect(() => {
+    const svg = svgRef.current; if (!svg) return;
+    const onWheel = (e) => {
+      e.preventDefault();
+      const f = e.deltaY < 0 ? 1.15 : 1/1.15;
+      const newZ = Math.max(0.15, Math.min(6, zoomRef.current*f));
+      const r = svg.getBoundingClientRect();
+      const rx=(e.clientX-r.left)*(1160/r.width), ry=(e.clientY-r.top)*(620/r.height);
+      const dz=newZ/zoomRef.current;
+      setZoomPan(newZ, {x:rx-dz*(rx-panRef.current.x), y:ry-dz*(ry-panRef.current.y)});
+    };
+    svg.addEventListener('wheel', onWheel, {passive:false});
+    return () => svg.removeEventListener('wheel', onWheel);
+  }, [setZoomPan]);
 
   const nodes = {
     // ── On-Premise OLO ───────────────────────────────────────────────────────
@@ -701,6 +966,18 @@ function OLOArchView() {
               <span style={{ fontSize:9.5, color:"rgba(255,255,255,0.38)", fontWeight:500 }}>{l}</span>
             </div>
           ))}
+          {/* Zoom controls */}
+          <div style={{ display:"flex", alignItems:"center", gap:3, background:"rgba(255,255,255,0.06)", borderRadius:6, padding:"2px 6px" }}>
+            <button onClick={()=>setZoomPan(Math.min(6,zoomRef.current*1.25),panRef.current)} style={{ background:"none",border:"none",color:"rgba(255,255,255,0.55)",cursor:"pointer",fontSize:14,lineHeight:1,padding:"1px 3px" }}>+</button>
+            <span style={{ fontSize:9.5, color:"rgba(255,255,255,0.35)", minWidth:32, textAlign:"center" }}>{Math.round(zoom*100)}%</span>
+            <button onClick={()=>setZoomPan(Math.max(0.15,zoomRef.current/1.25),panRef.current)} style={{ background:"none",border:"none",color:"rgba(255,255,255,0.55)",cursor:"pointer",fontSize:14,lineHeight:1,padding:"1px 3px" }}>−</button>
+            <button onClick={resetView} style={{ background:"none",border:"none",color:"rgba(255,255,255,0.35)",cursor:"pointer",fontSize:10,lineHeight:1,padding:"1px 4px" }} title="Reset vista">⌂</button>
+          </div>
+          {/* Export */}
+          <div style={{ display:"flex", gap:4 }}>
+            <button onClick={()=>exportDiagram('svg')} style={{ fontSize:9.5, fontWeight:600, padding:"3px 9px", borderRadius:5, border:"1px solid rgba(255,255,255,0.15)", background:"rgba(255,255,255,0.06)", color:"rgba(255,255,255,0.5)", cursor:"pointer" }}>↓ SVG</button>
+            <button onClick={()=>exportDiagram('png')} style={{ fontSize:9.5, fontWeight:600, padding:"3px 9px", borderRadius:5, border:"1px solid rgba(255,255,255,0.15)", background:"rgba(255,255,255,0.06)", color:"rgba(255,255,255,0.5)", cursor:"pointer" }}>↓ PNG</button>
+          </div>
           <button
             onClick={()=>setRouteMode(m=>m==='bezier'?'ortho':'bezier')}
             style={{ fontSize:10, fontWeight:600, padding:"4px 10px", borderRadius:6, border:"1px solid rgba(255,255,255,0.15)", cursor:"pointer",
@@ -751,12 +1028,28 @@ function OLOArchView() {
           <marker id="arrDsh" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 2L8 5L1 8" fill="none" stroke="rgba(148,163,184,0.3)" strokeWidth="1.5" strokeLinecap="round"/></marker>
         </defs>
 
-        {/* Fondo oscuro con grid de puntos */}
+        {/* Fondo oscuro con grid de puntos (fijo, fuera del transform) */}
         <rect width="1160" height="620" fill="#0f172a"/>
         <pattern id="dotgrid" x="0" y="0" width="22" height="22" patternUnits="userSpaceOnUse">
           <circle cx="11" cy="11" r="0.7" fill="rgba(255,255,255,0.035)"/>
         </pattern>
         <rect width="1160" height="620" fill="url(#dotgrid)"/>
+
+        {/* ── Grupo zoom/pan ── todo el contenido va aquí ── */}
+        <g transform={`translate(${panXY.x},${panXY.y}) scale(${zoom})`}>
+        {/* Rect de pan — solo en modo lectura */}
+        {!editMode && <rect width="1160" height="620" fill="transparent"
+          style={{cursor:'grab'}}
+          onMouseDown={e=>{
+            if(dragRef.current) return;
+            const r=svgRef.current?.getBoundingClientRect(); if(!r) return;
+            panDragRef.current={
+              mx0:(e.clientX-r.left)*(1160/r.width),
+              my0:(e.clientY-r.top)*(620/r.height),
+              px0:panRef.current.x, py0:panRef.current.y
+            };
+          }}
+        />}
 
         {/* ── ZONAS — posición y tamaño dinámicos desde effNodes ── */}
         {(()=>{
@@ -895,13 +1188,16 @@ function OLOArchView() {
           const hl=isHl(n.id), dim=(hoveredNode||selectedNode)&&!hl;
           const isSel=selectedNode===n.id, isHov=hoveredNode===n.id;
           const isConnSrc = connectFrom===n.id;
+          const q = searchQuery.trim().toLowerCase();
+          const matchSearch = !q || n.label?.toLowerCase().includes(q) || n.id?.toLowerCase().includes(q) || n.desc?.toLowerCase().includes(q);
+          const searchDim = q && !matchSearch;
           return <g key={n.id}
             onClick={e=>handleNodeClick(e,n.id)}
             onMouseDown={e=>handleNodeDown(e,n.id)}
             onMouseEnter={()=>setHoveredNode(n.id)}
             onMouseLeave={()=>setHoveredNode(null)}
-            style={{ cursor:editMode?(connectFrom?"crosshair":"grab"):"pointer", opacity:dim?0.18:1, transition:"opacity 0.16s" }}
-            filter={isSel||isConnSrc?"url(#selglow)":undefined}>
+            style={{ cursor:editMode?(connectFrom?"crosshair":"grab"):"pointer", opacity:searchDim?0.08:dim?0.18:1, transition:"opacity 0.16s" }}
+            filter={isSel||isConnSrc?"url(#selglow)":(matchSearch&&q)?"url(#selglow)":undefined}>
             {/* Sombra base */}
             <rect x={n.x} y={n.y+2} width={n.w} height={n.h} rx="7" fill="rgba(0,0,0,0.35)" filter="url(#ndrop)"/>
             {/* Card body */}
@@ -919,6 +1215,7 @@ function OLOArchView() {
               fontFamily="'Segoe UI',sans-serif">{n.label}</text>
           </g>;
         })}
+        </g>{/* cierre grupo zoom/pan */}
       </svg>
     </div>
 
@@ -1205,11 +1502,213 @@ const SAT_MOD   = new Set(["Mecalux","EDI","Aduanas","BI","ZF","TMSI"]);
 const SUITE_MOD = new Set(["SRO","GoRamp","Trade","RFID","Pricing","OLO-API","Intermedia","LagoDatos",
   "OLO API","ePRAC","Middleware","Suite OLO","Liq. Viajes","Raga Orders","CCA","Fac. Svc","MPF",
   "Mayoreo","EPA","Compiere","OLO System","TICA","Delzof","Power BI","Tec. Tiempo","eflow"]);
+const SCO_COLORS = {
+  tiendas:"#0891b2",
+  usuarios:"#7c3aed",roles:"#7c3aed",permisos:"#7c3aed",rol_permisos:"#7c3aed",usuario_roles:"#7c3aed",usuario_tiendas:"#7c3aed",usuario_tienda_actual:"#7c3aed",
+  paises:"#16a34a",provincias:"#16a34a",cantones:"#16a34a",distritos:"#16a34a",actividades_economicas:"#16a34a",
+  inventario:"#d97706",categorias_inventario:"#d97706",unidades_medida:"#d97706",tipos_cod_barras:"#d97706",inventario_niveles:"#d97706",inventario_thresholds:"#d97706",inventario_alertas:"#d97706",inventario_movimientos:"#d97706",inventario_reservas:"#d97706",replenishment_orders:"#d97706",
+  productos:"#059669",categorias:"#059669",bom_items:"#059669",
+  clientes:"#2563eb",
+  cotizaciones:"#dc2626",cotizacion_items:"#dc2626",pedidos:"#dc2626",pedido_items:"#dc2626",
+  facturas_electronicas:"#9333ea",factura_items:"#9333ea",hacienda_consecutivos:"#9333ea",comprobantes_recibidos:"#9333ea",
+  tareas:"#0284c7",tareas_config_campos:"#0284c7",tareas_encargados:"#0284c7",tareas_colaboradores:"#0284c7",tareas_personal_asignado:"#0284c7",tareas_consecutivos:"#0284c7",tareas_items:"#0284c7",tareas_reportes_colaboradores:"#0284c7",
+  solicitudes:"#6366f1",solicitud_estados:"#6366f1",
+  correspondencia_plantillas:"#db2777",correspondencia_reglas:"#db2777",correspondencia_historial:"#db2777",
+  costbot_chunks:"#10b981",optimizador_proyectos_temp:"#10b981",
+  settings:"#475569",auditoria_acciones:"#475569",debug_log:"#475569",
+};
+
+const SCO_GROUPS = {
+  core:           { label:"Core",             color:"#0891b2", tables:["tiendas"] },
+  auth:           { label:"Auth / Usuarios",  color:"#7c3aed", tables:["usuarios","roles","permisos","rol_permisos","usuario_roles","usuario_tiendas","usuario_tienda_actual"] },
+  geo:            { label:"Geo / Fiscal",     color:"#16a34a", tables:["paises","provincias","cantones","distritos","actividades_economicas"] },
+  inventario:     { label:"Inventario",       color:"#d97706", tables:["inventario","categorias_inventario","unidades_medida","tipos_cod_barras","inventario_niveles","inventario_thresholds","inventario_alertas","inventario_movimientos","inventario_reservas","replenishment_orders"] },
+  productos:      { label:"Productos / BOM",  color:"#059669", tables:["productos","categorias","bom_items"] },
+  clientes:       { label:"Clientes",         color:"#2563eb", tables:["clientes"] },
+  ventas:         { label:"Ventas",           color:"#dc2626", tables:["cotizaciones","cotizacion_items","pedidos","pedido_items"] },
+  facturacion:    { label:"Facturación",      color:"#9333ea", tables:["facturas_electronicas","factura_items","hacienda_consecutivos","comprobantes_recibidos"] },
+  tareas:         { label:"Tareas",           color:"#0284c7", tables:["tareas","tareas_config_campos","tareas_encargados","tareas_colaboradores","tareas_personal_asignado","tareas_consecutivos","tareas_items","tareas_reportes_colaboradores"] },
+  solicitudes:    { label:"Solicitudes",      color:"#6366f1", tables:["solicitudes","solicitud_estados"] },
+  correspondencia:{ label:"Correspondencia",  color:"#db2777", tables:["correspondencia_plantillas","correspondencia_reglas","correspondencia_historial"] },
+  ai:             { label:"AI / Optimizador", color:"#10b981", tables:["costbot_chunks","optimizador_proyectos_temp"] },
+  sistema:        { label:"Sistema",          color:"#475569", tables:["settings","auditoria_acciones","debug_log"] },
+};
+
+const SCO_TABLE_DEFS = {
+  tiendas:                   { pk:"id (uuid)", cols:["nombre","codigo","direccion","telefono","email","activo"] },
+  usuarios:                  { pk:"id (uuid)", cols:["email","nombre_completo","rol","activo"] },
+  roles:                     { pk:"id", cols:["nombre","descripcion"] },
+  permisos:                  { pk:"id", cols:["nombre","descripcion","modulo"] },
+  rol_permisos:              { pk:"id", cols:["rol_id→roles","permiso_id→permisos"] },
+  usuario_roles:             { pk:"(usuario_id,rol_id)", cols:["usuario_id→usuarios","rol_id→roles"] },
+  usuario_tiendas:           { pk:"id (uuid)", cols:["usuario_id→usuarios","tienda_id→tiendas","rol_tienda","activo"] },
+  usuario_tienda_actual:     { pk:"usuario_id", cols:["usuario_id→usuarios","tienda_id→tiendas","updated_at"] },
+  paises:                    { pk:"id", cols:["codigo_iso","nombre","activo"] },
+  provincias:                { pk:"id", cols:["codigo","nombre","activo"] },
+  cantones:                  { pk:"id", cols:["provincia_id→provincias","codigo","nombre","activo"] },
+  distritos:                 { pk:"id", cols:["canton_id→cantones","codigo","nombre","activo"] },
+  actividades_economicas:    { pk:"id", cols:["codigo","descripcion","activo"] },
+  inventario:                { pk:"id_articulo", cols:["tienda_id→tiendas","codigo_articulo","descripcion_articulo","categoria_id→categorias_inventario","unidad_base_id→unidades_medida","tipo_cod_barras→tipos_cod_barras","cantidad_articulo","costo_articulo","precio_articulo","activo"] },
+  categorias_inventario:     { pk:"id_categoria", cols:["tienda_id→tiendas","nombre_categoria","descripcion_categoria","activo"] },
+  unidades_medida:           { pk:"id", cols:["tienda_id→tiendas","nombre","simbolo","factor_base","grupo"] },
+  tipos_cod_barras:          { pk:"id_tipo_cod_barras", cols:["descripcion_tipo_cod_barras","formato_valido","activo"] },
+  inventario_niveles:        { pk:"id", cols:["articulo_id→inventario","on_hand","reservado","disponible"] },
+  inventario_thresholds:     { pk:"id", cols:["articulo_id→inventario","min_qty","max_qty","safety_stock","reorder_point","lead_time_dias","lote_minimo","activo"] },
+  inventario_alertas:        { pk:"id", cols:["articulo_id→inventario","tipo","detalle (jsonb)","leida"] },
+  inventario_movimientos:    { pk:"id", cols:["articulo_id→inventario","usuario_id→usuarios","tipo","cantidad","referencia_type","stock_anterior","stock_posterior"] },
+  inventario_reservas:       { pk:"id", cols:["id_articulo→inventario","pedido_id→pedidos","cotizacion_id→cotizaciones","cantidad","vence_at","estado"] },
+  replenishment_orders:      { pk:"id", cols:["articulo_id→inventario","generado_por→usuarios","qty_sugerida","motivo","estado","qty_recibida"] },
+  productos:                 { pk:"id_producto", cols:["tienda_id→tiendas","codigo_producto","descripcion_producto","categoria_id→categorias","costo_total_bom","moneda","activo"] },
+  categorias:                { pk:"id", cols:["tienda_id→tiendas","nombre","descripcion","activo"] },
+  bom_items:                 { pk:"id", cols:["product_id→productos","id_componente→inventario","unidad_id→unidades_medida","nombre_componente","cantidad_x_unidad","precio_unitario","precio_ajustado"] },
+  clientes:                  { pk:"id", cols:["tienda_id→tiendas","tipo_persona","tipo_identificacion","identificacion","nombre_razon_social","correo_principal","provincia_id→provincias","canton_id→cantones","distrito_id→distritos","pais_iso→paises","codigo_actividad_economica→actividades_economicas","regimen_tributario","activo"] },
+  cotizaciones:              { pk:"id", cols:["tienda_id→tiendas","cliente_id→clientes","codigo","estado","moneda","tipo_cambio","subtotal","total"] },
+  cotizacion_items:          { pk:"id", cols:["cotizacion_id→cotizaciones","descripcion","cantidad","precio_unitario","subtotal","tipo_item","datos_optimizador (jsonb)"] },
+  pedidos:                   { pk:"id", cols:["tienda_id→tiendas","cliente_id→clientes","referencia_cotizacion_id→cotizaciones","created_by→usuarios","approved_by→usuarios","codigo","estado","moneda","subtotal","total"] },
+  pedido_items:              { pk:"id", cols:["pedido_id→pedidos","item_type","item_id","descripcion","cantidad","precio_unit","total"] },
+  facturas_electronicas:     { pk:"id", cols:["cliente_id→clientes","pedido_id→pedidos","cotizacion_id→cotizaciones","created_by→usuarios","numero_consecutivo","clave_numerica","tipo_documento","estado","moneda","subtotal","total_general"] },
+  factura_items:             { pk:"id", cols:["factura_id→facturas_electronicas","item_type","item_id","codigo","descripcion","cantidad","precio_unitario","total_linea"] },
+  hacienda_consecutivos:     { pk:"id", cols:["sucursal","terminal","tipo_documento","ultimo_numero"] },
+  comprobantes_recibidos:    { pk:"id (uuid)", cols:["tienda_id→tiendas","numero_consecutivo","clave","tipo_comprobante","emisor_nombre","estado_hacienda","estado_interno","total","moneda"] },
+  tareas:                    { pk:"id", cols:["tienda_id→tiendas","cotizacion_id→cotizaciones","consecutivo","estado","descripcion_breve","datos_formulario (jsonb)","total_costo"] },
+  tareas_config_campos:      { pk:"id", cols:["tienda_id→tiendas","nombre_campo","etiqueta","tipo_campo","requerido","orden","activo"] },
+  tareas_encargados:         { pk:"id", cols:["tienda_id→tiendas","usuario_id (auth.users)"] },
+  tareas_colaboradores:      { pk:"id", cols:["tienda_id→tiendas","nombre","email","telefono","activo"] },
+  tareas_personal_asignado:  { pk:"id", cols:["tarea_id→tareas","colaborador_id→tareas_colaboradores"] },
+  tareas_consecutivos:       { pk:"tienda_id", cols:["tienda_id→tiendas","ultimo_numero"] },
+  tareas_items:              { pk:"id", cols:["tarea_id→tareas","descripcion","cantidad","costo_unitario","costo_total","categoria"] },
+  tareas_reportes_colaboradores: { pk:"id", cols:["tarea_id→tareas","colaborador_id→tareas_colaboradores","tienda_id→tiendas","fecha_trabajo","horas_trabajadas","unidades_procesadas"] },
+  solicitudes:               { pk:"id", cols:["titulo","descripcion","estado_id","cliente_id (auth.users)"] },
+  solicitud_estados:         { pk:"id", cols:["nombre","color_hex","orden"] },
+  correspondencia_plantillas:{ pk:"id", cols:["tienda_id→tiendas","created_by→usuarios","nombre","asunto","cuerpo_html","variables (jsonb)","activo"] },
+  correspondencia_reglas:    { pk:"id", cols:["tienda_id→tiendas","created_by→usuarios","plantilla_id→correspondencia_plantillas","nombre","evento_trigger","condiciones (jsonb)","activo"] },
+  correspondencia_historial: { pk:"id", cols:["tienda_id→tiendas","regla_id→correspondencia_reglas","plantilla_id→correspondencia_plantillas","asunto","estado","evento_origen","enviado_en"] },
+  costbot_chunks:            { pk:"id (uuid)", cols:["source_id","source_type","chunk_index","content","role_scope","page_scope","metadata (jsonb)"] },
+  optimizador_proyectos_temp:{ pk:"id_proyecto (uuid)", cols:["id_tienda→tiendas","id_cotizacion→cotizaciones","nombre_proyecto","piezas (jsonb)","resultados_optimizacion (jsonb)","estado"] },
+  settings:                  { pk:"id", cols:["key","value","description","type"] },
+  auditoria_acciones:        { pk:"id", cols:["usuario_id→usuarios","permiso","recurso","recurso_id","ok","meta (jsonb)"] },
+  debug_log:                 { pk:"id", cols:["correlation_id","ctx","level","message","data (jsonb)"] },
+};
+
+const SRO_MOD   = new Set([
+  "profiles","roles","permissions","role_permissions","organizations","dock_categories","dock_statuses",
+  "docks","user_org_roles","reservation_statuses","reservations","reservation_files","dock_time_blocks",
+  "reservation_activity_log","admin_audit_log","activity_log","providers","cargo_types",
+  "provider_cargo_time_profiles","warehouses","countries","user_warehouse_access","user_countries",
+  "user_warehouses","user_country_access","work_types","collaborators","collaborator_warehouses",
+  "casetilla_ingresos","correspondence_rules","correspondence_logs","gmail_accounts",
+  "correspondence_outbox","casetilla_salidas","clients","client_rules","client_docks",
+  "client_providers","warehouse_clients","user_providers","client_pickup_rules",
+  "knowledge_documents","knowledge_document_roles","knowledge_document_permissions",
+  "chat_sessions","chat_messages","chat_audit_logs","chat_prompt_configs",
+  "knowledge_document_tags","knowledge_document_versions","provider_warehouses",
+  "cargo_type_warehouses","org_settings","user_clients","client_same_day_bypass_users",
+  "reservation_consolidated_providers","provider_clusters","provider_cluster_items",
+  "user_provider_clusters","origen_proveedores",
+]);
+
+const SCO_MOD = new Set([
+  "tiendas","usuarios","roles","permisos","rol_permisos","usuario_roles","usuario_tiendas","usuario_tienda_actual",
+  "paises","provincias","cantones","distritos","actividades_economicas",
+  "inventario","categorias_inventario","unidades_medida","tipos_cod_barras","inventario_niveles",
+  "inventario_thresholds","inventario_alertas","inventario_movimientos","inventario_reservas","replenishment_orders",
+  "productos","categorias","bom_items","clientes",
+  "cotizaciones","cotizacion_items","pedidos","pedido_items",
+  "facturas_electronicas","factura_items","hacienda_consecutivos","comprobantes_recibidos",
+  "tareas","tareas_config_campos","tareas_encargados","tareas_colaboradores","tareas_personal_asignado",
+  "tareas_consecutivos","tareas_items","tareas_reportes_colaboradores",
+  "solicitudes","solicitud_estados",
+  "correspondencia_plantillas","correspondencia_reglas","correspondencia_historial",
+  "costbot_chunks","optimizador_proyectos_temp",
+  "settings","auditoria_acciones","debug_log",
+]);
+
+const SRO_GROUPS = {
+  core:           { label:"Core",             color:"#0891b2", tables:["organizations","profiles","warehouses","countries"] },
+  auth:           { label:"Auth / RBAC",      color:"#7c3aed", tables:["roles","permissions","role_permissions","user_org_roles"] },
+  docks:          { label:"Muelles",          color:"#0d9488", tables:["dock_categories","dock_statuses","docks","dock_time_blocks"] },
+  reservations:   { label:"Reservaciones",    color:"#dc2626", tables:["reservation_statuses","reservations","reservation_files","reservation_activity_log","reservation_consolidated_providers"] },
+  clients:        { label:"Clientes",         color:"#2563eb", tables:["clients","client_rules","client_docks","warehouse_clients","user_clients","client_pickup_rules","client_same_day_bypass_users"] },
+  providers:      { label:"Proveedores",      color:"#d97706", tables:["providers","cargo_types","provider_cargo_time_profiles","client_providers","provider_warehouses","cargo_type_warehouses","user_providers","provider_clusters","provider_cluster_items","user_provider_clusters","origen_proveedores"] },
+  access:         { label:"Acceso usuarios",  color:"#6366f1", tables:["user_warehouse_access","user_countries","user_warehouses","user_country_access"] },
+  collaborators:  { label:"Colaboradores",    color:"#16a34a", tables:["work_types","collaborators","collaborator_warehouses"] },
+  casetilla:      { label:"Casetilla",        color:"#92400e", tables:["casetilla_ingresos","casetilla_salidas"] },
+  correspondence: { label:"Correspondencia",  color:"#9333ea", tables:["correspondence_rules","correspondence_logs","correspondence_outbox","gmail_accounts"] },
+  audit:          { label:"Auditoría",        color:"#475569", tables:["admin_audit_log","activity_log"] },
+  knowledge:      { label:"Conocimiento / IA",color:"#10b981", tables:["knowledge_documents","knowledge_document_roles","knowledge_document_permissions","knowledge_document_tags","knowledge_document_versions"] },
+  chat:           { label:"Chat",             color:"#0284c7", tables:["chat_sessions","chat_messages","chat_audit_logs","chat_prompt_configs"] },
+  settings:       { label:"Configuración",    color:"#64748b", tables:["org_settings"] },
+};
+
+const SRO_TABLE_DEFS = {
+  organizations:        { pk:"id", cols:["name","created_at","updated_at"] },
+  profiles:             { pk:"id", cols:["name","email","country_id→countries","phone_e164"] },
+  warehouses:           { pk:"id", cols:["org_id→organizations","name","country_id→countries","timezone","slot_interval_minutes","business_start_time","business_end_time"] },
+  countries:            { pk:"id", cols:["org_id→organizations","code","name","is_active"] },
+  roles:                { pk:"id", cols:["name","description"] },
+  permissions:          { pk:"id", cols:["name","description","category"] },
+  role_permissions:     { pk:"id", cols:["role_id→roles","permission_id→permissions"] },
+  user_org_roles:       { pk:"id", cols:["user_id (auth.users)","org_id→organizations","role_id→roles","assigned_by","assigned_at"] },
+  dock_categories:      { pk:"id", cols:["org_id→organizations","name","code","color"] },
+  dock_statuses:        { pk:"id", cols:["org_id→organizations","name","code","color","is_blocking"] },
+  docks:                { pk:"id", cols:["org_id→organizations","name","warehouse_id→warehouses","category_id→dock_categories","status_id→dock_statuses","is_active","reference"] },
+  dock_time_blocks:     { pk:"id", cols:["org_id→organizations","dock_id→docks","start_datetime","end_datetime","reason","is_cancelled"] },
+  reservation_statuses: { pk:"id", cols:["org_id→organizations","name","code","color","order_index","is_active"] },
+  reservations:         { pk:"id", cols:["org_id→organizations","dock_id→docks","status_id→reservation_statuses","client_id→clients","start_datetime","end_datetime","driver","truck_plate","dua","invoice","purchase_order","is_consolidated","is_cancelled"] },
+  reservation_files:    { pk:"id", cols:["org_id→organizations","reservation_id→reservations","category","file_name","file_url","mime_type","uploaded_by"] },
+  reservation_activity_log: { pk:"id", cols:["org_id→organizations","reservation_id→reservations","event_type","field_name","old_value","new_value","changed_by","changed_at"] },
+  reservation_consolidated_providers: { pk:"id", cols:["reservation_id→reservations","org_id→organizations","provider_id→providers","package_quantity"] },
+  clients:              { pk:"id", cols:["org_id→organizations","name","legal_id","email","phone","address","is_active"] },
+  client_rules:         { pk:"id", cols:["org_id→organizations","client_id→clients","edit_cutoff_hours","dock_allocation_mode","allow_all_docks","same_day_cutoff_enabled"] },
+  client_docks:         { pk:"id", cols:["org_id→organizations","client_id→clients","dock_id→docks","dock_order"] },
+  warehouse_clients:    { pk:"id", cols:["org_id→organizations","warehouse_id→warehouses","client_id→clients"] },
+  user_clients:         { pk:"id", cols:["org_id→organizations","user_id→profiles","client_id→clients"] },
+  client_pickup_rules:  { pk:"id", cols:["org_id→organizations","client_id→clients","dock_id→docks","block_minutes","reblock_before_minutes","is_active"] },
+  client_same_day_bypass_users: { pk:"id", cols:["org_id→organizations","client_id→clients","user_id"] },
+  providers:            { pk:"id", cols:["org_id→organizations","name","provider_type","provider_code","client_id→clients","source","source_code","active"] },
+  cargo_types:          { pk:"id", cols:["org_id→organizations","name","default_minutes","is_dynamic","measurement_key","unit_label","seconds_per_unit","active"] },
+  provider_cargo_time_profiles: { pk:"id", cols:["org_id→organizations","provider_id→providers","cargo_type_id→cargo_types","warehouse_id→warehouses","avg_minutes","p90_minutes","confidence","source"] },
+  client_providers:     { pk:"id", cols:["org_id→organizations","client_id→clients","provider_id→providers","is_default"] },
+  provider_warehouses:  { pk:"id", cols:["org_id→organizations","provider_id→providers","warehouse_id→warehouses"] },
+  cargo_type_warehouses:{ pk:"id", cols:["org_id→organizations","cargo_type_id→cargo_types","warehouse_id→warehouses"] },
+  user_providers:       { pk:"id", cols:["org_id→organizations","user_id","provider_id→providers"] },
+  provider_clusters:    { pk:"id", cols:["org_id→organizations","client_id→clients","name","description","is_active"] },
+  provider_cluster_items:{ pk:"id", cols:["org_id→organizations","cluster_id→provider_clusters","provider_id→providers"] },
+  user_provider_clusters:{ pk:"id", cols:["org_id→organizations","client_id","user_id","cluster_id→provider_clusters"] },
+  origen_proveedores:   { pk:"id", cols:["org_id→organizations","source_code","client_id→clients","description","is_active"] },
+  user_warehouse_access:{ pk:"id", cols:["org_id→organizations","user_id (auth.users)","warehouse_id→warehouses","role","restricted"] },
+  user_countries:       { pk:"id", cols:["org_id→organizations","user_id","country_id→countries","assigned_by","assigned_at"] },
+  user_warehouses:      { pk:"id", cols:["org_id→organizations","user_id","warehouse_id→warehouses","assigned_by"] },
+  user_country_access:  { pk:"id", cols:["org_id→organizations","user_id","country_id→countries","assigned_by"] },
+  work_types:           { pk:"id", cols:["org_id→organizations","name","is_active"] },
+  collaborators:        { pk:"id", cols:["org_id→organizations","full_name","ficha","cedula","country_id→countries","work_type_id→work_types","is_active"] },
+  collaborator_warehouses: { pk:"(collaborator_id,warehouse_id)", cols:["org_id→organizations","collaborator_id→collaborators","warehouse_id→warehouses"] },
+  casetilla_ingresos:   { pk:"id", cols:["org_id→organizations","reservation_id→reservations","chofer","matricula","dua","factura","orden_compra","cedula","fotos"] },
+  casetilla_salidas:    { pk:"id", cols:["org_id→organizations","reservation_id→reservations","chofer","matricula","dua","exit_at","fotos"] },
+  correspondence_rules: { pk:"id", cols:["org_id→organizations","name","event_type","status_from_id→reservation_statuses","status_to_id→reservation_statuses","warehouse_id→warehouses","is_active"] },
+  correspondence_logs:  { pk:"id", cols:["org_id→organizations","rule_id→correspondence_rules","reservation_id→reservations","event_type","status","sent_at"] },
+  correspondence_outbox:{ pk:"id", cols:["org_id→organizations","rule_id","reservation_id","to_emails","cc_emails","subject","status","warehouse_id→warehouses"] },
+  gmail_accounts:       { pk:"id", cols:["org_id→organizations","gmail_email","provider","status","expires_at"] },
+  admin_audit_log:      { pk:"id", cols:["org_id→organizations","event_type","entity_type","entity_id","details (jsonb)","changed_by","changed_at"] },
+  activity_log:         { pk:"id", cols:["org_id→organizations","entity_type","entity_id","action","field","old_value","new_value","actor_user_id→profiles","metadata (jsonb)"] },
+  knowledge_documents:  { pk:"id", cols:["org_id","title","file_name","mime_type","status","visibility_mode","access_level","is_active","openai_file_id","openai_vector_store_id"] },
+  knowledge_document_roles:       { pk:"id", cols:["document_id→knowledge_documents","role_id→roles"] },
+  knowledge_document_permissions: { pk:"id", cols:["document_id→knowledge_documents","permission_key"] },
+  knowledge_document_tags:        { pk:"id", cols:["document_id→knowledge_documents","tag"] },
+  knowledge_document_versions:    { pk:"id", cols:["document_id→knowledge_documents","version_label","file_name","file_size","openai_file_id","uploaded_by→profiles"] },
+  chat_sessions:        { pk:"id", cols:["org_id","user_id","title","status","last_message_at"] },
+  chat_messages:        { pk:"id", cols:["session_id→chat_sessions","org_id","user_id","role","content","model","input_tokens","output_tokens"] },
+  chat_audit_logs:      { pk:"id", cols:["org_id","user_id","session_id","question","answer","status","used_document_ids (jsonb)"] },
+  chat_prompt_configs:  { pk:"id", cols:["org_id","code","name","system_prompt","is_active"] },
+  org_settings:         { pk:"id", cols:["org_id→organizations","key","value (jsonb)","updated_by→profiles"] },
+};
 
 function codeCluster(code){
   if(ERP_MOD.has(code))   return "erp";
   if(EFLOW_MOD.has(code)) return "ops";
   if(SAT_MOD.has(code))   return "sat";
+  if(SRO_MOD.has(code))   return "sro";
+  if(SCO_MOD.has(code))   return "sco";
   if(SUITE_MOD.has(code)) return "suite";
   return "other";
 }
@@ -1218,6 +1717,10 @@ function rowCategory(row){
   const f=codeCluster(row.from), t=codeCluster(row.to);
   if(f==="ops"||t==="ops") return "ops";
   if(f==="sat"||t==="sat") return "sat";
+  if(f==="sro"&&t==="sro") return "sro";
+  if(f==="sro"||t==="sro") return "sro";
+  if(f==="sco"&&t==="sco") return "sco";
+  if(f==="sco"||t==="sco") return "sco";
   if(f==="suite"||t==="suite") return "suite";
   if(f==="erp"&&t==="erp") return "erp";
   return "erp";
@@ -1229,6 +1732,8 @@ const CAT_META = {
   ops:   { label:"Operación logística · eflow Cloud Suite",    icon:"🏗", color:"#1abc9c", bg:"rgba(26,188,156,0.08)", border:"rgba(26,188,156,0.25)" },
   sat:   { label:"Sistemas satélite · externos / inferidos",   icon:"🛰", color:"#9b59b6", bg:"rgba(155,89,182,0.08)", border:"rgba(155,89,182,0.22)" },
   suite: { label:"Suite OLO · Clusters del ecosistema",        icon:"⬡",  color:"#185FA5", bg:"rgba(24,95,165,0.07)",  border:"rgba(24,95,165,0.22)" },
+  sro:   { label:"SRO — Sistema de Rastreo de Órdenes",        icon:"🏭", color:"#0891b2", bg:"rgba(8,145,178,0.07)",  border:"rgba(8,145,178,0.22)" },
+  sco:   { label:"SCO — Sistema Comercial y Operativo",        icon:"🛒", color:"#dc2626", bg:"rgba(220,38,38,0.06)",  border:"rgba(220,38,38,0.2)"  },
 };
 
 // Módulos únicos por categoría para los selectores de filtro
@@ -1257,17 +1762,74 @@ function IntegTable({ rows }) {
 }
 
 // ── Diagrama entidad-relación interactivo ──────────────────────────────────
-function ERDiagram({ rows }) {
+function ERDiagram({ rows, storageKey }) {
   const [selected, setSelected] = useState(null);
   const [hovered,  setHovered]  = useState(null);
 
+  // ── Zoom / Pan / Fullscreen / Drag ────────────────────────────────────────
+  const [posOv,   setPosOv]   = useState(()=>{ try{return storageKey?JSON.parse(localStorage.getItem(storageKey+'-radpos'))||{}:{};}catch{return {};} });
+  const [erZoom,  setErZoom]  = useState(1);
+  const [erPan,   setErPan]   = useState({x:0,y:0});
+  const [fullscr, setFullscr] = useState(false);
+  const erZoomRef = useRef(1);
+  const erPanRef  = useRef({x:0,y:0});
+  const erDragRef = useRef(null);
+  const erPanDgRef= useRef(null);
+  const erSvgRef  = useRef(null);
+  const erDims    = useRef({w:1100,h:620});
+
+  useEffect(()=>{document.body.style.overflow=fullscr?'hidden':'';return()=>{document.body.style.overflow='';};}, [fullscr]);
+
+  useEffect(()=>{
+    const onMove=(e)=>{
+      const svg=erSvgRef.current; if(!svg) return;
+      const r=svg.getBoundingClientRect();
+      const {w,h}=erDims.current;
+      const rx=(e.clientX-r.left)*(w/r.width), ry=(e.clientY-r.top)*(h/r.height);
+      const pd=erPanDgRef.current;
+      if(pd){ const np={x:pd.px0+(rx-pd.mx0),y:pd.py0+(ry-pd.my0)}; erPanRef.current=np; setErPan(np); return; }
+      const d=erDragRef.current; if(!d) return;
+      const dx=(rx-d.mx0)/erZoomRef.current, dy=(ry-d.my0)/erZoomRef.current;
+      if(Math.abs(dx)>2||Math.abs(dy)>2) d.moved=true;
+      setPosOv(prev=>({...prev,[d.id]:{x:d.ox+dx,y:d.oy+dy}}));
+    };
+    const onUp=()=>{
+      erPanDgRef.current=null;
+      if(!erDragRef.current) return;
+      erDragRef.current=null;
+      if(storageKey) setPosOv(prev=>{ localStorage.setItem(storageKey+'-radpos',JSON.stringify(prev)); return prev; });
+    };
+    window.addEventListener('mousemove',onMove); window.addEventListener('mouseup',onUp);
+    return()=>{ window.removeEventListener('mousemove',onMove); window.removeEventListener('mouseup',onUp); };
+  },[storageKey]);
+
+  useEffect(()=>{
+    const svg=erSvgRef.current; if(!svg) return;
+    const onWh=(e)=>{
+      e.preventDefault();
+      const factor=e.deltaY<0?1.15:1/1.15;
+      const newZ=Math.max(0.15,Math.min(8,erZoomRef.current*factor));
+      const r=svg.getBoundingClientRect();
+      const {w,h}=erDims.current;
+      const rx=(e.clientX-r.left)*(w/r.width), ry=(e.clientY-r.top)*(h/r.height);
+      const dz=newZ/erZoomRef.current;
+      const np={x:rx-dz*(rx-erPanRef.current.x),y:ry-dz*(ry-erPanRef.current.y)};
+      erZoomRef.current=newZ; erPanRef.current=np; setErZoom(newZ); setErPan(np);
+    };
+    svg.addEventListener('wheel',onWh,{passive:false});
+    return()=>svg.removeEventListener('wheel',onWh);
+  },[fullscr]);
+
+  const resetER=()=>{ setPosOv({}); setErZoom(1); setErPan({x:0,y:0}); erZoomRef.current=1; erPanRef.current={x:0,y:0}; if(storageKey) localStorage.removeItem(storageKey+'-radpos'); };
+
   const W=1100, H=620, NW=100, NH=44;
+  erDims.current={w:W,h:H};
 
   function getModInfo(code) {
     return SOFTLAND_MODULES.find(m=>m.code===code) || OPS_MODULES.find(m=>m.code===code) || null;
   }
   function modColor(code) {
-    return MODULE_COLORS[code] || OPS_COLORS[code] || CLUSTER_COLORS[code] || "#7f8c8d";
+    return MODULE_COLORS[code] || OPS_COLORS[code] || CLUSTER_COLORS[code] || SRO_COLORS[code] || SCO_COLORS[code] || "#7f8c8d";
   }
 
   // Nodos únicos
@@ -1296,6 +1858,11 @@ function ERDiagram({ rows }) {
     }
   });
 
+  // Posiciones efectivas (layout radial + overrides de drag)
+  const effectivePos = Object.fromEntries(
+    Object.entries(pos).map(([k,v])=>[k, posOv[k]?{...v,...posOv[k]}:v])
+  );
+
   // Agrupar pares (puede haber varios from→to): conserva el estado más fuerte
   const pairMap={};
   rows.forEach(row=>{
@@ -1308,9 +1875,9 @@ function ERDiagram({ rows }) {
   });
   const pairs = Object.values(pairMap);
 
-  // Path de flecha curva entre dos nodos
+  // Path de flecha curva entre dos nodos (usa effectivePos)
   function makePath(from, to) {
-    const f=pos[from], t=pos[to];
+    const f=effectivePos[from], t=effectivePos[to];
     if(!f||!t) return "";
     const dx=t.x-f.x, dy=t.y-f.y, len=Math.sqrt(dx*dx+dy*dy);
     if(len<1) return "";
@@ -1342,8 +1909,26 @@ function ERDiagram({ rows }) {
   const selCol = selected ? modColor(selected) : "#888";
   const selMod = selected ? getModInfo(selected) : null;
 
-  return (
-    <div>
+  const erControls = (
+    <div style={{ display:"flex", gap:8, alignItems:"center", padding:"6px 10px", background:"#f8fafc", borderBottom:"1px solid #e0e0e0", flexShrink:0 }}>
+      <span style={{ fontSize:10, fontWeight:600, color:"#888" }}>Diagrama ER</span>
+      <div style={{ display:"flex", alignItems:"center", gap:3, background:"#f0f0f0", borderRadius:5, padding:"2px 6px" }}>
+        <button onClick={()=>{const nz=Math.min(8,erZoomRef.current*1.25);erZoomRef.current=nz;setErZoom(nz);}} style={{ background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:14,lineHeight:1,padding:"0 2px" }}>+</button>
+        <span style={{ fontSize:10, color:"#888", minWidth:34, textAlign:"center" }}>{Math.round(erZoom*100)}%</span>
+        <button onClick={()=>{const nz=Math.max(0.15,erZoomRef.current/1.25);erZoomRef.current=nz;setErZoom(nz);}} style={{ background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:14,lineHeight:1,padding:"0 2px" }}>−</button>
+        <button onClick={resetER} title="Resetear" style={{ background:"none",border:"none",color:"#aaa",cursor:"pointer",fontSize:10,padding:"0 3px" }}>↺</button>
+      </div>
+      <span style={{ fontSize:10, color:"#bbb", flex:1 }}>Scroll=zoom · Arrastra nodo · Drag fondo=pan</span>
+      {selected && <button onClick={()=>setSelected(null)} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, border:"1px solid #ddd", background:"#fff", cursor:"pointer", color:"#666" }}>✕ {selected}</button>}
+      <button onClick={()=>setFullscr(f=>!f)} style={{ fontSize:13, padding:"2px 8px", borderRadius:5, border:"1px solid #ddd", background:fullscr?"#1d4ed8":"#fff", color:fullscr?"#fff":"#666", cursor:"pointer" }} title="Pantalla completa">
+        {fullscr?"⊠":"⛶"}
+      </button>
+    </div>
+  );
+
+  const erDiagram = (
+    <div style={{ display:"flex", flexDirection:"column", height:fullscr?"100vh":"auto" }}>
+      {erControls}
       {/* Panel detalle */}
       {selected && (
         <div style={{ background:"#fff", border:`1px solid ${selCol}44`, borderLeft:`4px solid ${selCol}`, borderRadius:10, padding:"14px 18px", marginBottom:14 }}>
@@ -1395,8 +1980,8 @@ function ERDiagram({ rows }) {
       )}
 
       {/* SVG diagrama */}
-      <div style={{ background:"#f8fafc", border:"1px solid #e0e0e0", borderRadius:12, overflow:"hidden" }}>
-        <svg viewBox={`0 0 ${W} ${H}`} style={{ width:"100%", height:"auto", display:"block", fontFamily:"'Segoe UI',sans-serif" }}>
+      <div style={{ background:"#f8fafc", border:"1px solid #e0e0e0", borderRadius:fullscr?0:12, overflow:"auto", flex:fullscr?1:"auto" }}>
+        <svg ref={erSvgRef} viewBox={`0 0 ${W} ${H}`} style={{ width:"100%", height:fullscr?"calc(100vh - 80px)":"auto", display:"block", fontFamily:"'Segoe UI',sans-serif" }}>
           <defs>
             {[["mConf","#27ae60"],["mPart","#f39c12"],["mInf","#9b59b6"],["mDim","#d1d5db"]].map(([id,c])=>(
               <marker key={id} id={id} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
@@ -1404,6 +1989,18 @@ function ERDiagram({ rows }) {
               </marker>
             ))}
           </defs>
+
+          {/* Grupo zoom/pan */}
+          <g transform={`translate(${erPan.x},${erPan.y}) scale(${erZoom})`}>
+          {/* Fondo para pan */}
+          <rect width={W} height={H} fill="transparent" style={{cursor:'grab'}}
+            onMouseDown={e=>{
+              if(erDragRef.current) return;
+              const r=erSvgRef.current?.getBoundingClientRect(); if(!r) return;
+              const {w,h}=erDims.current;
+              erPanDgRef.current={mx0:(e.clientX-r.left)*(w/r.width),my0:(e.clientY-r.top)*(h/r.height),px0:erPanRef.current.x,py0:erPanRef.current.y};
+            }}
+          />
 
           {/* Aristas */}
           {pairs.map((p,i)=>{
@@ -1424,7 +2021,7 @@ function ERDiagram({ rows }) {
 
           {/* Nodos */}
           {codes.map(code=>{
-            const p=pos[code]; if(!p) return null;
+            const p=effectivePos[code]; if(!p) return null;
             const mod=getModInfo(code);
             const color=modColor(code);
             const isSel=selected===code, isHov=hovered===code;
@@ -1434,10 +2031,16 @@ function ERDiagram({ rows }) {
 
             return (
               <g key={code}
-                onClick={()=>setSelected(selected===code?null:code)}
+                onClick={()=>{ if(!erDragRef.current?.moved) setSelected(selected===code?null:code); }}
                 onMouseEnter={()=>setHovered(code)}
                 onMouseLeave={()=>setHovered(null)}
-                style={{ cursor:"pointer", opacity:faded?0.15:1, transition:"opacity 0.18s" }}>
+                onMouseDown={e=>{
+                  e.stopPropagation();
+                  const r=erSvgRef.current?.getBoundingClientRect(); if(!r) return;
+                  const {w,h}=erDims.current;
+                  erDragRef.current={id:code,ox:p.x,oy:p.y,mx0:(e.clientX-r.left)*(w/r.width),my0:(e.clientY-r.top)*(h/r.height),moved:false};
+                }}
+                style={{ cursor:"grab", opacity:faded?0.15:1, transition:"opacity 0.18s" }}>
                 {isSel && <rect x={p.x-NW/2-5} y={p.y-NH/2-5} width={NW+10} height={NH+10} rx="13" fill={color+"1a"} stroke={color+"44"} strokeWidth="1.2"/>}
                 <rect x={p.x-NW/2} y={p.y-NH/2} width={NW} height={NH} rx="8"
                   fill={isSel?color+"18":"#ffffff"}
@@ -1450,11 +2053,12 @@ function ERDiagram({ rows }) {
               </g>
             );
           })}
+          </g>{/* fin zoom/pan */}
         </svg>
       </div>
 
       {/* Leyenda */}
-      <div style={{ marginTop:10, display:"flex", gap:18, alignItems:"center", flexWrap:"wrap", padding:"8px 14px", background:"#fafafa", border:"1px solid #e8e8e8", borderRadius:8, fontSize:11, color:"#666" }}>
+      <div style={{ display:"flex", gap:18, alignItems:"center", flexWrap:"wrap", padding:"8px 14px", background:"#fafafa", border:"1px solid #e8e8e8", borderRadius:8, fontSize:11, color:"#666", flexShrink:0 }}>
         {[["#27ae60","Confirmado","0"],["#f39c12","Parcial","0"],["#9b59b6","Inferido","5 3"]].map(([c,l,d])=>(
           <div key={l} style={{ display:"flex", alignItems:"center", gap:6 }}>
             <svg width="34" height="10">
@@ -1464,19 +2068,600 @@ function ERDiagram({ rows }) {
             <span>{l}</span>
           </div>
         ))}
-        <span style={{ marginLeft:"auto", fontSize:10, color:"#bbb" }}>Click en un módulo · sus flechas se iluminan</span>
+        <span style={{ marginLeft:"auto", fontSize:10, color:"#bbb" }}>Click módulo · Arrastra nodo · Scroll zoom</span>
+      </div>
+    </div>
+  );
+
+  return fullscr
+    ? <div style={{ position:"fixed",top:0,left:0,right:0,bottom:0,zIndex:9999,background:"#f8fafc" }}>{erDiagram}</div>
+    : erDiagram;
+}
+
+// ── SRO Relational Diagram ───────────────────────────────────────────────────
+function SRODiagramView({ activeGroups, selectedTable, setSelectedTable, getRelation, sroRows, GR, TD, storageKey="olo-er" }) {
+  if(!GR) GR=SRO_GROUPS; if(!TD) TD=SRO_TABLE_DEFS;
+
+  // ── Estado interno del diagrama ──────────────────────────────────────────
+  const [posOv,    setPosOv]    = useState(()=>{ try{return JSON.parse(localStorage.getItem(storageKey+'-pos'))||{};}catch{return {};} });
+  const [erZoom,   setErZoom]   = useState(1);
+  const [erPan,    setErPan]    = useState({x:0,y:0});
+  const [fullscr,  setFullscr]  = useState(false);
+  const erZoomRef  = useRef(1);
+  const erPanRef   = useRef({x:0,y:0});
+  const erDragRef  = useRef(null);   // {id, ox,oy, mx0,my0}
+  const erPanDgRef = useRef(null);   // {mx0,my0, px0,py0}
+  const erSvgRef   = useRef(null);
+  const svgDims    = useRef({w:3000,h:2800});
+
+  // Bloquear scroll del body en pantalla completa
+  useEffect(()=>{ document.body.style.overflow=fullscr?'hidden':''; return()=>{document.body.style.overflow='';};}, [fullscr]);
+
+  const TW=200, TH_HD=22, TH_PK=13, TH_ROW=11, COL_W=260, COL_GAP=90, GRP_GAP=16, TBL_GAP=6, PX=18, PY=20;
+
+  const visibleTables = new Set(
+    Object.entries(GR).filter(([k])=>activeGroups.has(k)).flatMap(([,g])=>g.tables)
+  );
+
+  const tableH = t => {
+    const d=TD[t];
+    const fk=(d?.cols||[]).filter(c=>c.includes('→')).length;
+    const da=(d?.cols||[]).filter(c=>!c.includes('→')).length;
+    return TH_HD + TH_PK + Math.min(fk,5)*TH_ROW + Math.min(da,2)*TH_ROW + 8;
+  };
+
+  // Greedy bin-packing into 3 columns
+  const groupKeys = Object.keys(GR).filter(k=>activeGroups.has(k)&&GR[k].tables.some(t=>visibleTables.has(t)));
+  const cols=[[],[],[]]; const colH=[0,0,0];
+  groupKeys.forEach(k=>{
+    const h=22+GR[k].tables.filter(t=>visibleTables.has(t)).reduce((s,t)=>s+tableH(t)+TBL_GAP,0)+GRP_GAP;
+    const ci=colH.indexOf(Math.min(...colH));
+    cols[ci].push(k); colH[ci]+=h;
+  });
+
+  // Position calculation
+  const tPos={}, gPos={};
+  cols.forEach((grps,ci)=>{
+    const bx=ci*(COL_W+COL_GAP)+PX; let y=PY;
+    grps.forEach(gk=>{
+      const tables=GR[gk].tables.filter(t=>visibleTables.has(t));
+      const gh=22+tables.reduce((s,t)=>s+tableH(t)+TBL_GAP,0)+GRP_GAP-TBL_GAP+8;
+      gPos[gk]={x:bx-6,y,w:COL_W+12,h:gh};
+      y+=24;
+      tables.forEach(t=>{ tPos[t]={x:bx+4,y,w:TW,h:tableH(t),gk}; y+=tableH(t)+TBL_GAP; });
+      y+=GRP_GAP;
+    });
+  });
+
+  const svgW=3*(COL_W+COL_GAP)+PX*2-COL_GAP;
+  const svgH=Math.max(...colH)+PY*2+40;
+  svgDims.current={w:svgW, h:svgH};
+
+  // Posiciones efectivas (layout automático + overrides de drag)
+  const effectiveTPos = Object.fromEntries(
+    Object.entries(tPos).map(([t,p])=>[t, posOv[t]?{...p,...posOv[t]}:p])
+  );
+
+  // Eventos window (drag tabla + pan)
+  useEffect(()=>{
+    const onMove=(e)=>{
+      const svg=erSvgRef.current; if(!svg) return;
+      const r=svg.getBoundingClientRect();
+      const {w,h}=svgDims.current;
+      const rx=(e.clientX-r.left)*(w/r.width), ry=(e.clientY-r.top)*(h/r.height);
+      const pd=erPanDgRef.current;
+      if(pd){ const np={x:pd.px0+(rx-pd.mx0),y:pd.py0+(ry-pd.my0)}; erPanRef.current=np; setErPan(np); return; }
+      const d=erDragRef.current; if(!d) return;
+      const dx=(rx-d.mx0)/erZoomRef.current, dy=(ry-d.my0)/erZoomRef.current;
+      if(Math.abs(dx)>2||Math.abs(dy)>2) d.moved=true;
+      setPosOv(prev=>({...prev,[d.id]:{x:d.ox+dx,y:d.oy+dy}}));
+    };
+    const onUp=()=>{
+      erPanDgRef.current=null;
+      if(!erDragRef.current) return;
+      erDragRef.current=null;
+      setPosOv(prev=>{ localStorage.setItem(storageKey+'-pos',JSON.stringify(prev)); return prev; });
+    };
+    window.addEventListener('mousemove',onMove); window.addEventListener('mouseup',onUp);
+    return()=>{ window.removeEventListener('mousemove',onMove); window.removeEventListener('mouseup',onUp); };
+  },[storageKey]);
+
+  // Wheel zoom
+  useEffect(()=>{
+    const svg=erSvgRef.current; if(!svg) return;
+    const onWh=(e)=>{
+      e.preventDefault();
+      const factor=e.deltaY<0?1.15:1/1.15;
+      const newZ=Math.max(0.1,Math.min(8,erZoomRef.current*factor));
+      const r=svg.getBoundingClientRect();
+      const dw=svgDims.current.w, dh=svgDims.current.h;
+      const rx=(e.clientX-r.left)*(dw/r.width), ry=(e.clientY-r.top)*(dh/r.height);
+      const dz=newZ/erZoomRef.current;
+      const np={x:rx-dz*(rx-erPanRef.current.x),y:ry-dz*(ry-erPanRef.current.y)};
+      erZoomRef.current=newZ; erPanRef.current=np; setErZoom(newZ); setErPan(np);
+    };
+    svg.addEventListener('wheel',onWh,{passive:false});
+    return()=>svg.removeEventListener('wheel',onWh);
+  },[fullscr]);
+
+  const resetER=()=>{ setPosOv({}); setErZoom(1); setErPan({x:0,y:0}); erZoomRef.current=1; erPanRef.current={x:0,y:0}; localStorage.removeItem(storageKey+'-pos'); };
+
+  // Edge routing
+  const edgePts=(from,to)=>{
+    const f=effectiveTPos[from],t=effectiveTPos[to]; if(!f||!t) return null;
+    const fy=f.y+f.h/2, ty=t.y+t.h/2;
+    if(t.x>=f.x+f.w+4) return [{x:f.x+f.w,y:fy},{x:t.x,y:ty}];
+    if(t.x+t.w+4<=f.x) return [{x:f.x,y:fy},{x:t.x+t.w,y:ty}];
+    if(t.y>f.y+f.h)    return [{x:f.x+f.w*0.7,y:f.y+f.h},{x:t.x+t.w*0.7,y:t.y}];
+    if(t.y+t.h<f.y)    return [{x:f.x+f.w*0.3,y:f.y},{x:t.x+t.w*0.3,y:t.y+t.h}];
+    // same column, adjacent — route via side
+    const side=f.x+COL_W+COL_GAP/2;
+    return [{x:f.x+f.w,y:fy,mid:side},{x:t.x+t.w,y:ty,mid:side}];
+  };
+  const makePath=([p1,p2])=>{
+    if(!p1||!p2) return "";
+    if(p1.mid){ const mx=p1.mid; return `M${p1.x},${p1.y}C${mx},${p1.y} ${mx},${p2.y} ${p2.x},${p2.y}`; }
+    const dx=p2.x-p1.x, dy=p2.y-p1.y;
+    if(Math.abs(dy)<3) return `M${p1.x},${p1.y}L${p2.x},${p2.y}`;
+    if(Math.abs(dx)<3) return `M${p1.x},${p1.y}L${p2.x},${p2.y}`;
+    const mx=(p1.x+p2.x)/2;
+    return Math.abs(dx)>Math.abs(dy)
+      ? `M${p1.x},${p1.y}C${mx},${p1.y} ${mx},${p2.y} ${p2.x},${p2.y}`
+      : `M${p1.x},${p1.y}C${p1.x},${(p1.y+p2.y)/2} ${p2.x},${(p1.y+p2.y)/2} ${p2.x},${p2.y}`;
+  };
+  const getFKLabel=what=>{
+    if(!what) return '';
+    const m=what.match(/[.\s](\w+)\s*→/); if(m) return m[1];
+    return what.split('→')[0].trim().split(' ').pop().split('.').pop();
+  };
+  const edgeColor=row=>{
+    if(!selectedTable) return "#94a3b8";
+    if(row.from===selectedTable) return "#f59e0b";
+    if(row.to===selectedTable)   return "#ef4444";
+    return "#94a3b8";
+  };
+  const visRows=sroRows.filter(r=>visibleTables.has(r.from)&&visibleTables.has(r.to));
+
+  const diagramContent = (
+    <div style={{ display:"flex", flexDirection:"column", height:fullscr?"100vh":"auto" }}>
+      {/* ── Barra de controles ── */}
+      <div style={{ padding:"7px 12px", background:"#1e293b", borderBottom:"1px solid #334155", fontSize:11, color:"#94a3b8", display:"flex", gap:12, alignItems:"center", flexShrink:0 }}>
+        <span style={{ fontWeight:700, color:"#e2e8f0" }}>Diagrama Relacional FK</span>
+        <span>🔗 {visRows.length} relaciones</span>
+        {!selectedTable && <span style={{ color:"#475569" }}>Click tabla → resalta FK · Arrastra → mueve · Scroll → zoom</span>}
+        {selectedTable && <span style={{ color:"#93c5fd", fontWeight:600, fontSize:10 }}>
+          <b style={{color:"#f59e0b"}}>⬆</b> apunta desde {selectedTable} &nbsp;·&nbsp; <b style={{color:"#ef4444"}}>⬇</b> apunta hacia {selectedTable}
+        </span>}
+        <div style={{ marginLeft:"auto", display:"flex", gap:6, alignItems:"center" }}>
+          {/* Zoom */}
+          <div style={{ display:"flex", alignItems:"center", gap:3, background:"rgba(255,255,255,0.07)", borderRadius:5, padding:"2px 7px" }}>
+            <button onClick={()=>{const nz=Math.min(8,erZoomRef.current*1.25);erZoomRef.current=nz;setErZoom(nz);}} style={{ background:"none",border:"none",color:"#94a3b8",cursor:"pointer",fontSize:15,lineHeight:1 }}>+</button>
+            <span style={{ fontSize:10, color:"#64748b", minWidth:34, textAlign:"center" }}>{Math.round(erZoom*100)}%</span>
+            <button onClick={()=>{const nz=Math.max(0.1,erZoomRef.current/1.25);erZoomRef.current=nz;setErZoom(nz);}} style={{ background:"none",border:"none",color:"#94a3b8",cursor:"pointer",fontSize:15,lineHeight:1 }}>−</button>
+            <button onClick={resetER} style={{ background:"none",border:"none",color:"#64748b",cursor:"pointer",fontSize:10 }} title="Resetear posiciones">↺</button>
+          </div>
+          {selectedTable && <button onClick={()=>setSelectedTable(null)} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, border:"1px solid #334155", background:"transparent", color:"#94a3b8", cursor:"pointer" }}>✕</button>}
+          {/* Pantalla completa */}
+          <button onClick={()=>setFullscr(f=>!f)} style={{ fontSize:13, padding:"3px 8px", borderRadius:5, border:"1px solid #334155", background:fullscr?"#1d4ed8":"transparent", color:fullscr?"#fff":"#94a3b8", cursor:"pointer" }} title="Pantalla completa">
+            {fullscr?"⊠":"⛶"}
+          </button>
+        </div>
+      </div>
+      {/* ── SVG ── */}
+      <div style={{ overflow:"auto", flex:1, background:"#f8faff" }}>
+      <svg ref={erSvgRef} width={svgW} height={svgH} style={{ display:"block", fontFamily:"'Segoe UI',sans-serif" }}>
+        {/* Defs al nivel del SVG (fuera del transform para que los marcadores funcionen) */}
+        <defs>
+          {[["fkD","#94a3b8"],["fkHL","#1d4ed8"],["fkDep","#f59e0b"],["fkImp","#ef4444"]].map(([id,c])=>(
+            <marker key={id} id={id} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+              <path d="M1 2L8 5L1 8" fill="none" stroke={c} strokeWidth="1.5" strokeLinecap="round"/>
+            </marker>
+          ))}
+        </defs>
+        <g transform={`translate(${erPan.x},${erPan.y}) scale(${erZoom})`}>
+        {/* Fondo pan */}
+        <rect width={svgW} height={svgH} fill="transparent"
+          style={{cursor:'grab'}}
+          onMouseDown={e=>{
+            if(erDragRef.current) return;
+            const r=erSvgRef.current?.getBoundingClientRect(); if(!r) return;
+            const {w,h}=svgDims.current;
+            erPanDgRef.current={mx0:(e.clientX-r.left)*(w/r.width),my0:(e.clientY-r.top)*(h/r.height),px0:erPanRef.current.x,py0:erPanRef.current.y};
+          }}
+        />
+
+        {/* Group backgrounds */}
+        {Object.entries(gPos).map(([gk,gp])=>{
+          const g=GR[gk];
+          return <g key={gk}>
+            <rect x={gp.x} y={gp.y} width={gp.w} height={gp.h} rx={7} fill={g.color+"09"} stroke={g.color+"44"} strokeWidth={0.8}/>
+            <rect x={gp.x} y={gp.y} width={gp.w} height={18} rx={7} fill={g.color+"22"}/>
+            <rect x={gp.x} y={gp.y+10} width={gp.w} height={8} fill={g.color+"22"}/>
+            <text x={gp.x+8} y={gp.y+13} fontSize={8} fontWeight={700} fill={g.color} letterSpacing={0.1}>{g.label.toUpperCase()}</text>
+          </g>;
+        })}
+
+        {/* Edges — dim first, highlighted on top */}
+        {visRows.map((row,i)=>{
+          const pts=edgePts(row.from,row.to); if(!pts) return null;
+          const hl=selectedTable&&(row.from===selectedTable||row.to===selectedTable);
+          const dim=selectedTable&&!hl;
+          if(dim) return null; // render dim pass separately
+          return null; // placeholder
+        })}
+        {/* Dim edges */}
+        {visRows.filter(row=>selectedTable&&!(row.from===selectedTable||row.to===selectedTable)).map((row,i)=>{
+          const pts=edgePts(row.from,row.to); if(!pts) return null;
+          return <path key={`d${i}`} d={makePath(pts)} fill="none" stroke="#94a3b8" strokeWidth={0.6} strokeOpacity={0.18} markerEnd="url(#fkD)"/>;
+        })}
+        {/* Normal edges (no selection) */}
+        {!selectedTable && visRows.map((row,i)=>{
+          const pts=edgePts(row.from,row.to); if(!pts) return null;
+          const mx=(pts[0].x+pts[1].x)/2, my=(pts[0].y+pts[1].y)/2;
+          const label=getFKLabel(row.what);
+          return <g key={`n${i}`}>
+            <path d={makePath(pts)} fill="none" stroke="#94a3b8" strokeWidth={0.7} strokeOpacity={0.4} markerEnd="url(#fkD)"/>
+            {label && <text x={mx} y={my-3} textAnchor="middle" fontSize={7} fill="#b0b8c8" fontFamily="'JetBrains Mono',monospace">{label}</text>}
+          </g>;
+        })}
+        {/* Highlighted edges (with selection) */}
+        {selectedTable && visRows.filter(r=>r.from===selectedTable||r.to===selectedTable).map((row,i)=>{
+          const pts=edgePts(row.from,row.to); if(!pts) return null;
+          const mx=(pts[0].x+pts[1].x)/2, my=(pts[0].y+pts[1].y)/2;
+          const col=edgeColor(row);
+          const mId=row.from===selectedTable?"url(#fkDep)":"url(#fkImp)";
+          const label=getFKLabel(row.what);
+          return <g key={`h${i}`}>
+            <path d={makePath(pts)} fill="none" stroke={col} strokeWidth={1.8} strokeOpacity={0.85} markerEnd={mId}/>
+            {label && <>
+              <rect x={mx-label.length*3} y={my-11} width={label.length*6+6} height={11} rx={3} fill="white" opacity={0.88}/>
+              <text x={mx} y={my-3} textAnchor="middle" fontSize={8.5} fontWeight={700} fill={col} fontFamily="'JetBrains Mono',monospace">{label}</text>
+            </>}
+          </g>;
+        })}
+
+        {/* Table nodes */}
+        {Object.entries(effectiveTPos).map(([table,pos])=>{
+          const def=TD[table];
+          const fkCols=(def?.cols||[]).filter(c=>c.includes('→'));
+          const daCols=(def?.cols||[]).filter(c=>!c.includes('→')).slice(0,2);
+          const col=GR[pos.gk]?.color||"#888";
+          const rel=getRelation(table);
+          const relM=rel?RELATION_META[rel]:null;
+          const bdrCol=relM?.border||col+"66";
+          const bgCol=relM?.bg||"#fff";
+          const isSel=rel==="selected";
+          const dim=rel==="none";
+          let y0=pos.y+TH_HD+TH_PK;
+          return (
+            <g key={table} style={{ cursor:"grab", opacity:dim?0.15:1 }}
+              onClick={e=>{ if(!erDragRef.current?.moved) setSelectedTable(prev=>prev===table?null:table); }}
+              onMouseDown={e=>{
+                e.stopPropagation();
+                const r=erSvgRef.current?.getBoundingClientRect(); if(!r) return;
+                const {w,h}=svgDims.current;
+                erDragRef.current={id:table,ox:pos.x,oy:pos.y,mx0:(e.clientX-r.left)*(w/r.width),my0:(e.clientY-r.top)*(h/r.height),moved:false};
+              }}>
+              <rect x={pos.x} y={pos.y} width={pos.w} height={pos.h} rx={5} fill={bgCol} stroke={bdrCol} strokeWidth={isSel?2:0.9}/>
+              <rect x={pos.x} y={pos.y} width={pos.w} height={TH_HD} rx={5} fill={isSel?col:col+"22"}/>
+              <rect x={pos.x} y={pos.y+TH_HD-3} width={pos.w} height={3} fill={isSel?col:col+"22"}/>
+              <text x={pos.x+6} y={pos.y+14} fontSize={9} fontWeight={700} fill={isSel?"#fff":col} fontFamily="'JetBrains Mono',monospace">{table}</text>
+              {/* PK */}
+              <text x={pos.x+5} y={pos.y+TH_HD+TH_PK-1} fontSize={8} fill="#f59e0b" fontFamily="'JetBrains Mono',monospace">🔑 {def?.pk||"id"}</text>
+              {/* FK cols */}
+              {fkCols.slice(0,5).map((c,ci)=>{
+                const [field,ref]=c.split('→'); y0=pos.y+TH_HD+TH_PK+(ci+1)*TH_ROW+2;
+                return <text key={c} x={pos.x+5} y={y0} fontSize={8} fontFamily="'JetBrains Mono',monospace">
+                  <tspan fill="#94a3b8">🔗 </tspan>
+                  <tspan fill={col} fontWeight={600}>{field?.trim()}</tspan>
+                  <tspan fill={col} opacity={0.55}> →{ref?.trim()}</tspan>
+                </text>;
+              })}
+              {fkCols.length>5 && <text x={pos.x+5} y={pos.y+TH_HD+TH_PK+6*TH_ROW+2} fontSize={7.5} fill="#bbb" fontFamily="'JetBrains Mono',monospace">+{fkCols.length-5} FK…</text>}
+              {/* Data cols */}
+              {daCols.map((c,ci)=>{
+                const dy=pos.y+TH_HD+TH_PK+(Math.min(fkCols.length,5)+ci+1)*TH_ROW+2;
+                return <text key={c} x={pos.x+5} y={dy} fontSize={8} fill="#aaa" fontFamily="'JetBrains Mono',monospace">· {c}</text>;
+              })}
+            </g>
+          );
+        })}
+        </g>{/* fin zoom/pan */}
+      </svg>
+      </div>{/* fin scroll */}
+    </div>
+  );
+
+  return fullscr
+    ? <div style={{ position:"fixed",top:0,left:0,right:0,bottom:0,zIndex:9999,background:"#f8faff" }}>
+        {diagramContent}
+      </div>
+    : <div style={{ border:"1px solid #e0e0e0", borderRadius:10, overflow:"hidden" }}>
+        {diagramContent}
+      </div>;
+}
+
+// ── SRO ER View ─────────────────────────────────────────────────────────────
+const RELATION_META = {
+  selected: { border:"#1d4ed8", bg:"#eff6ff", badge:null,            badgeBg:null,       dim:false },
+  dep:      { border:"#f59e0b", bg:"#fffbeb", badge:"⬆ depende de",  badgeBg:"#fef3c7", dim:false },
+  impact:   { border:"#ef4444", bg:"#fef2f2", badge:"⬇ impactada",   badgeBg:"#fee2e2", dim:false },
+  impact2:  { border:"#fca5a5", bg:"#fff8f8", badge:"~ 2do nivel",   badgeBg:"#ffe4e6", dim:false },
+  none:     { border:null,      bg:"#fff",    badge:null,            badgeBg:null,       dim:true  },
+};
+
+function SROEntityCard({ table, def, color, fkIn, fkOut, relation, connRows, onClick }) {
+  const fkCols   = (def?.cols || []).filter(c => c.includes('→'));
+  const dataCols = (def?.cols || []).filter(c => !c.includes('→'));
+  const rm = relation ? (RELATION_META[relation] || RELATION_META.none) : { border:color+"55", bg:"#fff", badge:null, dim:false };
+  const borderColor = rm.border || color+"55";
+  const topColor    = relation==="selected" ? color : rm.border || color;
+  return (
+    <div onClick={onClick} style={{ background:rm.bg, border:`1.5px solid ${borderColor}`, borderTop:`3px solid ${topColor}`, borderRadius:8, minWidth:200, maxWidth:260, cursor:"pointer", opacity:rm.dim?0.22:1, transition:"all 0.15s", fontSize:11, position:"relative" }}>
+      {/* Badge de relación */}
+      {rm.badge && (
+        <div style={{ position:"absolute", top:-10, right:8, background:rm.badgeBg, border:`1px solid ${borderColor}`, color:borderColor, fontSize:9, fontWeight:700, padding:"1px 7px", borderRadius:10, letterSpacing:"0.04em" }}>
+          {rm.badge}
+        </div>
+      )}
+      {/* Header */}
+      <div style={{ background:relation==="selected"?color:rm.border?rm.border+"18":color+"18", padding:"5px 10px", borderRadius:"5px 5px 0 0", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+        <span style={{ fontWeight:700, color:relation==="selected"?"#fff":topColor, fontFamily:"'JetBrains Mono',monospace", letterSpacing:"0.03em", fontSize:11 }}>{table}</span>
+        <div style={{ display:"flex", gap:4 }}>
+          {fkOut>0 && <span style={{ fontSize:9, background:"rgba(255,255,255,0.35)", color:relation==="selected"?"#fff":color, padding:"1px 5px", borderRadius:3, fontWeight:700 }}>→{fkOut}</span>}
+          {fkIn>0  && <span style={{ fontSize:9, background:"rgba(100,100,100,0.12)", color:"#666", padding:"1px 5px", borderRadius:3, fontWeight:700 }}>←{fkIn}</span>}
+        </div>
+      </div>
+      {/* Filas FK de conexión (cuando hay relación activa) */}
+      {connRows?.length > 0 && (
+        <div style={{ padding:"3px 10px", background:rm.badgeBg||"#f8faff", borderBottom:"1px solid "+borderColor+"44" }}>
+          {connRows.slice(0,2).map((r,i) => (
+            <div key={i} style={{ fontSize:9, color:borderColor, fontFamily:"'JetBrains Mono',monospace", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+              {r.from===table?"→":"←"} {r.what?.split('→')[0]?.trim() || r.what}
+            </div>
+          ))}
+          {connRows.length>2 && <div style={{ fontSize:9, color:"#aaa" }}>+{connRows.length-2} más</div>}
+        </div>
+      )}
+      {/* PK */}
+      <div style={{ padding:"3px 10px 0", color:"#f59e0b", fontFamily:"'JetBrains Mono',monospace", fontSize:10, borderBottom:"1px solid #f5f5f5" }}>
+        🔑 {def?.pk || "id"}
+      </div>
+      {/* FK cols */}
+      {fkCols.slice(0,5).map(c => {
+        const [field, ref] = c.split('→');
+        return <div key={c} style={{ padding:"1px 10px", fontFamily:"'JetBrains Mono',monospace", fontSize:10, display:"flex", gap:4 }}>
+          <span style={{ color:"#aaa" }}>🔗</span>
+          <span style={{ color:"#555", fontWeight:500 }}>{field}</span>
+          <span style={{ color:color, opacity:0.7 }}>→{ref}</span>
+        </div>;
+      })}
+      {fkCols.length>5 && <div style={{ padding:"1px 10px", color:"#bbb", fontSize:10 }}>  +{fkCols.length-5} FK más</div>}
+      {/* Data cols */}
+      {dataCols.slice(0,3).map(c => (
+        <div key={c} style={{ padding:"1px 10px", color:"#888", fontFamily:"'JetBrains Mono',monospace", fontSize:10 }}>· {c}</div>
+      ))}
+      {dataCols.length>3 && <div style={{ padding:"1px 10px 4px", color:"#bbb", fontSize:10 }}>  +{dataCols.length-3} cols</div>}
+      {dataCols.length<=3 && <div style={{ height:4 }}/>}
+    </div>
+  );
+}
+
+function SROERView({ schema="sro", searchQuery="" }) {
+  const GR   = schema==="sco" ? SCO_GROUPS     : SRO_GROUPS;
+  const TD   = schema==="sco" ? SCO_TABLE_DEFS : SRO_TABLE_DEFS;
+  const COL  = schema==="sco" ? SCO_COLORS     : SRO_COLORS;
+  const MOD  = schema==="sco" ? SCO_MOD        : SRO_MOD;
+  const [activeGroups, setActiveGroups] = useState(()=>new Set(Object.keys(GR)));
+  const [selectedTable, setSelectedTable] = useState(null);
+  const [viewMode, setViewMode] = useState("cards"); // "cards" | "diagram" | "radial"
+
+  const toggleGroup = (key) => setActiveGroups(prev => {
+    const next = new Set(prev);
+    next.has(key) ? next.delete(key) : next.add(key);
+    return next;
+  });
+
+  // FK relationships para el schema activo
+  const sroRows = INTEGRATIONS.filter(r => MOD.has(r.from) || MOD.has(r.to));
+  const fkOutMap = {}, fkInMap = {};
+  sroRows.forEach(r => {
+    fkOutMap[r.from] = (fkOutMap[r.from]||0)+1;
+    fkInMap[r.to]    = (fkInMap[r.to]||0)+1;
+  });
+
+  // ── Análisis de impacto ────────────────────────────────────────────────────
+  // dep    = tablas de las que selectedTable DEPENDE (FK out: selected → dep)
+  // impact = tablas que serán AFECTADAS si selected cambia (FK in: impact → selected)
+  // impact2 = 2do nivel: tablas que apuntan a impact
+  const depSet     = new Set();
+  const impactSet  = new Set();
+  const impact2Set = new Set();
+
+  if (selectedTable) {
+    sroRows.forEach(r => {
+      if (r.from===selectedTable && r.to!==selectedTable) depSet.add(r.to);
+      if (r.to===selectedTable   && r.from!==selectedTable) impactSet.add(r.from);
+    });
+    sroRows.forEach(r => {
+      if (impactSet.has(r.to) && r.from!==selectedTable && !impactSet.has(r.from) && !depSet.has(r.from))
+        impact2Set.add(r.from);
+    });
+  }
+
+  const getRelation = (table) => {
+    if (!selectedTable) return null;
+    if (table===selectedTable) return "selected";
+    if (depSet.has(table))     return "dep";
+    if (impactSet.has(table))  return "impact";
+    if (impact2Set.has(table)) return "impact2";
+    return "none";
+  };
+
+  const getConnRows = (table) => {
+    if (!selectedTable || table===selectedTable) return [];
+    return sroRows.filter(r =>
+      (r.from===table && r.to===selectedTable) ||
+      (r.to===table   && r.from===selectedTable)
+    );
+  };
+
+  const selRelated = selectedTable
+    ? sroRows.filter(r => r.from===selectedTable || r.to===selectedTable)
+    : [];
+
+  const visibleTables = new Set(
+    Object.entries(GR)
+      .filter(([k]) => activeGroups.has(k))
+      .flatMap(([,g]) => g.tables)
+  );
+  const diagRows = sroRows.filter(r => visibleTables.has(r.from) && visibleTables.has(r.to));
+
+  const btnStyle = (active) => ({
+    fontSize:11, fontWeight:active?700:400, padding:"5px 12px", borderRadius:6, border:`1px solid ${active?"#0891b2":"#ddd"}`,
+    background:active?"#EFF6FF":"#fff", color:active?"#0891b2":"#666", cursor:"pointer", fontFamily:"inherit",
+  });
+
+  return (
+    <div style={{ display:"flex", gap:0, alignItems:"flex-start" }}>
+      {/* Sidebar de grupos */}
+      <div style={{ width:200, minWidth:200, background:"#fff", border:"1px solid #e0e0e0", borderRadius:10, overflow:"hidden", flexShrink:0, position:"sticky", top:20, marginRight:16 }}>
+        <div style={{ padding:"10px 14px", borderBottom:"1px solid #f0f0f0", background:"#fafafa", fontSize:10, fontWeight:700, color:"#888", letterSpacing:"0.08em", textTransform:"uppercase", display:"flex", justifyContent:"space-between" }}>
+          <span>Módulos</span>
+          <span style={{ cursor:"pointer", color:"#0891b2" }} onClick={()=>setActiveGroups(prev=>prev.size===Object.keys(GR).length?new Set():new Set(Object.keys(GR)))}>
+            {activeGroups.size===Object.keys(GR).length?"Ocultar todos":"Mostrar todos"}
+          </span>
+        </div>
+        {Object.entries(GR).map(([key,g])=>{
+          const on = activeGroups.has(key);
+          return <button key={key} onClick={()=>toggleGroup(key)} style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"8px 14px", border:"none", borderLeft:`3px solid ${on?g.color:"transparent"}`, background:on?g.color+"0a":"transparent", cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left", borderBottom:"1px solid #f5f5f5" }}>
+            <span style={{ width:10, height:10, borderRadius:"50%", background:on?g.color:"#ddd", flexShrink:0 }}/>
+            <span style={{ fontSize:11, fontWeight:on?700:400, color:on?g.color:"#888", flex:1 }}>{g.label}</span>
+            <span style={{ fontSize:10, color:on?g.color:"#bbb", background:on?g.color+"15":"#f0f0f0", padding:"1px 6px", borderRadius:8 }}>{g.tables.length}</span>
+          </button>;
+        })}
+        <div style={{ padding:"10px 14px", borderTop:"1px solid #f0f0f0", fontSize:10, color:"#aaa" }}>
+          {[...activeGroups].reduce((s,k)=>s+(GR[k]?.tables.length||0),0)} tablas visibles
+        </div>
+      </div>
+
+      {/* Contenido principal */}
+      <div style={{ flex:1, minWidth:0 }}>
+        {/* Detail de tabla seleccionada */}
+        {selectedTable && (
+          <div style={{ background:"#fff", border:`1px solid ${COL[selectedTable]}44`, borderLeft:`4px solid ${COL[selectedTable]}`, borderRadius:10, padding:"14px 18px", marginBottom:16 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+              <div>
+                <span style={{ fontFamily:"'JetBrains Mono',monospace", fontWeight:700, fontSize:15, color:COL[selectedTable] }}>{selectedTable}</span>
+                <span style={{ fontSize:11, color:"#888", marginLeft:10 }}>{(TD[selectedTable]?.cols||[]).length} columnas · {fkOutMap[selectedTable]||0} FK out · {fkInMap[selectedTable]||0} FK in</span>
+              </div>
+              <button onClick={()=>setSelectedTable(null)} style={{ background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:16 }}>✕</button>
+            </div>
+            {/* Todas las columnas */}
+            <div style={{ marginTop:10, display:"flex", flexWrap:"wrap", gap:6 }}>
+              <span style={{ fontSize:10, background:"#fff8dc", border:"1px solid #fcd34d", color:"#92400e", padding:"2px 8px", borderRadius:4, fontFamily:"'JetBrains Mono',monospace" }}>🔑 {TD[selectedTable]?.pk||"id"}</span>
+              {(TD[selectedTable]?.cols||[]).map(c=>{
+                const isFK=c.includes('→');
+                const color=COL[selectedTable];
+                return <span key={c} style={{ fontSize:10, background:isFK?color+"10":"#f5f5f5", border:`1px solid ${isFK?color+"44":"#e0e0e0"}`, color:isFK?color:"#555", padding:"2px 8px", borderRadius:4, fontFamily:"'JetBrains Mono',monospace" }}>{isFK?"🔗 ":""}{c}</span>;
+              })}
+            </div>
+            {/* Relaciones */}
+            {selRelated.length > 0 && (
+              <div style={{ marginTop:12, borderTop:"1px solid #f0f0f0", paddingTop:10 }}>
+                <div style={{ fontSize:10, fontWeight:700, color:"#888", letterSpacing:"0.07em", textTransform:"uppercase", marginBottom:6 }}>Relaciones FK</div>
+                <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+                  {selRelated.map((r,i)=>(
+                    <div key={i} style={{ fontSize:11, display:"flex", alignItems:"center", gap:8 }}>
+                      <span style={{ fontFamily:"'JetBrains Mono',monospace", color:COL[r.from]||"#888", fontWeight:600 }}>{r.from}</span>
+                      <span style={{ color:"#bbb" }}>→</span>
+                      <span style={{ fontFamily:"'JetBrains Mono',monospace", color:COL[r.to]||"#888", fontWeight:600 }}>{r.to}</span>
+                      <span style={{ color:"#999", fontSize:10, flex:1 }}>{r.what}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Barra de impacto (cuando hay tabla seleccionada) */}
+        {selectedTable && (
+          <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:12, padding:"8px 14px", background:"#f8faff", border:"1px solid #dbeafe", borderRadius:8, alignItems:"center" }}>
+            <span style={{ fontSize:11, fontWeight:700, color:COL[selectedTable]||"#555", fontFamily:"'JetBrains Mono',monospace" }}>{selectedTable}</span>
+            <span style={{ fontSize:10, color:"#888" }}>análisis de impacto:</span>
+            {depSet.size>0    && <span style={{ fontSize:11, background:"#fffbeb", border:"1px solid #f59e0b", color:"#b45309", padding:"2px 10px", borderRadius:12, fontWeight:600 }}>⬆ {depSet.size} dependencia{depSet.size!==1?"s":""}</span>}
+            {impactSet.size>0 && <span style={{ fontSize:11, background:"#fef2f2", border:"1px solid #ef4444", color:"#b91c1c", padding:"2px 10px", borderRadius:12, fontWeight:600 }}>⬇ {impactSet.size} tabla{impactSet.size!==1?"s":""} afectada{impactSet.size!==1?"s":""}</span>}
+            {impact2Set.size>0 && <span style={{ fontSize:11, background:"#fff5f5", border:"1px solid #fca5a5", color:"#dc2626", padding:"2px 10px", borderRadius:12, fontWeight:600 }}>~ {impact2Set.size} impacto{impact2Set.size!==1?"s":""} indirecto{impact2Set.size!==1?"s":""}</span>}
+            <span style={{ fontSize:10, color:"#aaa", marginLeft:"auto" }}>Leyenda: <b style={{color:"#f59e0b"}}>⬆ dep</b> · <b style={{color:"#ef4444"}}>⬇ impacto</b> · <b style={{color:"#fca5a5"}}>~ 2do nivel</b></span>
+          </div>
+        )}
+
+        {/* Toggle vista */}
+        <div style={{ display:"flex", gap:6, marginBottom:14, alignItems:"center" }}>
+          <button style={btnStyle(viewMode==="cards")}    onClick={()=>setViewMode("cards")}>⊞ Tarjetas por módulo</button>
+          <button style={btnStyle(viewMode==="diagram")}  onClick={()=>setViewMode("diagram")}>⬡ Diagrama Relacional FK</button>
+          <button style={btnStyle(viewMode==="radial")}   onClick={()=>setViewMode("radial")}>◎ Diagrama ER Radial</button>
+          <span style={{ fontSize:11, color:"#aaa", marginLeft:8 }}>{sroRows.filter(r=>visibleTables.has(r.from)&&visibleTables.has(r.to)).length} relaciones FK visibles</span>
+        </div>
+
+        {/* Vista: tarjetas */}
+        {viewMode==="cards" && Object.entries(GR)
+          .filter(([k])=>activeGroups.has(k))
+          .map(([key,group])=>(
+            <div key={key} style={{ marginBottom:22 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:10 }}>
+                <div style={{ width:12, height:12, borderRadius:"50%", background:group.color }}/>
+                <span style={{ fontSize:13, fontWeight:700, color:group.color }}>{group.label}</span>
+                <span style={{ fontSize:11, color:"#aaa" }}>· {group.tables.length} tablas</span>
+              </div>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:10 }}>
+                {group.tables.map(table=>(
+                  <SROEntityCard key={table}
+                    table={table}
+                    def={TD[table]}
+                    color={group.color}
+                    fkOut={fkOutMap[table]||0}
+                    fkIn={fkInMap[table]||0}
+                    relation={searchQuery&&!table.toLowerCase().includes(searchQuery.toLowerCase())&&!(TD[table]?.cols||[]).some(c=>c.toLowerCase().includes(searchQuery.toLowerCase()))?"none":getRelation(table)}
+                    connRows={getConnRows(table)}
+                    onClick={()=>setSelectedTable(prev=>prev===table?null:table)}
+                  />
+                ))}
+              </div>
+            </div>
+          ))
+        }
+
+        {/* Vista: diagrama relacional con labels FK */}
+        {viewMode==="diagram" && (
+          <SRODiagramView
+            activeGroups={activeGroups}
+            selectedTable={selectedTable}
+            setSelectedTable={setSelectedTable}
+            getRelation={getRelation}
+            sroRows={sroRows}
+            GR={GR}
+            TD={TD}
+            storageKey={`olo-er-${schema}`}
+          />
+        )}
+        {/* Vista: diagrama ER radial original */}
+        {viewMode==="radial" && <ERDiagram rows={diagRows}/>}
       </div>
     </div>
   );
 }
 
-function IntegrationsView() {
+function IntegrationsView({ searchQuery="" }) {
   const [cat, setCat] = useState("global");
   const [fFrom, setFFrom] = useState("*");
   const [fTo, setFTo] = useState("*");
   const [fStatus, setFStatus] = useState("*");
-  const [fWhat, setFWhat] = useState("");
+  const [fWhat, setFWhat] = useState(searchQuery||"");
   const [viewMode, setViewMode] = useState("table");
+  // Sync external search into filter
+  useEffect(()=>{ if(searchQuery) setFWhat(searchQuery); }, [searchQuery]);
 
   const handleCat = c => { setCat(c); setFFrom("*"); setFTo("*"); setFStatus("*"); setFWhat(""); };
 
@@ -1516,16 +2701,19 @@ function IntegrationsView() {
     {/* Contenido principal */}
     <div style={{ flex:1, minWidth:0 }}>
 
+    {/* SRO: vista dedicada */}
+    {(cat==="sro"||cat==="sco") ? <SROERView schema={cat} searchQuery={searchQuery}/> : <>
+
     {/* Banner de categoría activa */}
     {cat!=="global" && <div style={{ background:CAT_META[cat].bg, border:`1px solid ${CAT_META[cat].border}`, borderLeft:`3px solid ${CAT_META[cat].color}`, borderRadius:8, padding:"10px 14px", marginBottom:14, fontSize:12, color:"#555", lineHeight:1.5 }}>
       <b style={{ color:CAT_META[cat].color }}>{CAT_META[cat].icon} {CAT_META[cat].label}</b>
       {cat==="erp"   && " — integraciones intra-suite declaradas explícitamente en los manuales oficiales."}
-      {cat==="ops"   && " — integraciones entre ERP Softland y la plataforma eflow Cloud Suite. Mecanismo concreto (batch/WS/BD intermedia) no documentado."}
-      {cat==="sat"   && " — integraciones con sistemas externos inferidos por contexto. Sin documentación formal en el corpus accesible."}
-      {cat==="suite" && " — integraciones de los clusters del ecosistema OLO: Suite OLO, Middleware, Intermedia y clientes. Derivadas del diagrama de Inicio."}
+      {cat==="ops"   && " — integraciones entre ERP Softland y la plataforma eflow Cloud Suite."}
+      {cat==="sat"   && " — integraciones con sistemas externos inferidos por contexto."}
+      {cat==="suite" && " — integraciones de los clusters del ecosistema OLO."}
     </div>}
     {cat==="global" && <div style={{ background:"rgba(41,128,185,0.06)", border:"1px solid rgba(41,128,185,0.22)", borderLeft:"3px solid #2980b9", borderRadius:8, padding:"10px 14px", marginBottom:14, fontSize:12, color:"#666", lineHeight:1.6 }}>
-      Las integraciones intra-Softland están <b style={{ color:"#27ae60" }}>declaradas explícitamente</b> en la sección "Integración" de cada manual. Las del lado operativo y externo están parcialmente confirmadas o inferidas.
+      Las integraciones intra-Softland están <b style={{ color:"#27ae60" }}>declaradas explícitamente</b> en la sección "Integración" de cada manual.
     </div>}
 
     {/* Toggle de vista */}
@@ -1573,11 +2761,11 @@ function IntegrationsView() {
       {(fFrom!=="*"||fTo!=="*"||fStatus!=="*"||fWhat) && <button onClick={()=>{setFFrom("*");setFTo("*");setFStatus("*");setFWhat("");}} style={{ fontSize:10, color:"#c0392b", background:"none", border:"1px solid #ef9a9a", borderRadius:5, padding:"4px 10px", cursor:"pointer", fontFamily:"inherit" }}>✕ Limpiar</button>}
     </div>
 
-    {/* Contenido según vista */}
     {viewMode==="table"
       ? <div style={{ background:"#ffffff", border:"1px solid #e0e0e0", borderRadius:10, overflow:"hidden", overflowX:"auto" }}><IntegTable rows={filtered}/></div>
       : <ERDiagram rows={filtered}/>
     }
+    </>}
 
     </div>{/* fin contenido principal */}
   </div>;
@@ -1624,6 +2812,7 @@ export default function SoftlandArchitectureMap() {
   const [slSel, setSlSel] = useState(null);
   const [opsSel, setOpsSel] = useState(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [globalSearch, setGlobalSearch] = useState("");
 
   const handleTab = id => { setTab(id); setBpaSel(null); setSlSel(null); setOpsSel(null); };
   const activeTab = TABS.find(t => t.id === tab);
@@ -1665,7 +2854,19 @@ export default function SoftlandArchitectureMap() {
         <div style={{ marginBottom:16 }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", flexWrap:"wrap", gap:12, marginBottom:4 }}>
             <h1 style={{ fontSize:22, fontWeight:700, color:"#1D1D1B", margin:0, letterSpacing:"-0.02em" }}>{activeTab?.label.split(" ").slice(1).join(" ") || "Inicio"}</h1>
-            <span style={{ fontSize:11, color:"#888", letterSpacing:"0.1em", fontFamily:"'JetBrains Mono','Consolas',monospace" }}>Softland v7.00 · eflow Cloud Suite</span>
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginLeft:"auto" }}>
+              <div style={{ position:"relative" }}>
+                <span style={{ position:"absolute", left:9, top:"50%", transform:"translateY(-50%)", fontSize:13, color:"#bbb", pointerEvents:"none" }}>🔍</span>
+                <input
+                  value={globalSearch}
+                  onChange={e=>setGlobalSearch(e.target.value)}
+                  placeholder="Buscar nodo, tabla, conexión…"
+                  style={{ fontSize:12, border:"1px solid #ddd", borderRadius:8, padding:"6px 10px 6px 30px", width:240, fontFamily:"inherit", outline:"none", background: globalSearch?"#fff8dc":"#fafafa", color:"#333" }}
+                />
+                {globalSearch && <button onClick={()=>setGlobalSearch("")} style={{ position:"absolute", right:8, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", color:"#aaa", fontSize:14, lineHeight:1 }}>✕</button>}
+              </div>
+              <span style={{ fontSize:11, color:"#888", letterSpacing:"0.1em", fontFamily:"'JetBrains Mono','Consolas',monospace" }}>Softland v7.00 · eflow Cloud Suite</span>
+            </div>
           </div>
           <p style={{ fontSize:13, color:"#666", margin:0, lineHeight:1.5 }}>{activeTab?.sub}</p>
         </div>
@@ -1681,12 +2882,12 @@ export default function SoftlandArchitectureMap() {
         </div>
 
         {/* Contenido */}
-        {tab==="olo-arch"     && <OLOArchView/>}
-        {tab==="ecosystem"    && <EcosystemView/>}
+        {tab==="olo-arch"     && <OLOArchView     searchQuery={globalSearch}/>}
+        {tab==="ecosystem"    && <EcosystemView   searchQuery={globalSearch}/>}
         {tab==="bpa"          && <BPAView selected={bpaSel} setSelected={setBpaSel}/>}
         {tab==="softland"     && <SoftlandView selected={slSel} setSelected={setSlSel}/>}
         {tab==="ops"          && <OpsView selected={opsSel} setSelected={setOpsSel}/>}
-        {tab==="integrations" && <IntegrationsView/>}
+        {tab==="integrations" && <IntegrationsView searchQuery={globalSearch}/>}
         {tab==="context"      && <ContextView/>}
 
         {/* Footer */}

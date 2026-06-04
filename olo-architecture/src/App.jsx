@@ -317,11 +317,107 @@ function OLOArchView() {
 
   // ── Edit mode state ────────────────────────────────────────────────────────
   const [editMode,       setEditMode]       = useState(false);
+  // Posiciones y conexiones guardadas por el usuario — baked como defaults
+  const DEFAULT_NODE_OVERRIDES = {
+    eflow_api:         {x:90,  y:58},
+    db_intermedia:     {x:72,  y:116},
+    db_eflow:          {x:214, y:116},
+    eprac:             {x:199, y:55},
+    softland:          {x:95,  y:173},
+    terceros:          {x:135, y:285},
+    comercializadoras: {x:121, y:348},
+    mayoreo:           {x:128, y:413},
+    epa:               {x:131, y:479},
+    proveedores:       {x:939, y:397},
+    raganext:          {x:429, y:389},
+    api_dim:           {x:555, y:422},
+    olo_api:           {x:673, y:453},
+    mecalux:           {x:730, y:393},
+    trade:             {x:828, y:393},
+    azure:             {x:1042,y:72},
+    onpremise_zone:    {x:27,  y:7,   w:308, h:144},
+    clientes_zone:     {x:87,  y:254, w:168, h:264},
+    azure_zone:        {x:1030,y:24,  w:122, h:219},
+    aws_zone:          {x:378, y:26,  w:628, h:202},
+    middleware_zone:   {x:350, y:271, w:561, h:240},
+  };
+  const DEFAULT_CONNS = [
+    {from:"eflow_api",         to:"db_intermedia"},
+    {from:"db_intermedia",     to:"eflow_api"},
+    {from:"db_intermedia",     to:"db_eflow"},
+    {from:"db_eflow",          to:"db_intermedia"},
+    {from:"db_eflow",          to:"eprac"},
+    {from:"eprac",             to:"db_eflow"},
+    {from:"onpremise_zone",    to:"vias_zone"},
+    {from:"vias_zone",         to:"onpremise_zone"},
+    {from:"softland",          to:"vias_zone"},
+    {from:"vias_zone",         to:"softland"},
+    {from:"softland",          to:"onpremise_zone"},
+    {from:"cola_eventos",      to:"vias_zone"},
+    {from:"vias_zone",         to:"cola_eventos"},
+    {from:"cola_eventos",      to:"persistencia_eventos"},
+    {from:"persistencia_eventos",to:"repositorio_eventos"},
+    {from:"repositorio_eventos", to:"monitor_eventos"},
+    {from:"cola_eventos",      to:"normalizacion"},
+    {from:"normalizacion",     to:"amazon_rds_1"},
+    {from:"normalizacion",     to:"notificacion"},
+    {from:"amazon_rds_1",      to:"amazon_rds_2"},
+    {from:"amazon_rds_2",      to:"lago_datos"},
+    {from:"azure",             to:"lago_datos"},
+    {from:"lago_datos",        to:"azure"},
+    {from:"sro",               to:"aws_zone"},
+    {from:"aws_zone",          to:"sro"},
+    {from:"appolo",            to:"aws_zone"},
+    {from:"aws_zone",          to:"appolo"},
+    {from:"ultima_milla",      to:"aws_zone"},
+    {from:"aws_zone",          to:"ultima_milla"},
+    {from:"liquidador",        to:"aws_zone"},
+    {from:"aws_zone",          to:"liquidador"},
+    {from:"trade",             to:"aws_zone"},
+    {from:"aws_zone",          to:"trade"},
+    {from:"mecalux",           to:"aws_zone"},
+    {from:"aws_zone",          to:"mecalux"},
+    {from:"olo_api",           to:"aws_zone"},
+    {from:"aws_zone",          to:"olo_api"},
+    {from:"api_dim",           to:"aws_zone"},
+    {from:"aws_zone",          to:"api_dim"},
+    {from:"raganext",          to:"aws_zone"},
+    {from:"aws_zone",          to:"raganext"},
+    {from:"trade",             to:"proveedores"},
+    {from:"proveedores",       to:"trade"},
+    {from:"olo_api",           to:"terceros"},
+    {from:"terceros",          to:"olo_api"},
+    {from:"raganext",          to:"mayoreo"},
+    {from:"mayoreo",           to:"raganext"},
+    {from:"epa",               to:"raganext"},
+    {from:"raganext",          to:"epa"},
+    {from:"comercializadoras", to:"raganext"},
+    {from:"raganext",          to:"comercializadoras"},
+    {from:"epa",               to:"olo_api"},
+    {from:"olo_api",           to:"epa"},
+    {from:"epa",               to:"api_dim"},
+    {from:"api_dim",           to:"epa"},
+    {from:"mayoreo",           to:"api_dim"},
+    {from:"api_dim",           to:"mayoreo"},
+    {from:"mayoreo",           to:"olo_api"},
+    {from:"olo_api",           to:"mayoreo"},
+    {from:"comercializadoras", to:"olo_api"},
+    {from:"olo_api",           to:"comercializadoras"},
+  ];
+
   const [nodeOverrides,  setNodeOverrides]  = useState(() => {
-    try { return JSON.parse(localStorage.getItem('olo-node-ov')) ?? {}; } catch { return {}; }
+    try {
+      const s = JSON.parse(localStorage.getItem('olo-node-ov'));
+      if (s && Object.keys(s).length > 0) return s;
+    } catch {}
+    return DEFAULT_NODE_OVERRIDES;
   });
   const [editConns,      setEditConns]      = useState(() => {
-    try { const s=localStorage.getItem('olo-conns'); return s?JSON.parse(s):null; } catch { return null; }
+    try {
+      const s = localStorage.getItem('olo-conns');
+      if (s) return JSON.parse(s);
+    } catch {}
+    return DEFAULT_CONNS;
   });
   const [connectFrom,    setConnectFrom]    = useState(null);
   const [mousePos,       setMousePos]       = useState({x:580,y:310});

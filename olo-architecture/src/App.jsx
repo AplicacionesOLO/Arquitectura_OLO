@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { EFW_COLORS, EFW_MOD, EFW_GROUPS, EFW_TABLE_DEFS, EFW_INTEGRATIONS } from "./efw_constants.js";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DATOS · MÓDULOS SOFTLAND
@@ -123,6 +124,8 @@ const INTEGRATIONS = [
   { from:"Intermedia", to:"EPA",         what:"Intermedia → EPA (CR y VE) · distribución de datos hacia segmento EPA", status:"partial" },
   { from:"Intermedia", to:"Compiere",    what:"Intermedia → Comerc. Compiere · distribución de datos hacia Comercializadoras Compiere", status:"partial" },
   { from:"Intermedia", to:"OLO System",  what:"Intermedia → Comerc. OLO System · distribución de datos hacia OLO System", status:"partial" },
+  // ── EFW — eFlow WMS (generado desde schema real) ─────────────────────────
+  ...EFW_INTEGRATIONS,
   // ── SCO ──────────────────────────────────────────────────────────────────
   { from:"categorias",            to:"tiendas",                  what:"categorias.tienda_id → tiendas", status:"confirmed" },
   { from:"categorias_inventario", to:"tiendas",                  what:"categorias_inventario.tienda_id → tiendas", status:"confirmed" },
@@ -1709,6 +1712,7 @@ function codeCluster(code){
   if(SAT_MOD.has(code))   return "sat";
   if(SRO_MOD.has(code))   return "sro";
   if(SCO_MOD.has(code))   return "sco";
+  if(EFW_MOD.has(code))   return "efw";
   if(SUITE_MOD.has(code)) return "suite";
   return "other";
 }
@@ -1721,6 +1725,8 @@ function rowCategory(row){
   if(f==="sro"||t==="sro") return "sro";
   if(f==="sco"&&t==="sco") return "sco";
   if(f==="sco"||t==="sco") return "sco";
+  if(f==="efw"&&t==="efw") return "efw";
+  if(f==="efw"||t==="efw") return "efw";
   if(f==="suite"||t==="suite") return "suite";
   if(f==="erp"&&t==="erp") return "erp";
   return "erp";
@@ -1734,6 +1740,7 @@ const CAT_META = {
   suite: { label:"Suite OLO · Clusters del ecosistema",        icon:"⬡",  color:"#185FA5", bg:"rgba(24,95,165,0.07)",  border:"rgba(24,95,165,0.22)" },
   sro:   { label:"SRO — Sistema de Rastreo de Órdenes",        icon:"🏭", color:"#0891b2", bg:"rgba(8,145,178,0.07)",  border:"rgba(8,145,178,0.22)" },
   sco:   { label:"SCO — Sistema Comercial y Operativo",        icon:"🛒", color:"#dc2626", bg:"rgba(220,38,38,0.06)",  border:"rgba(220,38,38,0.2)"  },
+  efw:   { label:"EFW — eFlow WMS · Operación Logística",     icon:"🏗", color:"#0d9488", bg:"rgba(13,148,136,0.06)", border:"rgba(13,148,136,0.22)" },
 };
 
 // Módulos únicos por categoría para los selectores de filtro
@@ -1829,7 +1836,7 @@ function ERDiagram({ rows, storageKey }) {
     return SOFTLAND_MODULES.find(m=>m.code===code) || OPS_MODULES.find(m=>m.code===code) || null;
   }
   function modColor(code) {
-    return MODULE_COLORS[code] || OPS_COLORS[code] || CLUSTER_COLORS[code] || SRO_COLORS[code] || SCO_COLORS[code] || "#7f8c8d";
+    return MODULE_COLORS[code] || OPS_COLORS[code] || CLUSTER_COLORS[code] || SRO_COLORS[code] || SCO_COLORS[code] || EFW_COLORS[code] || "#7f8c8d";
   }
 
   // Nodos únicos
@@ -2448,10 +2455,10 @@ function SROEntityCard({ table, def, color, fkIn, fkOut, relation, connRows, onC
 }
 
 function SROERView({ schema="sro", searchQuery="" }) {
-  const GR   = schema==="sco" ? SCO_GROUPS     : SRO_GROUPS;
-  const TD   = schema==="sco" ? SCO_TABLE_DEFS : SRO_TABLE_DEFS;
-  const COL  = schema==="sco" ? SCO_COLORS     : SRO_COLORS;
-  const MOD  = schema==="sco" ? SCO_MOD        : SRO_MOD;
+  const GR   = schema==="sco" ? SCO_GROUPS     : schema==="efw" ? EFW_GROUPS     : SRO_GROUPS;
+  const TD   = schema==="sco" ? SCO_TABLE_DEFS : schema==="efw" ? EFW_TABLE_DEFS : SRO_TABLE_DEFS;
+  const COL  = schema==="sco" ? SCO_COLORS     : schema==="efw" ? EFW_COLORS     : SRO_COLORS;
+  const MOD  = schema==="sco" ? SCO_MOD        : schema==="efw" ? EFW_MOD        : SRO_MOD;
   const [activeGroups, setActiveGroups] = useState(()=>new Set(Object.keys(GR)));
   const [selectedTable, setSelectedTable] = useState(null);
   const [viewMode, setViewMode] = useState("cards"); // "cards" | "diagram" | "radial"
@@ -2702,7 +2709,7 @@ function IntegrationsView({ searchQuery="" }) {
     <div style={{ flex:1, minWidth:0 }}>
 
     {/* SRO: vista dedicada */}
-    {(cat==="sro"||cat==="sco") ? <SROERView schema={cat} searchQuery={searchQuery}/> : <>
+    {(cat==="sro"||cat==="sco"||cat==="efw") ? <SROERView schema={cat} searchQuery={searchQuery}/> : <>
 
     {/* Banner de categoría activa */}
     {cat!=="global" && <div style={{ background:CAT_META[cat].bg, border:`1px solid ${CAT_META[cat].border}`, borderLeft:`3px solid ${CAT_META[cat].color}`, borderRadius:8, padding:"10px 14px", marginBottom:14, fontSize:12, color:"#555", lineHeight:1.5 }}>

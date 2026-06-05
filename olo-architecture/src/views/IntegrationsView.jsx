@@ -6,6 +6,7 @@ import { INTEGRATIONS, CAT_META, rowCategory, getModules } from "../data/integra
 import { ModuleChip, StatusBadge } from "../components/ui.jsx";
 import { ERDiagram } from "../schemas/ERDiagram.jsx";
 import { ERSchemaView } from "../schemas/ERSchemaView.jsx";
+import { CrossSchemaView } from "../schemas/CrossSchemaView.jsx";
 
 function IntegTable({ rows }) {
   const thS={padding:"10px 14px",color:"#666",fontWeight:700,letterSpacing:"0.05em",fontSize:11,textTransform:"uppercase"};
@@ -72,8 +73,11 @@ export function IntegrationsView({ searchQuery="" }) {
     {/* Contenido principal */}
     <div style={{ flex:1, minWidth:0 }}>
 
-    {/* SRO: vista dedicada */}
-    {(cat==="sro"||cat==="sco"||cat==="efw") ? <ERSchemaView schema={cat} searchQuery={searchQuery}/> : <>
+    {/* Venezuela cross-schema view */}
+    {cat==="ve_cross" ? <CrossSchemaView/> :
+
+    /* Schema ER views (sro / sco / efw / ve schemas) */
+    (cat==="sro"||cat==="sco"||cat==="efw"||cat==="efwbeval"||cat==="efwfebeca"||cat==="efwsillaca"||cat==="efwwmh") ? <ERSchemaView schema={cat} searchQuery={searchQuery}/> : <>
 
     {cat!=="global" && <div style={{ background:CAT_META[cat].bg, border:`1px solid ${CAT_META[cat].border}`, borderLeft:`3px solid ${CAT_META[cat].color}`, borderRadius:8, padding:"10px 14px", marginBottom:14, fontSize:12, color:"#555", lineHeight:1.5 }}>
       <b style={{ color:CAT_META[cat].color }}>{CAT_META[cat].icon} {CAT_META[cat].label}</b>

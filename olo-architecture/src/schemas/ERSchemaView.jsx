@@ -6,16 +6,44 @@ import { useState } from "react";
 import { SRO_GROUPS, SRO_TABLE_DEFS, SRO_COLORS, SRO_MOD, RELATION_META } from "../data/sro.js";
 import { SCO_GROUPS, SCO_TABLE_DEFS, SCO_COLORS, SCO_MOD } from "../data/sco.js";
 import { EFW_GROUPS, EFW_TABLE_DEFS, EFW_COLORS, EFW_MOD } from "../data/efw.js";
+import { EFWBEVAL_GROUPS,   EFWBEVAL_TABLE_DEFS,   EFWBEVAL_COLORS,   EFWBEVAL_MOD   } from "../data/beval_ve.js";
+import { EFWFEBECA_GROUPS,  EFWFEBECA_TABLE_DEFS,  EFWFEBECA_COLORS,  EFWFEBECA_MOD  } from "../data/febeca_ve.js";
+import { EFWSILLACA_GROUPS, EFWSILLACA_TABLE_DEFS, EFWSILLACA_COLORS, EFWSILLACA_MOD } from "../data/sillaca_ve.js";
+import { EFWWMH_GROUPS,    EFWWMH_TABLE_DEFS,    EFWWMH_COLORS,    EFWWMH_MOD    } from "../data/wmh_ve.js";
 import { INTEGRATIONS } from "../data/integrations.js";
 import { EREntityCard } from "./EREntityCard.jsx";
 import { ERDiagramRelational } from "./ERDiagramRelational.jsx";
 import { ERDiagram } from "./ERDiagram.jsx";
 
 export function ERSchemaView({ schema="sro", searchQuery="" }) {
-  const GR   = schema==="sco" ? SCO_GROUPS     : schema==="efw" ? EFW_GROUPS     : SRO_GROUPS;
-  const TD   = schema==="sco" ? SCO_TABLE_DEFS : schema==="efw" ? EFW_TABLE_DEFS : SRO_TABLE_DEFS;
-  const COL  = schema==="sco" ? SCO_COLORS     : schema==="efw" ? EFW_COLORS     : SRO_COLORS;
-  const MOD  = schema==="sco" ? SCO_MOD        : schema==="efw" ? EFW_MOD        : SRO_MOD;
+  const GR  = schema==="sco"       ? SCO_GROUPS
+            : schema==="efw"       ? EFW_GROUPS
+            : schema==="efwbeval"  ? EFWBEVAL_GROUPS
+            : schema==="efwfebeca" ? EFWFEBECA_GROUPS
+            : schema==="efwsillaca"? EFWSILLACA_GROUPS
+            : schema==="efwwmh"    ? EFWWMH_GROUPS
+            : SRO_GROUPS;
+  const TD  = schema==="sco"       ? SCO_TABLE_DEFS
+            : schema==="efw"       ? EFW_TABLE_DEFS
+            : schema==="efwbeval"  ? EFWBEVAL_TABLE_DEFS
+            : schema==="efwfebeca" ? EFWFEBECA_TABLE_DEFS
+            : schema==="efwsillaca"? EFWSILLACA_TABLE_DEFS
+            : schema==="efwwmh"    ? EFWWMH_TABLE_DEFS
+            : SRO_TABLE_DEFS;
+  const COL = schema==="sco"       ? SCO_COLORS
+            : schema==="efw"       ? EFW_COLORS
+            : schema==="efwbeval"  ? EFWBEVAL_COLORS
+            : schema==="efwfebeca" ? EFWFEBECA_COLORS
+            : schema==="efwsillaca"? EFWSILLACA_COLORS
+            : schema==="efwwmh"    ? EFWWMH_COLORS
+            : SRO_COLORS;
+  const MOD = schema==="sco"       ? SCO_MOD
+            : schema==="efw"       ? EFW_MOD
+            : schema==="efwbeval"  ? EFWBEVAL_MOD
+            : schema==="efwfebeca" ? EFWFEBECA_MOD
+            : schema==="efwsillaca"? EFWSILLACA_MOD
+            : schema==="efwwmh"    ? EFWWMH_MOD
+            : SRO_MOD;
   const [activeGroups, setActiveGroups] = useState(()=>new Set(Object.keys(GR)));
   const [selectedTable, setSelectedTable] = useState(null);
   const [viewMode, setViewMode] = useState("cards"); // "cards" | "diagram" | "radial"

@@ -25,6 +25,9 @@ function IntegTable({ rows }) {
   </table>;
 }
 
+// Categorías que forman el grupo Venezuela
+const VE_CATS = ["efwbeval","efwfebeca","efwsillaca","efwwmh","ve_cross"];
+
 export function IntegrationsView({ searchQuery="" }) {
   const [cat, setCat] = useState("global");
   const [fFrom, setFFrom] = useState("*");
@@ -32,6 +35,7 @@ export function IntegrationsView({ searchQuery="" }) {
   const [fStatus, setFStatus] = useState("*");
   const [fWhat, setFWhat] = useState(searchQuery||"");
   const [viewMode, setViewMode] = useState("table");
+  const [veExpanded, setVeExpanded] = useState(false);
   // Sync external search into filter
   useEffect(()=>{ if(searchQuery) setFWhat(searchQuery); }, [searchQuery]);
 
@@ -57,9 +61,12 @@ export function IntegrationsView({ searchQuery="" }) {
     <nav style={{ width:215, minWidth:215, background:"#fff", border:"1px solid #e0e0e0", borderRadius:10, overflow:"hidden", flexShrink:0, position:"sticky", top:20 }}>
       <div style={{ padding:"10px 14px", borderBottom:"1px solid #f0f0f0", background:"#fafafa", fontSize:10, fontWeight:700, color:"#888", letterSpacing:"0.08em", textTransform:"uppercase" }}>Categoría</div>
       {Object.entries(CAT_META).map(([key,m])=>{
+        // Ocultar items Venezuela individuales — los mostramos dentro del grupo
+        if (VE_CATS.includes(key)) return null;
+
         const isA = cat===key;
         const count = key==="global" ? INTEGRATIONS.length : INTEGRATIONS.filter(r=>rowCategory(r)===key).length;
-        return <button key={key} onClick={()=>handleCat(key)} style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"10px 14px", border:"none", borderLeft:isA?`3px solid ${m.color}`:"3px solid transparent", borderBottom:"1px solid #f5f5f5", background:isA?m.bg:"transparent", cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
+        const btn = <button key={key} onClick={()=>handleCat(key)} style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"10px 14px", border:"none", borderLeft:isA?`3px solid ${m.color}`:"3px solid transparent", borderBottom:"1px solid #f5f5f5", background:isA?m.bg:"transparent", cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
           <span style={{ fontSize:14, lineHeight:1 }}>{m.icon}</span>
           <div style={{ flex:1, minWidth:0 }}>
             <div style={{ fontSize:11, fontWeight:isA?700:500, color:isA?m.color:"#555", lineHeight:1.35 }}>{key==="global"?"Global · todos":m.label.split("·")[0].trim()}</div>
@@ -67,6 +74,51 @@ export function IntegrationsView({ searchQuery="" }) {
           </div>
           <span style={{ fontSize:10, fontWeight:700, color:isA?m.color:"#999", background:isA?m.color+"15":"#f0f0f0", padding:"1px 6px", borderRadius:8, flexShrink:0, minWidth:24, textAlign:"center" }}>{count}</span>
         </button>;
+
+        // Insertar el grupo Venezuela justo después de "efw"
+        if (key === "efw") return [
+          btn,
+          // ── Grupo Venezuela (colapsable) ────────────────────────────────
+          <div key="ve_group">
+            {/* Header del grupo */}
+            <button onClick={()=>{ setVeExpanded(e=>!e); if(!veExpanded) handleCat("efwbeval"); }}
+              style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"9px 14px", border:"none",
+                borderLeft:VE_CATS.includes(cat)?"3px solid #dc2626":"3px solid transparent",
+                borderBottom:"1px solid #f5f5f5",
+                background:VE_CATS.includes(cat)?"rgba(220,38,38,0.04)":"rgba(0,0,0,0.015)",
+                cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
+              <span style={{ fontSize:13 }}>🇻🇪</span>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ fontSize:11, fontWeight:VE_CATS.includes(cat)?700:500, color:VE_CATS.includes(cat)?"#dc2626":"#444", lineHeight:1.35 }}>eFlow Venezuela</div>
+                {!veExpanded && <div style={{ fontSize:9, color:"#aaa" }}>470 + 488 + 429 + 83 tablas</div>}
+              </div>
+              <span style={{ fontSize:11, color:"#aaa", marginRight:2 }}>{veExpanded?"▼":"▶"}</span>
+            </button>
+            {/* Sub-items Venezuela */}
+            {veExpanded && VE_CATS.map(vk => {
+              const vm = CAT_META[vk]; if(!vm) return null;
+              const isVA = cat===vk;
+              const vc = vk==="ve_cross" ? 0 : INTEGRATIONS.filter(r=>rowCategory(r)===vk).length;
+              return <button key={vk} onClick={()=>handleCat(vk)}
+                style={{ display:"flex", alignItems:"center", gap:7, width:"100%", padding:"8px 14px 8px 28px",
+                  border:"none", borderLeft:isVA?`3px solid ${vm.color}`:"3px solid transparent",
+                  borderBottom:"1px solid #f5f5f5", background:isVA?vm.bg:"transparent",
+                  cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
+                <span style={{ fontSize:12, lineHeight:1 }}>{vm.icon}</span>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontSize:10.5, fontWeight:isVA?700:400, color:isVA?vm.color:"#666", lineHeight:1.35 }}>
+                    {vm.label.split("·")[1]?.trim() || vm.label.split("—")[1]?.trim() || vk}
+                  </div>
+                </div>
+                <span style={{ fontSize:9.5, fontWeight:700, color:isVA?vm.color:"#bbb", background:isVA?vm.color+"15":"#f5f5f5", padding:"1px 5px", borderRadius:8, flexShrink:0 }}>
+                  {vk==="ve_cross"?"🔀":vc}
+                </span>
+              </button>;
+            })}
+          </div>
+        ];
+
+        return btn;
       })}
     </nav>
 

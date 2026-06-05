@@ -2,7 +2,25 @@
 // VISTA · INTEGRACIONES
 // ═══════════════════════════════════════════════════════════════════════════
 import { useState, useEffect } from "react";
-import { INTEGRATIONS, CAT_META, rowCategory, getModules } from "../data/integrations.js";
+import { INTEGRATIONS, CAT_META, rowCategory, getModules,
+         EFWBEVAL_MOD, EFWFEBECA_MOD, EFWSILLACA_MOD, EFWWMH_MOD,
+         EFWBEVAL_INTEGRATIONS, EFWFEBECA_INTEGRATIONS,
+         EFWSILLACA_INTEGRATIONS, EFWWMH_INTEGRATIONS } from "../data/integrations.js";
+
+// Mapa de MOD.size para los contadores VE
+const VE_TABLE_COUNTS = {
+  efwbeval:   () => EFWBEVAL_MOD.size,
+  efwfebeca:  () => EFWFEBECA_MOD.size,
+  efwsillaca: () => EFWSILLACA_MOD.size,
+  efwwmh:     () => EFWWMH_MOD.size,
+};
+// Mapa de arrays de integraciones VE (no están en INTEGRATIONS global)
+const VE_ROWS = {
+  efwbeval:   EFWBEVAL_INTEGRATIONS,
+  efwfebeca:  EFWFEBECA_INTEGRATIONS,
+  efwsillaca: EFWSILLACA_INTEGRATIONS,
+  efwwmh:     EFWWMH_INTEGRATIONS,
+};
 import { ModuleChip, StatusBadge } from "../components/ui.jsx";
 import { ERDiagram } from "../schemas/ERDiagram.jsx";
 import { ERSchemaView } from "../schemas/ERSchemaView.jsx";
@@ -98,7 +116,7 @@ export function IntegrationsView({ searchQuery="" }) {
             {veExpanded && VE_CATS.map(vk => {
               const vm = CAT_META[vk]; if(!vm) return null;
               const isVA = cat===vk;
-              const vc = vk==="ve_cross" ? 0 : INTEGRATIONS.filter(r=>rowCategory(r)===vk).length;
+              const vc = vk==="ve_cross" ? 0 : (VE_TABLE_COUNTS[vk]?.() ?? 0);
               return <button key={vk} onClick={()=>handleCat(vk)}
                 style={{ display:"flex", alignItems:"center", gap:7, width:"100%", padding:"8px 14px 8px 28px",
                   border:"none", borderLeft:isVA?`3px solid ${vm.color}`:"3px solid transparent",
@@ -129,7 +147,8 @@ export function IntegrationsView({ searchQuery="" }) {
     {cat==="ve_cross" ? <CrossSchemaView/> :
 
     /* Schema ER views (sro / sco / efw / ve schemas) */
-    (cat==="sro"||cat==="sco"||cat==="efw"||cat==="efwbeval"||cat==="efwfebeca"||cat==="efwsillaca"||cat==="efwwmh") ? <ERSchemaView schema={cat} searchQuery={searchQuery}/> : <>
+    (cat==="sro"||cat==="sco"||cat==="efw"||cat==="efwbeval"||cat==="efwfebeca"||cat==="efwsillaca"||cat==="efwwmh")
+      ? <ERSchemaView schema={cat} searchQuery={searchQuery} overrideRows={VE_ROWS[cat]||null}/> : <>
 
     {cat!=="global" && <div style={{ background:CAT_META[cat].bg, border:`1px solid ${CAT_META[cat].border}`, borderLeft:`3px solid ${CAT_META[cat].color}`, borderRadius:8, padding:"10px 14px", marginBottom:14, fontSize:12, color:"#555", lineHeight:1.5 }}>
       <b style={{ color:CAT_META[cat].color }}>{CAT_META[cat].icon} {CAT_META[cat].label}</b>

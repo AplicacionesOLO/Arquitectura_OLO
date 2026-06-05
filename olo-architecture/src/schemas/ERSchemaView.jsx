@@ -15,7 +15,7 @@ import { EREntityCard } from "./EREntityCard.jsx";
 import { ERDiagramRelational } from "./ERDiagramRelational.jsx";
 import { ERDiagram } from "./ERDiagram.jsx";
 
-export function ERSchemaView({ schema="sro", searchQuery="" }) {
+export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }) {
   const GR  = schema==="sco"       ? SCO_GROUPS
             : schema==="efw"       ? EFW_GROUPS
             : schema==="efwbeval"  ? EFWBEVAL_GROUPS
@@ -54,7 +54,9 @@ export function ERSchemaView({ schema="sro", searchQuery="" }) {
     return next;
   });
 
-  const sroRows = INTEGRATIONS.filter(r => MOD.has(r.from) || MOD.has(r.to));
+  // overrideRows: para schemas VE que tienen los mismos nombres de tabla que EFW CR
+  const sroRows = overrideRows ? overrideRows.filter(r => MOD.has(r.from) || MOD.has(r.to))
+                               : INTEGRATIONS.filter(r => MOD.has(r.from) || MOD.has(r.to));
   const fkOutMap = {}, fkInMap = {};
   sroRows.forEach(r => {
     fkOutMap[r.from] = (fkOutMap[r.from]||0)+1;

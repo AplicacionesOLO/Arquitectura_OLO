@@ -13,6 +13,8 @@ export { EFW_MOD };
 export { SRO_MOD };
 export { SCO_MOD };
 export { EFWBEVAL_MOD, EFWFEBECA_MOD, EFWSILLACA_MOD, EFWWMH_MOD };
+// Arrays de integraciones VE exportados directamente (no van al array global)
+export { EFWBEVAL_INTEGRATIONS, EFWFEBECA_INTEGRATIONS, EFWSILLACA_INTEGRATIONS, EFWWMH_INTEGRATIONS };
 
 export const ERP_MOD   = new Set(["AS","CG","CB","CC","CP","FA","CO","CI","AF","GN","MF","RH","CCH","PY","FC","POS","FR","AC"]);
 export const EFLOW_MOD = new Set(["WMS-D","WMS-RF","WMH","ERP"]);
@@ -106,11 +108,7 @@ export const INTEGRATIONS = [
   { from:"Intermedia", to:"OLO System",  what:"Intermedia → Comerc. OLO System · distribución de datos hacia OLO System", status:"partial" },
   // ── EFW — eFlow WMS (generado desde schema real) ─────────────────────────
   ...EFW_INTEGRATIONS,
-  // ── Venezuela eFlow schemas ───────────────────────────────────────────────
-  ...EFWBEVAL_INTEGRATIONS,
-  ...EFWFEBECA_INTEGRATIONS,
-  ...EFWSILLACA_INTEGRATIONS,
-  ...EFWWMH_INTEGRATIONS,
+  // Venezuela schemas se manejan en arrays separados (mismos nombres de tabla que EFW CR)
   // ── SCO ──────────────────────────────────────────────────────────────────
   { from:"categorias",            to:"tiendas",                  what:"categorias.tienda_id → tiendas", status:"confirmed" },
   { from:"categorias_inventario", to:"tiendas",                  what:"categorias_inventario.tienda_id → tiendas", status:"confirmed" },

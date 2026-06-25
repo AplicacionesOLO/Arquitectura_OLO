@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "mssql": "^12.5.5"
+  }
+}

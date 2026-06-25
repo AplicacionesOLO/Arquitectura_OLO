@@ -1,0 +1,15 @@
+# Credentials — never commit
+.env
+db_config.js
+
+# Node
+node_modules/
+package-lock.json
+
+# Generated outputs (regenerate with gen_efw.js)
+efw_constants.js
+efw_constants_clean.js
+
+# Schema dumps (large binary-ish JSON)
+eflow_schema.json
+ve_schema_*.json

@@ -8,13 +8,18 @@ import { EFWBEVAL_MOD,   EFWBEVAL_INTEGRATIONS   } from "./beval_ve.js";
 import { EFWFEBECA_MOD,  EFWFEBECA_INTEGRATIONS  } from "./febeca_ve.js";
 import { EFWSILLACA_MOD, EFWSILLACA_INTEGRATIONS } from "./sillaca_ve.js";
 import { EFWWMH_MOD,    EFWWMH_INTEGRATIONS    } from "./wmh_ve.js";
+import { WMH_CR_MOD,    WMH_CR_INTEGRATIONS    } from "./wmh_cr.js";
+import { EINTEGRA_VE_MOD, EINTEGRA_VE_INTEGRATIONS } from "./eintegra_ve.js";
 
 export { EFW_MOD };
 export { SRO_MOD };
 export { SCO_MOD };
 export { EFWBEVAL_MOD, EFWFEBECA_MOD, EFWSILLACA_MOD, EFWWMH_MOD };
-// Arrays de integraciones VE exportados directamente (no van al array global)
+export { WMH_CR_MOD };
+export { EINTEGRA_VE_MOD };
+// Arrays de integraciones exportados directamente (no van al array global)
 export { EFWBEVAL_INTEGRATIONS, EFWFEBECA_INTEGRATIONS, EFWSILLACA_INTEGRATIONS, EFWWMH_INTEGRATIONS };
+export { WMH_CR_INTEGRATIONS, EINTEGRA_VE_INTEGRATIONS };
 
 export const ERP_MOD   = new Set(["AS","CG","CB","CC","CP","FA","CO","CI","AF","GN","MF","RH","CCH","PY","FC","POS","FR","AC"]);
 export const EFLOW_MOD = new Set(["WMS-D","WMS-RF","WMH","ERP"]);
@@ -290,33 +295,37 @@ export const INTEGRATIONS = [
 ];
 
 export function codeCluster(code) {
-  if (ERP_MOD.has(code))        return "erp";
-  if (EFLOW_MOD.has(code))      return "ops";
-  if (SAT_MOD.has(code))        return "sat";
-  if (SRO_MOD.has(code))        return "sro";
-  if (SCO_MOD.has(code))        return "sco";
-  if (EFW_MOD.has(code))        return "efw";
-  if (EFWBEVAL_MOD.has(code))   return "efwbeval";
-  if (EFWFEBECA_MOD.has(code))  return "efwfebeca";
-  if (EFWSILLACA_MOD.has(code)) return "efwsillaca";
-  if (EFWWMH_MOD.has(code))     return "efwwmh";
-  if (SUITE_MOD.has(code))      return "suite";
+  if (ERP_MOD.has(code))          return "erp";
+  if (EFLOW_MOD.has(code))        return "ops";
+  if (SAT_MOD.has(code))          return "sat";
+  if (SRO_MOD.has(code))          return "sro";
+  if (SCO_MOD.has(code))          return "sco";
+  if (EFW_MOD.has(code))          return "efw";
+  if (WMH_CR_MOD.has(code))       return "wmh_cr";
+  if (EFWBEVAL_MOD.has(code))     return "efwbeval";
+  if (EFWFEBECA_MOD.has(code))    return "efwfebeca";
+  if (EFWSILLACA_MOD.has(code))   return "efwsillaca";
+  if (EFWWMH_MOD.has(code))       return "efwwmh";
+  if (EINTEGRA_VE_MOD.has(code))  return "eintegra_ve";
+  if (SUITE_MOD.has(code))        return "suite";
   return "other";
 }
 
 export function rowCategory(row) {
   const f = codeCluster(row.from), t = codeCluster(row.to);
-  if (f==="ops"||t==="ops")               return "ops";
-  if (f==="sat"||t==="sat")               return "sat";
-  if (f==="sro"||t==="sro")               return "sro";
-  if (f==="sco"||t==="sco")               return "sco";
-  if (f==="efw"||t==="efw")               return "efw";
-  if (f==="efwbeval"||t==="efwbeval")     return "efwbeval";
-  if (f==="efwfebeca"||t==="efwfebeca")   return "efwfebeca";
-  if (f==="efwsillaca"||t==="efwsillaca") return "efwsillaca";
-  if (f==="efwwmh"||t==="efwwmh")         return "efwwmh";
-  if (f==="suite"||t==="suite")           return "suite";
-  if (f==="erp"&&t==="erp")               return "erp";
+  if (f==="ops"||t==="ops")                   return "ops";
+  if (f==="sat"||t==="sat")                   return "sat";
+  if (f==="sro"||t==="sro")                   return "sro";
+  if (f==="sco"||t==="sco")                   return "sco";
+  if (f==="efw"||t==="efw")                   return "efw";
+  if (f==="wmh_cr"||t==="wmh_cr")             return "wmh_cr";
+  if (f==="efwbeval"||t==="efwbeval")         return "efwbeval";
+  if (f==="efwfebeca"||t==="efwfebeca")       return "efwfebeca";
+  if (f==="efwsillaca"||t==="efwsillaca")     return "efwsillaca";
+  if (f==="efwwmh"||t==="efwwmh")             return "efwwmh";
+  if (f==="eintegra_ve"||t==="eintegra_ve")   return "eintegra_ve";
+  if (f==="suite"||t==="suite")               return "suite";
+  if (f==="erp"&&t==="erp")                   return "erp";
   return "erp";
 }
 
@@ -329,10 +338,13 @@ export const CAT_META = {
   sro:        { label:"SRO — Sistema de Rastreo de Órdenes",               icon:"🏭", color:"#0891b2", bg:"rgba(8,145,178,0.07)",   border:"rgba(8,145,178,0.22)" },
   sco:        { label:"SCO — Sistema Comercial y Operativo",               icon:"🛒", color:"#dc2626", bg:"rgba(220,38,38,0.06)",   border:"rgba(220,38,38,0.2)"  },
   efw:        { label:"EFW — eFlow WMS · Operación Logística",            icon:"🏗", color:"#0d9488", bg:"rgba(13,148,136,0.06)",  border:"rgba(13,148,136,0.22)" },
+  wmh_cr:     { label:"WMH CR — Torre de Control · Costa Rica",           icon:"🚚", color:"#16a34a", bg:"rgba(22,163,74,0.06)",   border:"rgba(22,163,74,0.22)"  },
   efwbeval:   { label:"EFW·BEVAL — eFlow Venezuela · Beval",              icon:"🇻🇪", color:"#0891b2", bg:"rgba(8,145,178,0.06)",   border:"rgba(8,145,178,0.2)"  },
   efwfebeca:  { label:"EFW·FEBECA — eFlow Venezuela · Febeca",            icon:"🇻🇪", color:"#0d9488", bg:"rgba(13,148,136,0.06)",  border:"rgba(13,148,136,0.2)" },
   efwsillaca: { label:"EFW·SILLACA — eFlow Venezuela · Sillaca",          icon:"🇻🇪", color:"#7c3aed", bg:"rgba(124,58,237,0.06)",  border:"rgba(124,58,237,0.2)" },
   efwwmh:     { label:"EFW·WMH — Torre de Control Venezuela",             icon:"🏗",  color:"#d97706", bg:"rgba(217,119,6,0.06)",   border:"rgba(217,119,6,0.2)"  },
+  softland_ve:{ label:"SFL·VE — Softland ERP · Venezuela",                icon:"🇻🇪", color:"#b45309", bg:"rgba(180,83,9,0.06)",    border:"rgba(180,83,9,0.22)"  },
+  eintegra_ve:{ label:"eIntegra·VE — Middleware ERP↔WMS · Venezuela",     icon:"🔌", color:"#6366f1", bg:"rgba(99,102,241,0.06)",  border:"rgba(99,102,241,0.22)" },
   ve_cross:   { label:"Cross-Schema · Relaciones Semánticas VE",          icon:"🔀", color:"#dc2626", bg:"rgba(220,38,38,0.06)",   border:"rgba(220,38,38,0.2)"  },
 };
 

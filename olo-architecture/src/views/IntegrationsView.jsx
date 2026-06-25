@@ -4,22 +4,28 @@
 import { useState, useEffect } from "react";
 import { INTEGRATIONS, CAT_META, rowCategory, getModules,
          EFWBEVAL_MOD, EFWFEBECA_MOD, EFWSILLACA_MOD, EFWWMH_MOD,
+         WMH_CR_MOD, EINTEGRA_VE_MOD,
          EFWBEVAL_INTEGRATIONS, EFWFEBECA_INTEGRATIONS,
-         EFWSILLACA_INTEGRATIONS, EFWWMH_INTEGRATIONS } from "../data/integrations.js";
+         EFWSILLACA_INTEGRATIONS, EFWWMH_INTEGRATIONS,
+         WMH_CR_INTEGRATIONS, EINTEGRA_VE_INTEGRATIONS } from "../data/integrations.js";
 
-// Mapa de MOD.size para los contadores VE
-const VE_TABLE_COUNTS = {
-  efwbeval:   () => EFWBEVAL_MOD.size,
-  efwfebeca:  () => EFWFEBECA_MOD.size,
-  efwsillaca: () => EFWSILLACA_MOD.size,
-  efwwmh:     () => EFWWMH_MOD.size,
+// Mapa de MOD.size para contadores de schema (no están en INTEGRATIONS global)
+const SCHEMA_TABLE_COUNTS = {
+  efwbeval:    () => EFWBEVAL_MOD.size,
+  efwfebeca:   () => EFWFEBECA_MOD.size,
+  efwsillaca:  () => EFWSILLACA_MOD.size,
+  efwwmh:      () => EFWWMH_MOD.size,
+  wmh_cr:      () => WMH_CR_MOD.size,
+  eintegra_ve: () => EINTEGRA_VE_MOD.size,
 };
-// Mapa de arrays de integraciones VE (no están en INTEGRATIONS global)
-const VE_ROWS = {
-  efwbeval:   EFWBEVAL_INTEGRATIONS,
-  efwfebeca:  EFWFEBECA_INTEGRATIONS,
-  efwsillaca: EFWSILLACA_INTEGRATIONS,
-  efwwmh:     EFWWMH_INTEGRATIONS,
+// Mapa de arrays de integraciones por schema (no van al array global)
+const SCHEMA_ROWS = {
+  efwbeval:    EFWBEVAL_INTEGRATIONS,
+  efwfebeca:   EFWFEBECA_INTEGRATIONS,
+  efwsillaca:  EFWSILLACA_INTEGRATIONS,
+  efwwmh:      EFWWMH_INTEGRATIONS,
+  wmh_cr:      WMH_CR_INTEGRATIONS,
+  eintegra_ve: EINTEGRA_VE_INTEGRATIONS,
 };
 import { ModuleChip, StatusBadge } from "../components/ui.jsx";
 import { ERDiagram } from "../schemas/ERDiagram.jsx";
@@ -44,7 +50,7 @@ function IntegTable({ rows }) {
 }
 
 // Categorías que forman el grupo Venezuela
-const VE_CATS = ["efwbeval","efwfebeca","efwsillaca","efwwmh","ve_cross"];
+const VE_CATS = ["efwbeval","efwfebeca","efwsillaca","efwwmh","softland_ve","eintegra_ve","ve_cross"];
 
 export function IntegrationsView({ searchQuery="" }) {
   const [cat, setCat] = useState("global");
@@ -83,7 +89,11 @@ export function IntegrationsView({ searchQuery="" }) {
         if (VE_CATS.includes(key)) return null;
 
         const isA = cat===key;
-        const count = key==="global" ? INTEGRATIONS.length : INTEGRATIONS.filter(r=>rowCategory(r)===key).length;
+        const count = key==="global"
+          ? INTEGRATIONS.length
+          : SCHEMA_TABLE_COUNTS[key]
+            ? SCHEMA_TABLE_COUNTS[key]()
+            : INTEGRATIONS.filter(r=>rowCategory(r)===key).length;
         const btn = <button key={key} onClick={()=>handleCat(key)} style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"10px 14px", border:"none", borderLeft:isA?`3px solid ${m.color}`:"3px solid transparent", borderBottom:"1px solid #f5f5f5", background:isA?m.bg:"transparent", cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
           <span style={{ fontSize:14, lineHeight:1 }}>{m.icon}</span>
           <div style={{ flex:1, minWidth:0 }}>
@@ -107,8 +117,8 @@ export function IntegrationsView({ searchQuery="" }) {
                 cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
               <span style={{ fontSize:13 }}>🇻🇪</span>
               <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontSize:11, fontWeight:VE_CATS.includes(cat)?700:500, color:VE_CATS.includes(cat)?"#dc2626":"#444", lineHeight:1.35 }}>eFlow Venezuela</div>
-                {!veExpanded && <div style={{ fontSize:9, color:"#aaa" }}>470 + 488 + 429 + 83 tablas</div>}
+                <div style={{ fontSize:11, fontWeight:VE_CATS.includes(cat)?700:500, color:VE_CATS.includes(cat)?"#dc2626":"#444", lineHeight:1.35 }}>Venezuela</div>
+                {!veExpanded && <div style={{ fontSize:9, color:"#aaa" }}>eFlow · Softland · eIntegra</div>}
               </div>
               <span style={{ fontSize:11, color:"#aaa", marginRight:2 }}>{veExpanded?"▼":"▶"}</span>
             </button>
@@ -116,7 +126,7 @@ export function IntegrationsView({ searchQuery="" }) {
             {veExpanded && VE_CATS.map(vk => {
               const vm = CAT_META[vk]; if(!vm) return null;
               const isVA = cat===vk;
-              const vc = vk==="ve_cross" ? 0 : (VE_TABLE_COUNTS[vk]?.() ?? 0);
+              const vc = vk==="ve_cross" ? 0 : (SCHEMA_TABLE_COUNTS[vk]?.() ?? 0);
               return <button key={vk} onClick={()=>handleCat(vk)}
                 style={{ display:"flex", alignItems:"center", gap:7, width:"100%", padding:"8px 14px 8px 28px",
                   border:"none", borderLeft:isVA?`3px solid ${vm.color}`:"3px solid transparent",
@@ -146,9 +156,9 @@ export function IntegrationsView({ searchQuery="" }) {
     {/* Venezuela cross-schema view */}
     {cat==="ve_cross" ? <CrossSchemaView/> :
 
-    /* Schema ER views (sro / sco / efw / ve schemas) */
-    (cat==="sro"||cat==="sco"||cat==="efw"||cat==="efwbeval"||cat==="efwfebeca"||cat==="efwsillaca"||cat==="efwwmh")
-      ? <ERSchemaView schema={cat} searchQuery={searchQuery} overrideRows={VE_ROWS[cat]||null}/> : <>
+    /* Schema ER views (sro / sco / efw / wmh_cr / ve schemas) */
+    (cat==="sro"||cat==="sco"||cat==="efw"||cat==="wmh_cr"||cat==="efwbeval"||cat==="efwfebeca"||cat==="efwsillaca"||cat==="efwwmh"||cat==="eintegra_ve")
+      ? <ERSchemaView schema={cat} searchQuery={searchQuery} overrideRows={SCHEMA_ROWS[cat]||null}/> : <>
 
     {cat!=="global" && <div style={{ background:CAT_META[cat].bg, border:`1px solid ${CAT_META[cat].border}`, borderLeft:`3px solid ${CAT_META[cat].color}`, borderRadius:8, padding:"10px 14px", marginBottom:14, fontSize:12, color:"#555", lineHeight:1.5 }}>
       <b style={{ color:CAT_META[cat].color }}>{CAT_META[cat].icon} {CAT_META[cat].label}</b>

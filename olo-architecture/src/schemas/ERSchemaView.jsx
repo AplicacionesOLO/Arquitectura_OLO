@@ -2,7 +2,7 @@
 // SCHEMA · ERSchemaView — Orquestador de schema ER (sro / sco / efw)
 // (previously SROERView)
 // ═══════════════════════════════════════════════════════════════════════════
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SRO_GROUPS, SRO_TABLE_DEFS, SRO_COLORS, SRO_MOD, RELATION_META } from "../data/sro.js";
 import { SCO_GROUPS, SCO_TABLE_DEFS, SCO_COLORS, SCO_MOD } from "../data/sco.js";
 import { EFW_GROUPS, EFW_TABLE_DEFS, EFW_COLORS, EFW_MOD } from "../data/efw.js";
@@ -10,6 +10,7 @@ import { EFWBEVAL_GROUPS,   EFWBEVAL_TABLE_DEFS,   EFWBEVAL_COLORS,   EFWBEVAL_M
 import { EFWFEBECA_GROUPS,  EFWFEBECA_TABLE_DEFS,  EFWFEBECA_COLORS,  EFWFEBECA_MOD  } from "../data/febeca_ve.js";
 import { EFWSILLACA_GROUPS, EFWSILLACA_TABLE_DEFS, EFWSILLACA_COLORS, EFWSILLACA_MOD } from "../data/sillaca_ve.js";
 import { EFWWMH_GROUPS,    EFWWMH_TABLE_DEFS,    EFWWMH_COLORS,    EFWWMH_MOD    } from "../data/wmh_ve.js";
+import { SFLBEVAL_GROUPS, SFLBEVAL_TABLE_DEFS, SFLBEVAL_COLORS, SFLBEVAL_MOD } from "../data/softland_beval_ve.js";
 import { INTEGRATIONS } from "../data/integrations.js";
 import { EREntityCard } from "./EREntityCard.jsx";
 import { ERDiagramRelational } from "./ERDiagramRelational.jsx";
@@ -22,6 +23,7 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
             : schema==="efwfebeca" ? EFWFEBECA_GROUPS
             : schema==="efwsillaca"? EFWSILLACA_GROUPS
             : schema==="efwwmh"    ? EFWWMH_GROUPS
+            : schema==="softland_beval" ? SFLBEVAL_GROUPS
             : SRO_GROUPS;
   const TD  = schema==="sco"       ? SCO_TABLE_DEFS
             : schema==="efw"       ? EFW_TABLE_DEFS
@@ -29,6 +31,7 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
             : schema==="efwfebeca" ? EFWFEBECA_TABLE_DEFS
             : schema==="efwsillaca"? EFWSILLACA_TABLE_DEFS
             : schema==="efwwmh"    ? EFWWMH_TABLE_DEFS
+            : schema==="softland_beval" ? SFLBEVAL_TABLE_DEFS
             : SRO_TABLE_DEFS;
   const COL = schema==="sco"       ? SCO_COLORS
             : schema==="efw"       ? EFW_COLORS
@@ -36,6 +39,7 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
             : schema==="efwfebeca" ? EFWFEBECA_COLORS
             : schema==="efwsillaca"? EFWSILLACA_COLORS
             : schema==="efwwmh"    ? EFWWMH_COLORS
+            : schema==="softland_beval" ? SFLBEVAL_COLORS
             : SRO_COLORS;
   const MOD = schema==="sco"       ? SCO_MOD
             : schema==="efw"       ? EFW_MOD
@@ -43,10 +47,17 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
             : schema==="efwfebeca" ? EFWFEBECA_MOD
             : schema==="efwsillaca"? EFWSILLACA_MOD
             : schema==="efwwmh"    ? EFWWMH_MOD
+            : schema==="softland_beval" ? SFLBEVAL_MOD
             : SRO_MOD;
   const [activeGroups, setActiveGroups] = useState(()=>new Set(Object.keys(GR)));
   const [selectedTable, setSelectedTable] = useState(null);
   const [viewMode, setViewMode] = useState("cards"); // "cards" | "diagram" | "radial"
+
+  // Al cambiar de schema, los keys de GR cambian — resetear selección para no heredar un Set vacío/obsoleto
+  useEffect(() => {
+    setActiveGroups(new Set(Object.keys(GR)));
+    setSelectedTable(null);
+  }, [schema]);
 
   const toggleGroup = (key) => setActiveGroups(prev => {
     const next = new Set(prev);
@@ -107,8 +118,8 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
   const diagRows = sroRows.filter(r => visibleTables.has(r.from) && visibleTables.has(r.to));
 
   const btnStyle = (active) => ({
-    fontSize:11, fontWeight:active?700:400, padding:"5px 12px", borderRadius:6, border:`1px solid ${active?"#0891b2":"#ddd"}`,
-    background:active?"#EFF6FF":"#fff", color:active?"#0891b2":"#666", cursor:"pointer", fontFamily:"inherit",
+    fontSize:11, fontWeight:active?700:400, padding:"5px 12px", borderRadius:6, border:`1px solid ${active?"#00838f":"#ddd"}`,
+    background:active?"#e0f7fa":"#fff", color:active?"#00838f":"#666", cursor:"pointer", fontFamily:"inherit",
   });
 
   return (
@@ -117,7 +128,7 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
       <div style={{ width:200, minWidth:200, background:"#fff", border:"1px solid #e0e0e0", borderRadius:10, overflow:"hidden", flexShrink:0, position:"sticky", top:20, marginRight:16 }}>
         <div style={{ padding:"10px 14px", borderBottom:"1px solid #f0f0f0", background:"#fafafa", fontSize:10, fontWeight:700, color:"#888", letterSpacing:"0.08em", textTransform:"uppercase", display:"flex", justifyContent:"space-between" }}>
           <span>Módulos</span>
-          <span style={{ cursor:"pointer", color:"#0891b2" }} onClick={()=>setActiveGroups(prev=>prev.size===Object.keys(GR).length?new Set():new Set(Object.keys(GR)))}>
+          <span style={{ cursor:"pointer", color:"#00838f" }} onClick={()=>setActiveGroups(prev=>prev.size===Object.keys(GR).length?new Set():new Set(Object.keys(GR)))}>
             {activeGroups.size===Object.keys(GR).length?"Ocultar todos":"Mostrar todos"}
           </span>
         </div>

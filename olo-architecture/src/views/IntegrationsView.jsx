@@ -4,10 +4,10 @@
 import { useState, useEffect } from "react";
 import { INTEGRATIONS, CAT_META, rowCategory, getModules,
          EFWBEVAL_MOD, EFWFEBECA_MOD, EFWSILLACA_MOD, EFWWMH_MOD,
-         WMH_CR_MOD, EINTEGRA_VE_MOD,
+         WMH_CR_MOD, EINTEGRA_VE_MOD, SFLBEVAL_MOD,
          EFWBEVAL_INTEGRATIONS, EFWFEBECA_INTEGRATIONS,
          EFWSILLACA_INTEGRATIONS, EFWWMH_INTEGRATIONS,
-         WMH_CR_INTEGRATIONS, EINTEGRA_VE_INTEGRATIONS } from "../data/integrations.js";
+         WMH_CR_INTEGRATIONS, EINTEGRA_VE_INTEGRATIONS, SFLBEVAL_INTEGRATIONS } from "../data/integrations.js";
 
 // Mapa de MOD.size para contadores de schema (no están en INTEGRATIONS global)
 const SCHEMA_TABLE_COUNTS = {
@@ -17,6 +17,7 @@ const SCHEMA_TABLE_COUNTS = {
   efwwmh:      () => EFWWMH_MOD.size,
   wmh_cr:      () => WMH_CR_MOD.size,
   eintegra_ve: () => EINTEGRA_VE_MOD.size,
+  softland_beval: () => SFLBEVAL_MOD.size,
 };
 // Mapa de arrays de integraciones por schema (no van al array global)
 const SCHEMA_ROWS = {
@@ -26,6 +27,7 @@ const SCHEMA_ROWS = {
   efwwmh:      EFWWMH_INTEGRATIONS,
   wmh_cr:      WMH_CR_INTEGRATIONS,
   eintegra_ve: EINTEGRA_VE_INTEGRATIONS,
+  softland_beval: SFLBEVAL_INTEGRATIONS,
 };
 import { ModuleChip, StatusBadge } from "../components/ui.jsx";
 import { ERDiagram } from "../schemas/ERDiagram.jsx";
@@ -50,7 +52,7 @@ function IntegTable({ rows }) {
 }
 
 // Categorías que forman el grupo Venezuela
-const VE_CATS = ["efwbeval","efwfebeca","efwsillaca","efwwmh","softland_ve","eintegra_ve","ve_cross"];
+const VE_CATS = ["efwbeval","efwfebeca","efwsillaca","efwwmh","softland_beval","eintegra_ve","ve_cross"];
 
 export function IntegrationsView({ searchQuery="" }) {
   const [cat, setCat] = useState("global");
@@ -157,7 +159,7 @@ export function IntegrationsView({ searchQuery="" }) {
     {cat==="ve_cross" ? <CrossSchemaView/> :
 
     /* Schema ER views (sro / sco / efw / wmh_cr / ve schemas) */
-    (cat==="sro"||cat==="sco"||cat==="efw"||cat==="wmh_cr"||cat==="efwbeval"||cat==="efwfebeca"||cat==="efwsillaca"||cat==="efwwmh"||cat==="eintegra_ve")
+    (cat==="sro"||cat==="sco"||cat==="efw"||cat==="wmh_cr"||cat==="efwbeval"||cat==="efwfebeca"||cat==="efwsillaca"||cat==="efwwmh"||cat==="eintegra_ve"||cat==="softland_beval")
       ? <ERSchemaView schema={cat} searchQuery={searchQuery} overrideRows={SCHEMA_ROWS[cat]||null}/> : <>
 
     {cat!=="global" && <div style={{ background:CAT_META[cat].bg, border:`1px solid ${CAT_META[cat].border}`, borderLeft:`3px solid ${CAT_META[cat].color}`, borderRadius:8, padding:"10px 14px", marginBottom:14, fontSize:12, color:"#555", lineHeight:1.5 }}>
@@ -175,7 +177,7 @@ export function IntegrationsView({ searchQuery="" }) {
       <span style={{ fontSize:10, fontWeight:700, color:"#aaa", letterSpacing:"0.06em", textTransform:"uppercase", marginRight:4 }}>Vista:</span>
       {[["table","📋 Tabla"],["relations","⬡ Diagrama ER"]].map(([mode,label])=>{
         const isA = viewMode===mode;
-        return <button key={mode} onClick={()=>setViewMode(mode)} style={{ fontSize:11, fontWeight:isA?700:400, color:isA?"#1D4ED8":"#666", background:isA?"#EFF6FF":"transparent", border:`1px solid ${isA?"#BFDBFE":"#ddd"}`, borderRadius:6, padding:"5px 12px", cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }}>{label}</button>;
+        return <button key={mode} onClick={()=>setViewMode(mode)} style={{ fontSize:11, fontWeight:isA?700:400, color:isA?"#00838f":"#666", background:isA?"#e0f7fa":"transparent", border:`1px solid ${isA?"#00838f55":"#ddd"}`, borderRadius:6, padding:"5px 12px", cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }}>{label}</button>;
       })}
     </div>
 

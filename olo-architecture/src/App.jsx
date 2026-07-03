@@ -10,12 +10,22 @@ import { SoftlandView } from "./views/SoftlandView.jsx";
 import { OpsView } from "./views/OpsView.jsx";
 import { IntegrationsView } from "./views/IntegrationsView.jsx";
 import { ContextView } from "./views/ContextView.jsx";
+import { useAuth } from "./auth/AuthContext.jsx";
+import { LoginScreen } from "./auth/LoginScreen.jsx";
+import oloLogo from "./assets/olo-logo.png";
+
+const ROLE_BADGE = {
+  admin:  { label:"Admin",  bg:"#fef3c7", color:"#92400e" },
+  editor: { label:"Editor", bg:"#dbeafe", color:"#1e40af" },
+  viewer: { label:"Viewer", bg:"#e0e7ff", color:"#3730a3" },
+};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // COMPONENTE PRINCIPAL
 // ═══════════════════════════════════════════════════════════════════════════
 export default function SoftlandArchitectureMap() {
-  const [tab, setTab] = useState("olo-arch");
+  const { loading, user, profile, role, signOut } = useAuth();
+  const [tab, setTab] = useState("bpa");
   const [bpaSel, setBpaSel] = useState(null);
   const [slSel, setSlSel] = useState(null);
   const [opsSel, setOpsSel] = useState(null);
@@ -26,31 +36,63 @@ export default function SoftlandArchitectureMap() {
   const activeTab = TABS.find(t => t.id === tab);
   const totalProcs = BPA_PROCESSES.estrategicos.length + BPA_PROCESSES.negocio.length + BPA_PROCESSES.apoyo.length + BPA_PROCESSES.control.length;
 
+  if (loading) return <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#f8f9fa", color:"#94a3b8", fontFamily:"'Segoe UI','Helvetica Neue',system-ui,sans-serif", fontSize:13 }}>Cargando…</div>;
+  if (!user) return <LoginScreen/>;
+
   return <div style={{ fontFamily:"'Segoe UI','Helvetica Neue',system-ui,sans-serif", background:"#f8f9fa", color:"#1D1D1B", minHeight:"100vh", display:"flex" }}>
     <style>{`@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap');body{margin:0;}::selection{background:#1D1D1B;color:#fff;}`}</style>
 
     {/* Sidebar */}
-    <aside style={{ width:sidebarCollapsed?60:240, minWidth:sidebarCollapsed?60:240, background:"#1D1D1B", color:"#ffffff", display:"flex", flexDirection:"column", transition:"width 0.2s ease, min-width 0.2s ease", overflow:"hidden", position:"sticky", top:0, height:"100vh" }}>
+    <aside style={{ width:sidebarCollapsed?56:220, minWidth:sidebarCollapsed?56:220, background:"#ffffff", color:"#1D1D1B", display:"flex", flexDirection:"column", transition:"width 0.2s ease, min-width 0.2s ease", overflow:"hidden", position:"sticky", top:0, height:"100vh", borderRight:"1px solid #e0e6ed", boxShadow:"0 0 8px rgba(0,0,0,0.04)" }}>
       {/* Sidebar Header */}
-      <div style={{ padding:sidebarCollapsed?"16px 10px":"20px 18px", borderBottom:"1px solid #333", display:"flex", alignItems:"center", justifyContent:sidebarCollapsed?"center":"space-between" }}>
-        {!sidebarCollapsed && <div>
-          <div style={{ fontSize:14, fontWeight:700, letterSpacing:"-0.02em", whiteSpace:"nowrap" }}>OLO Architecture</div>
-          <div style={{ fontSize:10, color:"#888", fontFamily:"'JetBrains Mono','Consolas',monospace", marginTop:2 }}>v0.5 · CR · VE</div>
-        </div>}
-        <button onClick={()=>setSidebarCollapsed(!sidebarCollapsed)} style={{ background:"none", border:"none", color:"#888", cursor:"pointer", fontSize:16, padding:4, lineHeight:1 }} title={sidebarCollapsed?"Expandir":"Colapsar"}>{sidebarCollapsed?"▶":"◀"}</button>
+      <div style={{ padding:sidebarCollapsed?"16px 10px":"16px 14px", borderBottom:"1px solid #e0e6ed", background:"#f8fafc", display:"flex", alignItems:"center", gap:8, minHeight:60, justifyContent:sidebarCollapsed?"center":"space-between" }}>
+        {sidebarCollapsed
+          ? <img src={oloLogo} alt="OLO" style={{ height:22 }}/>
+          : <div style={{ flex:1, overflow:"hidden", display:"flex", alignItems:"center", gap:9 }}>
+              <img src={oloLogo} alt="OLO" style={{ height:26, flexShrink:0 }}/>
+              <div style={{ overflow:"hidden" }}>
+                <div style={{ fontSize:9, color:"#94a3b8", letterSpacing:1.5, textTransform:"uppercase", marginBottom:2, fontWeight:600 }}>Arquitectura</div>
+                <div style={{ fontSize:13, fontWeight:800, color:"#1D1D1B", lineHeight:1.2, whiteSpace:"nowrap" }}>OLO Architecture</div>
+                <div style={{ fontSize:10, color:"#64748b", fontFamily:"'JetBrains Mono','Consolas',monospace", marginTop:2 }}>v0.5 · CR · VE</div>
+              </div>
+            </div>}
+        {!sidebarCollapsed && <button onClick={()=>setSidebarCollapsed(!sidebarCollapsed)} style={{ background:"#fff", border:"1px solid #e0e6ed", color:"#64748b", cursor:"pointer", fontSize:14, padding:"2px 8px", borderRadius:4, lineHeight:1.6, flexShrink:0 }} title="Contraer menú">‹</button>}
       </div>
+      {sidebarCollapsed && <button onClick={()=>setSidebarCollapsed(!sidebarCollapsed)} style={{ background:"#fff", border:"1px solid #e0e6ed", borderTop:"none", color:"#64748b", cursor:"pointer", fontSize:14, padding:"2px 8px", width:"100%" }} title="Expandir menú">›</button>}
 
       {/* Nav Items */}
-      <nav style={{ flex:1, padding:"12px 0", overflowY:"auto" }}>
-        {TABS.map(t => { const isA = tab === t.id; return <button key={t.id} onClick={()=>handleTab(t.id)} title={sidebarCollapsed?t.label:undefined} style={{ display:"flex", alignItems:"center", gap:10, width:"100%", background:isA?"rgba(255,255,255,0.1)":"transparent", border:"none", borderLeft:isA?"3px solid #fff":"3px solid transparent", color:isA?"#ffffff":"#aaa", padding:sidebarCollapsed?"12px 0":"10px 18px", cursor:"pointer", fontSize:13, fontWeight:isA?700:400, fontFamily:"inherit", transition:"all 0.15s", textAlign:"left", justifyContent:sidebarCollapsed?"center":"flex-start" }}>
-          <span style={{ fontSize:16, lineHeight:1, flexShrink:0 }}>{t.label.split(" ")[0]}</span>
-          {!sidebarCollapsed && <span style={{ whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{t.label.split(" ").slice(1).join(" ")}</span>}
-        </button>; })}
+      <nav style={{ flex:1, padding:"8px 0", overflowY:"auto" }}>
+        {TABS.map(t => { const isA = tab === t.id; return <div key={t.id} style={{ display:"flex", alignItems:"stretch", background:isA?"#e0f7fa":"transparent", borderLeft:isA?"3px solid #00838f":"3px solid transparent", transition:"background 0.15s" }}
+          onMouseEnter={e=>{ if(!isA) e.currentTarget.style.background="#f1f5f9"; }}
+          onMouseLeave={e=>{ if(!isA) e.currentTarget.style.background="transparent"; }}>
+          <button onClick={()=>handleTab(t.id)} title={sidebarCollapsed?t.label:undefined} style={{ display:"flex", alignItems:"center", gap:10, width:"100%", flex:1, background:"transparent", border:"none", color:isA?"#00838f":"#1D1D1B", padding:sidebarCollapsed?"12px 0":"11px 6px 11px 11px", cursor:"pointer", fontSize:13, fontWeight:isA?700:600, fontFamily:"inherit", textAlign:"left", justifyContent:sidebarCollapsed?"center":"flex-start" }}>
+            <span style={{ fontSize:16, lineHeight:1, width:18, textAlign:"center", flexShrink:0, color:isA?"#00838f":"#64748b" }}>{t.label.split(" ")[0]}</span>
+            {!sidebarCollapsed && <span style={{ flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{t.label.split(" ").slice(1).join(" ")}</span>}
+          </button>
+        </div>; })}
       </nav>
 
       {/* Sidebar Footer */}
-      {!sidebarCollapsed && <div style={{ padding:"14px 18px", borderTop:"1px solid #333", fontSize:10, color:"#666", lineHeight:1.5 }}>
-        17 manuales · 7 guías eflow · 1 BPA
+      {!sidebarCollapsed && <div style={{ borderTop:"1px solid #e0e6ed", background:"#f8fafc" }}>
+        <div style={{ padding:"10px 14px 0", fontSize:10, color:"#64748b", lineHeight:1.5 }}>
+          17 manuales · 7 guías eflow · 1 BPA
+        </div>
+        <div style={{ padding:"10px 14px 12px" }}>
+          <div style={{ display:"flex", gap:8, alignItems:"center", marginBottom:8 }}>
+            <div style={{ width:32, height:32, borderRadius:"50%", background:"#0097A7", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:700, fontSize:13, flexShrink:0 }}>
+              {(profile?.email || user.email || "?").charAt(0).toUpperCase()}
+            </div>
+            <div style={{ flex:1, overflow:"hidden", minWidth:0 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:"#1D1D1B", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }} title={profile?.email || user.email}>
+                {profile?.nombre || profile?.email || user.email}
+              </div>
+              {role && ROLE_BADGE[role] && <span style={{ display:"inline-block", marginTop:2, fontSize:9, fontWeight:700, padding:"1px 6px", borderRadius:3, background:ROLE_BADGE[role].bg, color:ROLE_BADGE[role].color }}>{ROLE_BADGE[role].label}</span>}
+            </div>
+          </div>
+          <button onClick={signOut} style={{ width:"100%", padding:"6px 8px", background:"#fff", border:"1px solid #e0e6ed", borderRadius:6, fontSize:10, fontWeight:600, color:"#475569", cursor:"pointer" }}>
+            Cerrar sesión
+          </button>
+        </div>
       </div>}
     </aside>
 

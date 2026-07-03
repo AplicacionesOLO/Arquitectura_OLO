@@ -1,6 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // COMPONENTES UI · Primitivas compartidas
 // ═══════════════════════════════════════════════════════════════════════════
+import { Children } from "react";
 import { MODULE_COLORS, OPS_COLORS, CLUSTER_COLORS, STATUS_VIS, MATURITY_TINTS, PRIORITY_LABEL } from "../data/constants.js";
 
 export function StatusBadge({ status, size="sm" }) {
@@ -14,7 +15,7 @@ export function ModuleChip({ code, color, size="sm" }) {
 }
 
 export function KPICard({ label, value, color, sub }) {
-  return <div style={{ background:"#ffffff", border:"1px solid #e0e0e0", borderRadius:10, padding:"12px 16px", flex:"1 1 130px", minWidth:120 }}>
+  return <div style={{ background:"#ffffff", border:"1px solid #e0e0e0", borderTop:`3px solid ${color}`, borderRadius:10, padding:"12px 16px", flex:"1 1 130px", minWidth:120 }}>
     <div style={{ fontSize:26, fontWeight:800, color, lineHeight:1.1 }}>{value}</div>
     <div style={{ fontSize:11, color:"#666", marginTop:4, fontWeight:500 }}>{label}</div>
     {sub && <div style={{ fontSize:10, color:"#999", marginTop:2 }}>{sub}</div>}
@@ -77,8 +78,12 @@ export function DetailBox({ label, accent, children }) {
 }
 
 export function ClusterCard({ color, bg, title, desc, children }) {
+  const count = Children.count(children);
   return <div style={{ background:bg, border:`1px solid ${color}44`, borderLeft:`3px solid ${color}`, borderRadius:10, padding:"12px 14px" }}>
-    <div style={{ fontSize:12, fontWeight:700, color, marginBottom:4 }}>{title}</div>
+    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", gap:8, marginBottom:4 }}>
+      <div style={{ fontSize:12, fontWeight:700, color }}>{title}</div>
+      {count>0 && <span style={{ fontSize:16, fontWeight:800, color, lineHeight:1 }}>{count}</span>}
+    </div>
     <div style={{ fontSize:11, color:"#555", lineHeight:1.55, marginBottom:10 }}>{desc}</div>
     <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>{children}</div>
   </div>;

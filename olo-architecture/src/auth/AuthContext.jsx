@@ -41,7 +41,10 @@ export function AuthProvider({ children }) {
     setError(null);
     const { error: err } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: window.location.origin },
+      // Fuerza el selector de cuenta de Google en cada intento — sin esto,
+      // Google reautentica en silencio con la sesión/cuenta ya activa en el
+      // navegador, sin dar oportunidad de elegir otra cuenta.
+      options: { redirectTo: window.location.origin, queryParams: { prompt: "select_account" } },
     });
     if (err) setError(traducirError(err));
   }, []);

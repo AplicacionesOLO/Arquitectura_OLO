@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { TABS } from "./data/constants.js";
 import { SOFTLAND_MODULES, OPS_MODULES, LOCALIZATIONS, GAPS, BPA_PROCESSES } from "./data/softland.js";
 import { INTEGRATIONS } from "./data/integrations.js";
@@ -10,9 +10,13 @@ import { SoftlandView } from "./views/SoftlandView.jsx";
 import { OpsView } from "./views/OpsView.jsx";
 import { IntegrationsView } from "./views/IntegrationsView.jsx";
 import { ContextView } from "./views/ContextView.jsx";
+import { AdminView } from "./views/AdminView.jsx";
 import { useAuth } from "./auth/AuthContext.jsx";
 import { LoginScreen } from "./auth/LoginScreen.jsx";
+import { PendingScreen } from "./auth/PendingScreen.jsx";
 import oloLogo from "./assets/olo-logo.png";
+
+const ADMIN_TAB = { id:"admin", label:"🛡 Administración", sub:"Usuarios · Roles · Permisos del sistema" };
 
 const ROLE_BADGE = {
   admin:  { label:"Admin",  bg:"#fef3c7", color:"#92400e" },
@@ -24,7 +28,7 @@ const ROLE_BADGE = {
 // COMPONENTE PRINCIPAL
 // ═══════════════════════════════════════════════════════════════════════════
 export default function SoftlandArchitectureMap() {
-  const { loading, user, profile, role, signOut } = useAuth();
+  const { loading, permsLoading, user, profile, profileLoaded, role, isActive, isAdmin, canSeeTab, signOut } = useAuth();
   const [tab, setTab] = useState("bpa");
   const [bpaSel, setBpaSel] = useState(null);
   const [slSel, setSlSel] = useState(null);
@@ -32,12 +36,24 @@ export default function SoftlandArchitectureMap() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [globalSearch, setGlobalSearch] = useState("");
 
+  const navTabs = useMemo(() => {
+    const visible = TABS.filter(t => isAdmin || canSeeTab(t.id));
+    return isAdmin ? [...visible, ADMIN_TAB] : visible;
+  }, [isAdmin, canSeeTab]);
+
+  // Si el rol/permisos cambian y el tab actual deja de estar disponible, cae al primero visible.
+  useEffect(() => {
+    if (permsLoading || navTabs.length===0) return;
+    if (!navTabs.some(t => t.id === tab)) setTab(navTabs[0].id);
+  }, [permsLoading, navTabs, tab]);
+
   const handleTab = id => { setTab(id); setBpaSel(null); setSlSel(null); setOpsSel(null); };
-  const activeTab = TABS.find(t => t.id === tab);
+  const activeTab = navTabs.find(t => t.id === tab);
   const totalProcs = BPA_PROCESSES.estrategicos.length + BPA_PROCESSES.negocio.length + BPA_PROCESSES.apoyo.length + BPA_PROCESSES.control.length;
 
-  if (loading) return <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#f8f9fa", color:"#94a3b8", fontFamily:"'Segoe UI','Helvetica Neue',system-ui,sans-serif", fontSize:13 }}>Cargando…</div>;
+  if (loading || (user && !profileLoaded)) return <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#f8f9fa", color:"#94a3b8", fontFamily:"'Segoe UI','Helvetica Neue',system-ui,sans-serif", fontSize:13 }}>Cargando…</div>;
   if (!user) return <LoginScreen/>;
+  if (!isActive) return <PendingScreen/>;
 
   return <div style={{ fontFamily:"'Segoe UI','Helvetica Neue',system-ui,sans-serif", background:"#f8f9fa", color:"#1D1D1B", minHeight:"100vh", display:"flex" }}>
     <style>{`@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap');body{margin:0;}::selection{background:#1D1D1B;color:#fff;}`}</style>
@@ -62,7 +78,7 @@ export default function SoftlandArchitectureMap() {
 
       {/* Nav Items */}
       <nav style={{ flex:1, padding:"8px 0", overflowY:"auto" }}>
-        {TABS.map(t => { const isA = tab === t.id; return <div key={t.id} style={{ display:"flex", alignItems:"stretch", background:isA?"#e0f7fa":"transparent", borderLeft:isA?"3px solid #00838f":"3px solid transparent", transition:"background 0.15s" }}
+        {navTabs.map(t => { const isA = tab === t.id; return <div key={t.id} style={{ display:"flex", alignItems:"stretch", background:isA?"#e0f7fa":"transparent", borderLeft:isA?"3px solid #00838f":"3px solid transparent", transition:"background 0.15s" }}
           onMouseEnter={e=>{ if(!isA) e.currentTarget.style.background="#f1f5f9"; }}
           onMouseLeave={e=>{ if(!isA) e.currentTarget.style.background="transparent"; }}>
           <button onClick={()=>handleTab(t.id)} title={sidebarCollapsed?t.label:undefined} style={{ display:"flex", alignItems:"center", gap:10, width:"100%", flex:1, background:"transparent", border:"none", color:isA?"#00838f":"#1D1D1B", padding:sidebarCollapsed?"12px 0":"11px 6px 11px 11px", cursor:"pointer", fontSize:13, fontWeight:isA?700:600, fontFamily:"inherit", textAlign:"left", justifyContent:sidebarCollapsed?"center":"flex-start" }}>
@@ -139,6 +155,7 @@ export default function SoftlandArchitectureMap() {
         {tab==="ops"          && <OpsView selected={opsSel} setSelected={setOpsSel}/>}
         {tab==="integrations" && <IntegrationsView searchQuery={globalSearch}/>}
         {tab==="context"      && <ContextView/>}
+        {tab==="admin" && isAdmin && <AdminView/>}
 
         {/* Footer */}
         <footer style={{ marginTop:56, paddingTop:24, borderTop:"1px solid #e0e0e0", display:"flex", justifyContent:"space-between", alignItems:"baseline", flexWrap:"wrap", gap:12, fontSize:11, color:"#888" }}>

@@ -21,16 +21,28 @@ function GoogleIcon() {
 }
 
 export function LoginScreen() {
-  const { signInWithPassword, signInWithGoogle, resetPassword, error, setError } = useAuth();
+  const { signInWithPassword, signUp, signInWithGoogle, resetPassword, error, setError } = useAuth();
+  const [mode, setMode] = useState("login"); // "login" | "signup"
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState(null);
 
+  const switchMode = (m) => { setMode(m); setError(null); setNotice(null); setPassword(""); setPassword2(""); };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) return;
+    if (mode === "signup") {
+      if (password !== password2) { setError("Las contraseñas no coinciden."); return; }
+      setBusy(true); setNotice(null);
+      const r = await signUp(email, password);
+      setBusy(false);
+      if (r.ok) { setNotice(`Cuenta creada. Te enviamos un correo a ${email} para confirmarla. Luego de confirmar, un administrador debe aprobar tu acceso antes de que puedas ingresar.`); setMode("login"); setPassword(""); setPassword2(""); }
+      return;
+    }
     setBusy(true); setNotice(null);
     await signInWithPassword(email, password);
     setBusy(false);
@@ -60,7 +72,7 @@ export function LoginScreen() {
 
         <label style={{ ...labelStyle, marginTop:14 }} htmlFor="login-pass">Contraseña</label>
         <div style={{ position:"relative" }}>
-          <input id="login-pass" type={showPw?"text":"password"} autoComplete="current-password" required
+          <input id="login-pass" type={showPw?"text":"password"} autoComplete={mode==="signup"?"new-password":"current-password"} required
             value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••"
             style={{ ...inputStyle, paddingRight:42 }}/>
           <button type="button" onClick={()=>setShowPw(s=>!s)} title={showPw?"Ocultar":"Mostrar"}
@@ -69,20 +81,32 @@ export function LoginScreen() {
           </button>
         </div>
 
-        <div style={{ textAlign:"right", marginTop:8 }}>
+        {mode==="signup" && <>
+          <label style={{ ...labelStyle, marginTop:14 }} htmlFor="login-pass2">Confirmar contraseña</label>
+          <input id="login-pass2" type={showPw?"text":"password"} autoComplete="new-password" required
+            value={password2} onChange={e=>setPassword2(e.target.value)} placeholder="••••••••" style={inputStyle}/>
+        </>}
+
+        {mode==="login" && <div style={{ textAlign:"right", marginTop:8 }}>
           <button type="button" onClick={handleForgot} disabled={busy}
             style={{ background:"none", border:"none", color:"#00838f", fontSize:11, cursor:"pointer", fontWeight:600, padding:0 }}>
             ¿Olvidaste tu contraseña?
           </button>
-        </div>
+        </div>}
 
         {error && <div style={{ marginTop:14, padding:"9px 12px", background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:8, color:"#b91c1c", fontSize:12, lineHeight:1.5 }}>{error}</div>}
         {notice && <div style={{ marginTop:14, padding:"9px 12px", background:"#e0f7fa", border:"1px solid #80cbc4", borderRadius:8, color:"#00695c", fontSize:12, lineHeight:1.5 }}>{notice}</div>}
 
-        <button type="submit" disabled={busy || !email || !password}
+        <button type="submit" disabled={busy || !email || !password || (mode==="signup" && !password2)}
           style={{ width:"100%", marginTop:16, padding:"10px", background: busy?"#80cbc4":"#00838f", color:"#fff", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor: busy?"default":"pointer", transition:"background 0.15s" }}>
-          {busy?"Verificando…":"Iniciar sesión"}
+          {busy?"Procesando…":mode==="signup"?"Crear cuenta":"Iniciar sesión"}
         </button>
+
+        <div style={{ textAlign:"center", marginTop:12 }}>
+          {mode==="login"
+            ? <span style={{ fontSize:11, color:"#64748b" }}>¿No tienes cuenta? <button type="button" onClick={()=>switchMode("signup")} style={{ background:"none", border:"none", color:"#00838f", fontSize:11, fontWeight:700, cursor:"pointer", padding:0 }}>Crear cuenta</button></span>
+            : <span style={{ fontSize:11, color:"#64748b" }}>¿Ya tienes cuenta? <button type="button" onClick={()=>switchMode("login")} style={{ background:"none", border:"none", color:"#00838f", fontSize:11, fontWeight:700, cursor:"pointer", padding:0 }}>Iniciar sesión</button></span>}
+        </div>
 
         <div style={{ display:"flex", alignItems:"center", gap:10, margin:"18px 0" }}>
           <div style={{ flex:1, height:1, background:"#e0e6ed" }}/>
@@ -97,7 +121,7 @@ export function LoginScreen() {
       </form>
 
       <p style={{ textAlign:"center", fontSize:10, color:"#94a3b8", marginTop:18, lineHeight:1.6 }}>
-        Acceso restringido · OLO Logistics · si no tienes cuenta contacta al administrador del sistema.
+        Acceso restringido · OLO Logistics · las cuentas nuevas entran con acceso mínimo hasta que un administrador asigne su rol.
       </p>
     </div>
   </div>;

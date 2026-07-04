@@ -9,13 +9,20 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(undefined); // undefined = aún no se sabe, null = sin sesión
   const [profile, setProfile] = useState(null);
+  const [profileLoaded, setProfileLoaded] = useState(false); // distingue "sin perfil todavía" de "aún cargando"
+  const [visibleTabs, setVisibleTabs] = useState(null); // null = aún no cargado; Set en cuanto resuelve
   const [error, setError] = useState(null);
 
   const loadProfile = useCallback(async (userId) => {
-    if (!userId) { setProfile(null); return; }
+    if (!userId) { setProfile(null); setProfileLoaded(false); setVisibleTabs(null); return; }
     const { data, error: err } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
-    if (err) { setProfile(null); return; }
-    setProfile(data);
+    if (err || !data) { setProfile(null); setProfileLoaded(true); setVisibleTabs(new Set()); return; }
+    setProfile(data); setProfileLoaded(true);
+    // Cuenta pendiente de aprobación o deshabilitada por un admin: sin secciones visibles.
+    if (data.status !== "active") { setVisibleTabs(new Set()); return; }
+    if (data.role === "admin") { setVisibleTabs("all"); return; }
+    const { data: perms } = await supabase.from("role_permissions").select("tab_id,access").eq("role_key", data.role);
+    setVisibleTabs(new Set((perms || []).filter(p => p.access === "view").map(p => p.tab_id)));
   }, []);
 
   useEffect(() => {
@@ -35,6 +42,16 @@ export function AuthProvider({ children }) {
     const { error: err } = await supabase.auth.signInWithPassword({ email, password });
     if (err) setError(traducirError(err));
     return { ok: !err };
+  }, []);
+
+  const signUp = useCallback(async (email, password) => {
+    setError(null);
+    const { error: err } = await supabase.auth.signUp({
+      email, password,
+      options: { emailRedirectTo: window.location.origin },
+    });
+    if (err) { setError(traducirError(err)); return { ok: false }; }
+    return { ok: true };
   }, []);
 
   const signInWithGoogle = useCallback(async () => {
@@ -61,22 +78,31 @@ export function AuthProvider({ children }) {
   const value = useMemo(() => {
     const user = session?.user ?? null;
     const role = profile?.role ?? null;
+    const status = profile?.status ?? null;
     return {
       loading: session === undefined,
       user,
       profile,
+      profileLoaded,
       role,
-      isAdmin: role === "admin",
-      isEditor: role === "editor" || role === "admin",
+      status,
+      isActive: status === "active",
+      isPending: !!user && profileLoaded && status !== "active" && status !== "disabled",
+      isDisabled: status === "disabled",
+      isAdmin: role === "admin" && status === "active",
+      isEditor: (role === "editor" || role === "admin") && status === "active",
       canView: () => !!user,
+      canSeeTab: (tabId) => visibleTabs === "all" || visibleTabs?.has(tabId),
+      permsLoading: !!user && visibleTabs === null,
       error,
       setError,
       signInWithPassword,
+      signUp,
       signInWithGoogle,
       resetPassword,
       signOut,
     };
-  }, [session, profile, error, signInWithPassword, signInWithGoogle, resetPassword, signOut]);
+  }, [session, profile, profileLoaded, visibleTabs, error, signInWithPassword, signUp, signInWithGoogle, resetPassword, signOut]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
@@ -86,6 +112,9 @@ function traducirError(err) {
   if (m.includes("Invalid login credentials")) return "Correo o contraseña incorrectos.";
   if (m.includes("Email not confirmed")) return "Confirma tu correo antes de iniciar sesión — revisa tu bandeja de entrada.";
   if (m.includes("provider is not enabled")) return "El inicio de sesión con Google aún no está activado en este proyecto.";
+  if (m.includes("User already registered")) return "Ya existe una cuenta con este correo — intenta iniciar sesión.";
+  if (m.includes("Password should be at least")) return "La contraseña debe tener al menos 6 caracteres.";
+  if (m.includes("Unable to validate email address")) return "El correo electrónico no es válido.";
   return m || "Ocurrió un error inesperado.";
 }
 

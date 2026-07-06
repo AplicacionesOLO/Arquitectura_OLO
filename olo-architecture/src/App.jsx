@@ -35,7 +35,7 @@ export default function SoftlandArchitectureMap() {
   const [opsSel, setOpsSel] = useState(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [globalSearch, setGlobalSearch] = useState("");
-  const [expandedGroups, setExpandedGroups] = useState(()=>new Set(["ecosystem"]));
+  const [expandedGroups, setExpandedGroups] = useState(()=>new Set(["ecosystem","bpa"]));
 
   const navTabs = useMemo(() => {
     const visible = TABS.filter(t => isAdmin || canSeeTab(t.id));
@@ -181,10 +181,12 @@ export default function SoftlandArchitectureMap() {
           <KPICard label="Brechas" value={GAPS.length} color="#7f8c8d" sub="vacíos reconocidos"/>
         </div>
 
-        {/* Contenido */}
-        {tab==="olo-arch"     && <OLOArchView     searchQuery={globalSearch}/>}
+        {/* Contenido — tab "bpa" ahora es Inicio (diagrama OLOArch); tab "olo-arch"
+            ahora es Procesos (BPAView). Los ids se dejan igual a propósito para
+            no invalidar los permisos por rol ya configurados (keyed por id). */}
+        {tab==="bpa"          && <OLOArchView     searchQuery={globalSearch}/>}
         {tab==="ecosystem"    && <EcosystemView   searchQuery={globalSearch}/>}
-        {tab==="bpa"          && <BPAView selected={bpaSel} setSelected={setBpaSel}/>}
+        {tab==="olo-arch"     && <BPAView selected={bpaSel} setSelected={setBpaSel}/>}
         {tab==="softland"     && <SoftlandView selected={slSel} setSelected={setSlSel}/>}
         {tab==="ops"          && <OpsView selected={opsSel} setSelected={setOpsSel}/>}
         {tab==="integrations" && <IntegrationsView searchQuery={globalSearch}/>}

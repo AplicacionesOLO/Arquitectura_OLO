@@ -11,6 +11,8 @@ import { EFWFEBECA_GROUPS,  EFWFEBECA_TABLE_DEFS,  EFWFEBECA_COLORS,  EFWFEBECA_
 import { EFWSILLACA_GROUPS, EFWSILLACA_TABLE_DEFS, EFWSILLACA_COLORS, EFWSILLACA_MOD } from "../data/sillaca_ve.js";
 import { EFWWMH_GROUPS,    EFWWMH_TABLE_DEFS,    EFWWMH_COLORS,    EFWWMH_MOD    } from "../data/wmh_ve.js";
 import { SFLBEVAL_GROUPS, SFLBEVAL_TABLE_DEFS, SFLBEVAL_COLORS, SFLBEVAL_MOD } from "../data/softland_beval_ve.js";
+import { WMH_CR_GROUPS, WMH_CR_TABLE_DEFS, WMH_CR_COLORS, WMH_CR_MOD } from "../data/wmh_cr.js";
+import { EINTEGRA_VE_GROUPS, EINTEGRA_VE_TABLE_DEFS, EINTEGRA_VE_COLORS, EINTEGRA_VE_MOD } from "../data/eintegra_ve.js";
 import { INTEGRATIONS } from "../data/integrations.js";
 import { EREntityCard } from "./EREntityCard.jsx";
 import { ERDiagramRelational } from "./ERDiagramRelational.jsx";
@@ -24,6 +26,8 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
             : schema==="efwsillaca"? EFWSILLACA_GROUPS
             : schema==="efwwmh"    ? EFWWMH_GROUPS
             : schema==="softland_beval" ? SFLBEVAL_GROUPS
+            : schema==="wmh_cr"    ? WMH_CR_GROUPS
+            : schema==="eintegra_ve" ? EINTEGRA_VE_GROUPS
             : SRO_GROUPS;
   const TD  = schema==="sco"       ? SCO_TABLE_DEFS
             : schema==="efw"       ? EFW_TABLE_DEFS
@@ -32,6 +36,8 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
             : schema==="efwsillaca"? EFWSILLACA_TABLE_DEFS
             : schema==="efwwmh"    ? EFWWMH_TABLE_DEFS
             : schema==="softland_beval" ? SFLBEVAL_TABLE_DEFS
+            : schema==="wmh_cr"    ? WMH_CR_TABLE_DEFS
+            : schema==="eintegra_ve" ? EINTEGRA_VE_TABLE_DEFS
             : SRO_TABLE_DEFS;
   const COL = schema==="sco"       ? SCO_COLORS
             : schema==="efw"       ? EFW_COLORS
@@ -40,6 +46,8 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
             : schema==="efwsillaca"? EFWSILLACA_COLORS
             : schema==="efwwmh"    ? EFWWMH_COLORS
             : schema==="softland_beval" ? SFLBEVAL_COLORS
+            : schema==="wmh_cr"    ? WMH_CR_COLORS
+            : schema==="eintegra_ve" ? EINTEGRA_VE_COLORS
             : SRO_COLORS;
   const MOD = schema==="sco"       ? SCO_MOD
             : schema==="efw"       ? EFW_MOD
@@ -48,6 +56,8 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
             : schema==="efwsillaca"? EFWSILLACA_MOD
             : schema==="efwwmh"    ? EFWWMH_MOD
             : schema==="softland_beval" ? SFLBEVAL_MOD
+            : schema==="wmh_cr"    ? WMH_CR_MOD
+            : schema==="eintegra_ve" ? EINTEGRA_VE_MOD
             : SRO_MOD;
   const [activeGroups, setActiveGroups] = useState(()=>new Set(Object.keys(GR)));
   const [selectedTable, setSelectedTable] = useState(null);

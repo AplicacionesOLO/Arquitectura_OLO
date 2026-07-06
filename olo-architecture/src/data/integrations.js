@@ -11,6 +11,10 @@ import { EFWWMH_MOD,    EFWWMH_INTEGRATIONS    } from "./wmh_ve.js";
 import { WMH_CR_MOD,    WMH_CR_INTEGRATIONS    } from "./wmh_cr.js";
 import { EINTEGRA_VE_MOD, EINTEGRA_VE_INTEGRATIONS } from "./eintegra_ve.js";
 import { SFLBEVAL_MOD, SFLBEVAL_INTEGRATIONS } from "./softland_beval_ve.js";
+import { SFLFEBECA_MOD, SFLFEBECA_INTEGRATIONS } from "./softland_febeca_ve.js";
+import { SFLSILLACA_MOD, SFLSILLACA_INTEGRATIONS } from "./softland_sillaca_ve.js";
+import { SFLTREXA_MOD, SFLTREXA_INTEGRATIONS } from "./softland_trexa_ve.js";
+import { SFLPRISMA_MOD, SFLPRISMA_INTEGRATIONS } from "./softland_prisma_ve.js";
 
 export { EFW_MOD };
 export { SRO_MOD };
@@ -18,11 +22,11 @@ export { SCO_MOD };
 export { EFWBEVAL_MOD, EFWFEBECA_MOD, EFWSILLACA_MOD, EFWWMH_MOD };
 export { WMH_CR_MOD };
 export { EINTEGRA_VE_MOD };
-export { SFLBEVAL_MOD };
+export { SFLBEVAL_MOD, SFLFEBECA_MOD, SFLSILLACA_MOD, SFLTREXA_MOD, SFLPRISMA_MOD };
 // Arrays de integraciones exportados directamente (no van al array global)
 export { EFWBEVAL_INTEGRATIONS, EFWFEBECA_INTEGRATIONS, EFWSILLACA_INTEGRATIONS, EFWWMH_INTEGRATIONS };
 export { WMH_CR_INTEGRATIONS, EINTEGRA_VE_INTEGRATIONS };
-export { SFLBEVAL_INTEGRATIONS };
+export { SFLBEVAL_INTEGRATIONS, SFLFEBECA_INTEGRATIONS, SFLSILLACA_INTEGRATIONS, SFLTREXA_INTEGRATIONS, SFLPRISMA_INTEGRATIONS };
 
 export const ERP_MOD   = new Set(["AS","CG","CB","CC","CP","FA","CO","CI","AF","GN","MF","RH","CCH","PY","FC","POS","FR","AC"]);
 export const EFLOW_MOD = new Set(["WMS-D","WMS-RF","WMH","ERP"]);
@@ -347,6 +351,10 @@ export const CAT_META = {
   efwsillaca: { label:"EFW·SILLACA — eFlow Venezuela · Sillaca",          icon:"🇻🇪", color:"#7c3aed", bg:"rgba(124,58,237,0.06)",  border:"rgba(124,58,237,0.2)" },
   efwwmh:     { label:"EFW·WMH — Torre de Control Venezuela",             icon:"🏗",  color:"#d97706", bg:"rgba(217,119,6,0.06)",   border:"rgba(217,119,6,0.2)"  },
   softland_beval:{ label:"SFL·BEVAL — Softland ERP · Beval (VE)",         icon:"🇻🇪", color:"#b45309", bg:"rgba(180,83,9,0.06)",    border:"rgba(180,83,9,0.22)"  },
+  softland_febeca:{ label:"SFL·FEBECA — Softland ERP · Febeca (VE)",      icon:"🇻🇪", color:"#0d9488", bg:"rgba(13,148,136,0.06)",  border:"rgba(13,148,136,0.22)" },
+  softland_sillaca:{ label:"SFL·SILLACA — Softland ERP · Sillaca (VE)",   icon:"🇻🇪", color:"#7c3aed", bg:"rgba(124,58,237,0.06)",  border:"rgba(124,58,237,0.22)" },
+  softland_trexa:{ label:"SFL·TREXA — Softland ERP · Trexa (VE)",         icon:"🇻🇪", color:"#be185d", bg:"rgba(190,24,93,0.06)",   border:"rgba(190,24,93,0.22)" },
+  softland_prisma:{ label:"SFL·PRISMA — Softland ERP · Prisma (VE)",      icon:"🇻🇪", color:"#4d7c0f", bg:"rgba(77,124,15,0.06)",   border:"rgba(77,124,15,0.22)" },
   eintegra_ve:{ label:"eIntegra·VE — Middleware ERP↔WMS · Venezuela",     icon:"🔌", color:"#6366f1", bg:"rgba(99,102,241,0.06)",  border:"rgba(99,102,241,0.22)" },
   ve_cross:   { label:"Cross-Schema · Relaciones Semánticas VE",          icon:"🔀", color:"#dc2626", bg:"rgba(220,38,38,0.06)",   border:"rgba(220,38,38,0.2)"  },
 };

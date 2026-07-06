@@ -4,10 +4,11 @@
 import { useState, useEffect } from "react";
 import { INTEGRATIONS, CAT_META, rowCategory, getModules,
          EFWBEVAL_MOD, EFWFEBECA_MOD, EFWSILLACA_MOD, EFWWMH_MOD,
-         WMH_CR_MOD, EINTEGRA_VE_MOD, SFLBEVAL_MOD,
+         WMH_CR_MOD, EINTEGRA_VE_MOD, SFLBEVAL_MOD, SFLFEBECA_MOD, SFLSILLACA_MOD, SFLTREXA_MOD, SFLPRISMA_MOD,
          EFWBEVAL_INTEGRATIONS, EFWFEBECA_INTEGRATIONS,
          EFWSILLACA_INTEGRATIONS, EFWWMH_INTEGRATIONS,
-         WMH_CR_INTEGRATIONS, EINTEGRA_VE_INTEGRATIONS, SFLBEVAL_INTEGRATIONS } from "../data/integrations.js";
+         WMH_CR_INTEGRATIONS, EINTEGRA_VE_INTEGRATIONS,
+         SFLBEVAL_INTEGRATIONS, SFLFEBECA_INTEGRATIONS, SFLSILLACA_INTEGRATIONS, SFLTREXA_INTEGRATIONS, SFLPRISMA_INTEGRATIONS } from "../data/integrations.js";
 
 // Mapa de MOD.size para contadores de schema (no están en INTEGRATIONS global)
 const SCHEMA_TABLE_COUNTS = {
@@ -18,6 +19,10 @@ const SCHEMA_TABLE_COUNTS = {
   wmh_cr:      () => WMH_CR_MOD.size,
   eintegra_ve: () => EINTEGRA_VE_MOD.size,
   softland_beval: () => SFLBEVAL_MOD.size,
+  softland_febeca: () => SFLFEBECA_MOD.size,
+  softland_sillaca: () => SFLSILLACA_MOD.size,
+  softland_trexa: () => SFLTREXA_MOD.size,
+  softland_prisma: () => SFLPRISMA_MOD.size,
 };
 // Mapa de arrays de integraciones por schema (no van al array global)
 const SCHEMA_ROWS = {
@@ -28,6 +33,10 @@ const SCHEMA_ROWS = {
   wmh_cr:      WMH_CR_INTEGRATIONS,
   eintegra_ve: EINTEGRA_VE_INTEGRATIONS,
   softland_beval: SFLBEVAL_INTEGRATIONS,
+  softland_febeca: SFLFEBECA_INTEGRATIONS,
+  softland_sillaca: SFLSILLACA_INTEGRATIONS,
+  softland_trexa: SFLTREXA_INTEGRATIONS,
+  softland_prisma: SFLPRISMA_INTEGRATIONS,
 };
 import { ModuleChip, StatusBadge } from "../components/ui.jsx";
 import { ERDiagram } from "../schemas/ERDiagram.jsx";
@@ -52,7 +61,7 @@ function IntegTable({ rows }) {
 }
 
 // Categorías que forman el grupo Venezuela
-const VE_CATS = ["efwbeval","efwfebeca","efwsillaca","efwwmh","softland_beval","eintegra_ve","ve_cross"];
+const VE_CATS = ["efwbeval","efwfebeca","efwsillaca","efwwmh","softland_beval","softland_febeca","softland_sillaca","softland_trexa","softland_prisma","eintegra_ve","ve_cross"];
 
 export function IntegrationsView({ searchQuery="" }) {
   const [cat, setCat] = useState("global");
@@ -159,7 +168,7 @@ export function IntegrationsView({ searchQuery="" }) {
     {cat==="ve_cross" ? <CrossSchemaView/> :
 
     /* Schema ER views (sro / sco / efw / wmh_cr / ve schemas) */
-    (cat==="sro"||cat==="sco"||cat==="efw"||cat==="wmh_cr"||cat==="efwbeval"||cat==="efwfebeca"||cat==="efwsillaca"||cat==="efwwmh"||cat==="eintegra_ve"||cat==="softland_beval")
+    (cat==="sro"||cat==="sco"||cat==="efw"||cat==="wmh_cr"||cat==="efwbeval"||cat==="efwfebeca"||cat==="efwsillaca"||cat==="efwwmh"||cat==="eintegra_ve"||cat==="softland_beval"||cat==="softland_febeca"||cat==="softland_sillaca"||cat==="softland_trexa"||cat==="softland_prisma")
       ? <ERSchemaView schema={cat} searchQuery={searchQuery} overrideRows={SCHEMA_ROWS[cat]||null}/> : <>
 
     {cat!=="global" && <div style={{ background:CAT_META[cat].bg, border:`1px solid ${CAT_META[cat].border}`, borderLeft:`3px solid ${CAT_META[cat].color}`, borderRadius:8, padding:"10px 14px", marginBottom:14, fontSize:12, color:"#555", lineHeight:1.5 }}>

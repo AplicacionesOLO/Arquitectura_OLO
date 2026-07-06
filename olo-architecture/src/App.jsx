@@ -35,11 +35,26 @@ export default function SoftlandArchitectureMap() {
   const [opsSel, setOpsSel] = useState(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [globalSearch, setGlobalSearch] = useState("");
+  const [expandedGroups, setExpandedGroups] = useState(()=>new Set(["ecosystem"]));
 
   const navTabs = useMemo(() => {
     const visible = TABS.filter(t => isAdmin || canSeeTab(t.id));
     return isAdmin ? [...visible, ADMIN_TAB] : visible;
   }, [isAdmin, canSeeTab]);
+
+  // Agrupa navTabs en árbol de 1 nivel: los tabs con `parent` cuelgan del tab
+  // con ese id (si sigue visible); si no, se muestran sueltos como fallback.
+  const navTree = useMemo(() => {
+    const ids = new Set(navTabs.map(t => t.id));
+    const tops = navTabs.filter(t => !t.parent || !ids.has(t.parent));
+    return tops.map(t => ({ ...t, children: navTabs.filter(c => c.parent === t.id) }));
+  }, [navTabs]);
+
+  const toggleGroup = (id) => setExpandedGroups(prev => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
 
   // Si el rol/permisos cambian y el tab actual deja de estar disponible, cae al primero visible.
   useEffect(() => {
@@ -78,14 +93,33 @@ export default function SoftlandArchitectureMap() {
 
       {/* Nav Items */}
       <nav style={{ flex:1, padding:"8px 0", overflowY:"auto" }}>
-        {navTabs.map(t => { const isA = tab === t.id; return <div key={t.id} style={{ display:"flex", alignItems:"stretch", background:isA?"#e0f7fa":"transparent", borderLeft:isA?"3px solid #00838f":"3px solid transparent", transition:"background 0.15s" }}
-          onMouseEnter={e=>{ if(!isA) e.currentTarget.style.background="#f1f5f9"; }}
-          onMouseLeave={e=>{ if(!isA) e.currentTarget.style.background="transparent"; }}>
-          <button onClick={()=>handleTab(t.id)} title={sidebarCollapsed?t.label:undefined} style={{ display:"flex", alignItems:"center", gap:10, width:"100%", flex:1, background:"transparent", border:"none", color:isA?"#00838f":"#1D1D1B", padding:sidebarCollapsed?"12px 0":"11px 6px 11px 11px", cursor:"pointer", fontSize:13, fontWeight:isA?700:600, fontFamily:"inherit", textAlign:"left", justifyContent:sidebarCollapsed?"center":"flex-start" }}>
-            <span style={{ fontSize:16, lineHeight:1, width:18, textAlign:"center", flexShrink:0, color:isA?"#00838f":"#64748b" }}>{t.label.split(" ")[0]}</span>
-            {!sidebarCollapsed && <span style={{ flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{t.label.split(" ").slice(1).join(" ")}</span>}
-          </button>
-        </div>; })}
+        {navTree.map(t => {
+          const isA = tab === t.id;
+          const hasChildren = t.children.length > 0;
+          const childActive = t.children.some(c => c.id === tab);
+          const expanded = expandedGroups.has(t.id) || childActive;
+          return <div key={t.id}>
+            <div style={{ display:"flex", alignItems:"stretch", background:isA?"#e0f7fa":"transparent", borderLeft:isA?"3px solid #00838f":"3px solid transparent", transition:"background 0.15s" }}
+              onMouseEnter={e=>{ if(!isA) e.currentTarget.style.background="#f1f5f9"; }}
+              onMouseLeave={e=>{ if(!isA) e.currentTarget.style.background="transparent"; }}>
+              <button onClick={()=>handleTab(t.id)} title={sidebarCollapsed?t.label:undefined} style={{ display:"flex", alignItems:"center", gap:10, width:"100%", flex:1, background:"transparent", border:"none", color:isA?"#00838f":"#1D1D1B", padding:sidebarCollapsed?"12px 0":"11px 6px 11px 11px", cursor:"pointer", fontSize:13, fontWeight:isA?700:600, fontFamily:"inherit", textAlign:"left", justifyContent:sidebarCollapsed?"center":"flex-start" }}>
+                <span style={{ fontSize:16, lineHeight:1, width:18, textAlign:"center", flexShrink:0, color:isA?"#00838f":"#64748b" }}>{t.label.split(" ")[0]}</span>
+                {!sidebarCollapsed && <span style={{ flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{t.label.split(" ").slice(1).join(" ")}</span>}
+              </button>
+              {hasChildren && !sidebarCollapsed && <button onClick={()=>toggleGroup(t.id)} title={expanded?"Contraer":"Expandir"} style={{ background:"transparent", border:"none", color:"#94a3b8", cursor:"pointer", fontSize:11, padding:"0 12px" }}>
+                <span style={{ display:"inline-block", transform:expanded?"rotate(90deg)":"rotate(0deg)", transition:"transform 0.15s" }}>›</span>
+              </button>}
+            </div>
+            {hasChildren && expanded && !sidebarCollapsed && t.children.map(c => { const isCA = tab === c.id; return (
+              <button key={c.id} onClick={()=>handleTab(c.id)} style={{ display:"flex", alignItems:"center", gap:9, width:"100%", background:isCA?"#e0f7fa":"transparent", border:"none", borderLeft:isCA?"3px solid #00838f":"3px solid transparent", color:isCA?"#00838f":"#475569", padding:"8px 14px 8px 32px", cursor:"pointer", fontSize:12, fontWeight:isCA?700:500, fontFamily:"inherit", textAlign:"left", transition:"background 0.15s" }}
+                onMouseEnter={e=>{ if(!isCA) e.currentTarget.style.background="#f1f5f9"; }}
+                onMouseLeave={e=>{ if(!isCA) e.currentTarget.style.background="transparent"; }}>
+                <span style={{ fontSize:13, width:16, textAlign:"center", flexShrink:0, color:isCA?"#00838f":"#94a3b8" }}>{c.label.split(" ")[0]}</span>
+                <span style={{ flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.label.split(" ").slice(1).join(" ")}</span>
+              </button>
+            ); })}
+          </div>;
+        })}
       </nav>
 
       {/* Sidebar Footer */}

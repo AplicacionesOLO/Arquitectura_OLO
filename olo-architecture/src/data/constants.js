@@ -38,12 +38,15 @@ export const CLUSTER_COLORS = {
   "Power BI":"#D97706","Tec. Tiempo":"#94A3B8","eflow":"#185FA5",
 };
 
+// `parent` anida el tab bajo otro en el sidebar (ej. Módulos ERP e Integraciones
+// dentro de Ecosistema) sin afectar permisos (siguen gateados por su propio
+// tab_id) ni el enrutado de contenido en App.jsx (sin cambios).
 export const TABS = [
   { id:"bpa",          label:"◈ BPA · OLO",           sub:"Modelo de procesos · 4 áreas · 30 procesos · cobertura por sistema" },
   { id:"olo-arch",     label:"⌂ Inicio",              sub:"Diagrama operativo · eFlow (CR/VE) · Lago de Datos · Suite OLO · Middleware · Sistemas del Estado" },
   { id:"ecosystem",    label:"◉ Ecosistema",          sub:"Mapa de capas: externos · ERP · operación · satélites" },
-  { id:"softland",     label:"⬡ Módulos ERP",         sub:"Catálogo de módulos Softland · click para detalle y entidades inferidas" },
+  { id:"softland",     label:"⬡ Módulos ERP",         sub:"Catálogo de módulos Softland · click para detalle y entidades inferidas", parent:"ecosystem" },
+  { id:"integrations", label:"⟳ Integraciones",      sub:"Matriz inter-módulo · qué fluye, en qué dirección, con qué estado", parent:"ecosystem" },
   { id:"ops",          label:"🏗 Operación",          sub:"eflow Cloud Suite · WMS Desktop / RF / WMH Torre de Control" },
-  { id:"integrations", label:"⟳ Integraciones",      sub:"Matriz inter-módulo · qué fluye, en qué dirección, con qué estado" },
   { id:"context",      label:"◐ Contexto",            sub:"Localizaciones · puntos de extensión · brechas declaradas" },
 ];

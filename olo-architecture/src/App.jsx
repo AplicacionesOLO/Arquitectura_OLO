@@ -11,6 +11,7 @@ import { OpsView } from "./views/OpsView.jsx";
 import { IntegrationsView } from "./views/IntegrationsView.jsx";
 import { ContextView } from "./views/ContextView.jsx";
 import { AdminView } from "./views/AdminView.jsx";
+import { ProcesosOperativosView } from "./views/ProcesosOperativosView.jsx";
 import { useAuth } from "./auth/AuthContext.jsx";
 import { LoginScreen } from "./auth/LoginScreen.jsx";
 import { PendingScreen } from "./auth/PendingScreen.jsx";
@@ -184,16 +185,12 @@ export default function SoftlandArchitectureMap() {
         {/* Contenido — BPA · OLO (id "bpa") ahora muestra el modelo de procesos;
             Infraestructura (id "infra", nuevo submódulo de BPA) muestra el
             diagrama de arquitectura que antes vivía en BPA · OLO; Procesos
-            (id "olo-arch") queda sin contenido asignado por ahora. Los ids
-            existentes se dejan igual a propósito para no invalidar los
-            permisos por rol ya configurados (keyed por id). */}
+            (id "olo-arch") muestra los grids lineales por categoría operativa.
+            Los ids existentes se dejan igual a propósito para no invalidar
+            los permisos por rol ya configurados (keyed por id). */}
         {tab==="bpa"          && <BPAView selected={bpaSel} setSelected={setBpaSel}/>}
         {tab==="infra"        && <OLOArchView     searchQuery={globalSearch}/>}
-        {tab==="olo-arch"     && <div style={{ padding:"48px 24px", textAlign:"center", background:"#fff", border:"1px dashed #e0e0e0", borderRadius:12, color:"#999" }}>
-          <div style={{ fontSize:28, marginBottom:10 }}>📋</div>
-          <div style={{ fontSize:14, fontWeight:700, color:"#666", marginBottom:4 }}>Procesos</div>
-          <div style={{ fontSize:12 }}>Contenido pendiente de definir.</div>
-        </div>}
+        {tab==="olo-arch"     && <ProcesosOperativosView/>}
         {tab==="ecosystem"    && <EcosystemView   searchQuery={globalSearch}/>}
         {tab==="softland"     && <SoftlandView selected={slSel} setSelected={setSlSel}/>}
         {tab==="ops"          && <OpsView selected={opsSel} setSelected={setOpsSel}/>}

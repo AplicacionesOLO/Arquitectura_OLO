@@ -83,7 +83,7 @@ export default function SoftlandArchitectureMap() {
               <img src={oloLogo} alt="OLO" style={{ height:26, flexShrink:0 }}/>
               <div style={{ overflow:"hidden" }}>
                 <div style={{ fontSize:9, color:"#94a3b8", letterSpacing:1.5, textTransform:"uppercase", marginBottom:2, fontWeight:600 }}>Arquitectura</div>
-                <div style={{ fontSize:13, fontWeight:800, color:"#1D1D1B", lineHeight:1.2, whiteSpace:"nowrap" }}>OLO Architecture</div>
+                <div style={{ fontSize:13, fontWeight:800, color:"#1D1D1B", lineHeight:1.2, whiteSpace:"nowrap" }}>BPA OLO</div>
                 <div style={{ fontSize:10, color:"#64748b", fontFamily:"'JetBrains Mono','Consolas',monospace", marginTop:2 }}>v0.5 · CR · VE</div>
               </div>
             </div>}

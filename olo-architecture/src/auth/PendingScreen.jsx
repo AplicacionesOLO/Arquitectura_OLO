@@ -26,7 +26,7 @@ export function PendingScreen() {
           Cerrar sesión
         </button>
       </div>
-      <p style={{ textAlign:"center", fontSize:10, color:"#94a3b8", marginTop:18 }}>OLO Architecture · acceso restringido</p>
+      <p style={{ textAlign:"center", fontSize:10, color:"#94a3b8", marginTop:18 }}>BPA OLO · acceso restringido</p>
     </div>
   </div>;
 }

@@ -61,7 +61,7 @@ export function LoginScreen() {
 
       <div style={{ textAlign:"center", marginBottom:28 }}>
         <img src={oloLogo} alt="OLO" style={{ height:56, margin:"0 auto", display:"block" }}/>
-        <h1 style={{ margin:"16px 0 0", fontSize:22, fontWeight:800, color:"#1D1D1B", letterSpacing:"-0.01em" }}>OLO Architecture</h1>
+        <h1 style={{ margin:"16px 0 0", fontSize:22, fontWeight:800, color:"#1D1D1B", letterSpacing:"-0.01em" }}>BPA OLO</h1>
         <p style={{ margin:"4px 0 0", fontSize:12, color:"#64748b" }}>Softland v7.00 · eflow Cloud Suite</p>
       </div>
 

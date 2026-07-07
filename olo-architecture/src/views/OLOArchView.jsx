@@ -431,6 +431,59 @@ export function OLOArchView({ searchQuery="" }) {
 
   const getPath = (c) => routeMode==='ortho' ? orthoPath(c) : bezierPath(c);
 
+  // ── Tema visual (claro por defecto, oscuro opcional) — solo afecta color ──
+  const [theme, setTheme] = useState(() => {
+    try { return localStorage.getItem('olo-arch-theme') || 'light'; } catch { return 'light'; }
+  });
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    try { localStorage.setItem('olo-arch-theme', next); } catch {}
+  };
+  const dark = theme === 'dark';
+  const T = {
+    panelBg:        dark ? "#0f172a" : "#f8fafc",
+    panelBorder:    dark ? "#1e293b" : "#e2e8f0",
+    headerBorder:   dark ? "rgba(255,255,255,0.06)" : "rgba(15,23,42,0.08)",
+    headerLabel:    dark ? "rgba(255,255,255,0.3)"  : "rgba(15,23,42,0.42)",
+    legendText:     dark ? "rgba(255,255,255,0.38)" : "rgba(15,23,42,0.52)",
+    ctrlBg:         dark ? "rgba(255,255,255,0.06)" : "rgba(15,23,42,0.05)",
+    ctrlBorder:     dark ? "rgba(255,255,255,0.15)" : "rgba(15,23,42,0.15)",
+    ctrlText:       dark ? "rgba(255,255,255,0.55)" : "rgba(15,23,42,0.6)",
+    ctrlTextDim:    dark ? "rgba(255,255,255,0.35)" : "rgba(15,23,42,0.42)",
+    routeBtnBg:     dark ? "rgba(255,255,255,0.05)" : "rgba(15,23,42,0.04)",
+    routeBtnText:   dark ? "rgba(255,255,255,0.45)" : "rgba(15,23,42,0.5)",
+    editBtnBg:      dark ? "rgba(255,255,255,0.1)"  : "rgba(15,23,42,0.06)",
+    editBtnText:    dark ? "rgba(255,255,255,0.6)"  : "rgba(15,23,42,0.62)",
+    editBarLabel:   dark ? "#fca5a5" : "#b91c1c",
+    editBarAmber:   dark ? "#fbbf24" : "#b45309",
+    editBarHint:    dark ? "rgba(255,255,255,0.5)" : "rgba(15,23,42,0.55)",
+    svgBg:          dark ? "#0f172a" : "#f8fafc",
+    dotFill:        dark ? "rgba(255,255,255,0.035)" : "rgba(15,23,42,0.065)",
+    connDefault:    dark ? "rgba(148,163,184,0.42)" : "rgba(71,85,105,0.45)",
+    connDashedDefault: dark ? "rgba(148,163,184,0.28)" : "rgba(71,85,105,0.28)",
+    arrDefault:     dark ? "rgba(148,163,184,0.5)"  : "rgba(71,85,105,0.55)",
+    arrDashed:      dark ? "rgba(148,163,184,0.3)"  : "rgba(71,85,105,0.32)",
+    onpremLabel:    dark ? "#93c5fd" : "#1d4ed8",
+    awsLabel:       dark ? "#fbbf24" : "#b45309",
+    azureLabel:     dark ? "#93c5fd" : "#1d4ed8",
+    middlewareLabel:dark ? "#fca5a5" : "#b91c1c",
+    qaText:         dark ? "rgba(148,163,184,0.4)"  : "rgba(71,85,105,0.5)",
+    viasText:       dark ? "rgba(148,163,184,0.55)" : "rgba(71,85,105,0.6)",
+    viasBg:         dark ? "rgba(255,255,255,0.025)": "rgba(15,23,42,0.03)",
+    viasBorder:     dark ? "rgba(148,163,184,0.2)"  : "rgba(71,85,105,0.25)",
+    clientesText:   dark ? "rgba(148,163,184,0.32)" : "rgba(71,85,105,0.45)",
+    clientesBg:     dark ? "rgba(148,163,184,0.03)" : "rgba(71,85,105,0.04)",
+    clientesBorder: dark ? "rgba(148,163,184,0.14)" : "rgba(71,85,105,0.2)",
+    nodeCardBg:     dark ? "rgba(15,23,42,0.85)"    : "rgba(255,255,255,0.92)",
+    nodeCardBorder: dark ? "rgba(255,255,255,0.1)"  : "rgba(15,23,42,0.12)",
+    nodeText:       dark ? "rgba(226,232,240,0.85)": "rgba(15,23,42,0.8)",
+    nodeShadow:     dark ? "rgba(0,0,0,0.35)"       : "rgba(15,23,42,0.12)",
+    nodeShadowOp:   dark ? 0.55 : 0.16,
+    zoneLabelBg:    dark ? "rgba(15,23,42,0.85)"    : "rgba(255,255,255,0.92)",
+    zoneCornerStroke: dark ? "rgba(15,23,42,0.6)"   : "rgba(255,255,255,0.7)",
+  };
+
   return <div>
     {/* Panel de detalle */}
     {sel && <div style={{ background:"#fff", border:`1px solid ${(sel.color==="transparent"?"#888":sel.color)}33`, borderLeft:`4px solid ${sel.color==="transparent"?"#888":sel.color}`, borderRadius:10, padding:"14px 18px", marginBottom:14 }}>
@@ -445,41 +498,48 @@ export function OLOArchView({ searchQuery="" }) {
       </div>
     </div>}
 
-    {/* Diagrama principal — dark professional */}
-    <div style={{ background:"#0f172a", borderRadius:14, overflow:"hidden", border:"1px solid #1e293b", boxShadow:"0 8px 40px rgba(0,0,0,0.3)" }}>
+    {/* Diagrama principal */}
+    <div style={{ background:T.panelBg, borderRadius:14, overflow:"hidden", border:`1px solid ${T.panelBorder}`, boxShadow:"0 8px 40px rgba(0,0,0,0.3)" }}>
       {/* Header interno */}
-      <div style={{ padding:"10px 18px", borderBottom:"1px solid rgba(255,255,255,0.06)", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:10 }}>
-        <span style={{ fontSize:9.5, color:"rgba(255,255,255,0.3)", fontWeight:700, letterSpacing:"0.14em" }}>ARQUITECTURA TO-BE · OLO ECOSYSTEM MAP</span>
+      <div style={{ padding:"10px 18px", borderBottom:`1px solid ${T.headerBorder}`, display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:10 }}>
+        <span style={{ fontSize:9.5, color:T.headerLabel, fontWeight:700, letterSpacing:"0.14em" }}>ARQUITECTURA TO-BE · OLO ECOSYSTEM MAP</span>
         <div style={{ display:"flex", gap:16, alignItems:"center" }}>
           {[["#60a5fa","On-Premise"],["#fbbf24","AWS"],["#93c5fd","Azure"],["#f87171","Middleware"],["#94a3b8","Clientes"]].map(([c,l])=>(
             <div key={l} style={{ display:"flex", alignItems:"center", gap:5 }}>
               <span style={{ width:7, height:7, borderRadius:"50%", background:c, display:"inline-block", boxShadow:`0 0 6px ${c}88` }}/>
-              <span style={{ fontSize:9.5, color:"rgba(255,255,255,0.38)", fontWeight:500 }}>{l}</span>
+              <span style={{ fontSize:9.5, color:T.legendText, fontWeight:500 }}>{l}</span>
             </div>
           ))}
           {/* Zoom controls */}
-          <div style={{ display:"flex", alignItems:"center", gap:3, background:"rgba(255,255,255,0.06)", borderRadius:6, padding:"2px 6px" }}>
-            <button onClick={()=>setZoomPan(Math.min(6,zoomRef.current*1.25),panRef.current)} style={{ background:"none",border:"none",color:"rgba(255,255,255,0.55)",cursor:"pointer",fontSize:14,lineHeight:1,padding:"1px 3px" }}>+</button>
-            <span style={{ fontSize:9.5, color:"rgba(255,255,255,0.35)", minWidth:32, textAlign:"center" }}>{Math.round(zoom*100)}%</span>
-            <button onClick={()=>setZoomPan(Math.max(0.15,zoomRef.current/1.25),panRef.current)} style={{ background:"none",border:"none",color:"rgba(255,255,255,0.55)",cursor:"pointer",fontSize:14,lineHeight:1,padding:"1px 3px" }}>−</button>
-            <button onClick={resetView} style={{ background:"none",border:"none",color:"rgba(255,255,255,0.35)",cursor:"pointer",fontSize:10,lineHeight:1,padding:"1px 4px" }} title="Reset vista">⌂</button>
+          <div style={{ display:"flex", alignItems:"center", gap:3, background:T.ctrlBg, borderRadius:6, padding:"2px 6px" }}>
+            <button onClick={()=>setZoomPan(Math.min(6,zoomRef.current*1.25),panRef.current)} style={{ background:"none",border:"none",color:T.ctrlText,cursor:"pointer",fontSize:14,lineHeight:1,padding:"1px 3px" }}>+</button>
+            <span style={{ fontSize:9.5, color:T.ctrlTextDim, minWidth:32, textAlign:"center" }}>{Math.round(zoom*100)}%</span>
+            <button onClick={()=>setZoomPan(Math.max(0.15,zoomRef.current/1.25),panRef.current)} style={{ background:"none",border:"none",color:T.ctrlText,cursor:"pointer",fontSize:14,lineHeight:1,padding:"1px 3px" }}>−</button>
+            <button onClick={resetView} style={{ background:"none",border:"none",color:T.ctrlTextDim,cursor:"pointer",fontSize:10,lineHeight:1,padding:"1px 4px" }} title="Reset vista">⌂</button>
           </div>
           {/* Export */}
           <div style={{ display:"flex", gap:4 }}>
-            <button onClick={()=>exportDiagram('svg')} style={{ fontSize:9.5, fontWeight:600, padding:"3px 9px", borderRadius:5, border:"1px solid rgba(255,255,255,0.15)", background:"rgba(255,255,255,0.06)", color:"rgba(255,255,255,0.5)", cursor:"pointer" }}>↓ SVG</button>
-            <button onClick={()=>exportDiagram('png')} style={{ fontSize:9.5, fontWeight:600, padding:"3px 9px", borderRadius:5, border:"1px solid rgba(255,255,255,0.15)", background:"rgba(255,255,255,0.06)", color:"rgba(255,255,255,0.5)", cursor:"pointer" }}>↓ PNG</button>
+            <button onClick={()=>exportDiagram('svg')} style={{ fontSize:9.5, fontWeight:600, padding:"3px 9px", borderRadius:5, border:`1px solid ${T.ctrlBorder}`, background:T.ctrlBg, color:T.ctrlText, cursor:"pointer" }}>↓ SVG</button>
+            <button onClick={()=>exportDiagram('png')} style={{ fontSize:9.5, fontWeight:600, padding:"3px 9px", borderRadius:5, border:`1px solid ${T.ctrlBorder}`, background:T.ctrlBg, color:T.ctrlText, cursor:"pointer" }}>↓ PNG</button>
           </div>
           <button
             onClick={()=>setRouteMode(m=>m==='bezier'?'ortho':'bezier')}
-            style={{ fontSize:10, fontWeight:600, padding:"4px 10px", borderRadius:6, border:"1px solid rgba(255,255,255,0.15)", cursor:"pointer",
-              background:routeMode==='ortho'?"rgba(251,191,36,0.2)":"rgba(255,255,255,0.05)",
-              color:routeMode==='ortho'?"#fbbf24":"rgba(255,255,255,0.45)", letterSpacing:"0.05em" }}>
+            style={{ fontSize:10, fontWeight:600, padding:"4px 10px", borderRadius:6, border:`1px solid ${T.ctrlBorder}`, cursor:"pointer",
+              background:routeMode==='ortho'?"rgba(251,191,36,0.2)":T.routeBtnBg,
+              color:routeMode==='ortho'?"#fbbf24":T.routeBtnText, letterSpacing:"0.05em" }}>
             {routeMode==='ortho'?"⌐ 90°":"∿ Curvas"}
+          </button>
+          <button
+            onClick={toggleTheme}
+            title="Cambiar tema"
+            style={{ fontSize:10, fontWeight:600, padding:"4px 10px", borderRadius:6, border:`1px solid ${T.ctrlBorder}`, cursor:"pointer",
+              background:T.ctrlBg, color:T.ctrlText, letterSpacing:"0.05em" }}>
+            {dark ? "☾ Oscuro" : "☀ Claro"}
           </button>
           <button
             onClick={() => { setEditMode(m=>!m); setConnectFrom(null); setSelectedNode(null); }}
             style={{ fontSize:10, fontWeight:700, padding:"4px 12px", borderRadius:6, border:"none", cursor:"pointer",
-              background:editMode?"#ef4444":"rgba(255,255,255,0.1)", color:editMode?"#fff":"rgba(255,255,255,0.6)",
+              background:editMode?"#ef4444":T.editBtnBg, color:editMode?"#fff":T.editBtnText,
               letterSpacing:"0.06em" }}>
             {editMode ? "✓ LISTO" : "✏ EDITAR"}
           </button>
@@ -488,14 +548,14 @@ export function OLOArchView({ searchQuery="" }) {
       {/* Barra de edición */}
       {editMode && (
         <div style={{ padding:"8px 18px", background:"rgba(239,68,68,0.12)", borderBottom:"1px solid rgba(239,68,68,0.3)", display:"flex", alignItems:"center", gap:16, flexWrap:"wrap" }}>
-          <span style={{ fontSize:10, color:"#fca5a5", fontWeight:700, letterSpacing:"0.06em" }}>MODO EDICIÓN</span>
+          <span style={{ fontSize:10, color:T.editBarLabel, fontWeight:700, letterSpacing:"0.06em" }}>MODO EDICIÓN</span>
           {connectFrom
-            ? <span style={{ fontSize:10, color:"#fbbf24" }}>Conectando desde <b>{effNodes[connectFrom]?.label||connectFrom}</b> — haz click en el nodo destino · <span style={{cursor:"pointer",textDecoration:"underline"}} onClick={()=>setConnectFrom(null)}>Cancelar (Esc)</span></span>
-            : <span style={{ fontSize:10, color:"rgba(255,255,255,0.5)" }}>Arrastra nodos · Click en dos nodos para conectar · Click en una línea para eliminarla</span>
+            ? <span style={{ fontSize:10, color:T.editBarAmber }}>Conectando desde <b>{effNodes[connectFrom]?.label||connectFrom}</b> — haz click en el nodo destino · <span style={{cursor:"pointer",textDecoration:"underline"}} onClick={()=>setConnectFrom(null)}>Cancelar (Esc)</span></span>
+            : <span style={{ fontSize:10, color:T.editBarHint }}>Arrastra nodos · Click en dos nodos para conectar · Click en una línea para eliminarla</span>
           }
           <div style={{ marginLeft:"auto", display:"flex", gap:8 }}>
             {(Object.keys(nodeOverrides).length>0 || editConns!==null) &&
-              <button onClick={handleReset} style={{ fontSize:10, padding:"3px 10px", borderRadius:5, border:"1px solid rgba(239,68,68,0.5)", background:"transparent", color:"#fca5a5", cursor:"pointer" }}>↺ Restaurar original</button>
+              <button onClick={handleReset} style={{ fontSize:10, padding:"3px 10px", borderRadius:5, border:"1px solid rgba(239,68,68,0.5)", background:"transparent", color:T.editBarLabel, cursor:"pointer" }}>↺ Restaurar original</button>
             }
           </div>
         </div>
@@ -506,7 +566,7 @@ export function OLOArchView({ searchQuery="" }) {
         onClick={()=>{ if(editMode&&connectFrom) setConnectFrom(null); }}>
         <defs>
           <filter id="ndrop" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="2" stdDeviation="5" floodColor="#000" floodOpacity="0.55"/>
+            <feDropShadow dx="0" dy="2" stdDeviation="5" floodColor="#000" floodOpacity={T.nodeShadowOp}/>
           </filter>
           <filter id="selglow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur in="SourceAlpha" stdDeviation="6" result="b"/>
@@ -514,15 +574,15 @@ export function OLOArchView({ searchQuery="" }) {
             <feComposite in="col" in2="b" operator="in" result="glow"/>
             <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
-          <marker id="arrD"  viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 2L8 5L1 8" fill="none" stroke="rgba(148,163,184,0.5)" strokeWidth="1.5" strokeLinecap="round"/></marker>
+          <marker id="arrD"  viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 2L8 5L1 8" fill="none" stroke={T.arrDefault} strokeWidth="1.5" strokeLinecap="round"/></marker>
           <marker id="arrHL" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 2L8 5L1 8" fill="none" stroke="#60a5fa" strokeWidth="2"   strokeLinecap="round"/></marker>
-          <marker id="arrDsh" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 2L8 5L1 8" fill="none" stroke="rgba(148,163,184,0.3)" strokeWidth="1.5" strokeLinecap="round"/></marker>
+          <marker id="arrDsh" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 2L8 5L1 8" fill="none" stroke={T.arrDashed} strokeWidth="1.5" strokeLinecap="round"/></marker>
         </defs>
 
-        {/* Fondo oscuro con grid de puntos */}
-        <rect width="1160" height="620" fill="#0f172a"/>
+        {/* Fondo con grid de puntos */}
+        <rect width="1160" height="620" fill={T.svgBg}/>
         <pattern id="dotgrid" x="0" y="0" width="22" height="22" patternUnits="userSpaceOnUse">
-          <circle cx="11" cy="11" r="0.7" fill="rgba(255,255,255,0.035)"/>
+          <circle cx="11" cy="11" r="0.7" fill={T.dotFill}/>
         </pattern>
         <rect width="1160" height="620" fill="url(#dotgrid)"/>
 
@@ -554,28 +614,28 @@ export function OLOArchView({ searchQuery="" }) {
             <rect x={opz.x} y={opz.y} width={opz.w} height={opz.h} rx="10" fill="rgba(59,130,246,0.08)" stroke="#3b82f6" strokeWidth="0.8" strokeOpacity="0.4"/>
             <rect x={opz.x} y={opz.y} width={opz.w} height={24} rx="10" fill="rgba(59,130,246,0.18)"/>
             <rect x={opz.x} y={opz.y+14} width={opz.w} height={10} fill="rgba(59,130,246,0.18)"/>
-            <text x={opz.x+10} y={opz.y+16} fill="#93c5fd" fontSize="8.5" fontWeight="700" letterSpacing="0.12em">OLO · ON-PREMISE</text>
-            <text x={opz.x+10} y={opz.y+30} fill="rgba(148,163,184,0.4)" fontSize="7" fontFamily="'JetBrains Mono',monospace">qa: 10.17.224.226  ·  prod: 10.48.17.91</text>
+            <text x={opz.x+10} y={opz.y+16} fill={T.onpremLabel} fontSize="8.5" fontWeight="700" letterSpacing="0.12em">OLO · ON-PREMISE</text>
+            <text x={opz.x+10} y={opz.y+30} fill={T.qaText} fontSize="7" fontFamily="'JetBrains Mono',monospace">qa: 10.17.224.226  ·  prod: 10.48.17.91</text>
             {/* AWS OLO */}
             <rect x={awz.x} y={awz.y} width={awz.w} height={awz.h} rx="10" fill="rgba(245,158,11,0.06)" stroke="#f59e0b" strokeWidth="0.8" strokeOpacity="0.4"/>
             <rect x={awz.x} y={awz.y} width={awz.w} height={24} rx="10" fill="rgba(245,158,11,0.14)"/>
             <rect x={awz.x} y={awz.y+14} width={awz.w} height={10} fill="rgba(245,158,11,0.14)"/>
-            <text x={awz.x+12} y={awz.y+16} fill="#fbbf24" fontSize="8.5" fontWeight="700" letterSpacing="0.12em">AWS OLO · SERVICIOS OLO</text>
+            <text x={awz.x+12} y={awz.y+16} fill={T.awsLabel} fontSize="8.5" fontWeight="700" letterSpacing="0.12em">AWS OLO · SERVICIOS OLO</text>
             {/* Vías de Entradas sub-box */}
-            <rect x={viz.x} y={viz.y} width={viz.w} height={viz.h} rx="7" fill="rgba(255,255,255,0.025)" stroke="rgba(148,163,184,0.2)" strokeWidth="0.7"/>
-            <text x={viz.x+viz.w/2} y={viz.y+14} textAnchor="middle" fill="rgba(148,163,184,0.55)" fontSize="7" fontWeight="700" letterSpacing="0.08em">VÍAS DE</text>
-            <text x={viz.x+viz.w/2} y={viz.y+24} textAnchor="middle" fill="rgba(148,163,184,0.55)" fontSize="7" fontWeight="700" letterSpacing="0.08em">ENTRADAS</text>
+            <rect x={viz.x} y={viz.y} width={viz.w} height={viz.h} rx="7" fill={T.viasBg} stroke={T.viasBorder} strokeWidth="0.7"/>
+            <text x={viz.x+viz.w/2} y={viz.y+14} textAnchor="middle" fill={T.viasText} fontSize="7" fontWeight="700" letterSpacing="0.08em">VÍAS DE</text>
+            <text x={viz.x+viz.w/2} y={viz.y+24} textAnchor="middle" fill={T.viasText} fontSize="7" fontWeight="700" letterSpacing="0.08em">ENTRADAS</text>
             {/* Azure */}
             <rect x={azz.x} y={azz.y} width={azz.w} height={azz.h} rx="10" fill="rgba(96,165,250,0.08)" stroke="#60a5fa" strokeWidth="0.8" strokeOpacity="0.4"/>
             <rect x={azz.x} y={azz.y} width={azz.w} height={20} rx="10" fill="rgba(96,165,250,0.16)"/>
             <rect x={azz.x} y={azz.y+10} width={azz.w} height={10} fill="rgba(96,165,250,0.16)"/>
-            <text x={azz.x+azz.w/2} y={azz.y+14} textAnchor="middle" fill="#93c5fd" fontSize="7.5" fontWeight="700" letterSpacing="0.12em">AZURE</text>
+            <text x={azz.x+azz.w/2} y={azz.y+14} textAnchor="middle" fill={T.azureLabel} fontSize="7.5" fontWeight="700" letterSpacing="0.12em">AZURE</text>
             {/* Clientes / ERP */}
-            <rect x={clz.x} y={clz.y} width={clz.w} height={clz.h} rx="10" fill="rgba(148,163,184,0.03)" stroke="rgba(148,163,184,0.14)" strokeWidth="0.7" strokeDasharray="5 4"/>
-            <text x={clz.x+10} y={clz.y+18} fill="rgba(148,163,184,0.32)" fontSize="8" fontWeight="600" letterSpacing="0.1em">CLIENTES / ERP</text>
+            <rect x={clz.x} y={clz.y} width={clz.w} height={clz.h} rx="10" fill={T.clientesBg} stroke={T.clientesBorder} strokeWidth="0.7" strokeDasharray="5 4"/>
+            <text x={clz.x+10} y={clz.y+18} fill={T.clientesText} fontSize="8" fontWeight="600" letterSpacing="0.1em">CLIENTES / ERP</text>
             {/* Middleware */}
             <rect x={mwz.x} y={mwz.y} width={mwz.w} height={mwz.h} rx="10" fill="rgba(248,113,113,0.05)" stroke="#f87171" strokeWidth="0.7" strokeOpacity="0.4" strokeDasharray="5 4"/>
-            <text x={mwz.x+14} y={mwz.y+16} fill="#fca5a5" fontSize="8" fontWeight="700" letterSpacing="0.12em">CAPA DE INTEGRACIÓN · MIDDLEWARE</text>
+            <text x={mwz.x+14} y={mwz.y+16} fill={T.middlewareLabel} fontSize="8" fontWeight="700" letterSpacing="0.12em">CAPA DE INTEGRACIÓN · MIDDLEWARE</text>
           </>;
         })()}
 
@@ -586,7 +646,7 @@ export function OLOArchView({ searchQuery="" }) {
           const hl=isConnHl(c), dim=(hoveredNode||selectedNode)&&!hl;
           const isHovConn = editMode && hovConn===i;
           const d=getPath(c);
-          const lineColor = isHovConn?"#ef4444":hl?"#60a5fa":(c.dashed?(c.color??"rgba(148,163,184,0.28)"):"rgba(148,163,184,0.42)");
+          const lineColor = isHovConn?"#ef4444":hl?"#60a5fa":(c.dashed?(c.color??T.connDashedDefault):T.connDefault);
           return <g key={i}>
             <path d={d} fill="none"
               stroke={lineColor}
@@ -641,7 +701,7 @@ export function OLOArchView({ searchQuery="" }) {
               strokeWidth={isConnSrc||hl?2.5:1.2} strokeDasharray="8 4"
               style={{pointerEvents:"none"}}/>
             <rect x={n.x+8} y={n.y+4} width={labelW} height={14} rx="3"
-              fill={isConnSrc?"#fbbf24":hl?"#1D4ED8":"rgba(15,23,42,0.85)"}
+              fill={isConnSrc?"#fbbf24":hl?"#1D4ED8":T.zoneLabelBg}
               stroke={col} strokeWidth="0.8"
               style={{cursor:"move", pointerEvents:"all"}}
               onMouseDown={e=>{
@@ -655,7 +715,7 @@ export function OLOArchView({ searchQuery="" }) {
               style={{pointerEvents:"none", userSelect:"none"}}>{n.label}</text>
             {corners.map(({h,x,y,cur})=>(
               <rect key={h} x={x} y={y} width={HS} height={HS} rx="2"
-                fill={col} stroke="rgba(15,23,42,0.6)" strokeWidth="0.8"
+                fill={col} stroke={T.zoneCornerStroke} strokeWidth="0.8"
                 style={{cursor:cur, pointerEvents:"all"}}
                 onMouseDown={e=>{
                   e.stopPropagation(); e.preventDefault();
@@ -683,15 +743,15 @@ export function OLOArchView({ searchQuery="" }) {
             onMouseLeave={()=>setHoveredNode(null)}
             style={{ cursor:editMode?(connectFrom?"crosshair":"grab"):"pointer", opacity:searchDim?0.08:dim?0.18:1, transition:"opacity 0.16s" }}
             filter={isSel||isConnSrc?"url(#selglow)":(matchSearch&&q)?"url(#selglow)":undefined}>
-            <rect x={n.x} y={n.y+2} width={n.w} height={n.h} rx="7" fill="rgba(0,0,0,0.35)" filter="url(#ndrop)"/>
+            <rect x={n.x} y={n.y+2} width={n.w} height={n.h} rx="7" fill={T.nodeShadow} filter="url(#ndrop)"/>
             <rect x={n.x} y={n.y} width={n.w} height={n.h} rx="7"
-              fill={isSel?n.color+"30":"rgba(15,23,42,0.85)"}
-              stroke={isSel?n.color:isHov||hl?n.color+"cc":"rgba(255,255,255,0.1)"}
+              fill={isSel?n.color+"30":T.nodeCardBg}
+              stroke={isSel?n.color:isHov||hl?n.color+"cc":T.nodeCardBorder}
               strokeWidth={isSel?2:isHov||hl?1.5:0.7}/>
             <rect x={n.x+2} y={n.y+1} width={n.w-4} height={3} rx="5"
               fill={isSel||hl?n.color:n.color+"66"}/>
             <text x={n.x+n.w/2} y={n.y+n.h/2+3.5} textAnchor="middle"
-              fill={isSel?n.color:hl?n.color:"rgba(226,232,240,0.85)"}
+              fill={isSel?n.color:hl?n.color:T.nodeText}
               fontSize={n.w>90?"8.5":"8"} fontWeight={isSel||hl?"700":"600"}
               fontFamily="'Segoe UI',sans-serif">{n.label}</text>
           </g>;

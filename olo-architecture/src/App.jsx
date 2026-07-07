@@ -172,15 +172,15 @@ export default function SoftlandArchitectureMap() {
           <p style={{ fontSize:13, color:"#666", margin:0, lineHeight:1.5 }}>{activeTab?.sub}</p>
         </div>
 
-        {/* KPI Strip */}
-        <div style={{ display:"flex", gap:8, marginBottom:22, flexWrap:"wrap" }}>
+        {/* KPI Strip — no aplica a Procesos, que ya muestra sus propios KPIs reales */}
+        {tab!=="olo-arch" && <div style={{ display:"flex", gap:8, marginBottom:22, flexWrap:"wrap" }}>
           <KPICard label="Módulos Softland" value={SOFTLAND_MODULES.length} color="#c0392b" sub="con manual oficial"/>
           <KPICard label="Procesos BPA" value={totalProcs} color="#f39c12" sub="4 áreas · CICR dic-2024"/>
           <KPICard label="Operación eflow" value={OPS_MODULES.length} color="#1abc9c" sub="WMS-D · RF · WMH"/>
           <KPICard label="Integraciones" value={INTEGRATIONS.length} color="#2980b9" sub="mapeadas explícitamente"/>
           <KPICard label="Localizaciones" value={LOCALIZATIONS.length} color="#27ae60" sub="CR · VE"/>
           <KPICard label="Brechas" value={GAPS.length} color="#7f8c8d" sub="vacíos reconocidos"/>
-        </div>
+        </div>}
 
         {/* Contenido — BPA · OLO (id "bpa") ahora muestra el modelo de procesos;
             Infraestructura (id "infra", nuevo submódulo de BPA) muestra el

@@ -44,6 +44,7 @@ export function ProcesosOperativosView() {
   const [categorias, setCategorias] = useState(null);
   const [collapsed, setCollapsed] = useState(() => new Set());
   const [err, setErr] = useState(null);
+  const initedCollapse = useRef(false);
 
   const toggle = (id) => setCollapsed(prev => {
     const next = new Set(prev);
@@ -65,6 +66,12 @@ export function ProcesosOperativosView() {
       tree: buildTree((nodes || []).filter(n => n.categoria_id === cat.id), filesByNode, null),
     }));
     setCategorias(withTree);
+    // Primera carga: todos los procesos inician colapsados. Recargas
+    // posteriores (agregar/editar) no deben reabrir lo que el usuario cerró.
+    if (!initedCollapse.current) {
+      initedCollapse.current = true;
+      setCollapsed(new Set(withTree.map(c => c.id)));
+    }
   }, []);
 
   useEffect(() => { load(); }, [load]);

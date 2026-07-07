@@ -6,10 +6,13 @@ import { supabase } from "../lib/supabaseClient.js";
 import { TABS } from "../data/constants.js";
 
 const SUBTABS = [
-  { id:"aprobaciones", label:"⏳ Aprobaciones", desc:"Cuentas nuevas sin rol — asígnales uno para activarlas" },
-  { id:"usuarios",     label:"👥 Usuarios",     desc:"Cuentas activas y deshabilitadas · buscar · reasignar rol" },
-  { id:"roles",        label:"🔑 Roles",        desc:"Roles del sistema y roles personalizados" },
-  { id:"permisos",     label:"🛡 Permisos",    desc:"Qué secciones puede ver cada rol" },
+  { id:"aprobaciones",     label:"⏳ Aprobaciones",  desc:"Cuentas nuevas sin rol — asígnales uno para activarlas" },
+  { id:"usuarios",         label:"👥 Usuarios",      desc:"Cuentas activas y deshabilitadas · buscar · reasignar rol" },
+  { id:"roles",            label:"🔑 Roles",         desc:"Roles del sistema y roles personalizados" },
+  { id:"permisos",         label:"🛡 Permisos",     desc:"Qué secciones puede ver cada rol" },
+  { id:"chatbot",          label:"🤖 Chatbot",       desc:"Documentos y permisos del asistente BPA-BOT" },
+  { id:"bpabot_manuales",  label:"📄 Manuales",      desc:"Documentos que alimentan al asistente BPA-BOT", parent:"chatbot" },
+  { id:"bpabot_permisos",  label:"◎ Permisos",      desc:"Qué puede hacer cada rol dentro del asistente", parent:"chatbot" },
 ];
 
 const card = { background:"#fff", border:"1px solid #e0e0e0", borderRadius:10 };
@@ -20,6 +23,7 @@ const PAGE_SIZE = 10;
 export function AdminView() {
   const [sub, setSub] = useState("aprobaciones");
   const [pendingCount, setPendingCount] = useState(null);
+  const [expanded, setExpanded] = useState(() => new Set());
 
   const refreshPendingCount = useCallback(async () => {
     const { count } = await supabase.from("profiles").select("id", { count:"exact", head:true }).eq("status", "pending");
@@ -28,17 +32,43 @@ export function AdminView() {
 
   useEffect(() => { refreshPendingCount(); }, [refreshPendingCount]);
 
+  const tops = SUBTABS.filter(s => !s.parent);
+  const childrenOf = (id) => SUBTABS.filter(s => s.parent === id);
+  const toggleExpand = (id) => setExpanded(prev => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
+
   return <div style={{ display:"flex", gap:20, alignItems:"flex-start" }}>
     <nav style={{ width:200, minWidth:200, ...card, overflow:"hidden", flexShrink:0, position:"sticky", top:20 }}>
       <div style={{ padding:"10px 14px", borderBottom:"1px solid #f0f0f0", background:"#fafafa", fontSize:10, fontWeight:700, color:"#888", letterSpacing:"0.08em", textTransform:"uppercase" }}>Administración</div>
-      {SUBTABS.map(s => {
+      {tops.map(s => {
+        const kids = childrenOf(s.id);
+        const hasKids = kids.length > 0;
+        const childActive = kids.some(k => k.id === sub);
+        const isExpanded = expanded.has(s.id) || childActive;
         const isA = sub === s.id;
         const badge = s.id==="aprobaciones" ? pendingCount : null;
-        return <button key={s.id} onClick={()=>setSub(s.id)} style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"10px 14px", border:"none", borderLeft:isA?"3px solid #00838f":"3px solid transparent", borderBottom:"1px solid #f5f5f5", background:isA?"#e0f7fa":"transparent", cursor:"pointer", fontFamily:"inherit", textAlign:"left", transition:"all 0.15s" }}>
-          <span style={{ fontSize:13 }}>{s.label.split(" ")[0]}</span>
-          <span style={{ fontSize:12, fontWeight:isA?700:500, color:isA?"#00838f":"#444", flex:1 }}>{s.label.split(" ").slice(1).join(" ")}</span>
-          {!!badge && <span style={{ fontSize:10, fontWeight:700, color:"#fff", background:"#f39c12", borderRadius:9, minWidth:18, height:18, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 5px" }}>{badge}</span>}
-        </button>;
+        return <div key={s.id}>
+          <div style={{ display:"flex", alignItems:"stretch" }}>
+            <button onClick={()=>hasKids ? toggleExpand(s.id) : setSub(s.id)} style={{ display:"flex", alignItems:"center", gap:8, flex:1, padding:"10px 14px", border:"none", borderLeft:isA?"3px solid #00838f":"3px solid transparent", borderBottom:"1px solid #f5f5f5", background:isA?"#e0f7fa":"transparent", cursor:"pointer", fontFamily:"inherit", textAlign:"left", transition:"all 0.15s" }}>
+              <span style={{ fontSize:13 }}>{s.label.split(" ")[0]}</span>
+              <span style={{ fontSize:12, fontWeight:isA?700:500, color:isA?"#00838f":"#444", flex:1 }}>{s.label.split(" ").slice(1).join(" ")}</span>
+              {!!badge && <span style={{ fontSize:10, fontWeight:700, color:"#fff", background:"#f39c12", borderRadius:9, minWidth:18, height:18, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 5px" }}>{badge}</span>}
+            </button>
+            {hasKids && <button onClick={()=>toggleExpand(s.id)} title={isExpanded?"Contraer":"Expandir"} style={{ background:"transparent", border:"none", borderBottom:"1px solid #f5f5f5", color:"#94a3b8", cursor:"pointer", fontSize:11, padding:"0 12px" }}>
+              <span style={{ display:"inline-block", transform:isExpanded?"rotate(90deg)":"rotate(0deg)", transition:"transform 0.15s" }}>›</span>
+            </button>}
+          </div>
+          {hasKids && isExpanded && kids.map(k => {
+            const isCA = sub === k.id;
+            return <button key={k.id} onClick={()=>setSub(k.id)} style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"8px 14px 8px 30px", border:"none", borderLeft:isCA?"3px solid #00838f":"3px solid transparent", borderBottom:"1px solid #f5f5f5", background:isCA?"#e0f7fa":"transparent", cursor:"pointer", fontFamily:"inherit", textAlign:"left", transition:"all 0.15s" }}>
+              <span style={{ fontSize:12 }}>{k.label.split(" ")[0]}</span>
+              <span style={{ fontSize:11.5, fontWeight:isCA?700:500, color:isCA?"#00838f":"#666", flex:1 }}>{k.label.split(" ").slice(1).join(" ")}</span>
+            </button>;
+          })}
+        </div>;
       })}
     </nav>
     <div style={{ flex:1, minWidth:0 }}>
@@ -47,6 +77,8 @@ export function AdminView() {
       {sub==="usuarios"     && <UsuariosPanel/>}
       {sub==="roles"        && <RolesPanel/>}
       {sub==="permisos"     && <PermisosPanel/>}
+      {sub==="bpabot_manuales" && <BpaBotManualesPanel/>}
+      {sub==="bpabot_permisos" && <BpaBotPermisosPanel/>}
     </div>
   </div>;
 }
@@ -393,6 +425,197 @@ function PermisosPanel() {
       </table>
     </div>
     <p style={{ fontSize:11, color:"#999", marginTop:10 }}>El rol <b>Admin</b> siempre ve todas las secciones, incluida Administración — no se gestiona aquí para evitar bloqueos accidentales.</p>
+  </div>;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Manuales BPA-BOT — sube documentos al bucket privado BPA_BOT_Manuales y
+// los indexa en el Vector Store de OpenAI vía la Edge Function bpabot-ingest.
+// ─────────────────────────────────────────────────────────────────────────
+const BPABOT_BUCKET = "BPA_BOT_Manuales";
+const STATUS_META_BOT = {
+  pendiente: { label:"Procesando…", bg:"#fff8e1", color:"#8a6d00" },
+  listo:     { label:"Listo",       bg:"#e8f5e9", color:"#1e8449" },
+  error:     { label:"Error",       bg:"#fbe9e7", color:"#c0392b" },
+};
+
+function formatSize(bytes) {
+  if (!bytes) return "";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024*1024) return `${(bytes/1024).toFixed(1)} KB`;
+  return `${(bytes/1024/1024).toFixed(1)} MB`;
+}
+
+function BpaBotManualesPanel() {
+  const [rows, setRows] = useState(null);
+  const [titulo, setTitulo] = useState("");
+  const [file, setFile] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState(null);
+
+  const load = useCallback(async () => {
+    const { data, error } = await supabase.from("bpabot_manuales").select("*").order("created_at", { ascending:false });
+    if (error) { setErr(error.message); return; }
+    setRows(data);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    if (!file) return;
+    setBusy(true); setErr(null);
+    const { data: userData } = await supabase.auth.getUser();
+    const path = `${Date.now()}_${file.name}`;
+
+    const { error: upErr } = await supabase.storage.from(BPABOT_BUCKET).upload(path, file);
+    if (upErr) { setBusy(false); setErr(upErr.message); return; }
+
+    const { data: inserted, error: insErr } = await supabase.from("bpabot_manuales").insert({
+      titulo: titulo.trim() || file.name,
+      file_name: file.name,
+      bucket: BPABOT_BUCKET,
+      path,
+      mime_type: file.type,
+      size_bytes: file.size,
+      uploaded_by: userData?.user?.id,
+    }).select().single();
+    if (insErr) { setBusy(false); setErr(insErr.message); return; }
+
+    setTitulo(""); setFile(null);
+    load();
+
+    const { error: fnErr } = await supabase.functions.invoke("bpabot-ingest", { body: { action:"ingest", manualId: inserted.id } });
+    setBusy(false);
+    if (fnErr) setErr("El archivo se subió, pero la indexación falló: " + fnErr.message);
+    load();
+  };
+
+  const handleDelete = async (id) => {
+    setErr(null);
+    const { error } = await supabase.functions.invoke("bpabot-ingest", { body: { action:"delete", manualId: id } });
+    if (error) { setErr(error.message); return; }
+    load();
+  };
+
+  if (err && !rows) return <ErrorBox msg={err}/>;
+  if (!rows) return <LoadingBox/>;
+
+  return <div>
+    <form onSubmit={handleUpload} style={{ ...card, padding:"14px 16px", display:"flex", gap:10, flexWrap:"wrap", alignItems:"flex-end", marginBottom:16 }}>
+      <div style={{ display:"flex", flexDirection:"column", gap:4, flex:"1 1 220px" }}>
+        <label style={{ fontSize:10, fontWeight:700, color:"#888", textTransform:"uppercase" }}>Título (opcional)</label>
+        <input value={titulo} onChange={e=>setTitulo(e.target.value)} placeholder="ej. Manual de Recepción eFlow"
+          style={{ fontSize:12, border:"1px solid #ddd", borderRadius:6, padding:"7px 10px", fontFamily:"inherit" }}/>
+      </div>
+      <div style={{ display:"flex", flexDirection:"column", gap:4, flex:"1 1 220px" }}>
+        <label style={{ fontSize:10, fontWeight:700, color:"#888", textTransform:"uppercase" }}>Archivo (PDF, DOCX, TXT…)</label>
+        <input type="file" onChange={e=>setFile(e.target.files?.[0] ?? null)}
+          style={{ fontSize:12, fontFamily:"inherit" }}/>
+      </div>
+      <button type="submit" disabled={busy || !file}
+        style={{ padding:"7px 16px", background: busy||!file ? "#e0e0e0" : "#00838f", color:"#fff", border:"none", borderRadius:6, fontSize:12, fontWeight:700, cursor: busy||!file ? "default" : "pointer" }}>
+        {busy ? "Subiendo…" : "+ Cargar manual"}
+      </button>
+    </form>
+
+    {err && <div style={{ marginBottom:12 }}><ErrorBox msg={err}/></div>}
+
+    <div style={{ ...card, overflow:"hidden", overflowX:"auto" }}>
+      <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
+        <thead><tr style={{ background:"#fafafa" }}>
+          <th style={th}>Título</th><th style={th}>Archivo</th><th style={th}>Tamaño</th><th style={th}>Estado</th><th style={th}>Cargado</th><th style={th}></th>
+        </tr></thead>
+        <tbody>
+          {rows.map(r => {
+            const meta = STATUS_META_BOT[r.status] || STATUS_META_BOT.pendiente;
+            return <tr key={r.id} style={{ borderTop:"1px solid #f0f0f0" }}>
+              <td style={{ ...td, fontWeight:700, color:"#1D1D1B" }}>{r.titulo || "—"}</td>
+              <td style={{ ...td, color:"#555" }}>{r.file_name}</td>
+              <td style={{ ...td, color:"#888" }}>{formatSize(r.size_bytes)}</td>
+              <td style={td}><span style={{ fontSize:10, fontWeight:700, padding:"2px 8px", borderRadius:8, background:meta.bg, color:meta.color }}>{meta.label}</span></td>
+              <td style={{ ...td, color:"#888" }}>{new Date(r.created_at).toLocaleDateString("es-CR")}</td>
+              <td style={{ ...td, textAlign:"right" }}>
+                <button onClick={()=>handleDelete(r.id)} style={{ background:"none", border:"none", color:"#c0392b", cursor:"pointer", fontSize:11 }}>Eliminar</button>
+              </td>
+            </tr>;
+          })}
+        </tbody>
+      </table>
+      {rows.length===0 && <div style={{ padding:24, textAlign:"center", color:"#888", fontSize:13 }}>Sin manuales cargados todavía.</div>}
+    </div>
+  </div>;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Permisos BPA-BOT — matriz de capacidades por rol (independiente de la
+// visibilidad del tab, que se gestiona en Permisos). El admin siempre tiene
+// las 3 capacidades (forzado en bpabot_has_capability), por eso no se lista.
+// ─────────────────────────────────────────────────────────────────────────
+const BPABOT_CAPS = [
+  { key:"gestionar_documentos", label:"Gestionar documentos", desc:"Subir / eliminar manuales" },
+  { key:"chat_semantico",       label:"Chat semántico",       desc:"Respuestas con síntesis e interpretación de varios manuales" },
+  { key:"consulta_documental",  label:"Consulta documental",  desc:"Respuestas con citas literales de los manuales" },
+];
+
+function BpaBotPermisosPanel() {
+  const [roles, setRoles] = useState(null);
+  const [caps, setCaps] = useState({}); // { [roleKey]: Set(capability) }
+  const [err, setErr] = useState(null);
+
+  const load = useCallback(async () => {
+    const [{ data: rls, error: e1 }, { data: rc, error: e2 }] = await Promise.all([
+      supabase.from("roles").select("*").eq("is_system", true).order("key"),
+      supabase.from("bpabot_role_capabilities").select("role_key,capability,enabled"),
+    ]);
+    if (e1 || e2) { setErr((e1||e2).message); return; }
+    const map = {};
+    (rc||[]).forEach(c => { if (c.enabled) (map[c.role_key] ||= new Set()).add(c.capability); });
+    setRoles(rls); setCaps(map);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const toggle = async (roleKey, cap, current) => {
+    setCaps(prev => {
+      const copy = { ...prev, [roleKey]: new Set(prev[roleKey] || []) };
+      current ? copy[roleKey].delete(cap) : copy[roleKey].add(cap);
+      return copy;
+    });
+    const { error } = await supabase.from("bpabot_role_capabilities").upsert({ role_key: roleKey, capability: cap, enabled: !current });
+    if (error) setErr(error.message);
+  };
+
+  if (err) return <ErrorBox msg={err}/>;
+  if (!roles) return <LoadingBox/>;
+
+  return <div>
+    <div style={{ ...card, overflow:"hidden", overflowX:"auto" }}>
+      <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
+        <thead><tr style={{ background:"#fafafa" }}>
+          <th style={th}>Rol</th>
+          {BPABOT_CAPS.map(c => <th key={c.key} style={{ ...th, textAlign:"center" }} title={c.desc}>{c.label}</th>)}
+        </tr></thead>
+        <tbody>
+          {roles.filter(r=>r.key!=="admin").map(r => (
+            <tr key={r.key} style={{ borderTop:"1px solid #f0f0f0" }}>
+              <td style={{ ...td, fontWeight:700, color:"#1D1D1B", whiteSpace:"nowrap" }}>{r.label}</td>
+              {BPABOT_CAPS.map(c => {
+                const on = caps[r.key]?.has(c.key) ?? false;
+                return <td key={c.key} style={{ ...td, textAlign:"center" }}>
+                  <button onClick={()=>toggle(r.key, c.key, on)}
+                    title={on?"Habilitado — clic para deshabilitar":"Deshabilitado — clic para habilitar"}
+                    style={{ width:22, height:22, borderRadius:6, border:`1px solid ${on?"#00838f":"#ddd"}`, background:on?"#00838f":"#fff", color:on?"#fff":"#ccc", cursor:"pointer", fontSize:12, lineHeight:1 }}>
+                    {on?"✓":"—"}
+                  </button>
+                </td>;
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p style={{ fontSize:11, color:"#999", marginTop:10 }}>El rol <b>Admin</b> siempre tiene las 3 capacidades — no se gestiona aquí para evitar bloqueos accidentales.</p>
   </div>;
 }
 

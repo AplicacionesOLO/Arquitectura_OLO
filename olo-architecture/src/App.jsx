@@ -1,8 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 import { TABS } from "./data/constants.js";
-import { SOFTLAND_MODULES, OPS_MODULES, LOCALIZATIONS, GAPS, BPA_PROCESSES } from "./data/softland.js";
-import { INTEGRATIONS } from "./data/integrations.js";
-import { KPICard } from "./components/ui.jsx";
 import { OLOArchView } from "./views/OLOArchView.jsx";
 import { EcosystemView } from "./views/EcosystemView.jsx";
 import { BPAView } from "./views/BPAView.jsx";
@@ -12,6 +9,7 @@ import { IntegrationsView } from "./views/IntegrationsView.jsx";
 import { ContextView } from "./views/ContextView.jsx";
 import { AdminView } from "./views/AdminView.jsx";
 import { ProcesosOperativosView } from "./views/ProcesosOperativosView.jsx";
+import { BpaBotWidget } from "./components/BpaBotWidget.jsx";
 import { useAuth } from "./auth/AuthContext.jsx";
 import { LoginScreen } from "./auth/LoginScreen.jsx";
 import { PendingScreen } from "./auth/PendingScreen.jsx";
@@ -65,7 +63,6 @@ export default function SoftlandArchitectureMap() {
 
   const handleTab = id => { setTab(id); setBpaSel(null); setSlSel(null); setOpsSel(null); };
   const activeTab = navTabs.find(t => t.id === tab);
-  const totalProcs = BPA_PROCESSES.estrategicos.length + BPA_PROCESSES.negocio.length + BPA_PROCESSES.apoyo.length + BPA_PROCESSES.control.length;
 
   if (loading || (user && !profileLoaded)) return <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#f8f9fa", color:"#94a3b8", fontFamily:"'Segoe UI','Helvetica Neue',system-ui,sans-serif", fontSize:13 }}>Cargando…</div>;
   if (!user) return <LoginScreen/>;
@@ -172,16 +169,6 @@ export default function SoftlandArchitectureMap() {
           <p style={{ fontSize:13, color:"#666", margin:0, lineHeight:1.5 }}>{activeTab?.sub}</p>
         </div>
 
-        {/* KPI Strip — no aplica a Procesos, que ya muestra sus propios KPIs reales */}
-        {tab!=="olo-arch" && <div style={{ display:"flex", gap:8, marginBottom:22, flexWrap:"wrap" }}>
-          <KPICard label="Módulos Softland" value={SOFTLAND_MODULES.length} color="#c0392b" sub="con manual oficial"/>
-          <KPICard label="Procesos BPA" value={totalProcs} color="#f39c12" sub="4 áreas · CICR dic-2024"/>
-          <KPICard label="Operación eflow" value={OPS_MODULES.length} color="#1abc9c" sub="WMS-D · RF · WMH"/>
-          <KPICard label="Integraciones" value={INTEGRATIONS.length} color="#2980b9" sub="mapeadas explícitamente"/>
-          <KPICard label="Localizaciones" value={LOCALIZATIONS.length} color="#27ae60" sub="CR · VE"/>
-          <KPICard label="Brechas" value={GAPS.length} color="#7f8c8d" sub="vacíos reconocidos"/>
-        </div>}
-
         {/* Contenido — BPA · OLO (id "bpa") ahora muestra el modelo de procesos;
             Infraestructura (id "infra", nuevo submódulo de BPA) muestra el
             diagrama de arquitectura que antes vivía en BPA · OLO; Procesos
@@ -205,5 +192,7 @@ export default function SoftlandArchitectureMap() {
         </footer>
       </div>
     </main>
+
+    <BpaBotWidget/>
   </div>;
 }

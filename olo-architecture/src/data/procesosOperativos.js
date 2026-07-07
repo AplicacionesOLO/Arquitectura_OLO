@@ -1,14 +1,11 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// DATOS · PROCESOS OPERATIVOS — metadata de los 6 procesos fijos.
-// El árbol Subproceso → Sub-subproceso → Detalle (y sus archivos adjuntos)
-// vive en Supabase (procesos_nodes / procesos_archivos) — ver
-// ProcesosOperativosView.jsx y supabase_procesos_module.sql.
+// DATOS · PROCESOS OPERATIVOS — paleta para nuevos procesos (categorías).
+// Las categorías en sí (Inbound, Outbound, ...) y el árbol Subproceso →
+// Sub-subproceso → Detalle (con sus archivos adjuntos) viven en Supabase
+// (procesos_categorias / procesos_nodes / procesos_archivos) — ver
+// ProcesosOperativosView.jsx y supabase_procesos_categorias.sql.
 // ═══════════════════════════════════════════════════════════════════════════
-export const PROCESOS_CATEGORIAS = [
-  { id:"inbound",          num:1, label:"Inbound",          color:"#2980b9" },
-  { id:"outbound",         num:2, label:"Outbound",         color:"#27ae60" },
-  { id:"crossdocking",     num:3, label:"CrossDocking",     color:"#8e44ad" },
-  { id:"no_nacionalizado", num:4, label:"No Nacionalizado", color:"#d35400" },
-  { id:"comercio",         num:5, label:"Comercio",         color:"#00838f" },
-  { id:"administrativo",   num:6, label:"Administrativo",   color:"#7f8c8d" },
+export const PROCESO_COLOR_PALETTE = [
+  "#2980b9", "#27ae60", "#8e44ad", "#d35400", "#00838f", "#7f8c8d",
+  "#c0392b", "#16a085", "#f39c12", "#5B21B6",
 ];

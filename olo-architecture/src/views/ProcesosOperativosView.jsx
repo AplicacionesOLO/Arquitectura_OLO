@@ -7,6 +7,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 import { useAuth } from "../auth/AuthContext.jsx";
+import { KPICard } from "../components/ui.jsx";
 import { PROCESO_COLOR_PALETTE } from "../data/procesosOperativos.js";
 
 const LEVEL_LABELS = ["Subproceso", "Sub-subproceso", "Detalle"];
@@ -20,6 +21,11 @@ function buildTree(nodes, filesByNode, parentId) {
 }
 function countAll(nodes) {
   return nodes.reduce((s, n) => s + 1 + countAll(n.children || []), 0);
+}
+// Cuenta nodos en un nivel exacto del árbol (0 = raíz del array recibido).
+function countAtDepth(nodes, target) {
+  if (target === 0) return nodes.length;
+  return nodes.reduce((s, n) => s + countAtDepth(n.children || [], target - 1), 0);
 }
 function formatSize(bytes) {
   if (!bytes) return "";
@@ -74,7 +80,21 @@ export function ProcesosOperativosView() {
   if (err) return <div style={{ padding:"12px 16px", background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:8, color:"#b91c1c", fontSize:12 }}>{err}</div>;
   if (!categorias) return <div style={{ padding:24, textAlign:"center", color:"#888", fontSize:13 }}>Cargando…</div>;
 
+  // Silo = proceso/categoría (Inbound, Outbound…) · Macroproceso = nivel Subproceso ·
+  // Proceso = nivel Sub-subproceso · Subproceso = nivel Detalle. Conteos en vivo, no fijos.
+  const silos = categorias.length;
+  const macroprocesos = categorias.reduce((s, c) => s + countAtDepth(c.tree, 0), 0);
+  const procesos = categorias.reduce((s, c) => s + countAtDepth(c.tree, 1), 0);
+  const subprocesos = categorias.reduce((s, c) => s + countAtDepth(c.tree, 2), 0);
+
   return <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+    <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+      <KPICard label="Silos" value={silos} color="#2980b9" sub="procesos de primer nivel"/>
+      <KPICard label="Macroprocesos" value={macroprocesos} color="#27ae60" sub="nivel Subproceso"/>
+      <KPICard label="Procesos" value={procesos} color="#8e44ad" sub="nivel Sub-subproceso"/>
+      <KPICard label="Subprocesos" value={subprocesos} color="#d35400" sub="nivel Detalle"/>
+    </div>
+
     {categorias.map(cat => (
       <CategoriaCard key={cat.id} cat={cat} canEdit={canEdit} collapsed={collapsed} onToggle={toggle} onReload={load} setErr={setErr}/>
     ))}

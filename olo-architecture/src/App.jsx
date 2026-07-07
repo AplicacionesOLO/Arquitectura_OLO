@@ -181,12 +181,20 @@ export default function SoftlandArchitectureMap() {
           <KPICard label="Brechas" value={GAPS.length} color="#7f8c8d" sub="vacíos reconocidos"/>
         </div>
 
-        {/* Contenido — tab "bpa" ahora es Inicio (diagrama OLOArch); tab "olo-arch"
-            ahora es Procesos (BPAView). Los ids se dejan igual a propósito para
-            no invalidar los permisos por rol ya configurados (keyed por id). */}
-        {tab==="bpa"          && <OLOArchView     searchQuery={globalSearch}/>}
+        {/* Contenido — BPA · OLO (id "bpa") ahora muestra el modelo de procesos;
+            Infraestructura (id "infra", nuevo submódulo de BPA) muestra el
+            diagrama de arquitectura que antes vivía en BPA · OLO; Procesos
+            (id "olo-arch") queda sin contenido asignado por ahora. Los ids
+            existentes se dejan igual a propósito para no invalidar los
+            permisos por rol ya configurados (keyed por id). */}
+        {tab==="bpa"          && <BPAView selected={bpaSel} setSelected={setBpaSel}/>}
+        {tab==="infra"        && <OLOArchView     searchQuery={globalSearch}/>}
+        {tab==="olo-arch"     && <div style={{ padding:"48px 24px", textAlign:"center", background:"#fff", border:"1px dashed #e0e0e0", borderRadius:12, color:"#999" }}>
+          <div style={{ fontSize:28, marginBottom:10 }}>📋</div>
+          <div style={{ fontSize:14, fontWeight:700, color:"#666", marginBottom:4 }}>Procesos</div>
+          <div style={{ fontSize:12 }}>Contenido pendiente de definir.</div>
+        </div>}
         {tab==="ecosystem"    && <EcosystemView   searchQuery={globalSearch}/>}
-        {tab==="olo-arch"     && <BPAView selected={bpaSel} setSelected={setBpaSel}/>}
         {tab==="softland"     && <SoftlandView selected={slSel} setSelected={setSlSel}/>}
         {tab==="ops"          && <OpsView selected={opsSel} setSelected={setOpsSel}/>}
         {tab==="integrations" && <IntegrationsView searchQuery={globalSearch}/>}

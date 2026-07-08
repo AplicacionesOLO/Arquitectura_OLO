@@ -18,6 +18,7 @@ export function BpaBotWidget() {
   const [sending, setSending] = useState(false);
   const [mode, setMode] = useState(null);
   const [err, setErr] = useState(null);
+  const [confirmClear, setConfirmClear] = useState(false);
   const bottomRef = useRef(null);
 
   const load = useCallback(async () => {
@@ -25,6 +26,18 @@ export function BpaBotWidget() {
     if (error) { setErr(error.message); return; }
     setMessages(data || []);
   }, []);
+
+  const clearConversation = async () => {
+    const { data: userData } = await supabase.auth.getUser();
+    if (userData?.user) {
+      const { error } = await supabase.from("bpabot_mensajes").delete().eq("user_id", userData.user.id);
+      if (error) { setErr(error.message); return; }
+    }
+    setMessages([]);
+    setMode(null);
+    setErr(null);
+    setConfirmClear(false);
+  };
 
   useEffect(() => { if (open && messages === null) load(); }, [open, messages, load]);
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:"smooth" }); }, [messages, sending]);
@@ -75,6 +88,18 @@ export function BpaBotWidget() {
       <div style={{ padding:"10px 14px", borderBottom:"1px solid #f0f0f0", display:"flex", alignItems:"center", gap:8, background:"#fafafa", flexWrap:"wrap" }}>
         <span style={{ fontSize:13, fontWeight:700, color:"#1D1D1B" }}>◎ BPA-BOT</span>
         {mode && <span style={{ fontSize:9.5, fontWeight:700, padding:"2px 8px", borderRadius:8, background:MODE_META[mode].color+"18", color:MODE_META[mode].color }}>{MODE_META[mode].label}</span>}
+        <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:6 }}>
+          {confirmClear ? <>
+            <span style={{ fontSize:10.5, color:"#888" }}>¿Borrar todo?</span>
+            <button onClick={clearConversation} style={{ fontSize:10.5, fontWeight:700, color:"#c0392b", background:"none", border:"none", cursor:"pointer", padding:0 }}>Sí</button>
+            <button onClick={()=>setConfirmClear(false)} style={{ fontSize:10.5, color:"#888", background:"none", border:"none", cursor:"pointer", padding:0 }}>No</button>
+          </> : (messages?.length > 0 && !sending) && (
+            <button onClick={()=>setConfirmClear(true)} title="Nueva conversación"
+              style={{ fontSize:10.5, fontWeight:600, color:"#666", background:"none", border:"1px solid #ddd", borderRadius:6, padding:"3px 8px", cursor:"pointer", fontFamily:"inherit" }}>
+              + Nueva
+            </button>
+          )}
+        </div>
       </div>
 
       <div style={{ flex:1, overflow:"auto", padding:14, display:"flex", flexDirection:"column", gap:9 }}>

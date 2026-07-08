@@ -60,8 +60,14 @@ function IntegTable({ rows }) {
   </table>;
 }
 
-// Categorías que forman el grupo Venezuela
-const VE_CATS = ["efwbeval","efwfebeca","efwsillaca","efwwmh","softland_beval","softland_febeca","softland_sillaca","softland_trexa","softland_prisma","eintegra_ve","ve_cross"];
+// Categorías que forman el grupo Venezuela, organizadas por capa:
+// WMS Venezuela = todo eFlow (incluye WMH, torre de control) · ERP Venezuela =
+// todo Softland · middleware (eIntegra) y relaciones semánticas (cross-schema)
+// quedan sueltos directamente bajo Venezuela, no dentro de WMS ni ERP.
+const WMS_VE_CATS = ["efwbeval","efwfebeca","efwsillaca","efwwmh"];
+const ERP_VE_CATS = ["softland_beval","softland_febeca","softland_sillaca","softland_trexa","softland_prisma"];
+const VE_DIRECT_CATS = ["eintegra_ve","ve_cross"];
+const VE_CATS = [...WMS_VE_CATS, ...ERP_VE_CATS, ...VE_DIRECT_CATS];
 
 export function IntegrationsView({ searchQuery="" }) {
   const [cat, setCat] = useState("global");
@@ -71,6 +77,8 @@ export function IntegrationsView({ searchQuery="" }) {
   const [fWhat, setFWhat] = useState(searchQuery||"");
   const [viewMode, setViewMode] = useState("table");
   const [veExpanded, setVeExpanded] = useState(false);
+  const [wmsVeExpanded, setWmsVeExpanded] = useState(false);
+  const [erpVeExpanded, setErpVeExpanded] = useState(false);
   // Sync external search into filter
   useEffect(()=>{ if(searchQuery) setFWhat(searchQuery); }, [searchQuery]);
 
@@ -129,31 +137,72 @@ export function IntegrationsView({ searchQuery="" }) {
               <span style={{ fontSize:13 }}>🇻🇪</span>
               <div style={{ flex:1, minWidth:0 }}>
                 <div style={{ fontSize:11, fontWeight:VE_CATS.includes(cat)?700:500, color:VE_CATS.includes(cat)?"#dc2626":"#444", lineHeight:1.35 }}>Venezuela</div>
-                {!veExpanded && <div style={{ fontSize:9, color:"#aaa" }}>eFlow · Softland · eIntegra</div>}
+                {!veExpanded && <div style={{ fontSize:9, color:"#aaa" }}>WMS · ERP · Middleware</div>}
               </div>
               <span style={{ fontSize:11, color:"#aaa", marginRight:2 }}>{veExpanded?"▼":"▶"}</span>
             </button>
-            {/* Sub-items Venezuela */}
-            {veExpanded && VE_CATS.map(vk => {
-              const vm = CAT_META[vk]; if(!vm) return null;
-              const isVA = cat===vk;
-              const vc = vk==="ve_cross" ? 0 : (SCHEMA_TABLE_COUNTS[vk]?.() ?? 0);
-              return <button key={vk} onClick={()=>handleCat(vk)}
-                style={{ display:"flex", alignItems:"center", gap:7, width:"100%", padding:"8px 14px 8px 28px",
-                  border:"none", borderLeft:isVA?`3px solid ${vm.color}`:"3px solid transparent",
-                  borderBottom:"1px solid #f5f5f5", background:isVA?vm.bg:"transparent",
-                  cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
-                <span style={{ fontSize:12, lineHeight:1 }}>{vm.icon}</span>
-                <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontSize:10.5, fontWeight:isVA?700:400, color:isVA?vm.color:"#666", lineHeight:1.35 }}>
-                    {vm.label.split("·")[1]?.trim() || vm.label.split("—")[1]?.trim() || vk}
+            {/* Sub-items Venezuela: WMS Venezuela (eFlow) · ERP Venezuela (Softland) ·
+                middleware y relaciones semánticas sueltos, sin agrupar */}
+            {veExpanded && <>
+              {[
+                { id:"wms", label:"WMS Venezuela", icon:"◒", color:"#0891b2", cats:WMS_VE_CATS, expanded:wmsVeExpanded, toggle:setWmsVeExpanded },
+                { id:"erp", label:"ERP Venezuela", icon:"⬡", color:"#b45309", cats:ERP_VE_CATS, expanded:erpVeExpanded, toggle:setErpVeExpanded },
+              ].map(grp => {
+                const groupActive = grp.cats.includes(cat);
+                const groupCount = grp.cats.reduce((s,k)=>s+(SCHEMA_TABLE_COUNTS[k]?.()??0), 0);
+                return <div key={grp.id}>
+                  <button onClick={()=>{ grp.toggle(e=>!e); if(!grp.expanded) handleCat(grp.cats[0]); }}
+                    style={{ display:"flex", alignItems:"center", gap:7, width:"100%", padding:"8px 14px 8px 24px",
+                      border:"none", borderLeft:groupActive?`3px solid ${grp.color}`:"3px solid transparent",
+                      borderBottom:"1px solid #f5f5f5", background:groupActive?grp.color+"0a":"transparent",
+                      cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
+                    <span style={{ fontSize:12, lineHeight:1, color:groupActive?grp.color:"#999" }}>{grp.icon}</span>
+                    <span style={{ fontSize:10.5, fontWeight:groupActive?700:500, color:groupActive?grp.color:"#555", flex:1 }}>{grp.label}</span>
+                    <span style={{ fontSize:9.5, fontWeight:700, color:groupActive?grp.color:"#bbb", background:groupActive?grp.color+"15":"#f5f5f5", padding:"1px 5px", borderRadius:8, flexShrink:0 }}>{groupCount}</span>
+                    <span style={{ fontSize:10, color:"#bbb" }}>{grp.expanded?"▼":"▶"}</span>
+                  </button>
+                  {grp.expanded && grp.cats.map(vk => {
+                    const vm = CAT_META[vk]; if(!vm) return null;
+                    const isVA = cat===vk;
+                    const vc = SCHEMA_TABLE_COUNTS[vk]?.() ?? 0;
+                    return <button key={vk} onClick={()=>handleCat(vk)}
+                      style={{ display:"flex", alignItems:"center", gap:7, width:"100%", padding:"7px 14px 7px 42px",
+                        border:"none", borderLeft:isVA?`3px solid ${vm.color}`:"3px solid transparent",
+                        borderBottom:"1px solid #f5f5f5", background:isVA?vm.bg:"transparent",
+                        cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
+                      <span style={{ fontSize:11, lineHeight:1 }}>{vm.icon}</span>
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ fontSize:10, fontWeight:isVA?700:400, color:isVA?vm.color:"#666", lineHeight:1.35 }}>
+                          {vm.label.split("·")[1]?.trim() || vm.label.split("—")[1]?.trim() || vk}
+                        </div>
+                      </div>
+                      <span style={{ fontSize:9, fontWeight:700, color:isVA?vm.color:"#bbb", background:isVA?vm.color+"15":"#f5f5f5", padding:"1px 5px", borderRadius:8, flexShrink:0 }}>{vc}</span>
+                    </button>;
+                  })}
+                </div>;
+              })}
+              {/* Middleware y relaciones semánticas — sueltos bajo Venezuela */}
+              {VE_DIRECT_CATS.map(vk => {
+                const vm = CAT_META[vk]; if(!vm) return null;
+                const isVA = cat===vk;
+                const vc = vk==="ve_cross" ? 0 : (SCHEMA_TABLE_COUNTS[vk]?.() ?? 0);
+                return <button key={vk} onClick={()=>handleCat(vk)}
+                  style={{ display:"flex", alignItems:"center", gap:7, width:"100%", padding:"8px 14px 8px 24px",
+                    border:"none", borderLeft:isVA?`3px solid ${vm.color}`:"3px solid transparent",
+                    borderBottom:"1px solid #f5f5f5", background:isVA?vm.bg:"transparent",
+                    cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
+                  <span style={{ fontSize:12, lineHeight:1 }}>{vm.icon}</span>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontSize:10.5, fontWeight:isVA?700:400, color:isVA?vm.color:"#666", lineHeight:1.35 }}>
+                      {vm.label.split("·")[1]?.trim() || vm.label.split("—")[1]?.trim() || vk}
+                    </div>
                   </div>
-                </div>
-                <span style={{ fontSize:9.5, fontWeight:700, color:isVA?vm.color:"#bbb", background:isVA?vm.color+"15":"#f5f5f5", padding:"1px 5px", borderRadius:8, flexShrink:0 }}>
-                  {vk==="ve_cross"?"🔀":vc}
-                </span>
-              </button>;
-            })}
+                  <span style={{ fontSize:9.5, fontWeight:700, color:isVA?vm.color:"#bbb", background:isVA?vm.color+"15":"#f5f5f5", padding:"1px 5px", borderRadius:8, flexShrink:0 }}>
+                    {vk==="ve_cross"?"🔀":vc}
+                  </span>
+                </button>;
+              })}
+            </>}
           </div>
         ];
 

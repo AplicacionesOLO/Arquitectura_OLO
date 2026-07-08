@@ -137,21 +137,23 @@ function CategoriaCard({ cat, canEdit, collapsed, onToggle, onReload, setErr }) 
     onReload();
   };
 
+  const [hover, setHover] = useState(false);
+
   return <div style={{ background:"#fff", border:"1px solid #e0e0e0", borderLeft:`4px solid ${cat.color}`, borderRadius:10, padding:"14px 18px" }}>
-    <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom: isCollapsed?0:12 }}>
-      <button onClick={()=>onToggle(cat.id)} title={isCollapsed?"Expandir":"Contraer"}
-        style={{ background:"none", border:"none", cursor:"pointer", color:"#94a3b8", fontSize:13, padding:0, flexShrink:0 }}>
+    <div onClick={()=>onToggle(cat.id)} onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)} title={isCollapsed?"Expandir":"Contraer"}
+      style={{ display:"flex", alignItems:"center", gap:10, cursor:"pointer", margin: isCollapsed?"-4px -6px":"-4px -6px 12px", padding:"4px 6px", borderRadius:8, background: hover?"#f8fafc":"transparent", transition:"background 0.15s" }}>
+      <span style={{ color:"#94a3b8", fontSize:13, flexShrink:0 }}>
         <Chevron collapsed={isCollapsed}/>
-      </button>
+      </span>
       <span style={{ fontSize:11, fontWeight:700, color:"#fff", background:cat.color, borderRadius:12, padding:"2px 9px", flexShrink:0 }}>{cat.num}</span>
-      <input value={label} disabled={!canEdit} onChange={e=>setLabel(e.target.value)} onBlur={saveLabel}
+      <input value={label} disabled={!canEdit} onChange={e=>setLabel(e.target.value)} onBlur={saveLabel} onClick={e=>e.stopPropagation()}
         placeholder="Nombre del proceso…"
         style={{ fontSize:14, fontWeight:700, color:"#1D1D1B", border:"none", borderBottom: canEdit?"1px solid #eee":"none", background:"transparent", outline:"none", fontFamily:"inherit", minWidth:100, flex:"0 1 260px" }}/>
       <span style={{ fontSize:11, color:"#999" }}>· {total} elemento{total!==1?"s":""}</span>
-      {canEdit && <button onClick={removeCategoria} title="Eliminar proceso" style={{ marginLeft:"auto", background:"none", border:"none", color:"#c0392b", cursor:"pointer", fontSize:14, lineHeight:1, flexShrink:0 }}>×</button>}
+      {canEdit && <button onClick={e=>{e.stopPropagation(); removeCategoria();}} title="Eliminar proceso" style={{ marginLeft:"auto", background:"none", border:"none", color:"#c0392b", cursor:"pointer", fontSize:14, lineHeight:1, flexShrink:0 }}>×</button>}
     </div>
 
-    {!isCollapsed && <>
+    <div style={{ maxHeight: isCollapsed?0:4000, opacity: isCollapsed?0:1, overflow:"hidden", transition:"max-height 0.28s ease, opacity 0.22s ease" }}>
       {cat.tree.length === 0
         ? <div style={{ display:"flex", alignItems:"center", justifyContent:"center", minHeight:52, border:"1px dashed #e0e0e0", borderRadius:8, color:"#aaa", fontSize:12, marginBottom:10 }}>
             Sin subprocesos agregados todavía.
@@ -165,7 +167,7 @@ function CategoriaCard({ cat, canEdit, collapsed, onToggle, onReload, setErr }) 
       {canEdit && <button onClick={addSubproceso} style={{ fontSize:11, fontWeight:600, color:cat.color, background:"#fff", border:`1px solid ${cat.color}55`, borderRadius:6, padding:"5px 12px", cursor:"pointer", fontFamily:"inherit" }}>
         + Agregar subproceso
       </button>}
-    </>}
+    </div>
   </div>;
 }
 
@@ -227,25 +229,29 @@ function NodeRow({ node, depth, color, canEdit, collapsed, onToggle, onReload, s
   };
 
   const fileUrl = (file) => supabase.storage.from(BUCKET).getPublicUrl(file.path).data.publicUrl;
+  const [hover, setHover] = useState(false);
 
   return <div style={{ marginLeft: depth*20 }}>
-    <div style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 10px", background: depth===0?"#fafafa":"transparent", border: depth===0?`1px solid ${color}33`:"none", borderRadius:6 }}>
+    <div onClick={hasChildren ? ()=>onToggle(node.id) : undefined}
+      onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)}
+      title={hasChildren ? (isCollapsed?"Expandir":"Contraer") : undefined}
+      style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 10px", background: hasChildren&&hover?"#f1f5f9":depth===0?"#fafafa":"transparent", border: depth===0?`1px solid ${color}33`:"none", borderRadius:6, cursor: hasChildren?"pointer":"default", transition:"background 0.15s" }}>
       {hasChildren
-        ? <button onClick={()=>onToggle(node.id)} title={isCollapsed?"Expandir":"Contraer"} style={{ background:"none", border:"none", cursor:"pointer", color:"#94a3b8", fontSize:12, padding:0, width:14, flexShrink:0 }}><Chevron collapsed={isCollapsed}/></button>
+        ? <span style={{ color:"#94a3b8", fontSize:12, width:14, flexShrink:0 }}><Chevron collapsed={isCollapsed}/></span>
         : <span style={{ width:14, flexShrink:0 }}/>}
       <span style={{ fontSize:9, fontWeight:700, color:"#aaa", textTransform:"uppercase", letterSpacing:"0.04em", minWidth:82, flexShrink:0 }}>{label}</span>
-      <input value={name} disabled={!canEdit} onChange={e=>setName(e.target.value)} onBlur={saveName}
+      <input value={name} disabled={!canEdit} onChange={e=>setName(e.target.value)} onBlur={saveName} onClick={e=>e.stopPropagation()}
         placeholder={`Nombre del ${label.toLowerCase()}…`}
         style={{ flex:1, border:"none", borderBottom:"1px solid #eee", background:"transparent", fontSize:12, padding:"3px 4px", fontFamily:"inherit", color:"#1D1D1B", outline:"none" }}/>
       {canEdit && isDetalle && <>
         <input type="file" ref={fileInputRef} onChange={handleUpload} style={{ display:"none" }}/>
-        <button onClick={()=>fileInputRef.current?.click()} disabled={busy} title="Adjuntar archivo"
+        <button onClick={e=>{e.stopPropagation(); fileInputRef.current?.click();}} disabled={busy} title="Adjuntar archivo"
           style={{ background:"none", border:"1px solid #ddd", borderRadius:4, color:"#00838f", cursor:"pointer", fontSize:10, fontWeight:600, padding:"3px 8px", flexShrink:0 }}>
           Adjuntar
         </button>
       </>}
-      {canEdit && canHaveChildren && <button onClick={addChild} title={`Agregar ${LEVEL_LABELS[depth+1]}`} style={{ background:"none", border:"1px solid #ddd", borderRadius:4, color:"#00838f", cursor:"pointer", fontSize:12, width:20, height:20, lineHeight:1, flexShrink:0 }}>+</button>}
-      {canEdit && <button onClick={removeNode} title="Eliminar" style={{ background:"none", border:"none", color:"#c0392b", cursor:"pointer", fontSize:14, lineHeight:1, flexShrink:0 }}>×</button>}
+      {canEdit && canHaveChildren && <button onClick={e=>{e.stopPropagation(); addChild();}} title={`Agregar ${LEVEL_LABELS[depth+1]}`} style={{ background:"none", border:"1px solid #ddd", borderRadius:4, color:"#00838f", cursor:"pointer", fontSize:12, width:20, height:20, lineHeight:1, flexShrink:0 }}>+</button>}
+      {canEdit && <button onClick={e=>{e.stopPropagation(); removeNode();}} title="Eliminar" style={{ background:"none", border:"none", color:"#c0392b", cursor:"pointer", fontSize:14, lineHeight:1, flexShrink:0 }}>×</button>}
     </div>
 
     {isDetalle && node.files?.length > 0 && <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginTop:4, marginLeft:106 }}>
@@ -258,7 +264,7 @@ function NodeRow({ node, depth, color, canEdit, collapsed, onToggle, onReload, s
       ))}
     </div>}
 
-    {hasChildren && !isCollapsed && <div style={{ marginTop:4, display:"flex", flexDirection:"column", gap:4 }}>
+    {hasChildren && <div style={{ maxHeight: isCollapsed?0:2000, opacity: isCollapsed?0:1, overflow:"hidden", transition:"max-height 0.25s ease, opacity 0.2s ease", marginTop: isCollapsed?0:4, display:"flex", flexDirection:"column", gap:4 }}>
       {node.children.map(child => (
         <NodeRow key={child.id} node={child} depth={depth+1} color={color} canEdit={canEdit} collapsed={collapsed} onToggle={onToggle} onReload={onReload} setErr={setErr}/>
       ))}

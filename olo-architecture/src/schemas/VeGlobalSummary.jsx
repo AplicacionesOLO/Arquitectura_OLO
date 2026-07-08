@@ -119,8 +119,7 @@ export function VeGlobalSummary({ onNavigate }) {
 
     {viewMode==="diagram" ? <ERDiagram rows={CONCEPT_ROWS} storageKey="ve-global-concept"/> : <>
       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:14 }}>
-        <GroupCard title="WMS Venezuela" color="#0891b2" icon="◒" schemas={wms} onNavigate={onNavigate}
-          note="Las relaciones FK están en 0 porque la extracción de estos schemas (eFlow VE) no capturó metadata de foreign keys — brecha de datos, no un error de esta vista."/>
+        <GroupCard title="WMS Venezuela" color="#0891b2" icon="◒" schemas={wms} onNavigate={onNavigate}/>
         <GroupCard title="ERP Venezuela" color="#b45309" icon="⬡" schemas={erp} onNavigate={onNavigate}/>
       </div>
 

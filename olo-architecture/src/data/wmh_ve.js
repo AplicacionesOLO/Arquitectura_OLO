@@ -197,9 +197,9 @@ export const EFWWMH_TABLE_DEFS = {
   "ext_tms_trasportation_units_mt": { pk:"unit_id", cols:["placa","batch_code","update_by_etl","job_execution_date"] },
   "ext_tms_wms_pedido_factura_mt": { pk:"idexpedicion", cols:["idexpedicion2","num_factura","batch_code","update_by_etl"] },
   "incline_belts": { pk:"belt_id", cols:["status"] },
-  "journey_members": { pk:"journey_id", cols:["related_journey"] },
-  "journey_order_transportation": { pk:"assigment_id", cols:["journey_id","assigment_date","unit_id","driver_id"] },
-  "journey_orders": { pk:"assigment_id", cols:["journey_id","route_id","assigment_date","warehouse_id"] },
+  "journey_members": { pk:"journey_id", cols:["related_journey→journeys"] },
+  "journey_order_transportation": { pk:"assigment_id", cols:["journey_id→journeys","assigment_date","unit_id→trasportation_units","driver_id→drivers"] },
+  "journey_orders": { pk:"assigment_id", cols:["journey_id→journeys","route_id","assigment_date","warehouse_id"] },
   "journeys": { pk:"journey_id", cols:["description","creation_date","created_by","closing_date"] },
   "stat_compania_mt": { pk:"code", cols:["compania","country_code"] },
   "stat_ts_sp_ejecucion_mt": { pk:"nombre_sp", cols:["fecha_ejecucion","fecha_siguiente"] },
@@ -257,7 +257,7 @@ export const EFWWMH_TABLE_DEFS = {
   "trasportation_units": { pk:"unit_id", cols:["transportation_company_id","unit_code","unit_description","license_plate"] },
   "users": { pk:"user_id", cols:["user_code","name","last_name","password"] },
   "warehouse_logo": { pk:"warehouse_code", cols:["logo"] },
-  "warehouse_queries": { pk:"query_id", cols:["warehouse_id","description","query"] },
+  "warehouse_queries": { pk:"query_id", cols:["warehouse_id→warehouses","description","query"] },
   "warehouses": { pk:"warehouse_id", cols:["warehouse_code","warehouse_name","dns_connection","state"] },
 };
 

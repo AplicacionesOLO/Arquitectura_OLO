@@ -34,7 +34,7 @@ export default function SoftlandArchitectureMap() {
   const [opsSel, setOpsSel] = useState(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [globalSearch, setGlobalSearch] = useState("");
-  const [expandedGroups, setExpandedGroups] = useState(()=>new Set(["ecosystem","bpa"]));
+  const [expandedGroups, setExpandedGroups] = useState(()=>new Set());
 
   const navTabs = useMemo(() => {
     const visible = TABS.filter(t => isAdmin || canSeeTab(t.id));

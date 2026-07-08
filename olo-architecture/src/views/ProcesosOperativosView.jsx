@@ -174,6 +174,9 @@ function CategoriaCard({ cat, canEdit, collapsed, onToggle, onReload, setErr }) 
   };
 
   const [hover, setHover] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const labelInputRef = useRef(null);
+  useEffect(() => { if (editing) labelInputRef.current?.focus(); }, [editing]);
 
   return <div style={{ background:"#fff", border:"1px solid #e0e0e0", borderLeft:`4px solid ${cat.color}`, borderRadius:10, padding:"14px 18px" }}>
     <div onClick={()=>onToggle(cat.id)} onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)} title={isCollapsed?"Expandir":"Contraer"}
@@ -182,11 +185,17 @@ function CategoriaCard({ cat, canEdit, collapsed, onToggle, onReload, setErr }) 
         <Chevron collapsed={isCollapsed}/>
       </span>
       <span style={{ fontSize:11, fontWeight:700, color:"#fff", background:cat.color, borderRadius:12, padding:"2px 9px", flexShrink:0 }}>{cat.num}</span>
-      <input value={label} disabled={!canEdit} onChange={e=>setLabel(e.target.value)} onBlur={saveLabel} onClick={e=>e.stopPropagation()}
-        placeholder="Nombre del proceso…"
-        style={{ fontSize:14, fontWeight:700, color:"#1D1D1B", border:"none", borderBottom: canEdit?"1px solid #eee":"none", background:"transparent", outline:"none", fontFamily:"inherit", minWidth:100, flex:"0 1 260px" }}/>
+      {editing
+        ? <input ref={labelInputRef} value={label} onChange={e=>setLabel(e.target.value)} onClick={e=>e.stopPropagation()}
+            onBlur={()=>{ saveLabel(); setEditing(false); }} onKeyDown={e=>{ if(e.key==="Enter") e.currentTarget.blur(); }}
+            placeholder="Nombre del proceso…"
+            style={{ fontSize:14, fontWeight:700, color:"#1D1D1B", border:"none", borderBottom:"1px solid #eee", background:"transparent", outline:"none", fontFamily:"inherit", minWidth:100, flex:"0 1 260px" }}/>
+        : <span style={{ fontSize:14, fontWeight:700, color: label?"#1D1D1B":"#aaa", flex:"0 1 260px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{label || "Nombre del proceso…"}</span>}
       <span style={{ fontSize:11, color:"#999" }}>· {total} elemento{total!==1?"s":""}</span>
-      {canEdit && <button onClick={e=>{e.stopPropagation(); removeCategoria();}} title="Eliminar proceso" style={{ marginLeft:"auto", background:"none", border:"none", color:"#c0392b", cursor:"pointer", fontSize:14, lineHeight:1, flexShrink:0 }}>×</button>}
+      {canEdit && <span style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:8 }}>
+        <button onClick={e=>{e.stopPropagation(); setEditing(true);}} title="Editar nombre" style={{ background:"none", border:"none", color:"#94a3b8", cursor:"pointer", fontSize:13, lineHeight:1 }}>✎</button>
+        <button onClick={e=>{e.stopPropagation(); removeCategoria();}} title="Eliminar proceso" style={{ background:"none", border:"none", color:"#c0392b", cursor:"pointer", fontSize:14, lineHeight:1 }}>×</button>
+      </span>}
     </div>
 
     <div style={{ maxHeight: isCollapsed?0:4000, opacity: isCollapsed?0:1, overflow:"hidden", transition:"max-height 0.28s ease, opacity 0.22s ease" }}>
@@ -210,7 +219,9 @@ function CategoriaCard({ cat, canEdit, collapsed, onToggle, onReload, setErr }) 
 function NodeRow({ node, depth, color, canEdit, collapsed, onToggle, onReload, setErr }) {
   const [name, setName] = useState(node.name);
   const [busy, setBusy] = useState(false);
+  const [editing, setEditing] = useState(false);
   const fileInputRef = useRef(null);
+  const nameInputRef = useRef(null);
   const label = LEVEL_LABELS[depth] ?? LEVEL_LABELS[LEVEL_LABELS.length - 1];
   const canHaveChildren = depth < LEVEL_LABELS.length - 1;
   const isDetalle = depth === LEVEL_LABELS.length - 1;
@@ -218,6 +229,7 @@ function NodeRow({ node, depth, color, canEdit, collapsed, onToggle, onReload, s
   const isCollapsed = collapsed.has(node.id);
 
   useEffect(() => { setName(node.name); }, [node.name]);
+  useEffect(() => { if (editing) nameInputRef.current?.focus(); }, [editing]);
 
   const saveName = async () => {
     if (name === node.name) return;
@@ -277,9 +289,12 @@ function NodeRow({ node, depth, color, canEdit, collapsed, onToggle, onReload, s
         ? <span style={{ color:"#94a3b8", fontSize:12, width:14, flexShrink:0 }}><Chevron collapsed={isCollapsed}/></span>
         : <span style={{ width:14, flexShrink:0 }}/>}
       <span style={{ fontSize:9, fontWeight:700, color:"#aaa", textTransform:"uppercase", letterSpacing:"0.04em", minWidth:82, flexShrink:0 }}>{label}</span>
-      <input value={name} disabled={!canEdit} onChange={e=>setName(e.target.value)} onBlur={saveName} onClick={e=>e.stopPropagation()}
-        placeholder={`Nombre del ${label.toLowerCase()}…`}
-        style={{ flex:"0 1 420px", minWidth:80, border:"none", borderBottom:"1px solid #eee", background:"transparent", fontSize:12, padding:"3px 4px", fontFamily:"inherit", color:"#1D1D1B", outline:"none" }}/>
+      {editing
+        ? <input ref={nameInputRef} value={name} onChange={e=>setName(e.target.value)} onClick={e=>e.stopPropagation()}
+            onBlur={()=>{ saveName(); setEditing(false); }} onKeyDown={e=>{ if(e.key==="Enter") e.currentTarget.blur(); }}
+            placeholder={`Nombre del ${label.toLowerCase()}…`}
+            style={{ flex:"0 1 420px", minWidth:80, border:"none", borderBottom:"1px solid #eee", background:"transparent", fontSize:12, padding:"3px 4px", fontFamily:"inherit", color:"#1D1D1B", outline:"none" }}/>
+        : <span style={{ flex:"0 1 420px", minWidth:80, fontSize:12, padding:"3px 4px", color: name?"#1D1D1B":"#aaa", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{name || `Nombre del ${label.toLowerCase()}…`}</span>}
       {hasChildren && <span style={{ flex:1, alignSelf:"stretch" }}/>}
       {canEdit && isDetalle && <>
         <input type="file" ref={fileInputRef} onChange={handleUpload} style={{ display:"none" }}/>
@@ -288,6 +303,7 @@ function NodeRow({ node, depth, color, canEdit, collapsed, onToggle, onReload, s
           Adjuntar
         </button>
       </>}
+      {canEdit && <button onClick={e=>{e.stopPropagation(); setEditing(true);}} title="Editar nombre" style={{ background:"none", border:"none", color:"#94a3b8", cursor:"pointer", fontSize:12, lineHeight:1, flexShrink:0 }}>✎</button>}
       {canEdit && canHaveChildren && <button onClick={e=>{e.stopPropagation(); addChild();}} title={`Agregar ${LEVEL_LABELS[depth+1]}`} style={{ background:"none", border:"1px solid #ddd", borderRadius:4, color:"#00838f", cursor:"pointer", fontSize:12, width:20, height:20, lineHeight:1, flexShrink:0 }}>+</button>}
       {canEdit && <button onClick={e=>{e.stopPropagation(); removeNode();}} title="Eliminar" style={{ background:"none", border:"none", color:"#c0392b", cursor:"pointer", fontSize:14, lineHeight:1, flexShrink:0 }}>×</button>}
     </div>

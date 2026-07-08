@@ -51,10 +51,12 @@ function viewerKind(file) {
 
 function FileViewerModal({ file, url, onClose }) {
   const kind = viewerKind(file);
-  return <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(15,23,42,0.6)", zIndex:200, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
-    <div onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius:12, width:"min(1000px,100%)", height:"min(85vh,900px)", display:"flex", flexDirection:"column", overflow:"hidden", boxShadow:"0 20px 60px rgba(0,0,0,0.35)" }}>
+  const [full, setFull] = useState(false);
+  return <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(15,23,42,0.6)", zIndex:200, display:"flex", alignItems:"center", justifyContent:"center", padding: full?0:24 }}>
+    <div onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius: full?0:12, width: full?"100vw":"min(1000px,100%)", height: full?"100vh":"min(85vh,900px)", display:"flex", flexDirection:"column", overflow:"hidden", boxShadow:"0 20px 60px rgba(0,0,0,0.35)", transition:"width 0.15s, height 0.15s, border-radius 0.15s" }}>
       <div style={{ padding:"10px 16px", borderBottom:"1px solid #eee", display:"flex", alignItems:"center", gap:10, background:"#fafafa" }}>
         <span style={{ fontSize:13, fontWeight:700, color:"#1D1D1B", flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{file.file_name}</span>
+        <button onClick={()=>setFull(f=>!f)} title={full?"Restaurar tamaño":"Pantalla completa"} style={{ background:"none", border:"1px solid #ddd", borderRadius:6, color:"#666", cursor:"pointer", fontSize:13, lineHeight:1, padding:"4px 9px", flexShrink:0 }}>{full?"⤡":"⤢"}</button>
         <a href={url} download={file.file_name} style={{ fontSize:11, fontWeight:600, color:"#00838f", textDecoration:"none", border:"1px solid #00838f55", borderRadius:6, padding:"4px 10px", flexShrink:0 }}>⇩ Descargar</a>
         <button onClick={onClose} style={{ background:"none", border:"none", color:"#888", fontSize:18, cursor:"pointer", lineHeight:1, padding:0, flexShrink:0 }}>✕</button>
       </div>

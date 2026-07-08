@@ -20,6 +20,7 @@ export function BpaBotWidget() {
   const [err, setErr] = useState(null);
   const [confirmClear, setConfirmClear] = useState(false);
   const bottomRef = useRef(null);
+  const textareaRef = useRef(null);
 
   const load = useCallback(async () => {
     const { data, error } = await supabase.from("bpabot_mensajes").select("*").order("created_at").limit(200);
@@ -41,6 +42,9 @@ export function BpaBotWidget() {
 
   useEffect(() => { if (open && messages === null) load(); }, [open, messages, load]);
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:"smooth" }); }, [messages, sending]);
+  // Devuelve el foco al input en cuanto deja de estar deshabilitado, para
+  // que se pueda seguir escribiendo sin volver a hacer click.
+  useEffect(() => { if (!sending && open) textareaRef.current?.focus(); }, [sending, open]);
 
   const send = async () => {
     const text = input.trim();
@@ -125,7 +129,7 @@ export function BpaBotWidget() {
       {err && <div style={{ padding:"7px 14px", background:"#fef2f2", color:"#b91c1c", fontSize:11, borderTop:"1px solid #fca5a5" }}>{err}</div>}
 
       <div style={{ padding:10, borderTop:"1px solid #f0f0f0", display:"flex", gap:7 }}>
-        <textarea value={input} onChange={e=>setInput(e.target.value)} onKeyDown={onKeyDown} rows={1} disabled={sending}
+        <textarea ref={textareaRef} value={input} onChange={e=>setInput(e.target.value)} onKeyDown={onKeyDown} rows={1} disabled={sending}
           placeholder="Escribe tu pregunta…"
           style={{ flex:1, resize:"none", fontSize:12.5, border:"1px solid #ddd", borderRadius:8, padding:"8px 10px", fontFamily:"inherit", outline:"none" }}/>
         <button onClick={send} disabled={sending || !input.trim()}

@@ -116,7 +116,7 @@ export function IntegrationsView({ searchQuery="" }) {
             borderBottom:"1px solid #f5f5f5",
             background:CR_CATS.includes(cat)?"rgba(29,29,27,0.04)":"rgba(0,0,0,0.015)",
             cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
-          <span style={{ fontSize:13 }}>🇨🇷</span>
+          <span style={{ fontSize:13, color:"#1D1D1B" }}>◈</span>
           <div style={{ flex:1, minWidth:0 }}>
             <div style={{ fontSize:11, fontWeight:CR_CATS.includes(cat)?700:500, color:CR_CATS.includes(cat)?"#1D1D1B":"#444", lineHeight:1.35 }}>Costa Rica</div>
             {!crExpanded && <div style={{ fontSize:9, color:"#aaa" }}>ERP · Operación · Satélite · Suite</div>}
@@ -151,7 +151,7 @@ export function IntegrationsView({ searchQuery="" }) {
             borderBottom:"1px solid #f5f5f5",
             background:VE_CATS.includes(cat)?"rgba(220,38,38,0.04)":"rgba(0,0,0,0.015)",
             cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
-          <span style={{ fontSize:13 }}>🇻🇪</span>
+          <span style={{ fontSize:13, color:"#dc2626" }}>◈</span>
           <div style={{ flex:1, minWidth:0 }}>
             <div style={{ fontSize:11, fontWeight:VE_CATS.includes(cat)?700:500, color:VE_CATS.includes(cat)?"#dc2626":"#444", lineHeight:1.35 }}>Venezuela</div>
             {!veExpanded && <div style={{ fontSize:9, color:"#aaa" }}>WMS · ERP · Middleware</div>}

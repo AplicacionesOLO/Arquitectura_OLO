@@ -17,6 +17,17 @@ import { SFLPRISMA_TABLE_DEFS, SFLPRISMA_MOD } from "../data/softland_prisma_ve.
 import { EINTEGRA_VE_TABLE_DEFS, EINTEGRA_VE_MOD, EINTEGRA_VE_INTEGRATIONS } from "../data/eintegra_ve.js";
 import veCross from "../data/ve_cross.json";
 import { deriveRowsFromTableDefs } from "./fkUtils.js";
+import { ERDiagram } from "./ERDiagram.jsx";
+import { useState } from "react";
+
+// Diagrama conceptual entre las 4 piezas de Venezuela (no entre tablas — los
+// schemas no se fusionan porque varias compañías comparten nombres de tabla).
+const CONCEPT_ROWS = [
+  { from:"WMS Venezuela", to:"Middleware ERP↔WMS", what:"Eventos de almacén hacia la cola de integración", status:"confirmed" },
+  { from:"Middleware ERP↔WMS", to:"ERP Venezuela", what:"Sincronización de documentos hacia Softland", status:"confirmed" },
+  { from:"ERP Venezuela", to:"Middleware ERP↔WMS", what:"Maestros y documentos hacia el WMS", status:"confirmed" },
+  { from:"WMS Venezuela", to:"Relaciones Semánticas VE", what:"Comparación de estructura de tablas entre compañías", status:"inferred" },
+];
 
 const WMS_SCHEMAS = [
   { key:"efwbeval",   label:"Beval",   mod:EFWBEVAL_MOD,   td:EFWBEVAL_TABLE_DEFS   },
@@ -62,6 +73,7 @@ function GroupCard({ title, color, icon, schemas, onNavigate, note }) {
 }
 
 export function VeGlobalSummary({ onNavigate }) {
+  const [viewMode, setViewMode] = useState("summary");
   const wms = withCounts(WMS_SCHEMAS);
   const erp = withCounts(ERP_SCHEMAS);
   const middlewareTables = EINTEGRA_VE_MOD.size;
@@ -91,31 +103,43 @@ export function VeGlobalSummary({ onNavigate }) {
       </div>
     </div>
 
+    <div style={{ display:"flex", gap:6, marginBottom:14, alignItems:"center" }}>
+      <span style={{ fontSize:10, fontWeight:700, color:"#aaa", letterSpacing:"0.06em", textTransform:"uppercase", marginRight:4 }}>Vista:</span>
+      {[["summary","⊞ Resumen"],["diagram","⬡ Diagrama ER"]].map(([mode,label])=>{
+        const isA = viewMode===mode;
+        return <button key={mode} onClick={()=>setViewMode(mode)} style={{ fontSize:11, fontWeight:isA?700:400, color:isA?"#00838f":"#666", background:isA?"#e0f7fa":"transparent", border:`1px solid ${isA?"#00838f55":"#ddd"}`, borderRadius:6, padding:"5px 12px", cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }}>{label}</button>;
+      })}
+    </div>
+
     <div style={{ background:"rgba(41,128,185,0.06)", border:"1px solid rgba(41,128,185,0.22)", borderLeft:"3px solid #2980b9", borderRadius:8, padding:"10px 14px", marginBottom:16, fontSize:12, color:"#555", lineHeight:1.6 }}>
-      No se fusionan los 10 schemas en un solo diagrama porque varios comparten nombres de tabla (mismo software, distinta compañía) — fusionarlos sin renombrar por compañía perdería o mezclaría datos. Este resumen agrega los totales y te lleva directo a cada schema.
+      {viewMode==="summary"
+        ? "No se fusionan los 10 schemas en un solo diagrama porque varios comparten nombres de tabla (mismo software, distinta compañía) — fusionarlos sin renombrar por compañía perdería o mezclaría datos. Este resumen agrega los totales y te lleva directo a cada schema."
+        : "Diagrama conceptual entre las 4 piezas de Venezuela (no entre tablas individuales) — muestra cómo el Middleware conecta WMS y ERP, y qué alimenta el análisis semántico."}
     </div>
 
-    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:14 }}>
-      <GroupCard title="WMS Venezuela" color="#0891b2" icon="◒" schemas={wms} onNavigate={onNavigate}
-        note="Las relaciones FK están en 0 porque la extracción de estos schemas (eFlow VE) no capturó metadata de foreign keys — brecha de datos, no un error de esta vista."/>
-      <GroupCard title="ERP Venezuela" color="#b45309" icon="⬡" schemas={erp} onNavigate={onNavigate}/>
-    </div>
+    {viewMode==="diagram" ? <ERDiagram rows={CONCEPT_ROWS} storageKey="ve-global-concept"/> : <>
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:14 }}>
+        <GroupCard title="WMS Venezuela" color="#0891b2" icon="◒" schemas={wms} onNavigate={onNavigate}
+          note="Las relaciones FK están en 0 porque la extracción de estos schemas (eFlow VE) no capturó metadata de foreign keys — brecha de datos, no un error de esta vista."/>
+        <GroupCard title="ERP Venezuela" color="#b45309" icon="⬡" schemas={erp} onNavigate={onNavigate}/>
+      </div>
 
-    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
-      <button onClick={()=>onNavigate("eintegra_ve")} style={{ display:"flex", alignItems:"center", gap:10, background:"#fff", border:"1px solid #e0e0e0", borderLeft:"4px solid #6366f1", borderRadius:10, padding:"14px 18px", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
-        <span style={{ fontSize:15 }}>🔌</span>
-        <div style={{ flex:1 }}>
-          <div style={{ fontSize:13, fontWeight:700, color:"#6366f1" }}>Middleware ERP↔WMS</div>
-          <div style={{ fontSize:11, color:"#888", marginTop:2 }}>{middlewareTables} tablas · {middlewareRel} relaciones FK</div>
-        </div>
-      </button>
-      <button onClick={()=>onNavigate("ve_cross")} style={{ display:"flex", alignItems:"center", gap:10, background:"#fff", border:"1px solid #e0e0e0", borderLeft:"4px solid #7c3aed", borderRadius:10, padding:"14px 18px", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
-        <span style={{ fontSize:15 }}>🔀</span>
-        <div style={{ flex:1 }}>
-          <div style={{ fontSize:13, fontWeight:700, color:"#7c3aed" }}>Relaciones Semánticas VE</div>
-          <div style={{ fontSize:11, color:"#888", marginTop:2 }}>Comparativa Beval / Febeca / Sillaca / WMH</div>
-        </div>
-      </button>
-    </div>
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
+        <button onClick={()=>onNavigate("eintegra_ve")} style={{ display:"flex", alignItems:"center", gap:10, background:"#fff", border:"1px solid #e0e0e0", borderLeft:"4px solid #6366f1", borderRadius:10, padding:"14px 18px", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
+          <span style={{ fontSize:15 }}>◇</span>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:13, fontWeight:700, color:"#6366f1" }}>Middleware ERP↔WMS</div>
+            <div style={{ fontSize:11, color:"#888", marginTop:2 }}>{middlewareTables} tablas · {middlewareRel} relaciones FK</div>
+          </div>
+        </button>
+        <button onClick={()=>onNavigate("ve_cross")} style={{ display:"flex", alignItems:"center", gap:10, background:"#fff", border:"1px solid #e0e0e0", borderLeft:"4px solid #7c3aed", borderRadius:10, padding:"14px 18px", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
+          <span style={{ fontSize:15 }}>⟳</span>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:13, fontWeight:700, color:"#7c3aed" }}>Relaciones Semánticas VE</div>
+            <div style={{ fontSize:11, color:"#888", marginTop:2 }}>Comparativa Beval / Febeca / Sillaca / WMH</div>
+          </div>
+        </button>
+      </div>
+    </>}
   </div>;
 }

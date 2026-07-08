@@ -38,6 +38,40 @@ function Chevron({ collapsed }) {
   return <span style={{ display:"inline-block", transform: collapsed?"rotate(0deg)":"rotate(90deg)", transition:"transform 0.15s" }}>›</span>;
 }
 
+// Determina cómo previsualizar un archivo sin salir de la app.
+function viewerKind(file) {
+  const mime = file.mime_type || "";
+  const ext = (file.file_name || "").split(".").pop()?.toLowerCase() || "";
+  if (mime.startsWith("image/")) return "image";
+  if (mime === "application/pdf" || ext === "pdf") return "pdf";
+  if (mime.startsWith("text/") || ["txt","md","csv","log","json"].includes(ext)) return "text";
+  if (["doc","docx","xls","xlsx","ppt","pptx"].includes(ext)) return "office";
+  return "unsupported";
+}
+
+function FileViewerModal({ file, url, onClose }) {
+  const kind = viewerKind(file);
+  return <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(15,23,42,0.6)", zIndex:200, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
+    <div onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius:12, width:"min(1000px,100%)", height:"min(85vh,900px)", display:"flex", flexDirection:"column", overflow:"hidden", boxShadow:"0 20px 60px rgba(0,0,0,0.35)" }}>
+      <div style={{ padding:"10px 16px", borderBottom:"1px solid #eee", display:"flex", alignItems:"center", gap:10, background:"#fafafa" }}>
+        <span style={{ fontSize:13, fontWeight:700, color:"#1D1D1B", flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{file.file_name}</span>
+        <a href={url} download={file.file_name} style={{ fontSize:11, fontWeight:600, color:"#00838f", textDecoration:"none", border:"1px solid #00838f55", borderRadius:6, padding:"4px 10px", flexShrink:0 }}>⇩ Descargar</a>
+        <button onClick={onClose} style={{ background:"none", border:"none", color:"#888", fontSize:18, cursor:"pointer", lineHeight:1, padding:0, flexShrink:0 }}>✕</button>
+      </div>
+      <div style={{ flex:1, overflow:"auto", background:"#f5f5f5", display:"flex", alignItems:"center", justifyContent:"center" }}>
+        {kind==="image" && <img src={url} alt={file.file_name} style={{ maxWidth:"100%", maxHeight:"100%", objectFit:"contain" }}/>}
+        {kind==="pdf"   && <iframe src={url} title={file.file_name} style={{ width:"100%", height:"100%", border:"none" }}/>}
+        {kind==="text"  && <iframe src={url} title={file.file_name} style={{ width:"100%", height:"100%", border:"none", background:"#fff" }}/>}
+        {kind==="office"&& <iframe src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`} title={file.file_name} style={{ width:"100%", height:"100%", border:"none" }}/>}
+        {kind==="unsupported" && <div style={{ textAlign:"center", color:"#888", fontSize:13, padding:24, lineHeight:1.8 }}>
+          Vista previa no disponible para este tipo de archivo.<br/>
+          <a href={url} download={file.file_name} style={{ color:"#00838f", fontWeight:600 }}>⇩ Descargar {file.file_name}</a>
+        </div>}
+      </div>
+    </div>
+  </div>;
+}
+
 export function ProcesosOperativosView() {
   const { role } = useAuth();
   const canEdit = role === "admin" || role === "editor";
@@ -230,6 +264,7 @@ function NodeRow({ node, depth, color, canEdit, collapsed, onToggle, onReload, s
 
   const fileUrl = (file) => supabase.storage.from(BUCKET).getPublicUrl(file.path).data.publicUrl;
   const [hover, setHover] = useState(false);
+  const [viewingFile, setViewingFile] = useState(null);
 
   return <div style={{ marginLeft: depth*20 }}>
     <div onClick={hasChildren ? ()=>onToggle(node.id) : undefined}
@@ -257,12 +292,13 @@ function NodeRow({ node, depth, color, canEdit, collapsed, onToggle, onReload, s
     {isDetalle && node.files?.length > 0 && <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginTop:4, marginLeft:106 }}>
       {node.files.map(f => (
         <span key={f.id} style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:10, background:"#f0f9fa", border:"1px solid #b2ebf2", borderRadius:4, padding:"3px 6px" }}>
-          <a href={fileUrl(f)} target="_blank" rel="noreferrer" style={{ color:"#00838f", textDecoration:"none", fontWeight:600 }}>{f.file_name}</a>
+          <button onClick={()=>setViewingFile(f)} title="Ver sin salir de la app" style={{ background:"none", border:"none", color:"#00838f", textDecoration:"underline", fontWeight:600, cursor:"pointer", padding:0, fontFamily:"inherit", fontSize:10 }}>{f.file_name}</button>
           <span style={{ color:"#999" }}>{formatSize(f.size_bytes)}</span>
           {canEdit && <button onClick={()=>removeFile(f)} title="Quitar archivo" style={{ background:"none", border:"none", color:"#c0392b", cursor:"pointer", fontSize:12, lineHeight:1, padding:0 }}>×</button>}
         </span>
       ))}
     </div>}
+    {viewingFile && <FileViewerModal file={viewingFile} url={fileUrl(viewingFile)} onClose={()=>setViewingFile(null)}/>}
 
     {hasChildren && <div style={{ maxHeight: isCollapsed?0:2000, opacity: isCollapsed?0:1, overflow:"hidden", transition:"max-height 0.25s ease, opacity 0.2s ease", marginTop: isCollapsed?0:4, display:"flex", flexDirection:"column", gap:4 }}>
       {node.children.map(child => (

@@ -279,7 +279,8 @@ function NodeRow({ node, depth, color, canEdit, collapsed, onToggle, onReload, s
       <span style={{ fontSize:9, fontWeight:700, color:"#aaa", textTransform:"uppercase", letterSpacing:"0.04em", minWidth:82, flexShrink:0 }}>{label}</span>
       <input value={name} disabled={!canEdit} onChange={e=>setName(e.target.value)} onBlur={saveName} onClick={e=>e.stopPropagation()}
         placeholder={`Nombre del ${label.toLowerCase()}…`}
-        style={{ flex:1, border:"none", borderBottom:"1px solid #eee", background:"transparent", fontSize:12, padding:"3px 4px", fontFamily:"inherit", color:"#1D1D1B", outline:"none" }}/>
+        style={{ flex:"0 1 420px", minWidth:80, border:"none", borderBottom:"1px solid #eee", background:"transparent", fontSize:12, padding:"3px 4px", fontFamily:"inherit", color:"#1D1D1B", outline:"none" }}/>
+      {hasChildren && <span style={{ flex:1, alignSelf:"stretch" }}/>}
       {canEdit && isDetalle && <>
         <input type="file" ref={fileInputRef} onChange={handleUpload} style={{ display:"none" }}/>
         <button onClick={e=>{e.stopPropagation(); fileInputRef.current?.click();}} disabled={busy} title="Adjuntar archivo"

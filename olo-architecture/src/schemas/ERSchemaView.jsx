@@ -21,23 +21,7 @@ import { INTEGRATIONS } from "../data/integrations.js";
 import { EREntityCard } from "./EREntityCard.jsx";
 import { ERDiagramRelational } from "./ERDiagramRelational.jsx";
 import { ERDiagram } from "./ERDiagram.jsx";
-
-// Deriva relaciones FK directamente de las columnas "COL→TABLA" en TABLE_DEFS.
-// Sirve como respaldo para schemas extraídos (Softland/eFlow VE, WMH, eIntegra)
-// cuyo array de integraciones dedicado quedó vacío o con placeholders inválidos
-// del codegen — las FK reales sí están en TABLE_DEFS (se ven bien en "Tarjetas").
-function deriveRowsFromTableDefs(TD) {
-  const rows = [];
-  Object.entries(TD || {}).forEach(([tableName, def]) => {
-    (def?.cols || []).forEach(c => {
-      if (typeof c !== "string" || !c.includes("→")) return;
-      const [colName, targetTable] = c.split("→").map(s => s.trim());
-      if (!targetTable || targetTable === tableName) return;
-      rows.push({ from: tableName, to: targetTable, what: `${colName} → ${targetTable}`, status: "confirmed" });
-    });
-  });
-  return rows;
-}
+import { deriveRowsFromTableDefs } from "./fkUtils.js";
 
 export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }) {
   const GR  = schema==="sco"       ? SCO_GROUPS

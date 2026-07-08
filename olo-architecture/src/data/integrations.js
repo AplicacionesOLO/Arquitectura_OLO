@@ -357,6 +357,7 @@ export const CAT_META = {
   softland_prisma:{ label:"SFL·PRISMA — Softland ERP · Prisma (VE)",      icon:"🇻🇪", color:"#4d7c0f", bg:"rgba(77,124,15,0.06)",   border:"rgba(77,124,15,0.22)" },
   eintegra_ve:{ label:"eIntegra·VE — Middleware ERP↔WMS · Venezuela",     icon:"🔌", color:"#6366f1", bg:"rgba(99,102,241,0.06)",  border:"rgba(99,102,241,0.22)" },
   ve_cross:   { label:"Cross-Schema · Relaciones Semánticas VE",          icon:"🔀", color:"#dc2626", bg:"rgba(220,38,38,0.06)",   border:"rgba(220,38,38,0.2)"  },
+  ve_global:  { label:"Global · Todos — Venezuela",                      icon:"◎",  color:"#dc2626", bg:"rgba(220,38,38,0.05)",   border:"rgba(220,38,38,0.2)"  },
 };
 
 export function getModules(cat) {

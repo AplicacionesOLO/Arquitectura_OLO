@@ -42,6 +42,7 @@ import { ModuleChip, StatusBadge } from "../components/ui.jsx";
 import { ERDiagram } from "../schemas/ERDiagram.jsx";
 import { ERSchemaView } from "../schemas/ERSchemaView.jsx";
 import { CrossSchemaView } from "../schemas/CrossSchemaView.jsx";
+import { VeGlobalSummary } from "../schemas/VeGlobalSummary.jsx";
 
 function IntegTable({ rows }) {
   const thS={padding:"10px 14px",color:"#666",fontWeight:700,letterSpacing:"0.05em",fontSize:11,textTransform:"uppercase"};
@@ -67,7 +68,10 @@ function IntegTable({ rows }) {
 const WMS_VE_CATS = ["efwbeval","efwfebeca","efwsillaca","efwwmh"];
 const ERP_VE_CATS = ["softland_beval","softland_febeca","softland_sillaca","softland_trexa","softland_prisma"];
 const VE_DIRECT_CATS = ["eintegra_ve","ve_cross"];
-const VE_CATS = [...WMS_VE_CATS, ...ERP_VE_CATS, ...VE_DIRECT_CATS];
+const VE_CATS = ["ve_global", ...WMS_VE_CATS, ...ERP_VE_CATS, ...VE_DIRECT_CATS];
+// Todo lo que no es Venezuela se agrupa bajo Costa Rica (mismo patrón de
+// grupo colapsable), con su propio "Global · Todos" (el ya existente "global").
+const CR_CATS = Object.keys(CAT_META).filter(k => !VE_CATS.includes(k));
 
 export function IntegrationsView({ searchQuery="" }) {
   const [cat, setCat] = useState("global");
@@ -76,6 +80,7 @@ export function IntegrationsView({ searchQuery="" }) {
   const [fStatus, setFStatus] = useState("*");
   const [fWhat, setFWhat] = useState(searchQuery||"");
   const [viewMode, setViewMode] = useState("table");
+  const [crExpanded, setCrExpanded] = useState(true);
   const [veExpanded, setVeExpanded] = useState(false);
   const [wmsVeExpanded, setWmsVeExpanded] = useState(false);
   const [erpVeExpanded, setErpVeExpanded] = useState(false);
@@ -103,48 +108,73 @@ export function IntegrationsView({ searchQuery="" }) {
     {/* Submenú lateral de categorías */}
     <nav style={{ width:215, minWidth:215, background:"#fff", border:"1px solid #e0e0e0", borderRadius:10, overflow:"hidden", flexShrink:0, position:"sticky", top:20 }}>
       <div style={{ padding:"10px 14px", borderBottom:"1px solid #f0f0f0", background:"#fafafa", fontSize:10, fontWeight:700, color:"#888", letterSpacing:"0.08em", textTransform:"uppercase" }}>Categoría</div>
-      {Object.entries(CAT_META).map(([key,m])=>{
-        // Ocultar items Venezuela individuales — los mostramos dentro del grupo
-        if (VE_CATS.includes(key)) return null;
-
-        const isA = cat===key;
-        const count = key==="global"
-          ? INTEGRATIONS.length
-          : SCHEMA_TABLE_COUNTS[key]
-            ? SCHEMA_TABLE_COUNTS[key]()
-            : INTEGRATIONS.filter(r=>rowCategory(r)===key).length;
-        const btn = <button key={key} onClick={()=>handleCat(key)} style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"10px 14px", border:"none", borderLeft:isA?`3px solid ${m.color}`:"3px solid transparent", borderBottom:"1px solid #f5f5f5", background:isA?m.bg:"transparent", cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
-          <span style={{ fontSize:14, lineHeight:1 }}>{m.icon}</span>
+      {/* ── Grupo Costa Rica (colapsable) — todo lo que no es Venezuela ── */}
+      <div key="cr_group">
+        <button onClick={()=>{ setCrExpanded(e=>!e); if(!crExpanded) handleCat("global"); }}
+          style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"9px 14px", border:"none",
+            borderLeft:CR_CATS.includes(cat)?"3px solid #1D1D1B":"3px solid transparent",
+            borderBottom:"1px solid #f5f5f5",
+            background:CR_CATS.includes(cat)?"rgba(29,29,27,0.04)":"rgba(0,0,0,0.015)",
+            cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
+          <span style={{ fontSize:13 }}>🇨🇷</span>
           <div style={{ flex:1, minWidth:0 }}>
-            <div style={{ fontSize:11, fontWeight:isA?700:500, color:isA?m.color:"#555", lineHeight:1.35 }}>{key==="global"?"Global · todos":m.label.split("·")[0].trim()}</div>
-            {isA && key!=="global" && <div style={{ fontSize:9, color:m.color+"99", marginTop:1, lineHeight:1.3 }}>{m.label.split("·").slice(1).join("·").trim()}</div>}
+            <div style={{ fontSize:11, fontWeight:CR_CATS.includes(cat)?700:500, color:CR_CATS.includes(cat)?"#1D1D1B":"#444", lineHeight:1.35 }}>Costa Rica</div>
+            {!crExpanded && <div style={{ fontSize:9, color:"#aaa" }}>ERP · Operación · Satélite · Suite</div>}
           </div>
-          <span style={{ fontSize:10, fontWeight:700, color:isA?m.color:"#999", background:isA?m.color+"15":"#f0f0f0", padding:"1px 6px", borderRadius:8, flexShrink:0, minWidth:24, textAlign:"center" }}>{count}</span>
-        </button>;
+          <span style={{ fontSize:11, color:"#aaa", marginRight:2 }}>{crExpanded?"▼":"▶"}</span>
+        </button>
+        {crExpanded && CR_CATS.map(key => {
+          const m = CAT_META[key];
+          const isA = cat===key;
+          const count = key==="global"
+            ? INTEGRATIONS.length
+            : SCHEMA_TABLE_COUNTS[key]
+              ? SCHEMA_TABLE_COUNTS[key]()
+              : INTEGRATIONS.filter(r=>rowCategory(r)===key).length;
+          return <button key={key} onClick={()=>handleCat(key)} style={{ display:"flex", alignItems:"center", gap:7, width:"100%", padding:"8px 14px 8px 24px", border:"none", borderLeft:isA?`3px solid ${m.color}`:"3px solid transparent", borderBottom:"1px solid #f5f5f5", background:isA?m.bg:"transparent", cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
+            <span style={{ fontSize:12, lineHeight:1 }}>{m.icon}</span>
+            <div style={{ flex:1, minWidth:0 }}>
+              <div style={{ fontSize:10.5, fontWeight:isA?700:500, color:isA?m.color:"#555", lineHeight:1.35 }}>{key==="global"?"Global · Todos":m.label.split("·")[0].trim()}</div>
+              {isA && key!=="global" && <div style={{ fontSize:9, color:m.color+"99", marginTop:1, lineHeight:1.3 }}>{m.label.split("·").slice(1).join("·").trim()}</div>}
+            </div>
+            <span style={{ fontSize:9.5, fontWeight:700, color:isA?m.color:"#999", background:isA?m.color+"15":"#f0f0f0", padding:"1px 5px", borderRadius:8, flexShrink:0, minWidth:22, textAlign:"center" }}>{count}</span>
+          </button>;
+        })}
+      </div>
 
-        // Insertar el grupo Venezuela justo después de "efw"
-        if (key === "efw") return [
-          btn,
-          // ── Grupo Venezuela (colapsable) ────────────────────────────────
-          <div key="ve_group">
-            {/* Header del grupo */}
-            <button onClick={()=>{ setVeExpanded(e=>!e); if(!veExpanded) handleCat("efwbeval"); }}
-              style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"9px 14px", border:"none",
-                borderLeft:VE_CATS.includes(cat)?"3px solid #dc2626":"3px solid transparent",
-                borderBottom:"1px solid #f5f5f5",
-                background:VE_CATS.includes(cat)?"rgba(220,38,38,0.04)":"rgba(0,0,0,0.015)",
+      {/* ── Grupo Venezuela (colapsable) ── */}
+      <div key="ve_group">
+        {/* Header del grupo */}
+        <button onClick={()=>{ setVeExpanded(e=>!e); if(!veExpanded) handleCat("ve_global"); }}
+          style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"9px 14px", border:"none",
+            borderLeft:VE_CATS.includes(cat)?"3px solid #dc2626":"3px solid transparent",
+            borderBottom:"1px solid #f5f5f5",
+            background:VE_CATS.includes(cat)?"rgba(220,38,38,0.04)":"rgba(0,0,0,0.015)",
+            cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
+          <span style={{ fontSize:13 }}>🇻🇪</span>
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ fontSize:11, fontWeight:VE_CATS.includes(cat)?700:500, color:VE_CATS.includes(cat)?"#dc2626":"#444", lineHeight:1.35 }}>Venezuela</div>
+            {!veExpanded && <div style={{ fontSize:9, color:"#aaa" }}>WMS · ERP · Middleware</div>}
+          </div>
+          <span style={{ fontSize:11, color:"#aaa", marginRight:2 }}>{veExpanded?"▼":"▶"}</span>
+        </button>
+        {/* Sub-items Venezuela: Global · Todos (resumen agregado) · WMS Venezuela
+            (eFlow) · ERP Venezuela (Softland) · middleware y relaciones
+            semánticas sueltos, sin agrupar */}
+        {veExpanded && <>
+          {(() => {
+            const vm = CAT_META.ve_global;
+            const isVA = cat==="ve_global";
+            return <button onClick={()=>handleCat("ve_global")}
+              style={{ display:"flex", alignItems:"center", gap:7, width:"100%", padding:"8px 14px 8px 24px",
+                border:"none", borderLeft:isVA?`3px solid ${vm.color}`:"3px solid transparent",
+                borderBottom:"1px solid #f5f5f5", background:isVA?vm.bg:"transparent",
                 cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
-              <span style={{ fontSize:13 }}>🇻🇪</span>
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontSize:11, fontWeight:VE_CATS.includes(cat)?700:500, color:VE_CATS.includes(cat)?"#dc2626":"#444", lineHeight:1.35 }}>Venezuela</div>
-                {!veExpanded && <div style={{ fontSize:9, color:"#aaa" }}>WMS · ERP · Middleware</div>}
-              </div>
-              <span style={{ fontSize:11, color:"#aaa", marginRight:2 }}>{veExpanded?"▼":"▶"}</span>
-            </button>
-            {/* Sub-items Venezuela: WMS Venezuela (eFlow) · ERP Venezuela (Softland) ·
-                middleware y relaciones semánticas sueltos, sin agrupar */}
-            {veExpanded && <>
-              {[
+              <span style={{ fontSize:13, lineHeight:1 }}>{vm.icon}</span>
+              <span style={{ fontSize:10.5, fontWeight:isVA?700:600, color:isVA?vm.color:"#444", flex:1 }}>Global · Todos</span>
+            </button>;
+          })()}
+          {[
                 { id:"wms", label:"WMS Venezuela", icon:"◒", color:"#0891b2", cats:WMS_VE_CATS, expanded:wmsVeExpanded, toggle:setWmsVeExpanded },
                 { id:"erp", label:"ERP Venezuela", icon:"⬡", color:"#b45309", cats:ERP_VE_CATS, expanded:erpVeExpanded, toggle:setErpVeExpanded },
               ].map(grp => {
@@ -203,18 +233,15 @@ export function IntegrationsView({ searchQuery="" }) {
                 </button>;
               })}
             </>}
-          </div>
-        ];
-
-        return btn;
-      })}
+      </div>
     </nav>
 
     {/* Contenido principal */}
     <div style={{ flex:1, minWidth:0 }}>
 
-    {/* Venezuela cross-schema view */}
-    {cat==="ve_cross" ? <CrossSchemaView/> :
+    {/* Venezuela: resumen agregado / cross-schema */}
+    {cat==="ve_global" ? <VeGlobalSummary onNavigate={handleCat}/> :
+    cat==="ve_cross" ? <CrossSchemaView/> :
 
     /* Schema ER views (sro / sco / efw / wmh_cr / ve schemas) */
     (cat==="sro"||cat==="sco"||cat==="efw"||cat==="wmh_cr"||cat==="efwbeval"||cat==="efwfebeca"||cat==="efwsillaca"||cat==="efwwmh"||cat==="eintegra_ve"||cat==="softland_beval"||cat==="softland_febeca"||cat==="softland_sillaca"||cat==="softland_trexa"||cat==="softland_prisma")

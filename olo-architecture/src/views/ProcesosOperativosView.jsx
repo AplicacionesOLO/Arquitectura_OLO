@@ -60,7 +60,7 @@ function FileViewerModal({ file, url, onClose }) {
       </div>
       <div style={{ flex:1, overflow:"auto", background:"#f5f5f5", display:"flex", alignItems:"center", justifyContent:"center" }}>
         {kind==="image" && <img src={url} alt={file.file_name} style={{ maxWidth:"100%", maxHeight:"100%", objectFit:"contain" }}/>}
-        {kind==="pdf"   && <iframe src={url} title={file.file_name} style={{ width:"100%", height:"100%", border:"none" }}/>}
+        {kind==="pdf"   && <iframe src={`https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`} title={file.file_name} style={{ width:"100%", height:"100%", border:"none" }}/>}
         {kind==="text"  && <iframe src={url} title={file.file_name} style={{ width:"100%", height:"100%", border:"none", background:"#fff" }}/>}
         {kind==="office"&& <iframe src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`} title={file.file_name} style={{ width:"100%", height:"100%", border:"none" }}/>}
         {kind==="unsupported" && <div style={{ textAlign:"center", color:"#888", fontSize:13, padding:24, lineHeight:1.8 }}>

@@ -43,8 +43,8 @@ export const CLUSTER_COLORS = {
 // tab_id) ni el enrutado de contenido en App.jsx (sin cambios).
 export const TABS = [
   { id:"bpa",          label:"◈ BPA · OLO",           sub:"Modelo de procesos · 4 áreas · 30 procesos · cobertura por sistema" },
-  { id:"olo-arch",     label:"◇ Procesos",             sub:"Silos · Macroprocesos · Procesos · Subprocesos", parent:"bpa" },
-  { id:"infra",        label:"▭ Infraestructura",      sub:"Diagrama operativo · eFlow (CR/VE) · Lago de Datos · Suite OLO · Middleware · Sistemas del Estado", parent:"bpa" },
+  { id:"olo-arch",     label:"◇ Procesos",             sub:"Silos · Macroprocesos · Procesos · Subprocesos · Detalle", parent:"bpa" },
+  { id:"infra",        label:"▭ Infraestructura",      sub:"Diagrama operativo · eFlow (CR/VE) · Lago de Datos · Suite OLO · Middleware · Sistemas del Estado", parent:"ecosystem" },
   { id:"ecosystem",    label:"◉ Ecosistema",          sub:"Mapa de capas: externos · ERP · operación · satélites" },
   { id:"softland",     label:"⬡ Módulos ERP",         sub:"Catálogo de módulos Softland · click para detalle y entidades inferidas", parent:"ecosystem" },
   { id:"integrations", label:"⟳ Integraciones",      sub:"Matriz inter-módulo · qué fluye, en qué dirección, con qué estado", parent:"ecosystem" },

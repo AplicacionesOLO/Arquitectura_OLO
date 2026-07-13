@@ -1,8 +1,8 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// VISTA · PROCESOS OPERATIVOS — procesos (categorías) dinámicos, cada uno
-// con un árbol Subproceso → Sub-subproceso → Detalle persistido en Supabase.
-// Categorías, subprocesos y sub-subprocesos son colapsables; los nodos
-// Detalle permiten adjuntar archivos al bucket "Detalles_Porcesos".
+// VISTA · PROCESOS OPERATIVOS — Silos (categorías) dinámicos, cada uno con
+// un árbol Macroproceso → Proceso → Subproceso persistido en Supabase.
+// Todos los niveles son colapsables; los Subprocesos (nivel más profundo)
+// permiten adjuntar archivos de Detalle al bucket "Detalles_Porcesos".
 // ═══════════════════════════════════════════════════════════════════════════
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "../lib/supabaseClient.js";
@@ -10,7 +10,7 @@ import { useAuth } from "../auth/AuthContext.jsx";
 import { KPICard } from "../components/ui.jsx";
 import { PROCESO_COLOR_PALETTE } from "../data/procesosOperativos.js";
 
-const LEVEL_LABELS = ["Subproceso", "Sub-subproceso", "Detalle"];
+const LEVEL_LABELS = ["Macroproceso", "Proceso", "Subproceso"];
 const BUCKET = "Detalles_Porcesos";
 
 function buildTree(nodes, filesByNode, parentId) {
@@ -21,6 +21,9 @@ function buildTree(nodes, filesByNode, parentId) {
 }
 function countAll(nodes) {
   return nodes.reduce((s, n) => s + 1 + countAll(n.children || []), 0);
+}
+function countFiles(nodes) {
+  return nodes.reduce((s, n) => s + (n.files?.length || 0) + countFiles(n.children || []), 0);
 }
 // Cuenta nodos en un nivel exacto del árbol (0 = raíz del array recibido).
 function countAtDepth(nodes, target) {
@@ -123,23 +126,26 @@ export function ProcesosOperativosView() {
   if (err) return <div style={{ padding:"12px 16px", background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:8, color:"#b91c1c", fontSize:12 }}>{err}</div>;
   if (!categorias) return <div style={{ padding:24, textAlign:"center", color:"#888", fontSize:13 }}>Cargando…</div>;
 
-  // Silo = proceso/categoría (Inbound, Outbound…) · Macroproceso = nivel Subproceso ·
-  // Proceso = nivel Sub-subproceso · Subproceso = nivel Detalle. Conteos en vivo, no fijos.
+  // Silo = proceso/categoría (Inbound, Outbound…) · Macroproceso = nivel 0 ·
+  // Proceso = nivel 1 · Subproceso = nivel 2 (nivel más profundo, admite archivos
+  // de Detalle). Conteos en vivo, no fijos.
   const silos = categorias.length;
   const macroprocesos = categorias.reduce((s, c) => s + countAtDepth(c.tree, 0), 0);
   const procesos = categorias.reduce((s, c) => s + countAtDepth(c.tree, 1), 0);
   const subprocesos = categorias.reduce((s, c) => s + countAtDepth(c.tree, 2), 0);
+  const detalles = categorias.reduce((s, c) => s + countFiles(c.tree), 0);
 
   return <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
     <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
       <KPICard label="Silos" value={silos} color="#2980b9" sub="procesos de primer nivel"/>
-      <KPICard label="Macroprocesos" value={macroprocesos} color="#27ae60" sub="nivel Subproceso"/>
-      <KPICard label="Procesos" value={procesos} color="#8e44ad" sub="nivel Sub-subproceso"/>
-      <KPICard label="Subprocesos" value={subprocesos} color="#d35400" sub="nivel Detalle"/>
+      <KPICard label="Macroprocesos" value={macroprocesos} color="#27ae60" sub="agrupan Procesos"/>
+      <KPICard label="Procesos" value={procesos} color="#8e44ad" sub="agrupan Subprocesos"/>
+      <KPICard label="Subprocesos" value={subprocesos} color="#d35400" sub="nivel más profundo"/>
+      <KPICard label="Detalle" value={detalles} color="#00838f" sub="archivos adjuntos"/>
     </div>
 
-    {categorias.map(cat => (
-      <CategoriaCard key={cat.id} cat={cat} canEdit={canEdit} collapsed={collapsed} onToggle={toggle} onReload={load} setErr={setErr}/>
+    {categorias.map((cat, idx) => (
+      <CategoriaCard key={cat.id} cat={cat} displayNum={idx + 1} canEdit={canEdit} collapsed={collapsed} onToggle={toggle} onReload={load} setErr={setErr}/>
     ))}
     {canEdit && <button onClick={addProceso} style={{ alignSelf:"flex-start", fontSize:12, fontWeight:600, color:"#00838f", background:"#fff", border:"1px solid #00838f55", borderRadius:6, padding:"6px 14px", cursor:"pointer", fontFamily:"inherit" }}>
       + Agregar proceso
@@ -147,7 +153,7 @@ export function ProcesosOperativosView() {
   </div>;
 }
 
-function CategoriaCard({ cat, canEdit, collapsed, onToggle, onReload, setErr }) {
+function CategoriaCard({ cat, displayNum, canEdit, collapsed, onToggle, onReload, setErr }) {
   const [label, setLabel] = useState(cat.label);
   useEffect(() => { setLabel(cat.label); }, [cat.label]);
   const isCollapsed = collapsed.has(cat.id);
@@ -161,11 +167,11 @@ function CategoriaCard({ cat, canEdit, collapsed, onToggle, onReload, setErr }) 
 
   const removeCategoria = async () => {
     const { error } = await supabase.from("procesos_categorias").delete().eq("id", cat.id);
-    if (error) { setErr(error.message); return; }
+    if (error) { setErr(error.message); setConfirmDelete(false); return; }
     onReload();
   };
 
-  const addSubproceso = async () => {
+  const addMacroproceso = async () => {
     const { error } = await supabase.from("procesos_nodes").insert({
       categoria_id: cat.id, parent_id: null, level: 0, name: "", sort_order: cat.tree.length,
     });
@@ -175,6 +181,7 @@ function CategoriaCard({ cat, canEdit, collapsed, onToggle, onReload, setErr }) 
 
   const [hover, setHover] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const labelInputRef = useRef(null);
   useEffect(() => { if (editing) labelInputRef.current?.focus(); }, [editing]);
 
@@ -184,7 +191,7 @@ function CategoriaCard({ cat, canEdit, collapsed, onToggle, onReload, setErr }) 
       <span style={{ color:"#94a3b8", fontSize:13, flexShrink:0 }}>
         <Chevron collapsed={isCollapsed}/>
       </span>
-      <span style={{ fontSize:11, fontWeight:700, color:"#fff", background:cat.color, borderRadius:12, padding:"2px 9px", flexShrink:0 }}>{cat.num}</span>
+      <span style={{ fontSize:11, fontWeight:700, color:"#fff", background:cat.color, borderRadius:12, padding:"2px 9px", flexShrink:0 }}>{displayNum}</span>
       {editing
         ? <input ref={labelInputRef} value={label} onChange={e=>setLabel(e.target.value)} onClick={e=>e.stopPropagation()}
             onBlur={()=>{ saveLabel(); setEditing(false); }} onKeyDown={e=>{ if(e.key==="Enter") e.currentTarget.blur(); }}
@@ -192,16 +199,22 @@ function CategoriaCard({ cat, canEdit, collapsed, onToggle, onReload, setErr }) 
             style={{ fontSize:14, fontWeight:700, color:"#1D1D1B", border:"none", borderBottom:"1px solid #eee", background:"transparent", outline:"none", fontFamily:"inherit", minWidth:100, flex:"0 1 260px" }}/>
         : <span style={{ fontSize:14, fontWeight:700, color: label?"#1D1D1B":"#aaa", flex:"0 1 260px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{label || "Nombre del proceso…"}</span>}
       <span style={{ fontSize:11, color:"#999" }}>· {total} elemento{total!==1?"s":""}</span>
-      {canEdit && <span style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:8 }}>
-        <button onClick={e=>{e.stopPropagation(); setEditing(true);}} title="Editar nombre" style={{ background:"none", border:"none", color:"#94a3b8", cursor:"pointer", fontSize:13, lineHeight:1 }}>✎</button>
-        <button onClick={e=>{e.stopPropagation(); removeCategoria();}} title="Eliminar proceso" style={{ background:"none", border:"none", color:"#c0392b", cursor:"pointer", fontSize:14, lineHeight:1 }}>×</button>
+      {canEdit && <span style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:8 }} onClick={e=>e.stopPropagation()}>
+        {confirmDelete ? <>
+          <span style={{ fontSize:11, color:"#c0392b" }}>¿Eliminar "{label || "este proceso"}" y sus {total} elemento{total!==1?"s":""}?</span>
+          <button onClick={removeCategoria} style={{ fontSize:11, fontWeight:700, color:"#c0392b", background:"none", border:"none", cursor:"pointer", padding:0 }}>Sí</button>
+          <button onClick={()=>setConfirmDelete(false)} style={{ fontSize:11, color:"#888", background:"none", border:"none", cursor:"pointer", padding:0 }}>No</button>
+        </> : <>
+          <button onClick={()=>setEditing(true)} title="Editar nombre" style={{ background:"none", border:"none", color:"#94a3b8", cursor:"pointer", fontSize:13, lineHeight:1 }}>✎</button>
+          <button onClick={()=>setConfirmDelete(true)} title="Eliminar proceso" style={{ background:"none", border:"none", color:"#c0392b", cursor:"pointer", fontSize:14, lineHeight:1 }}>×</button>
+        </>}
       </span>}
     </div>
 
     <div style={{ maxHeight: isCollapsed?0:4000, opacity: isCollapsed?0:1, overflow:"hidden", transition:"max-height 0.28s ease, opacity 0.22s ease" }}>
       {cat.tree.length === 0
         ? <div style={{ display:"flex", alignItems:"center", justifyContent:"center", minHeight:52, border:"1px dashed #e0e0e0", borderRadius:8, color:"#aaa", fontSize:12, marginBottom:10 }}>
-            Sin subprocesos agregados todavía.
+            Sin macroprocesos agregados todavía.
           </div>
         : <div style={{ display:"flex", flexDirection:"column", gap:6, marginBottom:10 }}>
             {cat.tree.map(n => (
@@ -209,8 +222,8 @@ function CategoriaCard({ cat, canEdit, collapsed, onToggle, onReload, setErr }) 
             ))}
           </div>}
 
-      {canEdit && <button onClick={addSubproceso} style={{ fontSize:11, fontWeight:600, color:cat.color, background:"#fff", border:`1px solid ${cat.color}55`, borderRadius:6, padding:"5px 12px", cursor:"pointer", fontFamily:"inherit" }}>
-        + Agregar subproceso
+      {canEdit && <button onClick={addMacroproceso} style={{ fontSize:11, fontWeight:600, color:cat.color, background:"#fff", border:`1px solid ${cat.color}55`, borderRadius:6, padding:"5px 12px", cursor:"pointer", fontFamily:"inherit" }}>
+        + Agregar macroproceso
       </button>}
     </div>
   </div>;
@@ -245,9 +258,10 @@ function NodeRow({ node, depth, color, canEdit, collapsed, onToggle, onReload, s
     onReload();
   };
 
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const removeNode = async () => {
     const { error } = await supabase.from("procesos_nodes").delete().eq("id", node.id);
-    if (error) { setErr(error.message); return; }
+    if (error) { setErr(error.message); setConfirmDelete(false); return; }
     onReload();
   };
 
@@ -305,10 +319,15 @@ function NodeRow({ node, depth, color, canEdit, collapsed, onToggle, onReload, s
       </>}
       {canEdit && <button onClick={e=>{e.stopPropagation(); setEditing(true);}} title="Editar nombre" style={{ background:"none", border:"none", color:"#94a3b8", cursor:"pointer", fontSize:12, lineHeight:1, flexShrink:0 }}>✎</button>}
       {canEdit && canHaveChildren && <button onClick={e=>{e.stopPropagation(); addChild();}} title={`Agregar ${LEVEL_LABELS[depth+1]}`} style={{ background:"none", border:"1px solid #ddd", borderRadius:4, color:"#00838f", cursor:"pointer", fontSize:12, width:20, height:20, lineHeight:1, flexShrink:0 }}>+</button>}
-      {canEdit && <button onClick={e=>{e.stopPropagation(); removeNode();}} title="Eliminar" style={{ background:"none", border:"none", color:"#c0392b", cursor:"pointer", fontSize:14, lineHeight:1, flexShrink:0 }}>×</button>}
+      {canEdit && (confirmDelete ? <span onClick={e=>e.stopPropagation()} style={{ display:"flex", alignItems:"center", gap:6, flexShrink:0 }}>
+        <span style={{ fontSize:10, color:"#c0392b", whiteSpace:"nowrap" }}>¿Eliminar?</span>
+        <button onClick={removeNode} style={{ fontSize:10, fontWeight:700, color:"#c0392b", background:"none", border:"none", cursor:"pointer", padding:0 }}>Sí</button>
+        <button onClick={()=>setConfirmDelete(false)} style={{ fontSize:10, color:"#888", background:"none", border:"none", cursor:"pointer", padding:0 }}>No</button>
+      </span> : <button onClick={e=>{e.stopPropagation(); setConfirmDelete(true);}} title="Eliminar" style={{ background:"none", border:"none", color:"#c0392b", cursor:"pointer", fontSize:14, lineHeight:1, flexShrink:0 }}>×</button>)}
     </div>
 
-    {isDetalle && node.files?.length > 0 && <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginTop:4, marginLeft:106 }}>
+    {isDetalle && node.files?.length > 0 && <div style={{ display:"flex", flexWrap:"wrap", alignItems:"center", gap:6, marginTop:4, marginLeft:106 }}>
+      <span style={{ fontSize:9, fontWeight:700, color:"#aaa", textTransform:"uppercase", letterSpacing:"0.04em" }}>Detalle:</span>
       {node.files.map(f => (
         <span key={f.id} style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:10, background:"#f0f9fa", border:"1px solid #b2ebf2", borderRadius:4, padding:"3px 6px" }}>
           <button onClick={()=>setViewingFile(f)} title="Ver sin salir de la app" style={{ background:"none", border:"none", color:"#00838f", textDecoration:"underline", fontWeight:600, cursor:"pointer", padding:0, fontFamily:"inherit", fontSize:10 }}>{f.file_name}</button>

@@ -148,7 +148,7 @@ export default function SoftlandArchitectureMap() {
 
     {/* Main Content */}
     <main style={{ flex:1, padding:"20px 40px 64px 40px", overflow:"auto", minWidth:0 }}>
-      <div style={{ maxWidth:1200, margin:"0 auto" }}>
+      <div>
 
         {/* Header */}
         <div style={{ marginBottom:16 }}>

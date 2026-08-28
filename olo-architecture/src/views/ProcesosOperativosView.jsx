@@ -375,7 +375,7 @@ function SiloSection({ cat, canEdit, collapsed, onToggle, onReload, setErr, forc
         <CountBadge n={procesos} label="procesos"/>
         <CountBadge n={subs} label="subs"/>
       </div>
-      {canEdit && <span style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }} onClick={e=>e.stopPropagation()}>
+      {canEdit && (hover || editing || confirmDelete) && <span style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }} onClick={e=>e.stopPropagation()}>
         {confirmDelete ? <>
           <span style={{ fontSize:11, color:"#b91c1c" }}>¿Eliminar "{label || "este silo"}"?</span>
           <button onClick={removeCategoria} style={{ fontSize:11, fontWeight:700, color:"#b91c1c", background:"none", border:"none", cursor:"pointer", padding:0 }}>Sí</button>
@@ -407,6 +407,7 @@ function SiloSection({ cat, canEdit, collapsed, onToggle, onReload, setErr, forc
 function MacroprocesoRow({ node, canEdit, collapsed, onToggle, onReload, setErr, forceOpen }) {
   const [name, setName] = useState(node.name);
   const [editing, setEditing] = useState(false);
+  const [hover, setHover] = useState(false);
   const nameInputRef = useRef(null);
   const isCollapsed = !forceOpen && collapsed.has(node.id);
   const procesos = countAtDepth(node.children, 0), subs = countAtDepth(node.children, 1);
@@ -434,7 +435,7 @@ function MacroprocesoRow({ node, canEdit, collapsed, onToggle, onReload, setErr,
   };
 
   return <div style={{ borderTop:`1px solid ${DESIGN.border}`, paddingTop:12, marginTop:12 }}>
-    <div onClick={()=>onToggle(node.id)} title={isCollapsed?"Expandir":"Contraer"} style={{ display:"flex", alignItems:"center", gap:10, cursor:"pointer", marginBottom:10 }}>
+    <div onClick={()=>onToggle(node.id)} onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)} title={isCollapsed?"Expandir":"Contraer"} style={{ display:"flex", alignItems:"center", gap:10, cursor:"pointer", marginBottom:10 }}>
       <span style={{ color:DESIGN.mutedSoft, fontSize:12, flexShrink:0 }}><Chevron collapsed={isCollapsed}/></span>
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{ fontSize:10.5, fontWeight:600, color:DESIGN.muted }}>Macroproceso</div>
@@ -449,7 +450,7 @@ function MacroprocesoRow({ node, canEdit, collapsed, onToggle, onReload, setErr,
         <CountBadge n={procesos} label="procesos"/>
         <CountBadge n={subs} label="subs"/>
       </div>
-      {canEdit && <span style={{ display:"flex", alignItems:"center", gap:6, flexShrink:0 }} onClick={e=>e.stopPropagation()}>
+      {canEdit && (hover || editing || confirmDelete) && <span style={{ display:"flex", alignItems:"center", gap:6, flexShrink:0 }} onClick={e=>e.stopPropagation()}>
         {confirmDelete ? <>
           <span style={{ fontSize:10, color:"#b91c1c" }}>¿Eliminar?</span>
           <button onClick={removeNode} style={{ fontSize:10, fontWeight:700, color:"#b91c1c", background:"none", border:"none", cursor:"pointer", padding:0 }}>Sí</button>
@@ -480,6 +481,7 @@ function MacroprocesoRow({ node, canEdit, collapsed, onToggle, onReload, setErr,
 function ProcesoRow({ node, canEdit, collapsed, onToggle, onReload, setErr, forceOpen }) {
   const [name, setName] = useState(node.name);
   const [editing, setEditing] = useState(false);
+  const [hover, setHover] = useState(false);
   const nameInputRef = useRef(null);
   const isCollapsed = !forceOpen && collapsed.has(node.id);
   const subCount = node.children.length;
@@ -511,7 +513,7 @@ function ProcesoRow({ node, canEdit, collapsed, onToggle, onReload, setErr, forc
   // propio — igual que el estándar del Grupo.
   return <div>
     <div style={{ border:`1px solid ${DESIGN.border}`, borderRadius:8, background:"#fff" }}>
-      <div onClick={()=>onToggle(node.id)} title={isCollapsed?"Expandir":"Contraer"}
+      <div onClick={()=>onToggle(node.id)} onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)} title={isCollapsed?"Expandir":"Contraer"}
         style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", padding:"8px 12px" }}>
         <span style={{ color:DESIGN.mutedSoft, fontSize:11, flexShrink:0 }}><Chevron collapsed={isCollapsed}/></span>
         <span style={{ fontSize:11, fontWeight:600, color:DESIGN.muted, flexShrink:0 }}>Proceso</span>
@@ -522,7 +524,7 @@ function ProcesoRow({ node, canEdit, collapsed, onToggle, onReload, setErr, forc
               style={{ flex:1, fontSize:13, fontWeight:700, color:DESIGN.ink, border:"none", borderBottom:`1px solid ${DESIGN.border}`, background:"transparent", outline:"none", fontFamily:"inherit", minWidth:80 }}/>
           : <span style={{ flex:1, fontSize:13, fontWeight:700, color: name?DESIGN.ink:DESIGN.mutedSoft, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{name || "Nombre del proceso…"}</span>}
         <CountPill n={subCount}/>
-        {canEdit && <span style={{ display:"flex", alignItems:"center", gap:6, flexShrink:0 }} onClick={e=>e.stopPropagation()}>
+        {canEdit && (hover || editing || confirmDelete) && <span style={{ display:"flex", alignItems:"center", gap:6, flexShrink:0 }} onClick={e=>e.stopPropagation()}>
           {confirmDelete ? <>
             <span style={{ fontSize:10, color:"#b91c1c", whiteSpace:"nowrap" }}>¿Eliminar?</span>
             <button onClick={removeNode} style={{ fontSize:10, fontWeight:700, color:"#b91c1c", background:"none", border:"none", cursor:"pointer", padding:0 }}>Sí</button>

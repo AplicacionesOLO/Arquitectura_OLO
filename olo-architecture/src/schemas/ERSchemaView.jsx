@@ -16,14 +16,20 @@ import { SFLSILLACA_GROUPS, SFLSILLACA_TABLE_DEFS, SFLSILLACA_COLORS, SFLSILLACA
 import { SFLTREXA_GROUPS, SFLTREXA_TABLE_DEFS, SFLTREXA_COLORS, SFLTREXA_MOD } from "../data/softland_trexa_ve.js";
 import { SFLPRISMA_GROUPS, SFLPRISMA_TABLE_DEFS, SFLPRISMA_COLORS, SFLPRISMA_MOD } from "../data/softland_prisma_ve.js";
 import { WMH_CR_GROUPS, WMH_CR_TABLE_DEFS, WMH_CR_COLORS, WMH_CR_MOD } from "../data/wmh_cr.js";
+import { EFW_CONFIG_GROUPS, EFW_CONFIG_TABLE_DEFS, EFW_CONFIG_COLORS, EFW_CONFIG_MOD, EFW_CONFIG_CAPITULOS } from "../data/efw_config.js";
+import { FileViewerModal } from "../views/ProcesosOperativosView.jsx";
+import { supabase } from "../lib/supabaseClient.js";
+import { FileIcon } from "../components/icons.jsx";
 import { EINTEGRA_VE_GROUPS, EINTEGRA_VE_TABLE_DEFS, EINTEGRA_VE_COLORS, EINTEGRA_VE_MOD } from "../data/eintegra_ve.js";
 import { INTEGRATIONS } from "../data/integrations.js";
 import { EREntityCard } from "./EREntityCard.jsx";
 import { ERDiagramRelational } from "./ERDiagramRelational.jsx";
 import { ERDiagram } from "./ERDiagram.jsx";
 import { deriveRowsFromTableDefs } from "./fkUtils.js";
+import { KeyIcon, LinkIcon } from "../components/icons.jsx";
+import { DESIGN } from "../data/constants.js";
 
-export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }) {
+export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null, focusTable=null }) {
   const GR  = schema==="sco"       ? SCO_GROUPS
             : schema==="efw"       ? EFW_GROUPS
             : schema==="efwbeval"  ? EFWBEVAL_GROUPS
@@ -36,6 +42,7 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
             : schema==="softland_trexa" ? SFLTREXA_GROUPS
             : schema==="softland_prisma" ? SFLPRISMA_GROUPS
             : schema==="wmh_cr"    ? WMH_CR_GROUPS
+            : schema==="efw_config" ? EFW_CONFIG_GROUPS
             : schema==="eintegra_ve" ? EINTEGRA_VE_GROUPS
             : SRO_GROUPS;
   const TD  = schema==="sco"       ? SCO_TABLE_DEFS
@@ -50,6 +57,7 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
             : schema==="softland_trexa" ? SFLTREXA_TABLE_DEFS
             : schema==="softland_prisma" ? SFLPRISMA_TABLE_DEFS
             : schema==="wmh_cr"    ? WMH_CR_TABLE_DEFS
+            : schema==="efw_config" ? EFW_CONFIG_TABLE_DEFS
             : schema==="eintegra_ve" ? EINTEGRA_VE_TABLE_DEFS
             : SRO_TABLE_DEFS;
   const COL = schema==="sco"       ? SCO_COLORS
@@ -64,6 +72,7 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
             : schema==="softland_trexa" ? SFLTREXA_COLORS
             : schema==="softland_prisma" ? SFLPRISMA_COLORS
             : schema==="wmh_cr"    ? WMH_CR_COLORS
+            : schema==="efw_config" ? EFW_CONFIG_COLORS
             : schema==="eintegra_ve" ? EINTEGRA_VE_COLORS
             : SRO_COLORS;
   const MOD = schema==="sco"       ? SCO_MOD
@@ -78,17 +87,24 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
             : schema==="softland_trexa" ? SFLTREXA_MOD
             : schema==="softland_prisma" ? SFLPRISMA_MOD
             : schema==="wmh_cr"    ? WMH_CR_MOD
+            : schema==="efw_config" ? EFW_CONFIG_MOD
             : schema==="eintegra_ve" ? EINTEGRA_VE_MOD
             : SRO_MOD;
   const [activeGroups, setActiveGroups] = useState(()=>new Set(Object.keys(GR)));
   const [selectedTable, setSelectedTable] = useState(null);
   const [viewMode, setViewMode] = useState("cards"); // "cards" | "diagram" | "radial"
+  const [viewingGuia, setViewingGuia] = useState(null); // capítulo abierto en el visor de PDF
 
   // Al cambiar de schema, los keys de GR cambian — resetear selección para no heredar un Set vacío/obsoleto
   useEffect(() => {
     setActiveGroups(new Set(Object.keys(GR)));
     setSelectedTable(null);
   }, [schema]);
+
+  // Foco externo (p. ej. resultado de "Buscar dato" en Relaciones de sistemas).
+  useEffect(() => {
+    if (focusTable) { setSelectedTable(focusTable); setViewMode("cards"); }
+  }, [focusTable, schema]);
 
   const toggleGroup = (key) => setActiveGroups(prev => {
     const next = new Set(prev);
@@ -153,8 +169,8 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
   const diagRows = sroRows.filter(r => visibleTables.has(r.from) && visibleTables.has(r.to));
 
   const btnStyle = (active) => ({
-    fontSize:11, fontWeight:active?700:400, padding:"5px 12px", borderRadius:6, border:`1px solid ${active?"#00838f":"#ddd"}`,
-    background:active?"#e0f7fa":"#fff", color:active?"#00838f":"#666", cursor:"pointer", fontFamily:"inherit",
+    fontSize:11, fontWeight:active?700:400, padding:"5px 12px", borderRadius:6, border:`1px solid ${active?"#0f172a":"#ddd"}`,
+    background:active?"#f1f5f9":"#fff", color:active?"#0f172a":"#666", cursor:"pointer", fontFamily:"inherit",
   });
 
   return (
@@ -163,7 +179,7 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
       <div style={{ width:200, minWidth:200, background:"#fff", border:"1px solid #e0e0e0", borderRadius:10, overflow:"hidden", flexShrink:0, position:"sticky", top:20, marginRight:16 }}>
         <div style={{ padding:"10px 14px", borderBottom:"1px solid #f0f0f0", background:"#fafafa", fontSize:10, fontWeight:700, color:"#888", letterSpacing:"0.08em", textTransform:"uppercase", display:"flex", justifyContent:"space-between" }}>
           <span>Módulos</span>
-          <span style={{ cursor:"pointer", color:"#00838f" }} onClick={()=>setActiveGroups(prev=>prev.size===Object.keys(GR).length?new Set():new Set(Object.keys(GR)))}>
+          <span style={{ cursor:"pointer", color:"#0f172a" }} onClick={()=>setActiveGroups(prev=>prev.size===Object.keys(GR).length?new Set():new Set(Object.keys(GR)))}>
             {activeGroups.size===Object.keys(GR).length?"Ocultar todos":"Mostrar todos"}
           </span>
         </div>
@@ -186,17 +202,26 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
           <div style={{ background:"#fff", border:`1px solid ${COL[selectedTable]}44`, borderLeft:`4px solid ${COL[selectedTable]}`, borderRadius:10, padding:"14px 18px", marginBottom:16 }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
               <div>
-                <span style={{ fontFamily:"'JetBrains Mono',monospace", fontWeight:700, fontSize:15, color:COL[selectedTable] }}>{selectedTable}</span>
+                <span style={{ fontFamily:DESIGN.font, fontWeight:700, fontSize:15, color:COL[selectedTable] }}>{selectedTable}</span>
                 <span style={{ fontSize:11, color:"#888", marginLeft:10 }}>{(TD[selectedTable]?.cols||[]).length} columnas · {fkOutMap[selectedTable]||0} FK out · {fkInMap[selectedTable]||0} FK in</span>
               </div>
-              <button onClick={()=>setSelectedTable(null)} style={{ background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:16 }}>✕</button>
+              <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                {EFW_CONFIG_CAPITULOS[selectedTable] && (
+                  <button onClick={()=>setViewingGuia(EFW_CONFIG_CAPITULOS[selectedTable])}
+                    title="Abrir el capítulo de la Guía de Configuración que documenta esta tabla"
+                    style={{ display:"flex", alignItems:"center", gap:6, background:"#fff", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:6, color:DESIGN.inkSoft, cursor:"pointer", fontSize:11, fontWeight:600, padding:"5px 10px", fontFamily:DESIGN.font }}>
+                    <FileIcon style={{ fontSize:12 }}/> Cap. {EFW_CONFIG_CAPITULOS[selectedTable].capitulo} · {EFW_CONFIG_CAPITULOS[selectedTable].titulo}
+                  </button>
+                )}
+                <button onClick={()=>setSelectedTable(null)} style={{ background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:16 }}>✕</button>
+              </div>
             </div>
             <div style={{ marginTop:10, display:"flex", flexWrap:"wrap", gap:6 }}>
-              <span style={{ fontSize:10, background:"#fff8dc", border:"1px solid #fcd34d", color:"#92400e", padding:"2px 8px", borderRadius:4, fontFamily:"'JetBrains Mono',monospace" }}>🔑 {TD[selectedTable]?.pk||"id"}</span>
+              <span style={{ fontSize:10, background:"#fff8dc", border:"1px solid #fcd34d", color:"#92400e", padding:"2px 8px", borderRadius:4, fontFamily:DESIGN.font, display:"inline-flex", alignItems:"center", gap:4 }}><KeyIcon style={{ fontSize:10 }}/> {TD[selectedTable]?.pk||"id"}</span>
               {(TD[selectedTable]?.cols||[]).map(c=>{
                 const isFK=c.includes('→');
                 const color=COL[selectedTable];
-                return <span key={c} style={{ fontSize:10, background:isFK?color+"10":"#f5f5f5", border:`1px solid ${isFK?color+"44":"#e0e0e0"}`, color:isFK?color:"#555", padding:"2px 8px", borderRadius:4, fontFamily:"'JetBrains Mono',monospace" }}>{isFK?"🔗 ":""}{c}</span>;
+                return <span key={c} style={{ fontSize:10, background:isFK?color+"10":"#f5f5f5", border:`1px solid ${isFK?color+"44":"#e0e0e0"}`, color:isFK?color:"#555", padding:"2px 8px", borderRadius:4, fontFamily:DESIGN.font, display:"inline-flex", alignItems:"center", gap:4 }}>{isFK?<LinkIcon style={{ fontSize:9 }}/>:null}{c}</span>;
               })}
             </div>
             {selRelated.length > 0 && (
@@ -205,9 +230,9 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
                 <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
                   {selRelated.map((r,i)=>(
                     <div key={i} style={{ fontSize:11, display:"flex", alignItems:"center", gap:8 }}>
-                      <span style={{ fontFamily:"'JetBrains Mono',monospace", color:COL[r.from]||"#888", fontWeight:600 }}>{r.from}</span>
+                      <span style={{ fontFamily:DESIGN.font, color:COL[r.from]||"#888", fontWeight:600 }}>{r.from}</span>
                       <span style={{ color:"#bbb" }}>→</span>
-                      <span style={{ fontFamily:"'JetBrains Mono',monospace", color:COL[r.to]||"#888", fontWeight:600 }}>{r.to}</span>
+                      <span style={{ fontFamily:DESIGN.font, color:COL[r.to]||"#888", fontWeight:600 }}>{r.to}</span>
                       <span style={{ color:"#999", fontSize:10, flex:1 }}>{r.what}</span>
                     </div>
                   ))}
@@ -219,7 +244,7 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
 
         {selectedTable && (
           <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:12, padding:"8px 14px", background:"#f8faff", border:"1px solid #dbeafe", borderRadius:8, alignItems:"center" }}>
-            <span style={{ fontSize:11, fontWeight:700, color:COL[selectedTable]||"#555", fontFamily:"'JetBrains Mono',monospace" }}>{selectedTable}</span>
+            <span style={{ fontSize:11, fontWeight:700, color:COL[selectedTable]||"#555", fontFamily:DESIGN.font }}>{selectedTable}</span>
             <span style={{ fontSize:10, color:"#888" }}>análisis de impacto:</span>
             {depSet.size>0    && <span style={{ fontSize:11, background:"#fffbeb", border:"1px solid #f59e0b", color:"#b45309", padding:"2px 10px", borderRadius:12, fontWeight:600 }}>⬆ {depSet.size} dependencia{depSet.size!==1?"s":""}</span>}
             {impactSet.size>0 && <span style={{ fontSize:11, background:"#fef2f2", border:"1px solid #ef4444", color:"#b91c1c", padding:"2px 10px", borderRadius:12, fontWeight:600 }}>⬇ {impactSet.size} tabla{impactSet.size!==1?"s":""} afectada{impactSet.size!==1?"s":""}</span>}
@@ -276,6 +301,13 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null }
         )}
         {viewMode==="radial" && <ERDiagram rows={diagRows}/>}
       </div>
+      {viewingGuia && (
+        <FileViewerModal
+          file={{ file_name: viewingGuia.fileName }}
+          url={supabase.storage.from(viewingGuia.bucket).getPublicUrl(viewingGuia.path).data.publicUrl}
+          onClose={()=>setViewingGuia(null)}
+        />
+      )}
     </div>
   );
 }

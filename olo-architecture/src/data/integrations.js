@@ -346,6 +346,7 @@ export const CAT_META = {
   sco:        { label:"SCO — Sistema Comercial y Operativo",               icon:"◉",  color:"#dc2626", bg:"rgba(220,38,38,0.06)",   border:"rgba(220,38,38,0.2)"  },
   efw:        { label:"EFW — eFlow WMS · Operación Logística",            icon:"◒",  color:"#0d9488", bg:"rgba(13,148,136,0.06)",  border:"rgba(13,148,136,0.22)" },
   wmh_cr:     { label:"WMH CR — Torre de Control · Costa Rica",           icon:"⟳",  color:"#16a34a", bg:"rgba(22,163,74,0.06)",   border:"rgba(22,163,74,0.22)"  },
+  efw_config: { label:"EFW·Configuración — Menú Configuración eflow-WMS",  icon:"▨",  color:"#546E7A", bg:"rgba(84,110,122,0.07)",  border:"rgba(84,110,122,0.22)" },
   efwbeval:   { label:"EFW·BEVAL — eFlow Venezuela · Beval",              icon:"◒",  color:"#0891b2", bg:"rgba(8,145,178,0.06)",   border:"rgba(8,145,178,0.2)"  },
   efwfebeca:  { label:"EFW·FEBECA — eFlow Venezuela · Febeca",            icon:"◒",  color:"#0d9488", bg:"rgba(13,148,136,0.06)",  border:"rgba(13,148,136,0.2)" },
   efwsillaca: { label:"EFW·SILLACA — eFlow Venezuela · Sillaca",          icon:"◒",  color:"#7c3aed", bg:"rgba(124,58,237,0.06)",  border:"rgba(124,58,237,0.2)" },

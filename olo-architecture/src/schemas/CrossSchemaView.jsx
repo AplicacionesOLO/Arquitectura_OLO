@@ -7,6 +7,8 @@ import { EFWFEBECA_TABLE_DEFS                      } from "../data/febeca_ve.js"
 import { EFWSILLACA_TABLE_DEFS                     } from "../data/sillaca_ve.js";
 import { EFWWMH_TABLE_DEFS,     EFWWMH_COLORS      } from "../data/wmh_ve.js";
 import veCross from "../data/ve_cross.json";
+import { DESIGN } from "../data/constants.js";
+import { KeyIcon, LinkIcon } from "../components/icons.jsx";
 
 // ── Palette ──────────────────────────────────────────────────────────────────
 const C = {
@@ -45,7 +47,7 @@ function TableChip({ name, color, selected, onClick }) {
       onClick={onClick}
       title={name}
       style={{
-        fontFamily:"'JetBrains Mono',monospace",
+        fontFamily:DESIGN.font,
         fontSize:10,
         padding:"2px 7px",
         borderRadius:4,
@@ -183,7 +185,7 @@ function DetailPanel({ name, onClose }) {
       {/* Header */}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:14 }}>
         <div>
-          <span style={{ fontFamily:"'JetBrains Mono',monospace", fontWeight:800, fontSize:16, color:"#1e293b" }}>{name}</span>
+          <span style={{ fontFamily:DESIGN.font, fontWeight:800, fontSize:16, color:"#1e293b" }}>{name}</span>
           <div style={{ display:"flex", gap:6, marginTop:6, flexWrap:"wrap" }}>
             {allSchemas.map(s => {
               const present = schemas.includes(s);
@@ -211,8 +213,8 @@ function DetailPanel({ name, onClose }) {
           <span style={{ fontSize:10, fontWeight:700, color:"#888", textTransform:"uppercase", letterSpacing:"0.07em" }}>Clave primaria:</span>
           <span style={{ marginLeft:6 }}>
             {[...pkSet].map(pk => (
-              <span key={pk} style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, background:"#fff8dc", border:"1px solid #fcd34d", color:"#92400e", padding:"2px 8px", borderRadius:4, marginRight:4 }}>
-                🔑 {pk}
+              <span key={pk} style={{ fontFamily:DESIGN.font, fontSize:11, background:"#fff8dc", border:"1px solid #fcd34d", color:"#92400e", padding:"2px 8px", borderRadius:4, marginRight:4, display:"inline-flex", alignItems:"center", gap:4 }}>
+                <KeyIcon style={{ fontSize:10 }}/> {pk}
               </span>
             ))}
           </span>
@@ -229,7 +231,7 @@ function DetailPanel({ name, onClose }) {
             <table style={{ borderCollapse:"collapse", width:"100%", fontSize:11 }}>
               <thead>
                 <tr style={{ background:"#f8faff" }}>
-                  <th style={{ padding:"6px 10px", textAlign:"left", fontWeight:700, color:"#555", borderBottom:"2px solid #e0e0e0", fontFamily:"'JetBrains Mono',monospace" }}>Columna</th>
+                  <th style={{ padding:"6px 10px", textAlign:"left", fontWeight:700, color:"#555", borderBottom:"2px solid #e0e0e0", fontFamily:DESIGN.font }}>Columna</th>
                   {schemas.map(s => (
                     <th key={s} style={{ padding:"6px 10px", textAlign:"center", fontWeight:700, color: C[s].fg, borderBottom:`2px solid ${C[s].border}`, minWidth:80 }}>
                       {SCHEMA_LABELS[s]}
@@ -245,8 +247,8 @@ function DetailPanel({ name, onClose }) {
                   const noneHave = presentIn.length === 0;
                   return (
                     <tr key={col} style={{ background: i%2===0 ? "#fff" : "#fafafa", borderBottom:"1px solid #f0f0f0" }}>
-                      <td style={{ padding:"4px 10px", fontFamily:"'JetBrains Mono',monospace", color: isFK ? "#6d28d9" : "#334155", fontWeight: isFK ? 600 : 400 }}>
-                        {isFK ? "🔗 " : ""}{col}
+                      <td style={{ padding:"4px 10px", fontFamily:DESIGN.font, color: isFK ? "#6d28d9" : "#334155", fontWeight: isFK ? 600 : 400, display:"flex", alignItems:"center", gap:4 }}>
+                        {isFK ? <LinkIcon style={{ fontSize:10 }}/> : null}{col}
                       </td>
                       {schemas.map(s => {
                         const has = (tableDef(s, name)?.cols || []).includes(col);
@@ -275,8 +277,8 @@ function DetailPanel({ name, onClose }) {
               const isFK = col.includes("→");
               const color = schemas[0] ? C[schemas[0]].fg : "#475569";
               return (
-                <span key={col} style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, padding:"2px 8px", borderRadius:4, background: isFK ? color+"12" : "#f5f5f5", border:`1px solid ${isFK ? color+"44" : "#e0e0e0"}`, color: isFK ? color : "#555" }}>
-                  {isFK ? "🔗 " : ""}{col}
+                <span key={col} style={{ fontFamily:DESIGN.font, fontSize:10, padding:"2px 8px", borderRadius:4, background: isFK ? color+"12" : "#f5f5f5", border:`1px solid ${isFK ? color+"44" : "#e0e0e0"}`, color: isFK ? color : "#555", display:"inline-flex", alignItems:"center", gap:4 }}>
+                  {isFK ? <LinkIcon style={{ fontSize:9 }}/> : null}{col}
                 </span>
               );
             })}

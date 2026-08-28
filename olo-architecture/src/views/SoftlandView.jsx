@@ -2,7 +2,7 @@
 // VISTA · SOFTLAND — Módulos ERP
 // ═══════════════════════════════════════════════════════════════════════════
 import { SOFTLAND_MODULES } from "../data/softland.js";
-import { MODULE_COLORS } from "../data/constants.js";
+import { MODULE_COLORS, DESIGN } from "../data/constants.js";
 import { StatusBadge, DetailPanel } from "../components/ui.jsx";
 
 export function SoftlandView({ selected, setSelected }) {
@@ -15,7 +15,7 @@ export function SoftlandView({ selected, setSelected }) {
         const isSel = selected === mod.code;
         return <div key={mod.code} onClick={()=>setSelected(isSel?null:mod.code)} style={{ background:isSel?c+"10":"#ffffff", border:`1px solid ${isSel?c+"88":c+"33"}`, borderLeft:`4px solid ${c}`, borderRadius:8, padding:"12px 14px", cursor:"pointer", transition:"all 0.15s", boxShadow:isSel?`0 0 0 2px ${c}33`:"none" }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", marginBottom:6 }}>
-            <span style={{ fontSize:13, fontWeight:800, color:c, fontFamily:"'JetBrains Mono','Consolas',monospace", letterSpacing:"0.04em" }}>{mod.code}</span>
+            <span style={{ fontSize:13, fontWeight:800, color:c, fontFamily:DESIGN.font, letterSpacing:"0.04em" }}>{mod.code}</span>
             <StatusBadge status={mod.status}/>
           </div>
           <div style={{ fontSize:13, fontWeight:700, color:"#1D1D1B", marginBottom:2 }}>{mod.name}</div>

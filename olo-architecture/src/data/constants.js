@@ -2,6 +2,35 @@
 // PALETA DE COLORES Y CONSTANTES GLOBALES
 // ═══════════════════════════════════════════════════════════════════════════
 
+// Fundación visual compartida del Grupo (estándar de diseño de interfaz):
+// Arial, neutros slate + acento navy, sin teal. Todas las herramientas del
+// Grupo comparten esta base — solo cambian el isotipo y el contenido.
+export const DESIGN = {
+  font: "Arial, Helvetica, 'Segoe UI', sans-serif",
+  ink: "#0f172a",        // texto principal, títulos, botón primario, acento/activo
+  inkSoft: "#475569",    // texto de apoyo, descripciones
+  muted: "#64748b",      // metadatos, breadcrumbs, placeholders
+  mutedSoft: "#94a3b8",  // separadores textuales (›), notas
+  border: "#e2e8f0",     // bordes y divisores por defecto
+  borderStrong: "#cbd5e1", // bordes de inputs / hover
+  sunken: "#f8fafc",     // fondo de encabezados, filas alternas
+  sunken2: "#f1f5f9",    // chips neutros, zonas de agrupación
+  surface: "#ffffff",    // fondo de tarjetas y contenido
+  navy: "#16233a",       // barras/acentos oscuros opcionales
+  radius: 8,
+  radiusPill: 999,
+  shadowCard: "0 1px 3px rgba(0,0,0,.08)",
+  shadowDialog: "0 8px 24px rgba(0,0,0,.12)",
+  overlay: "rgba(15,23,42,.45)",
+};
+
+export const DESIGN_STATUS = {
+  success: { bg:"#ecfdf5", color:"#065f46", border:"#a7f3d0" },
+  error:   { bg:"#fef2f2", color:"#991b1b", border:"#fecaca" },
+  warning: { bg:"#fffbeb", color:"#7a4f00", border:"#fde68a" },
+  critical:{ bg:"#fef2f2", color:"#b91c1c", border:"#fecaca" },
+};
+
 export const MODULE_COLORS = {
   AS:"#475569", CG:"#c0392b", CB:"#2980b9", CC:"#27ae60", CP:"#8e44ad",
   FA:"#16a085", CO:"#d35400", CI:"#f39c12", AF:"#7f8c8d", GN:"#e74c3c", MF:"#0284c7",
@@ -44,6 +73,7 @@ export const CLUSTER_COLORS = {
 export const TABS = [
   { id:"bpa",          label:"◈ BPA · OLO",           sub:"Modelo de procesos · 4 áreas · 30 procesos · cobertura por sistema" },
   { id:"olo-arch",     label:"◇ Procesos",             sub:"Silos · Macroprocesos · Procesos · Subprocesos · Detalle", parent:"bpa" },
+  { id:"relaciones",   label:"▨ Relaciones de sistemas", sub:"Cómo se relacionan sistemas, entidades y campos · ER por silo · linaje de dato", parent:"bpa" },
   { id:"infra",        label:"▭ Infraestructura",      sub:"Diagrama operativo · eFlow (CR/VE) · Lago de Datos · Suite OLO · Middleware · Sistemas del Estado", parent:"ecosystem" },
   { id:"ecosystem",    label:"◉ Ecosistema",          sub:"Mapa de capas: externos · ERP · operación · satélites" },
   { id:"softland",     label:"⬡ Módulos ERP",         sub:"Catálogo de módulos Softland · click para detalle y entidades inferidas", parent:"ecosystem" },

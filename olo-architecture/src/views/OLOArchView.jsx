@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ClusterCard, ClusterTag } from "../components/ui.jsx";
+import { DESIGN } from "../data/constants.js";
 
 export function OLOArchView({ searchQuery="" }) {
   const [selectedNode, setSelectedNode] = useState(null);
@@ -489,7 +490,7 @@ export function OLOArchView({ searchQuery="" }) {
     {sel && <div style={{ background:"#fff", border:`1px solid ${(sel.color==="transparent"?"#888":sel.color)}33`, borderLeft:`4px solid ${sel.color==="transparent"?"#888":sel.color}`, borderRadius:10, padding:"14px 18px", marginBottom:14 }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
         <div style={{ flex:1 }}>
-          <span style={{ fontSize:11, fontWeight:700, color:sel.color==="transparent"?"#888":sel.color, background:(sel.color==="transparent"?"#888":sel.color)+"15", border:`1px solid ${(sel.color==="transparent"?"#888":sel.color)}33`, padding:"3px 12px", borderRadius:6, fontFamily:"'JetBrains Mono',monospace", letterSpacing:"0.05em" }}>
+          <span style={{ fontSize:11, fontWeight:700, color:sel.color==="transparent"?"#888":sel.color, background:(sel.color==="transparent"?"#888":sel.color)+"15", border:`1px solid ${(sel.color==="transparent"?"#888":sel.color)}33`, padding:"3px 12px", borderRadius:6, fontFamily:DESIGN.font, letterSpacing:"0.05em" }}>
             {sel.type==="zone"?"ZONA · ":""}{sel.label||sel.id}
           </span>
           <p style={{ fontSize:13, color:"#444", lineHeight:1.65, margin:"10px 0 0", whiteSpace:"pre-line", maxWidth:740 }}>{sel.desc}</p>
@@ -615,7 +616,7 @@ export function OLOArchView({ searchQuery="" }) {
             <rect x={opz.x} y={opz.y} width={opz.w} height={24} rx="10" fill="rgba(59,130,246,0.18)"/>
             <rect x={opz.x} y={opz.y+14} width={opz.w} height={10} fill="rgba(59,130,246,0.18)"/>
             <text x={opz.x+10} y={opz.y+16} fill={T.onpremLabel} fontSize="8.5" fontWeight="700" letterSpacing="0.12em">OLO · ON-PREMISE</text>
-            <text x={opz.x+10} y={opz.y+30} fill={T.qaText} fontSize="7" fontFamily="'JetBrains Mono',monospace">qa: 10.17.224.226  ·  prod: 10.48.17.91</text>
+            <text x={opz.x+10} y={opz.y+30} fill={T.qaText} fontSize="7" fontFamily={DESIGN.font}>qa: 10.17.224.226  ·  prod: 10.48.17.91</text>
             {/* AWS OLO */}
             <rect x={awz.x} y={awz.y} width={awz.w} height={awz.h} rx="10" fill="rgba(245,158,11,0.06)" stroke="#f59e0b" strokeWidth="0.8" strokeOpacity="0.4"/>
             <rect x={awz.x} y={awz.y} width={awz.w} height={24} rx="10" fill="rgba(245,158,11,0.14)"/>

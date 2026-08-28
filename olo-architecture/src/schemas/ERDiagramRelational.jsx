@@ -3,6 +3,8 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { useState, useRef, useEffect } from "react";
 import { SRO_GROUPS, SRO_TABLE_DEFS, RELATION_META } from "../data/sro.js";
+import { DESIGN } from "../data/constants.js";
+import { LinkIcon } from "../components/icons.jsx";
 
 export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTable, getRelation, sroRows, GR, TD, storageKey="olo-er" }) {
   if(!GR) GR=SRO_GROUPS; if(!TD) TD=SRO_TABLE_DEFS;
@@ -142,7 +144,7 @@ export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTa
     <div style={{ display:"flex", flexDirection:"column", height:fullscr?"100vh":"auto" }}>
       <div style={{ padding:"7px 12px", background:"#1e293b", borderBottom:"1px solid #334155", fontSize:11, color:"#94a3b8", display:"flex", gap:12, alignItems:"center", flexShrink:0 }}>
         <span style={{ fontWeight:700, color:"#e2e8f0" }}>Diagrama Relacional FK</span>
-        <span>🔗 {visRows.length} relaciones</span>
+        <span style={{ display:"inline-flex", alignItems:"center", gap:4 }}><LinkIcon/> {visRows.length} relaciones</span>
         {!selectedTable && <span style={{ color:"#475569" }}>Click tabla → resalta FK · Arrastra → mueve · Scroll → zoom</span>}
         {selectedTable && <span style={{ color:"#93c5fd", fontWeight:600, fontSize:10 }}>
           <b style={{color:"#f59e0b"}}>⬆</b> apunta desde {selectedTable} &nbsp;·&nbsp; <b style={{color:"#ef4444"}}>⬇</b> apunta hacia {selectedTable}
@@ -200,7 +202,7 @@ export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTa
           const label=getFKLabel(row.what);
           return <g key={`n${i}`}>
             <path d={makePath(pts)} fill="none" stroke="#94a3b8" strokeWidth={0.7} strokeOpacity={0.4} markerEnd="url(#fkD)"/>
-            {label && <text x={mx} y={my-3} textAnchor="middle" fontSize={7} fill="#b0b8c8" fontFamily="'JetBrains Mono',monospace">{label}</text>}
+            {label && <text x={mx} y={my-3} textAnchor="middle" fontSize={7} fill="#b0b8c8" fontFamily={DESIGN.font}>{label}</text>}
           </g>;
         })}
         {selectedTable && visRows.filter(r=>r.from===selectedTable||r.to===selectedTable).map((row,i)=>{
@@ -213,7 +215,7 @@ export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTa
             <path d={makePath(pts)} fill="none" stroke={col} strokeWidth={1.8} strokeOpacity={0.85} markerEnd={mId}/>
             {label && <>
               <rect x={mx-label.length*3} y={my-11} width={label.length*6+6} height={11} rx={3} fill="white" opacity={0.88}/>
-              <text x={mx} y={my-3} textAnchor="middle" fontSize={8.5} fontWeight={700} fill={col} fontFamily="'JetBrains Mono',monospace">{label}</text>
+              <text x={mx} y={my-3} textAnchor="middle" fontSize={8.5} fontWeight={700} fill={col} fontFamily={DESIGN.font}>{label}</text>
             </>}
           </g>;
         })}
@@ -242,20 +244,19 @@ export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTa
               <rect x={pos.x} y={pos.y} width={pos.w} height={pos.h} rx={5} fill={bgCol} stroke={bdrCol} strokeWidth={isSel?2:0.9}/>
               <rect x={pos.x} y={pos.y} width={pos.w} height={TH_HD} rx={5} fill={isSel?col:col+"22"}/>
               <rect x={pos.x} y={pos.y+TH_HD-3} width={pos.w} height={3} fill={isSel?col:col+"22"}/>
-              <text x={pos.x+6} y={pos.y+14} fontSize={9} fontWeight={700} fill={isSel?"#fff":col} fontFamily="'JetBrains Mono',monospace">{table}</text>
-              <text x={pos.x+5} y={pos.y+TH_HD+TH_PK-1} fontSize={8} fill="#f59e0b" fontFamily="'JetBrains Mono',monospace">🔑 {def?.pk||"id"}</text>
+              <text x={pos.x+6} y={pos.y+14} fontSize={9} fontWeight={700} fill={isSel?"#fff":col} fontFamily={DESIGN.font}>{table}</text>
+              <text x={pos.x+5} y={pos.y+TH_HD+TH_PK-1} fontSize={8} fill="#b45309" fontFamily={DESIGN.font}>{def?.pk||"id"}</text>
               {fkCols.slice(0,5).map((c,ci)=>{
                 const [field,ref]=c.split('→'); y0=pos.y+TH_HD+TH_PK+(ci+1)*TH_ROW+2;
-                return <text key={c} x={pos.x+5} y={y0} fontSize={8} fontFamily="'JetBrains Mono',monospace">
-                  <tspan fill="#94a3b8">🔗 </tspan>
+                return <text key={c} x={pos.x+5} y={y0} fontSize={8} fontFamily={DESIGN.font}>
                   <tspan fill={col} fontWeight={600}>{field?.trim()}</tspan>
                   <tspan fill={col} opacity={0.55}> →{ref?.trim()}</tspan>
                 </text>;
               })}
-              {fkCols.length>5 && <text x={pos.x+5} y={pos.y+TH_HD+TH_PK+6*TH_ROW+2} fontSize={7.5} fill="#bbb" fontFamily="'JetBrains Mono',monospace">+{fkCols.length-5} FK…</text>}
+              {fkCols.length>5 && <text x={pos.x+5} y={pos.y+TH_HD+TH_PK+6*TH_ROW+2} fontSize={7.5} fill="#bbb" fontFamily={DESIGN.font}>+{fkCols.length-5} FK…</text>}
               {daCols.map((c,ci)=>{
                 const dy=pos.y+TH_HD+TH_PK+(Math.min(fkCols.length,5)+ci+1)*TH_ROW+2;
-                return <text key={c} x={pos.x+5} y={dy} fontSize={8} fill="#aaa" fontFamily="'JetBrains Mono',monospace">· {c}</text>;
+                return <text key={c} x={pos.x+5} y={dy} fontSize={8} fill="#aaa" fontFamily={DESIGN.font}>· {c}</text>;
               })}
             </g>
           );

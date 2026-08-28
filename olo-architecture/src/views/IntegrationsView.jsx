@@ -228,7 +228,7 @@ export function IntegrationsView({ searchQuery="" }) {
                     </div>
                   </div>
                   <span style={{ fontSize:9.5, fontWeight:700, color:isVA?vm.color:"#bbb", background:isVA?vm.color+"15":"#f5f5f5", padding:"1px 5px", borderRadius:8, flexShrink:0 }}>
-                    {vk==="ve_cross"?"🔀":vc}
+                    {vk==="ve_cross"?"⇄":vc}
                   </span>
                 </button>;
               })}
@@ -260,9 +260,9 @@ export function IntegrationsView({ searchQuery="" }) {
 
     <div style={{ display:"flex", gap:6, marginBottom:14, alignItems:"center" }}>
       <span style={{ fontSize:10, fontWeight:700, color:"#aaa", letterSpacing:"0.06em", textTransform:"uppercase", marginRight:4 }}>Vista:</span>
-      {[["table","📋 Tabla"],["relations","⬡ Diagrama ER"]].map(([mode,label])=>{
+      {[["table","▤ Tabla"],["relations","⬡ Diagrama ER"]].map(([mode,label])=>{
         const isA = viewMode===mode;
-        return <button key={mode} onClick={()=>setViewMode(mode)} style={{ fontSize:11, fontWeight:isA?700:400, color:isA?"#00838f":"#666", background:isA?"#e0f7fa":"transparent", border:`1px solid ${isA?"#00838f55":"#ddd"}`, borderRadius:6, padding:"5px 12px", cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }}>{label}</button>;
+        return <button key={mode} onClick={()=>setViewMode(mode)} style={{ fontSize:11, fontWeight:isA?700:400, color:isA?"#0f172a":"#666", background:isA?"#f1f5f9":"transparent", border:`1px solid ${isA?"#0f172a55":"#ddd"}`, borderRadius:6, padding:"5px 12px", cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }}>{label}</button>;
       })}
     </div>
 

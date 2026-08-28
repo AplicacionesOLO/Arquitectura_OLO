@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { useState, useRef, useEffect } from "react";
 import { SOFTLAND_MODULES, OPS_MODULES } from "../data/softland.js";
-import { MODULE_COLORS, OPS_COLORS, CLUSTER_COLORS } from "../data/constants.js";
+import { MODULE_COLORS, OPS_COLORS, CLUSTER_COLORS, DESIGN } from "../data/constants.js";
 import { SRO_COLORS } from "../data/sro.js";
 import { SCO_COLORS } from "../data/sco.js";
 import { EFW_COLORS } from "../data/efw.js";
@@ -281,7 +281,7 @@ export function ERDiagram({ rows, storageKey }) {
                   strokeWidth={isSel?2.2:isHov?1.6:0.8}/>
                 <text x={p.x} y={p.y-5} textAnchor="middle"
                   fill={color} fontSize="12" fontWeight="700"
-                  fontFamily="'JetBrains Mono','Consolas',monospace">{code}</text>
+                  fontFamily={DESIGN.font}>{code}</text>
                 <text x={p.x} y={p.y+10} textAnchor="middle" fill={isSel?"#444":"#999"} fontSize="8.2">{short}</text>
               </g>
             );

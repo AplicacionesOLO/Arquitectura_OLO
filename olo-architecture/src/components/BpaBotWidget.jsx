@@ -74,7 +74,7 @@ export function BpaBotWidget() {
       style={{
         position:"fixed", right:24, bottom:24, zIndex:60,
         width:52, height:52, borderRadius:"50%", border:"none", cursor:"pointer",
-        background: open ? "#1D1D1B" : "#00838f", color:"#fff",
+        background: open ? "#1D1D1B" : "#0f172a", color:"#fff",
         fontSize:20, boxShadow:"0 6px 20px rgba(0,0,0,0.25)",
         display:"flex", alignItems:"center", justifyContent:"center",
         transition:"background 0.15s",
@@ -115,7 +115,7 @@ export function BpaBotWidget() {
           <div key={m.id} style={{ display:"flex", justifyContent:m.role==="user"?"flex-end":"flex-start" }}>
             <div style={{
               maxWidth:"80%", padding:"8px 11px", borderRadius:10, fontSize:12.5, lineHeight:1.5, whiteSpace:"pre-wrap",
-              background:m.role==="user"?"#00838f":"#f1f5f9",
+              background:m.role==="user"?"#0f172a":"#f1f5f9",
               color:m.role==="user"?"#fff":"#1D1D1B",
             }}>{m.content}</div>
           </div>
@@ -133,7 +133,7 @@ export function BpaBotWidget() {
           placeholder="Escribe tu pregunta…"
           style={{ flex:1, resize:"none", fontSize:12.5, border:"1px solid #ddd", borderRadius:8, padding:"8px 10px", fontFamily:"inherit", outline:"none" }}/>
         <button onClick={send} disabled={sending || !input.trim()}
-          style={{ padding:"0 14px", background: sending||!input.trim() ? "#e0e0e0" : "#00838f", color:"#fff", border:"none", borderRadius:8, fontSize:12, fontWeight:700, cursor: sending||!input.trim() ? "default" : "pointer" }}>
+          style={{ padding:"0 14px", background: sending||!input.trim() ? "#e0e0e0" : "#0f172a", color:"#fff", border:"none", borderRadius:8, fontSize:12, fontWeight:700, cursor: sending||!input.trim() ? "default" : "pointer" }}>
           ➤
         </button>
       </div>

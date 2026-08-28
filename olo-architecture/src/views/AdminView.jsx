@@ -3,16 +3,19 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "../lib/supabaseClient.js";
-import { TABS } from "../data/constants.js";
+import { TABS, DESIGN } from "../data/constants.js";
+import { NovedadesCard } from "../components/NovedadesModal.jsx";
+import { SearchIcon } from "../components/icons.jsx";
 
 const SUBTABS = [
-  { id:"aprobaciones",     label:"⏳ Aprobaciones",  desc:"Cuentas nuevas sin rol — asígnales uno para activarlas" },
-  { id:"usuarios",         label:"👥 Usuarios",      desc:"Cuentas activas y deshabilitadas · buscar · reasignar rol" },
-  { id:"roles",            label:"🔑 Roles",         desc:"Roles del sistema y roles personalizados" },
-  { id:"permisos",         label:"🛡 Permisos",     desc:"Qué secciones puede ver cada rol" },
-  { id:"chatbot",          label:"🤖 Chatbot",       desc:"Documentos y permisos del asistente BPA-BOT" },
-  { id:"bpabot_manuales",  label:"📄 Manuales",      desc:"Documentos que alimentan al asistente BPA-BOT", parent:"chatbot" },
-  { id:"bpabot_permisos",  label:"◎ Permisos",      desc:"Qué puede hacer cada rol dentro del asistente", parent:"chatbot" },
+  { id:"aprobaciones",     label:"◷ Aprobaciones",  desc:"Cuentas nuevas sin rol — asígnales uno para activarlas" },
+  { id:"usuarios",         label:"◫ Usuarios",      desc:"Cuentas activas y deshabilitadas · buscar · reasignar rol" },
+  { id:"roles",            label:"⚿ Roles",         desc:"Roles del sistema y roles personalizados" },
+  { id:"permisos",         label:"▤ Permisos",     desc:"Qué secciones puede ver cada rol" },
+  { id:"novedades",        label:"◆ Novedades",     desc:"Curar los avisos de \"¿qué hay de nuevo?\" — candidatas, publicadas, archivadas" },
+  { id:"chatbot",          label:"◒ Chatbot",       desc:"Documentos y permisos del asistente BPA-BOT" },
+  { id:"bpabot_manuales",  label:"▥ Manuales",      desc:"Documentos que alimentan al asistente BPA-BOT", parent:"chatbot" },
+  { id:"bpabot_permisos",  label:"▤ Permisos",      desc:"Qué puede hacer cada rol dentro del asistente", parent:"chatbot" },
 ];
 
 const card = { background:"#fff", border:"1px solid #e0e0e0", borderRadius:10 };
@@ -52,9 +55,9 @@ export function AdminView() {
         const badge = s.id==="aprobaciones" ? pendingCount : null;
         return <div key={s.id}>
           <div style={{ display:"flex", alignItems:"stretch" }}>
-            <button onClick={()=>hasKids ? toggleExpand(s.id) : setSub(s.id)} style={{ display:"flex", alignItems:"center", gap:8, flex:1, padding:"10px 14px", border:"none", borderLeft:isA?"3px solid #00838f":"3px solid transparent", borderBottom:"1px solid #f5f5f5", background:isA?"#e0f7fa":"transparent", cursor:"pointer", fontFamily:"inherit", textAlign:"left", transition:"all 0.15s" }}>
+            <button onClick={()=>hasKids ? toggleExpand(s.id) : setSub(s.id)} style={{ display:"flex", alignItems:"center", gap:8, flex:1, padding:"10px 14px", border:"none", borderLeft:isA?"3px solid #0f172a":"3px solid transparent", borderBottom:"1px solid #f5f5f5", background:isA?"#f1f5f9":"transparent", cursor:"pointer", fontFamily:"inherit", textAlign:"left", transition:"all 0.15s" }}>
               <span style={{ fontSize:13 }}>{s.label.split(" ")[0]}</span>
-              <span style={{ fontSize:12, fontWeight:isA?700:500, color:isA?"#00838f":"#444", flex:1 }}>{s.label.split(" ").slice(1).join(" ")}</span>
+              <span style={{ fontSize:12, fontWeight:isA?700:500, color:isA?"#0f172a":"#444", flex:1 }}>{s.label.split(" ").slice(1).join(" ")}</span>
               {!!badge && <span style={{ fontSize:10, fontWeight:700, color:"#fff", background:"#f39c12", borderRadius:9, minWidth:18, height:18, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 5px" }}>{badge}</span>}
             </button>
             {hasKids && <button onClick={()=>toggleExpand(s.id)} title={isExpanded?"Contraer":"Expandir"} style={{ background:"transparent", border:"none", borderBottom:"1px solid #f5f5f5", color:"#94a3b8", cursor:"pointer", fontSize:11, padding:"0 12px" }}>
@@ -63,9 +66,9 @@ export function AdminView() {
           </div>
           {hasKids && isExpanded && kids.map(k => {
             const isCA = sub === k.id;
-            return <button key={k.id} onClick={()=>setSub(k.id)} style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"8px 14px 8px 30px", border:"none", borderLeft:isCA?"3px solid #00838f":"3px solid transparent", borderBottom:"1px solid #f5f5f5", background:isCA?"#e0f7fa":"transparent", cursor:"pointer", fontFamily:"inherit", textAlign:"left", transition:"all 0.15s" }}>
+            return <button key={k.id} onClick={()=>setSub(k.id)} style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"8px 14px 8px 30px", border:"none", borderLeft:isCA?"3px solid #0f172a":"3px solid transparent", borderBottom:"1px solid #f5f5f5", background:isCA?"#f1f5f9":"transparent", cursor:"pointer", fontFamily:"inherit", textAlign:"left", transition:"all 0.15s" }}>
               <span style={{ fontSize:12 }}>{k.label.split(" ")[0]}</span>
-              <span style={{ fontSize:11.5, fontWeight:isCA?700:500, color:isCA?"#00838f":"#666", flex:1 }}>{k.label.split(" ").slice(1).join(" ")}</span>
+              <span style={{ fontSize:11.5, fontWeight:isCA?700:500, color:isCA?"#0f172a":"#666", flex:1 }}>{k.label.split(" ").slice(1).join(" ")}</span>
             </button>;
           })}
         </div>;
@@ -77,6 +80,7 @@ export function AdminView() {
       {sub==="usuarios"     && <UsuariosPanel/>}
       {sub==="roles"        && <RolesPanel/>}
       {sub==="permisos"     && <PermisosPanel/>}
+      {sub==="novedades"    && <NovedadesPanel/>}
       {sub==="bpabot_manuales" && <BpaBotManualesPanel/>}
       {sub==="bpabot_permisos" && <BpaBotPermisosPanel/>}
     </div>
@@ -128,7 +132,7 @@ function AprobacionesPanel({ onChanged }) {
   if (!rows) return <LoadingBox/>;
 
   if (rows.length === 0) return <div style={{ ...card, padding:"32px 16px", textAlign:"center", color:"#888", fontSize:13 }}>
-    ✅ No hay cuentas pendientes de aprobación.
+    ✓ No hay cuentas pendientes de aprobación.
   </div>;
 
   return <div style={{ display:"grid", gap:10 }}>
@@ -221,7 +225,7 @@ function UsuariosPanel() {
       border:"1px solid rgba(255,255,255,0.7)", boxShadow:"0 4px 20px rgba(15,23,42,0.08)",
       display:"flex", alignItems:"center", gap:10,
     }}>
-      <span style={{ fontSize:14, color:"#94a3b8" }}>🔍</span>
+      <SearchIcon style={{ fontSize:14, color:"#94a3b8" }}/>
       <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar por nombre o correo…"
         style={{ flex:1, border:"none", outline:"none", background:"transparent", fontSize:13, fontFamily:"inherit", color:"#1D1D1B" }}/>
       {search && <button onClick={()=>setSearch("")} style={{ background:"none", border:"none", cursor:"pointer", color:"#94a3b8", fontSize:13 }}>✕</button>}
@@ -238,7 +242,7 @@ function UsuariosPanel() {
             <tr key={r.id} style={{ borderTop:"1px solid #f0f0f0" }}>
               <td style={td}>
                 <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                  <div style={{ width:26, height:26, borderRadius:"50%", background:"#0097A7", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:700, fontSize:11, flexShrink:0 }}>{(r.nombre||r.email||"?").charAt(0).toUpperCase()}</div>
+                  <div style={{ width:26, height:26, borderRadius:"50%", background:DESIGN.ink, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:700, fontSize:11, flexShrink:0 }}>{(r.nombre||r.email||"?").charAt(0).toUpperCase()}</div>
                   <span style={{ fontWeight:600, color:"#1D1D1B" }}>{r.nombre || "—"}</span>
                 </div>
               </td>
@@ -335,7 +339,7 @@ function RolesPanel() {
           {rows.map(r => (
             <tr key={r.key} style={{ borderTop:"1px solid #f0f0f0" }}>
               <td style={{ ...td, fontWeight:700, color:"#1D1D1B" }}>{r.label}</td>
-              <td style={{ ...td, fontFamily:"'JetBrains Mono','Consolas',monospace", color:"#888" }}>{r.key}</td>
+              <td style={{ ...td, fontFamily:DESIGN.font, color:"#888" }}>{r.key}</td>
               <td style={{ ...td, color:"#555" }}>{r.description || "—"}</td>
               <td style={{ ...td, textAlign:"right" }}>{r.is_system && <span style={{ fontSize:9, fontWeight:700, color:"#92400e", background:"#fef3c7", padding:"2px 8px", borderRadius:8 }}>SISTEMA</span>}</td>
               <td style={{ ...td, textAlign:"right" }}>{!r.is_system && <button onClick={()=>handleDelete(r.key)} style={{ background:"none", border:"none", color:"#c0392b", cursor:"pointer", fontSize:11 }}>Eliminar</button>}</td>
@@ -357,7 +361,7 @@ function RolesPanel() {
           style={{ fontSize:12, border:"1px solid #ddd", borderRadius:6, padding:"7px 10px", fontFamily:"inherit" }}/>
       </div>
       <button type="submit" disabled={busy || !label.trim()}
-        style={{ padding:"7px 16px", background:"#00838f", color:"#fff", border:"none", borderRadius:6, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+        style={{ padding:"7px 16px", background:"#0f172a", color:"#fff", border:"none", borderRadius:6, fontSize:12, fontWeight:700, cursor:"pointer" }}>
         + Crear rol
       </button>
     </form>
@@ -414,7 +418,7 @@ function PermisosPanel() {
                 return <td key={t.id} style={{ ...td, textAlign:"center" }}>
                   <button onClick={()=>toggle(r.key, t.id, on)}
                     title={on?"Visible — clic para ocultar":"Oculto — clic para mostrar"}
-                    style={{ width:22, height:22, borderRadius:6, border:`1px solid ${on?"#00838f":"#ddd"}`, background:on?"#00838f":"#fff", color:on?"#fff":"#ccc", cursor:"pointer", fontSize:12, lineHeight:1 }}>
+                    style={{ width:22, height:22, borderRadius:6, border:`1px solid ${on?"#0f172a":"#ddd"}`, background:on?"#0f172a":"#fff", color:on?"#fff":"#ccc", cursor:"pointer", fontSize:12, lineHeight:1 }}>
                     {on?"✓":"—"}
                   </button>
                 </td>;
@@ -427,6 +431,132 @@ function PermisosPanel() {
     <p style={{ fontSize:11, color:"#999", marginTop:10 }}>El rol <b>Admin</b> siempre ve todas las secciones, incluida Administración — no se gestiona aquí para evitar bloqueos accidentales.</p>
   </div>;
 }
+
+// ─────────────────────────────────────────────────────────────────────────
+// Novedades — catálogo de avisos "¿qué hay de nuevo?" (fila singleton en
+// Supabase). Agregar/editar nace en Candidata; solo lo Publicado llega al
+// usuario. "Guardar" no re-notifica; "Guardar y reactivar aviso" sube la
+// versión y la ventana reaparece una vez a todos los usuarios habilitados.
+// ─────────────────────────────────────────────────────────────────────────
+const ESTADO_META = {
+  candidata: { label:"Candidata", color:"#7a4f00", bg:"#fffbeb" },
+  publicada: { label:"Publicada", color:"#065f46", bg:"#ecfdf5" },
+  archivada: { label:"Archivada", color:"#64748b", bg:"#f1f5f9" },
+};
+
+function NovedadesPanel() {
+  const [row, setRow] = useState(null);       // fila cruda tal como está en Supabase
+  const [titulo, setTitulo] = useState("Novedades");
+  const [fecha, setFecha] = useState("");
+  const [items, setItems] = useState([]);
+  const [err, setErr] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [group, setGroup] = useState("publicada");
+
+  const load = useCallback(async () => {
+    setErr(null);
+    const { data, error } = await supabase.from("novedades").select("*").eq("id", 1).maybeSingle();
+    if (error) { setErr(error.message); return; }
+    const r = data || { version:"", titulo:"Novedades", fecha:"", items:[] };
+    setRow(r);
+    setTitulo(r.titulo || "Novedades");
+    setFecha(r.fecha || "");
+    setItems((r.items || []).map(it => ({ ...it, estado: it.estado || "publicada" })));
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const addItem = () => setItems(prev => [
+    { id:`novedad-${prev.length}-${titulo.length}${Date.now()%100000}`, estado:"candidata", titulo:"", detalle:"", seccion:null },
+    ...prev,
+  ]);
+  const patchItem = (id, patch) => setItems(prev => prev.map(it => it.id===id ? { ...it, ...patch } : it));
+  const removeItem = (id) => setItems(prev => prev.filter(it => it.id !== id));
+
+  const save = async (reactivar) => {
+    setSaving(true); setErr(null);
+    const version = reactivar ? new Date().toISOString().slice(0,16).replace("T","-") : (row?.version || "");
+    const { data:{ user } } = await supabase.auth.getUser();
+    const { error } = await supabase.from("novedades").upsert({
+      id: 1, titulo, fecha, items, version, updated_at: new Date().toISOString(), updated_by: user?.id,
+    });
+    setSaving(false);
+    if (error) { setErr(error.message); return; }
+    load();
+  };
+
+  if (!row && !err) return <LoadingBox/>;
+
+  const grouped = { candidata:[], publicada:[], archivada:[] };
+  items.forEach(it => grouped[it.estado]?.push(it));
+
+  return <div style={{ display:"grid", gridTemplateColumns:"1.3fr 1fr", gap:20, alignItems:"flex-start" }}>
+    <div>
+      {err && <div style={{ marginBottom:12 }}><ErrorBox msg={err}/></div>}
+      <div style={{ ...card, padding:"14px 16px", marginBottom:14 }}>
+        <div style={{ display:"flex", gap:10, marginBottom:10 }}>
+          <div style={{ flex:1 }}>
+            <label style={{ fontSize:10, fontWeight:700, color:"#94a3b8", textTransform:"uppercase", letterSpacing:"0.06em" }}>Título</label>
+            <input value={titulo} onChange={e=>setTitulo(e.target.value)} style={inputS}/>
+          </div>
+          <div style={{ flex:1 }}>
+            <label style={{ fontSize:10, fontWeight:700, color:"#94a3b8", textTransform:"uppercase", letterSpacing:"0.06em" }}>Fecha (mostrada)</label>
+            <input value={fecha} onChange={e=>setFecha(e.target.value)} placeholder="p. ej. Agosto 2026" style={inputS}/>
+          </div>
+        </div>
+        <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
+          <button onClick={addItem} style={{ fontSize:11, fontWeight:700, color:DESIGN.ink, background:"#fff", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:6, padding:"6px 12px", cursor:"pointer", fontFamily:"inherit" }}>+ Agregar novedad</button>
+          <span style={{ fontSize:11, color:DESIGN.muted }}><b style={{ color:DESIGN.ink }}>{grouped.publicada.length}</b> publicadas de {items.length}</span>
+          <button onClick={load} disabled={saving} style={{ fontSize:11, color:DESIGN.inkSoft, background:"none", border:`1px solid ${DESIGN.border}`, borderRadius:6, padding:"6px 12px", cursor:"pointer", fontFamily:"inherit" }}>Recargar</button>
+          <div style={{ marginLeft:"auto", display:"flex", gap:8 }}>
+            <button onClick={()=>save(false)} disabled={saving} style={{ fontSize:11, fontWeight:700, color:DESIGN.inkSoft, background:"#fff", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:6, padding:"7px 14px", cursor:"pointer", fontFamily:"inherit" }}>Guardar</button>
+            <button onClick={()=>save(true)} disabled={saving} style={{ fontSize:11, fontWeight:700, color:"#fff", background:DESIGN.ink, border:"none", borderRadius:6, padding:"7px 14px", cursor:"pointer", fontFamily:"inherit" }}>Guardar y reactivar aviso</button>
+          </div>
+        </div>
+        {row?.version && <div style={{ fontSize:10, color:DESIGN.mutedSoft, marginTop:8 }}>Versión actual notificada: <b>{row.version}</b></div>}
+      </div>
+
+      <div style={{ display:"flex", gap:6, marginBottom:10 }}>
+        {["publicada","candidata","archivada"].map(g => (
+          <button key={g} onClick={()=>setGroup(g)} style={{ fontSize:11, fontWeight:group===g?700:400, color:group===g?ESTADO_META[g].color:DESIGN.inkSoft, background:group===g?ESTADO_META[g].bg:"transparent", border:`1px solid ${group===g?ESTADO_META[g].color+"55":DESIGN.border}`, borderRadius:6, padding:"5px 12px", cursor:"pointer", fontFamily:"inherit" }}>
+            {ESTADO_META[g].label} · {grouped[g].length}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ display:"grid", gap:10 }}>
+        {grouped[group].length === 0 && <div style={{ ...card, padding:"20px 16px", textAlign:"center", color:"#999", fontSize:12 }}>Sin novedades en este estado.</div>}
+        {grouped[group].map(it => (
+          <div key={it.id} style={{ ...card, padding:"12px 14px" }}>
+            <div style={{ display:"flex", gap:8, alignItems:"center", marginBottom:8 }}>
+              <div style={{ display:"flex", gap:2, background:DESIGN.sunken2, borderRadius:6, padding:2 }}>
+                {["candidata","publicada","archivada"].map(e => (
+                  <button key={e} onClick={()=>patchItem(it.id, { estado:e })} title={ESTADO_META[e].label}
+                    style={{ fontSize:10, fontWeight:it.estado===e?700:400, color:it.estado===e?"#fff":DESIGN.inkSoft, background:it.estado===e?DESIGN.ink:"transparent", border:"none", borderRadius:4, padding:"4px 8px", cursor:"pointer", fontFamily:"inherit" }}>
+                    {ESTADO_META[e].label}
+                  </button>
+                ))}
+              </div>
+              <select value={it.seccion || ""} onChange={e=>patchItem(it.id, { seccion: e.target.value || null })} style={{ ...inputS, width:"auto", marginTop:0 }}>
+                <option value="">Todas las secciones</option>
+                {TABS.map(t => <option key={t.id} value={t.id}>{t.label.split(" ").slice(1).join(" ")}</option>)}
+              </select>
+              <button onClick={()=>removeItem(it.id)} title="Eliminar" style={{ marginLeft:"auto", background:"none", border:"none", color:"#b91c1c", cursor:"pointer", fontSize:15, lineHeight:1 }}>✕</button>
+            </div>
+            <input value={it.titulo} onChange={e=>patchItem(it.id, { titulo:e.target.value })} placeholder="Título de la novedad…" style={{ ...inputS, fontWeight:700, marginBottom:6 }}/>
+            <textarea value={it.detalle} onChange={e=>patchItem(it.id, { detalle:e.target.value })} placeholder="Detalle…" rows={2} style={{ ...inputS, resize:"vertical", fontFamily:"inherit" }}/>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div style={{ position:"sticky", top:20 }}>
+      <div style={{ fontSize:10, fontWeight:700, color:"#94a3b8", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:8 }}>Vista previa</div>
+      <NovedadesCard titulo={titulo} fecha={fecha} items={items.filter(it=>it.estado==="publicada")} onClose={()=>{}}/>
+    </div>
+  </div>;
+}
+const inputS = { width:"100%", boxSizing:"border-box", fontSize:12, border:`1px solid ${DESIGN.borderStrong}`, borderRadius:6, padding:"7px 10px", marginTop:4, color:DESIGN.ink, background:"#fff" };
 
 // ─────────────────────────────────────────────────────────────────────────
 // Manuales BPA-BOT — sube documentos al bucket privado BPA_BOT_Manuales y
@@ -514,7 +644,7 @@ function BpaBotManualesPanel() {
           style={{ fontSize:12, fontFamily:"inherit" }}/>
       </div>
       <button type="submit" disabled={busy || !file}
-        style={{ padding:"7px 16px", background: busy||!file ? "#e0e0e0" : "#00838f", color:"#fff", border:"none", borderRadius:6, fontSize:12, fontWeight:700, cursor: busy||!file ? "default" : "pointer" }}>
+        style={{ padding:"7px 16px", background: busy||!file ? "#e0e0e0" : "#0f172a", color:"#fff", border:"none", borderRadius:6, fontSize:12, fontWeight:700, cursor: busy||!file ? "default" : "pointer" }}>
         {busy ? "Subiendo…" : "+ Cargar manual"}
       </button>
     </form>
@@ -605,7 +735,7 @@ function BpaBotPermisosPanel() {
                 return <td key={c.key} style={{ ...td, textAlign:"center" }}>
                   <button onClick={()=>toggle(r.key, c.key, on)}
                     title={on?"Habilitado — clic para deshabilitar":"Deshabilitado — clic para habilitar"}
-                    style={{ width:22, height:22, borderRadius:6, border:`1px solid ${on?"#00838f":"#ddd"}`, background:on?"#00838f":"#fff", color:on?"#fff":"#ccc", cursor:"pointer", fontSize:12, lineHeight:1 }}>
+                    style={{ width:22, height:22, borderRadius:6, border:`1px solid ${on?"#0f172a":"#ddd"}`, background:on?"#0f172a":"#fff", color:on?"#fff":"#ccc", cursor:"pointer", fontSize:12, lineHeight:1 }}>
                     {on?"✓":"—"}
                   </button>
                 </td>;

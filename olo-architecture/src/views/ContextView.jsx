@@ -2,7 +2,7 @@
 // VISTA · CONTEXTO
 // ═══════════════════════════════════════════════════════════════════════════
 import { LOCALIZATIONS, EXTENSION_POINTS, GAPS } from "../data/softland.js";
-import { STATUS_VIS } from "../data/constants.js";
+import { STATUS_VIS, DESIGN } from "../data/constants.js";
 import { SectionTitle, StatusBadge } from "../components/ui.jsx";
 
 export function ContextView() {
@@ -34,7 +34,7 @@ export function ContextView() {
     <div style={{ display:"grid", gap:8 }}>
       {GAPS.map((g,i) => (
         <div key={i} style={{ display:"flex", gap:12, alignItems:"flex-start", background:"#fbe9e7", border:"1px solid #ef9a9a", borderLeft:"3px solid #c0392b", borderRadius:8, padding:"10px 14px" }}>
-          <span style={{ fontSize:10, fontWeight:700, color:"#c0392b", fontFamily:"'JetBrains Mono','Consolas',monospace", background:"#ffffff", padding:"2px 7px", borderRadius:4, whiteSpace:"nowrap", flexShrink:0 }}>GAP·{(i+1).toString().padStart(2,"0")}</span>
+          <span style={{ fontSize:10, fontWeight:700, color:"#c0392b", fontFamily:DESIGN.font, background:"#ffffff", padding:"2px 7px", borderRadius:4, whiteSpace:"nowrap", flexShrink:0 }}>GAP·{(i+1).toString().padStart(2,"0")}</span>
           <span style={{ fontSize:12, color:"#555", lineHeight:1.55 }}>{g}</span>
         </div>
       ))}

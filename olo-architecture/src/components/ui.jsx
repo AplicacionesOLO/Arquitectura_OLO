@@ -2,7 +2,7 @@
 // COMPONENTES UI · Primitivas compartidas
 // ═══════════════════════════════════════════════════════════════════════════
 import { Children } from "react";
-import { MODULE_COLORS, OPS_COLORS, CLUSTER_COLORS, STATUS_VIS, MATURITY_TINTS, PRIORITY_LABEL } from "../data/constants.js";
+import { MODULE_COLORS, OPS_COLORS, CLUSTER_COLORS, STATUS_VIS, MATURITY_TINTS, PRIORITY_LABEL, DESIGN } from "../data/constants.js";
 
 export function StatusBadge({ status, size="sm" }) {
   const t = STATUS_VIS[status] ?? STATUS_VIS.inferred;
@@ -11,14 +11,14 @@ export function StatusBadge({ status, size="sm" }) {
 
 export function ModuleChip({ code, color, size="sm" }) {
   const c = color ?? MODULE_COLORS[code] ?? OPS_COLORS[code] ?? CLUSTER_COLORS[code] ?? "#7f8c8d";
-  return <span style={{ display:"inline-block", fontSize:size==="lg"?12:10, fontWeight:700, color:c, background:c+"18", border:`1px solid ${c}44`, padding:size==="lg"?"4px 10px":"2px 7px", borderRadius:4, letterSpacing:"0.05em", fontFamily:"'JetBrains Mono','Consolas',monospace" }}>{code}</span>;
+  return <span style={{ display:"inline-block", fontSize:size==="lg"?12:10, fontWeight:700, color:c, background:c+"18", border:`1px solid ${c}44`, padding:size==="lg"?"4px 10px":"2px 7px", borderRadius:4, letterSpacing:"0.05em", fontFamily:DESIGN.font }}>{code}</span>;
 }
 
 export function KPICard({ label, value, color, sub }) {
-  return <div style={{ background:"#ffffff", border:"1px solid #e0e0e0", borderTop:`3px solid ${color}`, borderRadius:10, padding:"12px 16px", flex:"1 1 130px", minWidth:120 }}>
-    <div style={{ fontSize:26, fontWeight:800, color, lineHeight:1.1 }}>{value}</div>
-    <div style={{ fontSize:11, color:"#666", marginTop:4, fontWeight:500 }}>{label}</div>
-    {sub && <div style={{ fontSize:10, color:"#999", marginTop:2 }}>{sub}</div>}
+  return <div style={{ background:DESIGN.surface, border:`1px solid ${DESIGN.border}`, borderTop:`3px solid ${color}`, borderRadius:DESIGN.radius, padding:"12px 16px", flex:"1 1 130px", minWidth:120, boxShadow:DESIGN.shadowCard }}>
+    <div style={{ fontSize:26, fontWeight:700, color, lineHeight:1.1 }}>{value}</div>
+    <div style={{ fontSize:13, color:DESIGN.inkSoft, marginTop:4, fontWeight:400 }}>{label}</div>
+    {sub && <div style={{ fontSize:12, color:DESIGN.muted, marginTop:2 }}>{sub}</div>}
   </div>;
 }
 
@@ -33,22 +33,22 @@ export function CategoryHeader({ icon, label, count, sub, color }) {
 }
 
 export function CloseButton({ onClick }) {
-  return <button onClick={onClick} style={{ background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:18, lineHeight:1, padding:4 }}>✕</button>;
+  return <button onClick={onClick} title="Cerrar" style={{ background:DESIGN.sunken2, border:`1px solid ${DESIGN.border}`, borderRadius:8, cursor:"pointer", color:DESIGN.inkSoft, fontSize:14, width:32, height:32, lineHeight:1, padding:0 }}>✕</button>;
 }
 
 export function SectionTitle({ children }) {
-  return <h3 style={{ fontSize:16, fontWeight:700, color:"#1D1D1B", margin:"0 0 4px 0", letterSpacing:"-0.01em" }}>{children}</h3>;
+  return <h3 style={{ fontSize:16, fontWeight:700, color:DESIGN.ink, margin:"0 0 4px 0" }}>{children}</h3>;
 }
 
 export function DetailPanel({ item, onClose }) {
   if (!item) return null;
-  const color = item.color ?? "#888";
-  return <div style={{ background:"#ffffff", border:`1px solid ${color}55`, borderLeft:`4px solid ${color}`, borderRadius:10, padding:"16px 20px", marginBottom:22 }}>
+  const color = item.color ?? DESIGN.muted;
+  return <div style={{ background:DESIGN.surface, border:`1px solid ${DESIGN.border}`, borderLeft:`4px solid ${color}`, borderRadius:10, padding:"16px 20px", marginBottom:22, boxShadow:DESIGN.shadowCard }}>
     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:16 }}>
       <div style={{ flex:1 }}>
         <div style={{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" }}>
-          {item.code && <span style={{ fontSize:11, fontWeight:700, color, background:color+"18", border:`1px solid ${color}44`, padding:"3px 9px", borderRadius:4, letterSpacing:"0.08em", fontFamily:"'JetBrains Mono','Consolas',monospace" }}>{item.code}</span>}
-          <h3 style={{ margin:0, fontSize:17, fontWeight:700, color:"#1D1D1B" }}>{item.name}</h3>
+          {item.code && <span style={{ fontSize:11, fontWeight:700, color, background:color+"18", border:`1px solid ${color}44`, padding:"3px 9px", borderRadius:4, letterSpacing:"0.05em", fontFamily:DESIGN.font }}>{item.code}</span>}
+          <h3 style={{ margin:0, fontSize:17, fontWeight:700, color:DESIGN.ink }}>{item.name}</h3>
           {item.status && <StatusBadge status={item.status} />}
         </div>
         {item.role && <div style={{ fontSize:12, color:"#777", marginTop:4, fontStyle:"italic" }}>{item.role}</div>}
@@ -65,7 +65,7 @@ export function DetailPanel({ item, onClose }) {
     {item.note && <div style={{ fontSize:12, color:"#666", lineHeight:1.6, padding:"10px 14px", background:"#fafafa", borderRadius:6, marginBottom:14, fontStyle:"italic" }}>{item.note}</div>}
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))", gap:10 }}>
       {item.coverage && item.coverage.length>0 && <DetailBox label="⬡ Módulos que lo soportan" accent="#f39c12"><div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>{item.coverage.map(c=><ModuleChip key={c} code={c} size="lg"/>)}</div></DetailBox>}
-      {item.entities && item.entities.length>0 && <DetailBox label={`◫ Entidades inferidas · ${item.entities.length}`} accent="#7B1FA2"><div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>{item.entities.map(e=><span key={e} style={{ fontSize:10, color:"#555", background:"#f5f5f5", border:"1px solid #e0e0e0", padding:"2px 7px", borderRadius:3, fontFamily:"'JetBrains Mono','Consolas',monospace" }}>{e}</span>)}</div></DetailBox>}
+      {item.entities && item.entities.length>0 && <DetailBox label={`◫ Entidades inferidas · ${item.entities.length}`} accent="#7B1FA2"><div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>{item.entities.map(e=><span key={e} style={{ fontSize:10, color:"#555", background:"#f5f5f5", border:"1px solid #e0e0e0", padding:"2px 7px", borderRadius:3, fontFamily:DESIGN.font }}>{e}</span>)}</div></DetailBox>}
     </div>
   </div>;
 }

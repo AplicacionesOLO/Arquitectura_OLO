@@ -89,23 +89,23 @@ export function LoginScreen() {
 
         {mode==="login" && <div style={{ textAlign:"right", marginTop:8 }}>
           <button type="button" onClick={handleForgot} disabled={busy}
-            style={{ background:"none", border:"none", color:"#00838f", fontSize:11, cursor:"pointer", fontWeight:600, padding:0 }}>
+            style={{ background:"none", border:"none", color:"#0f172a", fontSize:11, cursor:"pointer", fontWeight:600, padding:0 }}>
             ¿Olvidaste tu contraseña?
           </button>
         </div>}
 
         {error && <div style={{ marginTop:14, padding:"9px 12px", background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:8, color:"#b91c1c", fontSize:12, lineHeight:1.5 }}>{error}</div>}
-        {notice && <div style={{ marginTop:14, padding:"9px 12px", background:"#e0f7fa", border:"1px solid #80cbc4", borderRadius:8, color:"#00695c", fontSize:12, lineHeight:1.5 }}>{notice}</div>}
+        {notice && <div style={{ marginTop:14, padding:"9px 12px", background:"#f1f5f9", border:"1px solid #cbd5e1", borderRadius:8, color:"#334155", fontSize:12, lineHeight:1.5 }}>{notice}</div>}
 
         <button type="submit" disabled={busy || !email || !password || (mode==="signup" && !password2)}
-          style={{ width:"100%", marginTop:16, padding:"10px", background: busy?"#80cbc4":"#00838f", color:"#fff", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor: busy?"default":"pointer", transition:"background 0.15s" }}>
+          style={{ width:"100%", marginTop:16, padding:"10px", background: busy?"#94a3b8":"#0f172a", color:"#fff", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor: busy?"default":"pointer", transition:"background 0.15s" }}>
           {busy?"Procesando…":mode==="signup"?"Crear cuenta":"Iniciar sesión"}
         </button>
 
         <div style={{ textAlign:"center", marginTop:12 }}>
           {mode==="login"
-            ? <span style={{ fontSize:11, color:"#64748b" }}>¿No tienes cuenta? <button type="button" onClick={()=>switchMode("signup")} style={{ background:"none", border:"none", color:"#00838f", fontSize:11, fontWeight:700, cursor:"pointer", padding:0 }}>Crear cuenta</button></span>
-            : <span style={{ fontSize:11, color:"#64748b" }}>¿Ya tienes cuenta? <button type="button" onClick={()=>switchMode("login")} style={{ background:"none", border:"none", color:"#00838f", fontSize:11, fontWeight:700, cursor:"pointer", padding:0 }}>Iniciar sesión</button></span>}
+            ? <span style={{ fontSize:11, color:"#64748b" }}>¿No tienes cuenta? <button type="button" onClick={()=>switchMode("signup")} style={{ background:"none", border:"none", color:"#0f172a", fontSize:11, fontWeight:700, cursor:"pointer", padding:0 }}>Crear cuenta</button></span>
+            : <span style={{ fontSize:11, color:"#64748b" }}>¿Ya tienes cuenta? <button type="button" onClick={()=>switchMode("login")} style={{ background:"none", border:"none", color:"#0f172a", fontSize:11, fontWeight:700, cursor:"pointer", padding:0 }}>Iniciar sesión</button></span>}
         </div>
 
         <div style={{ display:"flex", alignItems:"center", gap:10, margin:"18px 0" }}>

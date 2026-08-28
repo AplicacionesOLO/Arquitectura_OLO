@@ -43,6 +43,8 @@ import { ERDiagram } from "../schemas/ERDiagram.jsx";
 import { ERSchemaView } from "../schemas/ERSchemaView.jsx";
 import { CrossSchemaView } from "../schemas/CrossSchemaView.jsx";
 import { VeGlobalSummary } from "../schemas/VeGlobalSummary.jsx";
+import { SqlBackboneView } from "./SqlBackboneView.jsx";
+import { DESIGN } from "../data/constants.js";
 
 function IntegTable({ rows }) {
   const thS={padding:"10px 14px",color:"#666",fontWeight:700,letterSpacing:"0.05em",fontSize:11,textTransform:"uppercase"};
@@ -74,6 +76,7 @@ const VE_CATS = ["ve_global", ...WMS_VE_CATS, ...ERP_VE_CATS, ...VE_DIRECT_CATS]
 const CR_CATS = Object.keys(CAT_META).filter(k => !VE_CATS.includes(k));
 
 export function IntegrationsView({ searchQuery="" }) {
+  const [mainView, setMainView] = useState("modulos"); // "modulos" | "backbone"
   const [cat, setCat] = useState("global");
   const [fFrom, setFFrom] = useState("*");
   const [fTo, setFTo] = useState("*");
@@ -104,7 +107,17 @@ export function IntegrationsView({ searchQuery="" }) {
   const selStyle = { fontSize:11, border:"1px solid #ddd", borderRadius:6, padding:"5px 8px", background:"#fff", color:"#333", cursor:"pointer", fontFamily:"inherit" };
   const inputStyle = { fontSize:11, border:"1px solid #ddd", borderRadius:6, padding:"5px 8px", background:"#fff", color:"#333", fontFamily:"inherit", minWidth:160 };
 
-  return <div style={{ display:"flex", gap:20, alignItems:"flex-start" }}>
+  return <div>
+    {/* Vista: Integraciones de módulos (existente) vs Backbone SQL (homólogo
+        de "Ecosistema › Integraciones" en BPA Mayoreo — datos propios de OLO) */}
+    <div style={{ display:"flex", gap:6, marginBottom:16 }}>
+      {[["modulos","Integraciones de módulos"],["backbone","Backbone SQL"]].map(([id,label]) => {
+        const active = mainView===id;
+        return <button key={id} onClick={()=>setMainView(id)} style={{ padding:"7px 16px", borderRadius:8, border:`1px solid ${active?DESIGN.ink:DESIGN.border}`, background:active?DESIGN.ink:"#fff", color:active?"#fff":DESIGN.inkSoft, fontWeight:active?700:400, fontSize:13, cursor:"pointer", fontFamily:DESIGN.font }}>{label}</button>;
+      })}
+    </div>
+
+    {mainView==="backbone" ? <SqlBackboneView/> : <div style={{ display:"flex", gap:20, alignItems:"flex-start" }}>
     {/* Submenú lateral de categorías */}
     <nav style={{ width:215, minWidth:215, background:"#fff", border:"1px solid #e0e0e0", borderRadius:10, overflow:"hidden", flexShrink:0, position:"sticky", top:20 }}>
       <div style={{ padding:"10px 14px", borderBottom:"1px solid #f0f0f0", background:"#fafafa", fontSize:10, fontWeight:700, color:"#888", letterSpacing:"0.08em", textTransform:"uppercase" }}>Categoría</div>
@@ -308,5 +321,6 @@ export function IntegrationsView({ searchQuery="" }) {
     </>}
 
     </div>
+  </div>}
   </div>;
 }

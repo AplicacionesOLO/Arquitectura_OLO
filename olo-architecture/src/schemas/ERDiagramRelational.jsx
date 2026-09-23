@@ -18,7 +18,8 @@ export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTa
   const erDragRef  = useRef(null);
   const erPanDgRef = useRef(null);
   const erSvgRef   = useRef(null);
-  const svgDims    = useRef({w:3000,h:2800});
+  const boxRef     = useRef(null);      // contenedor del lienzo (área visible)
+  const limitesRef = useRef({});        // clúster de cada tabla: x/y mínimos y máximos
 
   useEffect(()=>{ document.body.style.overflow=fullscr?'hidden':''; return()=>{document.body.style.overflow='';};}, [fullscr]);
 
@@ -58,24 +59,33 @@ export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTa
 
   const svgW=3*(COL_W+COL_GAP)+PX*2-COL_GAP;
   const svgH=Math.max(...colH)+PY*2+40;
-  svgDims.current={w:svgW, h:svgH};
+
+  // Una tabla solo puede moverse dentro del recuadro de su clúster
+  const limites = Object.fromEntries(Object.entries(tPos).map(([t,p])=>{
+    const g=gPos[p.gk];
+    return [t, { x0:g.x+4, x1:g.x+g.w-p.w-4, y0:g.y+22, y1:Math.max(g.y+22, g.y+g.h-p.h-4) }];
+  }));
+  useEffect(() => { limitesRef.current = limites; }); // el arrastre lee los límites vigentes
+  const acotar = (t, x, y) => { const l=limites[t]; return l ? { x:Math.min(l.x1,Math.max(l.x0,x)), y:Math.min(l.y1,Math.max(l.y0,y)) } : { x, y }; };
 
   const effectiveTPos = Object.fromEntries(
-    Object.entries(tPos).map(([t,p])=>[t, posOv[t]?{...p,...posOv[t]}:p])
+    Object.entries(tPos).map(([t,p])=>[t, posOv[t]?{...p,...acotar(t, posOv[t].x, posOv[t].y)}:p])
   );
 
   useEffect(()=>{
     const onMove=(e)=>{
       const svg=erSvgRef.current; if(!svg) return;
       const r=svg.getBoundingClientRect();
-      const {w,h}=svgDims.current;
-      const rx=(e.clientX-r.left)*(w/r.width), ry=(e.clientY-r.top)*(h/r.height);
+      const rx=e.clientX-r.left, ry=e.clientY-r.top;
       const pd=erPanDgRef.current;
       if(pd){ const np={x:pd.px0+(rx-pd.mx0),y:pd.py0+(ry-pd.my0)}; erPanRef.current=np; setErPan(np); return; }
       const d=erDragRef.current; if(!d) return;
       const dx=(rx-d.mx0)/erZoomRef.current, dy=(ry-d.my0)/erZoomRef.current;
       if(Math.abs(dx)>2||Math.abs(dy)>2) d.moved=true;
-      setPosOv(prev=>({...prev,[d.id]:{x:d.ox+dx,y:d.oy+dy}}));
+      const l=limitesRef.current[d.id];
+      const x=d.ox+dx, y=d.oy+dy;
+      const np=l?{x:Math.min(l.x1,Math.max(l.x0,x)), y:Math.min(l.y1,Math.max(l.y0,y))}:{x,y};
+      setPosOv(prev=>({...prev,[d.id]:np}));
     };
     const onUp=()=>{
       erPanDgRef.current=null;
@@ -94,8 +104,7 @@ export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTa
       const factor=e.deltaY<0?1.15:1/1.15;
       const newZ=Math.max(0.1,Math.min(8,erZoomRef.current*factor));
       const r=svg.getBoundingClientRect();
-      const dw=svgDims.current.w, dh=svgDims.current.h;
-      const rx=(e.clientX-r.left)*(dw/r.width), ry=(e.clientY-r.top)*(dh/r.height);
+      const rx=e.clientX-r.left, ry=e.clientY-r.top;
       const dz=newZ/erZoomRef.current;
       const np={x:rx-dz*(rx-erPanRef.current.x),y:ry-dz*(ry-erPanRef.current.y)};
       erZoomRef.current=newZ; erPanRef.current=np; setErZoom(newZ); setErPan(np);
@@ -104,7 +113,23 @@ export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTa
     return()=>svg.removeEventListener('wheel',onWh);
   },[fullscr]);
 
-  const resetER=()=>{ setPosOv({}); setErZoom(1); setErPan({x:0,y:0}); erZoomRef.current=1; erPanRef.current={x:0,y:0}; localStorage.removeItem(storageKey+'-pos'); };
+  const ajustar=()=>{
+    const el=boxRef.current; if(!el) return;
+    const z=Math.max(0.1, Math.min(1.2, (el.clientWidth-24)/svgW, (el.clientHeight-24)/svgH));
+    const np={x:(el.clientWidth-svgW*z)/2, y:12};
+    erZoomRef.current=z; erPanRef.current=np; setErZoom(z); setErPan(np);
+  };
+  // zoom con los botones: centrado en el área visible
+  const zoomBoton=(f)=>{
+    const el=boxRef.current; const cx=el?el.clientWidth/2:0, cy=el?el.clientHeight/2:0;
+    const nz=Math.max(0.1,Math.min(8,erZoomRef.current*f)); const dz=nz/erZoomRef.current;
+    const np={x:cx-dz*(cx-erPanRef.current.x), y:cy-dz*(cy-erPanRef.current.y)};
+    erZoomRef.current=nz; erPanRef.current=np; setErZoom(nz); setErPan(np);
+  };
+  const resetER=()=>{ setPosOv({}); localStorage.removeItem(storageKey+'-pos'); ajustar(); };
+  // al abrir (y al cambiar de pantalla completa) el diagrama arranca encuadrado
+  useEffect(()=>{ const id=requestAnimationFrame(ajustar); return ()=>cancelAnimationFrame(id); // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[fullscr, storageKey]);
 
   const edgePts=(from,to)=>{
     const f=effectiveTPos[from],t=effectiveTPos[to]; if(!f||!t) return null;
@@ -145,16 +170,17 @@ export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTa
       <div style={{ padding:"7px 12px", background:"#1e293b", borderBottom:"1px solid #334155", fontSize:11, color:"#94a3b8", display:"flex", gap:12, alignItems:"center", flexShrink:0 }}>
         <span style={{ fontWeight:700, color:"#e2e8f0" }}>Diagrama Relacional FK</span>
         <span style={{ display:"inline-flex", alignItems:"center", gap:4 }}><LinkIcon/> {visRows.length} relaciones</span>
-        {!selectedTable && <span style={{ color:"#475569" }}>Click tabla → resalta FK · Arrastra → mueve · Scroll → zoom</span>}
+        {!selectedTable && <span style={{ color:"#94a3b8" }}>Click tabla → resalta FK · Arrastra tabla → la reubica dentro de su módulo · Arrastra el fondo → desplaza · Rueda → zoom</span>}
         {selectedTable && <span style={{ color:"#93c5fd", fontWeight:600, fontSize:10 }}>
           <b style={{color:"#f59e0b"}}>⬆</b> apunta desde {selectedTable} &nbsp;·&nbsp; <b style={{color:"#ef4444"}}>⬇</b> apunta hacia {selectedTable}
         </span>}
         <div style={{ marginLeft:"auto", display:"flex", gap:6, alignItems:"center" }}>
           <div style={{ display:"flex", alignItems:"center", gap:3, background:"rgba(255,255,255,0.07)", borderRadius:5, padding:"2px 7px" }}>
-            <button onClick={()=>{const nz=Math.min(8,erZoomRef.current*1.25);erZoomRef.current=nz;setErZoom(nz);}} style={{ background:"none",border:"none",color:"#94a3b8",cursor:"pointer",fontSize:15,lineHeight:1 }}>+</button>
+            <button onClick={()=>zoomBoton(1.25)} title="Acercar" style={{ background:"none",border:"none",color:"#94a3b8",cursor:"pointer",fontSize:15,lineHeight:1 }}>+</button>
             <span style={{ fontSize:10, color:"#64748b", minWidth:34, textAlign:"center" }}>{Math.round(erZoom*100)}%</span>
-            <button onClick={()=>{const nz=Math.max(0.1,erZoomRef.current/1.25);erZoomRef.current=nz;setErZoom(nz);}} style={{ background:"none",border:"none",color:"#94a3b8",cursor:"pointer",fontSize:15,lineHeight:1 }}>−</button>
-            <button onClick={resetER} style={{ background:"none",border:"none",color:"#64748b",cursor:"pointer",fontSize:10 }} title="Resetear posiciones">↺</button>
+            <button onClick={()=>zoomBoton(1/1.25)} title="Alejar" style={{ background:"none",border:"none",color:"#94a3b8",cursor:"pointer",fontSize:15,lineHeight:1 }}>−</button>
+            <button onClick={ajustar} title="Encuadrar todo el diagrama" style={{ background:"none",border:"none",color:"#94a3b8",cursor:"pointer",fontSize:11 }}>Ajustar</button>
+            <button onClick={resetER} style={{ background:"none",border:"none",color:"#64748b",cursor:"pointer",fontSize:10 }} title="Volver las tablas a su posición original">↺</button>
           </div>
           {selectedTable && <button onClick={()=>setSelectedTable(null)} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, border:"1px solid #334155", background:"transparent", color:"#94a3b8", cursor:"pointer" }}>✕</button>}
           <button onClick={()=>setFullscr(f=>!f)} style={{ fontSize:13, padding:"3px 8px", borderRadius:5, border:"1px solid #334155", background:fullscr?"#1d4ed8":"transparent", color:fullscr?"#fff":"#94a3b8", cursor:"pointer" }} title="Pantalla completa">
@@ -162,8 +188,8 @@ export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTa
           </button>
         </div>
       </div>
-      <div style={{ overflow:"auto", flex:1, background:"#f8faff" }}>
-      <svg ref={erSvgRef} width={svgW} height={svgH} style={{ display:"block", fontFamily:"'Segoe UI',sans-serif" }}>
+      <div ref={boxRef} style={{ overflow:"hidden", ...(fullscr ? { flex:1, minHeight:0 } : { height:"min(72vh, 760px)" }), background:"#f8faff", position:"relative" }}>
+      <svg ref={erSvgRef} width="100%" height="100%" style={{ display:"block", fontFamily:"'Segoe UI',sans-serif", userSelect:"none" }}>
         <defs>
           {[["fkD","#94a3b8"],["fkHL","#1d4ed8"],["fkDep","#f59e0b"],["fkImp","#ef4444"]].map(([id,c])=>(
             <marker key={id} id={id} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
@@ -171,16 +197,16 @@ export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTa
             </marker>
           ))}
         </defs>
-        <g transform={`translate(${erPan.x},${erPan.y}) scale(${erZoom})`}>
-        <rect width={svgW} height={svgH} fill="transparent"
+        {/* Fondo que capta el arrastre: cubre SIEMPRE todo el lienzo (no se mueve con el contenido) */}
+        <rect x={0} y={0} width="100%" height="100%" fill="transparent"
           style={{cursor:'grab'}}
           onMouseDown={e=>{
             if(erDragRef.current) return;
             const r=erSvgRef.current?.getBoundingClientRect(); if(!r) return;
-            const {w,h}=svgDims.current;
-            erPanDgRef.current={mx0:(e.clientX-r.left)*(w/r.width),my0:(e.clientY-r.top)*(h/r.height),px0:erPanRef.current.x,py0:erPanRef.current.y};
+            erPanDgRef.current={mx0:e.clientX-r.left,my0:e.clientY-r.top,px0:erPanRef.current.x,py0:erPanRef.current.y};
           }}
         />
+        <g transform={`translate(${erPan.x},${erPan.y}) scale(${erZoom})`} style={{ pointerEvents:"none" }}>
 
         {Object.entries(gPos).map(([gk,gp])=>{
           const g=GR[gk];
@@ -233,13 +259,12 @@ export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTa
           const dim=rel==="none";
           let y0=pos.y+TH_HD+TH_PK;
           return (
-            <g key={table} style={{ cursor:"grab", opacity:dim?0.15:1 }}
+            <g key={table} style={{ cursor:"grab", opacity:dim?0.15:1, pointerEvents:"all" }}
               onClick={e=>{ if(!erDragRef.current?.moved) setSelectedTable(prev=>prev===table?null:table); }}
               onMouseDown={e=>{
                 e.stopPropagation();
                 const r=erSvgRef.current?.getBoundingClientRect(); if(!r) return;
-                const {w,h}=svgDims.current;
-                erDragRef.current={id:table,ox:pos.x,oy:pos.y,mx0:(e.clientX-r.left)*(w/r.width),my0:(e.clientY-r.top)*(h/r.height),moved:false};
+                erDragRef.current={id:table,ox:pos.x,oy:pos.y,mx0:e.clientX-r.left,my0:e.clientY-r.top,moved:false};
               }}>
               <rect x={pos.x} y={pos.y} width={pos.w} height={pos.h} rx={5} fill={bgCol} stroke={bdrCol} strokeWidth={isSel?2:0.9}/>
               <rect x={pos.x} y={pos.y} width={pos.w} height={TH_HD} rx={5} fill={isSel?col:col+"22"}/>

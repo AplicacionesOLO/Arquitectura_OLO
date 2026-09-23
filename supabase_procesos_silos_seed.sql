@@ -10,6 +10,9 @@
 -- Safe to commit: solo datos de procesos, sin secretos.
 -- ═══════════════════════════════════════════════════════════════════════════
 
+-- Silos nuevos (no existían en la base)
+insert into public.procesos_categorias (id, num, label, color) values ('cross_docking', 29, 'Cross Docking', '#ea580c') on conflict (id) do nothing;
+
 do $$
 declare
   v_macro uuid;
@@ -1195,6 +1198,102 @@ begin
       values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__control_de_pedidos_por_muelle.jpg', 'eFlow WMS · Reportes › Control de Pedidos por Muelle.jpg', 'image/jpeg', 50313);
     insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
       values ('neg_transporte_local', v_proc, 2, '5. Entregar al chofer la guía y las facturas del viaje y registrar la hora de salida', 4, 'TRL-03.05') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- XDK-01 · Recepción y clasificación en sorter (Nivel 1)  (Cross Docking › S1 · Cross-docking en sorter (Mecalux SORTER CLIRO))
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'cross_docking' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Cross-docking en sorter (Mecalux SORTER CLIRO)'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order)
+      select 'cross_docking', null, 0, 'S1 · Cross-docking en sorter (Mecalux SORTER CLIRO)', coalesce(max(sort_order), -1) + 1
+      from public.procesos_nodes where categoria_id = 'cross_docking' and level = 0
+      returning id into v_macro;
+  end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'XDK-01') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'cross_docking', v_macro, 1, 'Recepción y clasificación en sorter (Nivel 1)', coalesce(max(sort_order), -1) + 1, 'XDK-01'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('cross_docking', v_proc, 2, '1. Ingresa el expediente / orden de recepción (ej. CONSOL) con múltiples productos; se ve en Control de órdenes › Orden de recepción', 0, 'XDK-01.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__n1_control_ordenes.jpg', 'SORTER CLIRO · Nivel 1 › Control de órdenes de recepción.jpg', 'image/jpeg', null);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('cross_docking', v_proc, 2, '2. Escanear cada bulto en el Escaner de Nivel 1; una lectura que no corresponde queda RECHAZADA', 1, 'XDK-01.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__n1_escaner.jpg', 'SORTER CLIRO · Nivel 1 › Escaner (Nivel 1).jpg', 'image/jpeg', null);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('cross_docking', v_proc, 2, '3. Validar la lectura contra el Catálogo de productos (producto, etiqueta, proveedor)', 2, 'XDK-01.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__n1_catalogo.jpg', 'SORTER CLIRO · Nivel 1 › Catálogo de productos.jpg', 'image/jpeg', null);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('cross_docking', v_proc, 2, '4. El sistema descompone la orden en líneas por Producto y Tienda de destino (Control de órdenes › Líneas)', 3, 'XDK-01.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__n1_lineas.jpg', 'SORTER CLIRO · Nivel 1 › Control de órdenes · Líneas (cross-docking).jpg', 'image/jpeg', null);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('cross_docking', v_proc, 2, '5. Clasificar cada bulto hacia su bajada: automático (sorter) o manual; las columnas Automático y Manual lo registran', 4, 'XDK-01.05') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__n1_lineas.jpg', 'SORTER CLIRO · Nivel 1 › Control de órdenes · Líneas (cross-docking).jpg', 'image/jpeg', null);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('cross_docking', v_proc, 2, '6. Monitorear el avance por bajada y el % de la orden (pestaña Estatus de bajadas y Home)', 5, 'XDK-01.06') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__n1_estatus_bajadas.jpg', 'SORTER CLIRO · Nivel 1 › Control de órdenes · Estatus de bajadas.jpg', 'image/jpeg', null);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('cross_docking', v_proc, 2, '7. Reasignar una bajada con «Transferir Bajada» cuando se requiera', 6, 'XDK-01.07') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__n1_control_ordenes.jpg', 'SORTER CLIRO · Nivel 1 › Control de órdenes de recepción.jpg', 'image/jpeg', null);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('cross_docking', v_proc, 2, '8. Revisar productos pedidos y tiempos de proceso en Reportes (Nivel 1)', 7, 'XDK-01.08') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__n1_reportes.jpg', 'SORTER CLIRO · Nivel 1 › Reportes (Nivel 1).jpg', 'image/jpeg', null);
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- XDK-02 · Despacho por viajes en sorter (Planta Baja)  (Cross Docking › S1 · Cross-docking en sorter (Mecalux SORTER CLIRO))
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'cross_docking' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Cross-docking en sorter (Mecalux SORTER CLIRO)'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order)
+      select 'cross_docking', null, 0, 'S1 · Cross-docking en sorter (Mecalux SORTER CLIRO)', coalesce(max(sort_order), -1) + 1
+      from public.procesos_nodes where categoria_id = 'cross_docking' and level = 0
+      returning id into v_macro;
+  end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'XDK-02') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'cross_docking', v_macro, 1, 'Despacho por viajes en sorter (Planta Baja)', coalesce(max(sort_order), -1) + 1, 'XDK-02'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('cross_docking', v_proc, 2, '1. Los bultos clasificados se agrupan en viajes por bajada y cliente (Control de viajes › Viajes)', 0, 'XDK-02.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__pb_control_viajes.jpg', 'SORTER CLIRO · Planta Baja › Control de viajes.jpg', 'image/jpeg', null);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('cross_docking', v_proc, 2, '2. Seguir el avance de cada bajada y sus viajes (pestaña Estatus de bajadas)', 1, 'XDK-02.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__pb_estatus_bajadas.jpg', 'SORTER CLIRO · Planta Baja › Control de viajes · Estatus de bajadas.jpg', 'image/jpeg', null);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('cross_docking', v_proc, 2, '3. Leer cada caja en el Escaner de Planta Baja', 2, 'XDK-02.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__pb_escaner.jpg', 'SORTER CLIRO · Planta Baja › Escaner (Planta Baja).jpg', 'image/jpeg', null);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('cross_docking', v_proc, 2, '4. Verificar el estatus de cada caja en la pestaña Cajas (DESVIADO / Desvío OK)', 3, 'XDK-02.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__pb_cajas.jpg', 'SORTER CLIRO · Planta Baja › Control de viajes · Cajas.jpg', 'image/jpeg', null);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('cross_docking', v_proc, 2, '5. Reasignar un viaje a otra bajada con «Transferir Bajada» si se requiere', 4, 'XDK-02.05') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__pb_control_viajes.jpg', 'SORTER CLIRO · Planta Baja › Control de viajes.jpg', 'image/jpeg', null);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('cross_docking', v_proc, 2, '6. Despachar el viaje hacia la tienda (la carga y el despacho físico siguen en P4 · Despacho EPA)', 5, 'XDK-02.06') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__pb_control_viajes.jpg', 'SORTER CLIRO · Planta Baja › Control de viajes.jpg', 'image/jpeg', null);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('cross_docking', v_proc, 2, '7. Revisar tiempos de proceso de viajes y cajas en Reportes (Planta Baja)', 6, 'XDK-02.07') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__pb_reportes.jpg', 'SORTER CLIRO · Planta Baja › Reportes (Planta Baja).jpg', 'image/jpeg', null);
   end if;
   v_macro := null; v_proc := null;
 end $$;

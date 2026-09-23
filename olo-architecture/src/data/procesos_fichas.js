@@ -8,6 +8,7 @@
 import { PROCESOS_CEDI } from "./procesos_cedi.js";
 import { PROCESOS_SILOS } from "./procesos_silos.js";
 import { WMS_INDEX } from "./wms_links.js";
+import { SORTER_BY_ID } from "./sorter_manual.js";
 
 function normalizarBorrador(p) {
   return {
@@ -15,7 +16,9 @@ function normalizarBorrador(p) {
     entradaDe: [], salidaA: [], registros: [], noConformidades: [], datosClave: [], conceptos: [],
     ...p,
     // la pantalla del paso se muestra con su ruta en el manual
-    pasos: p.pasos.map(s => ({ ...s, pantalla: s.screen && WMS_INDEX[s.screen] ? `${WMS_INDEX[s.screen].module} › ${WMS_INDEX[s.screen].option}` : null })),
+    pasos: p.pasos.map(s => ({ ...s, pantalla:
+      s.sistema === "sorter" && SORTER_BY_ID[s.screen] ? `SORTER CLIRO › ${SORTER_BY_ID[s.screen].modulo} › ${SORTER_BY_ID[s.screen].nombre}`
+      : s.screen && WMS_INDEX[s.screen] ? `${WMS_INDEX[s.screen].module} › ${WMS_INDEX[s.screen].option}` : null })),
   };
 }
 

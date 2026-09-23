@@ -9,6 +9,7 @@
 //
 //   pasos[].origen: "eflow_wms"     → la pantalla/campo/botón citado existe en el WMS
 //                   "control_tower" → documentado en el levantamiento de Torre de Control (WMH)
+//                   "mecalux_sorter"→ manual del SORTER CLIRO de Mecalux (mapeo funcional real)
 //                   "inferido"      → paso o regla sin documento de OLO (revisar)
 //   pasos[].screen: id de la pantalla del manual (abre captura y recorrido)
 //   tablas[].confianza: "media" = relacionada por nombre/semántica con eFlow
@@ -22,6 +23,19 @@ const FUENTE_WMS = "Borrador: pantallas reales de eFlow WMS 3.2.8.5 (crawl 23/09
 const e = (texto, screen, sistema = "eflow") => ({ texto, sistema, screen, origen: "eflow_wms" });
 const i = (texto, sistema = "fisico", screen = null) => ({ texto, sistema, screen, origen: "inferido" });
 const ct = (texto) => ({ texto, sistema: "torre", screen: null, origen: "control_tower" });
+const mx = (texto, screen) => ({ texto, sistema: "sorter", screen, origen: "mecalux_sorter" });
+
+// Silos que no existían en la base y se crean con el seed (id, num, label, color)
+export const SILOS_NUEVOS = [
+  { id: "cross_docking", num: 29, label: "Cross Docking", color: "#ea580c" },
+];
+const XDK = { silo: "cross_docking", siloLabel: "Cross Docking", macro: "S1 · Cross-docking en sorter (Mecalux SORTER CLIRO)", crearMacro: true,
+  borrador: false, compania: "EPA", fuente: "Manual de Usuario SORTER CLIRO (Mecalux), septiembre 2026 — mapeo funcional real." };
+const CONCEPTOS_SORTER = [
+  { termino: "Bajada", definicion: "Salida del sorter que corresponde a un destino (tienda / viaje)." },
+  { termino: "Automático vs. Manual", definicion: "Unidades clasificadas por el sorter sin intervención frente a las clasificadas a mano." },
+  { termino: "DESVIADO / Desvío OK", definicion: "Estatus de una caja en Planta Baja: desviada a su bajada y desvío confirmado." },
+];
 const t = (tabla, motivo) => ({ schema: "efw", tabla, motivo, confianza: "media" });
 
 const S = {
@@ -867,11 +881,59 @@ export const PROCESOS_SILOS = {
     conceptos: [],
     entradaDe: ["TRL-02"], salidaA: ["P9"],
   },
+
+  // ── Cross Docking · sorter Mecalux (SORTER CLIRO) — fuente: manual real ───
+  // Pantallas: data/sorter_manual.js. La integración técnica del sorter con
+  // eFlow WMS / EPA no está documentada (GAP), por eso no hay tablas de BD.
+  "XDK-01": {
+    ...XDK, nombre: "Recepción y clasificación en sorter (Nivel 1)",
+    objetivo: "Recibir el expediente consolidado de EPA y clasificar cada bulto hacia la bajada de su tienda de destino, sin pasar por almacenaje.",
+    alcance: "Desde que ingresa la orden de recepción (expediente) al sorter hasta que todos sus bultos quedan clasificados por bajada.",
+    responsables: ["Personal de cross-docking EPA (Nivel 1 del sorter)"],
+    pasos: [
+      mx("Ingresa el expediente / orden de recepción (ej. CONSOL) con múltiples productos; se ve en Control de órdenes › Orden de recepción", "n1_control_ordenes"),
+      mx("Escanear cada bulto en el Escaner de Nivel 1; una lectura que no corresponde queda RECHAZADA", "n1_escaner"),
+      mx("Validar la lectura contra el Catálogo de productos (producto, etiqueta, proveedor)", "n1_catalogo"),
+      mx("El sistema descompone la orden en líneas por Producto y Tienda de destino (Control de órdenes › Líneas)", "n1_lineas"),
+      mx("Clasificar cada bulto hacia su bajada: automático (sorter) o manual; las columnas Automático y Manual lo registran", "n1_lineas"),
+      mx("Monitorear el avance por bajada y el % de la orden (pestaña Estatus de bajadas y Home)", "n1_estatus_bajadas"),
+      mx("Reasignar una bajada con «Transferir Bajada» cuando se requiera", "n1_control_ordenes"),
+      mx("Revisar productos pedidos y tiempos de proceso en Reportes (Nivel 1)", "n1_reportes"),
+    ],
+    registros: ["Orden de recepción con su avance por bajada", "Histórico de lecturas del escaner", "Reportes con tiempo de proceso"],
+    noConformidades: [], tablas: [],
+    datosClave: ["Orden de recepción (expediente)", "Producto", "Tienda de destino", "Bajada", "Cantidad automática vs. manual", "Porcentaje de avance"],
+    conceptos: CONCEPTOS_SORTER,
+    relacionados: [{ silo: "log_almacenaje", nombre: "Cross Docking" }],
+    salidaA: ["XDK-02"],
+  },
+  "XDK-02": {
+    ...XDK, nombre: "Despacho por viajes en sorter (Planta Baja)",
+    objetivo: "Agrupar los bultos ya clasificados en viajes por bajada y cliente y dejarlos listos para despachar a cada tienda.",
+    alcance: "Desde la clasificación por bajada hasta el despacho del viaje; la carga y el despacho físico a tienda siguen en P4 · Despacho EPA.",
+    responsables: ["Personal de cross-docking EPA (Planta Baja del sorter)"],
+    pasos: [
+      mx("Los bultos clasificados se agrupan en viajes por bajada y cliente (Control de viajes › Viajes)", "pb_control_viajes"),
+      mx("Seguir el avance de cada bajada y sus viajes (pestaña Estatus de bajadas)", "pb_estatus_bajadas"),
+      mx("Leer cada caja en el Escaner de Planta Baja", "pb_escaner"),
+      mx("Verificar el estatus de cada caja en la pestaña Cajas (DESVIADO / Desvío OK)", "pb_cajas"),
+      mx("Reasignar un viaje a otra bajada con «Transferir Bajada» si se requiere", "pb_control_viajes"),
+      mx("Despachar el viaje hacia la tienda (la carga y el despacho físico siguen en P4 · Despacho EPA)", "pb_control_viajes"),
+      mx("Revisar tiempos de proceso de viajes y cajas en Reportes (Planta Baja)", "pb_reportes"),
+    ],
+    registros: ["Viajes por bajada", "Histórico de lecturas de cajas", "Reportes con tiempo de despacho"],
+    noConformidades: [], tablas: [],
+    datosClave: ["Viaje", "Bajada", "Cliente", "Cantidad vs. cantidad actual", "Caja (etiqueta, peso, código de tránsito)", "Estatus de desvío"],
+    conceptos: CONCEPTOS_SORTER,
+    relacionados: [{ silo: "log_almacenaje", nombre: "Cross Docking" }],
+    entradaDe: ["XDK-01"], salidaA: ["P4"],
+  },
 };
 
-// Metadatos comunes a todos los borradores
+// Metadatos comunes: por defecto son borradores sobre pantallas de eFlow; los
+// procesos con fuente propia (p. ej. el manual del sorter) lo declaran.
 for (const [codigo, p] of Object.entries(PROCESOS_SILOS)) {
   p.codigo = codigo;
-  p.borrador = true;
-  p.fuente = FUENTE_WMS;
+  p.borrador ??= true;
+  p.fuente ??= FUENTE_WMS;
 }

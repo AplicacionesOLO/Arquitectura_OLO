@@ -145,7 +145,7 @@ for (const p of Object.values(PROCESOS_CEDI)) {
 // Pasos de los borradores (procesos_silos.js): la pantalla viene en cada paso.
 for (const p of Object.values(PROCESOS_SILOS)) {
   p.pasos.forEach((st, i) => {
-    if (!st.screen) return;
+    if (!st.screen || !screens.some(x => x.id === st.screen)) return; // solo pantallas del WMS
     (PASO_PANTALLA[p.codigo] ||= {})[i] = [st.screen];
     const arr = (PANTALLA_PROCESOS[st.screen] ||= []);
     let e = arr.find(x => x.codigo === p.codigo);

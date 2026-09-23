@@ -13,6 +13,7 @@ import { WMS_INDEX, PASO_PANTALLA, PANTALLA_PROCESOS } from "../data/wms_links.j
 import { Presentacion } from "./Presentacion.jsx";
 import { slidesProceso } from "../lib/presentacion.js";
 import { WMH_BY_ID, pantallaWmhDePaso } from "../data/wmh_manual.js";
+import { SORTER_BY_ID } from "../data/sorter_manual.js";
 
 const BUCKET = "Detalles_Porcesos";
 const DRAWIO = import.meta.glob("../assets/procesos_cedi/*.drawio", { query: "?raw", import: "default" });
@@ -23,6 +24,7 @@ const SISTEMAS = {
   torre:       { label: "Torre de Control", color: "#16a34a" },
   softland:    { label: "Softland ERP",     color: "#c0392b" },
   apolo:       { label: "Apolo",            color: "#7c3aed" },
+  sorter:      { label: "SORTER CLIRO",     color: "#ea580c" },
   correo:      { label: "Correo",           color: "#b45309" },
   excel_drive: { label: "Excel / Drive",    color: "#2563eb" },
   fisico:      { label: "Físico",           color: "#64748b" },
@@ -35,6 +37,7 @@ const SCHEMA_META = {
 const CIA_COLOR = { COFERSA: "#1d4ed8", EPA: "#b45309", CEDI: "#475569", Borrador: "#b45309" };
 // Origen de cada paso de un borrador: hecho verificable en el WMS vs. supuesto a revisar
 const ORIGEN = { eflow_wms: { label: "eFlow WMS", color: "#0891b2", title: "La pantalla, campo o botón citado existe en eFlow WMS" },
+  mecalux_sorter: { label: "SORTER Mecalux", color: "#ea580c", title: "Del manual del SORTER CLIRO (Mecalux): mapeo funcional real" },
   control_tower: { label: "Torre de Control", color: "#16a34a", title: "Documentado en el levantamiento de Torre de Control (Operación › Torre de Control · WMH)" },
   inferido: { label: "Inferido", color: "#b45309", title: "Paso o regla sin documento de OLO: revisar y validar" } };
 
@@ -179,11 +182,21 @@ function WmhLink({ id, onNavigate }) {
   </button>;
 }
 
+// Pantalla del manual del SORTER CLIRO ligada a un paso en "sorter"
+function SorterLink({ id, onNavigate }) {
+  const w = SORTER_BY_ID[id];
+  return <button onClick={()=>onNavigate({ tab:"ops", view:"sorter", sorterScreen:id })} title="Ver la pantalla en el manual del SORTER CLIRO"
+    style={{ fontSize:10.5, fontWeight:700, color:"#ea580c", background:"#ea580c14", border:"1px solid #ea580c40", borderRadius:5, padding:"1px 6px", cursor:"pointer", fontFamily:DESIGN.font }}>
+    SORTER › {w.modulo} › {w.nombre} ↗
+  </button>;
+}
+
 function Pasos({ p, onNavigate }) {
   const links = PASO_PANTALLA[p.codigo] || {};
   const [show, setShow] = useState(null);
   const wmhDe = (s) => s.sistema === "torre" ? pantallaWmhDePaso(s.texto) : null;
-  const conPantalla = p.pasos.filter((s, i) => links[i] || wmhDe(s)).length;
+  const srtDe = (s) => s.sistema === "sorter" && SORTER_BY_ID[s.screen] ? s.screen : null;
+  const conPantalla = p.pasos.filter((s, i) => links[i] || wmhDe(s) || srtDe(s)).length;
   return <>
   {conPantalla > 0 && <button onClick={()=>setShow(0)} title="Presentar el proceso pantalla por pantalla"
     style={{ width:"100%", marginBottom:12, fontSize:12, fontWeight:700, color:"#fff", background:"#0891b2", border:"none", borderRadius:7, padding:"8px 12px", cursor:"pointer", fontFamily:DESIGN.font }}>
@@ -191,7 +204,8 @@ function Pasos({ p, onNavigate }) {
   </button>}
   {show != null && <Presentacion slides={slidesProceso(p.codigo)} start={show} onClose={()=>setShow(null)}
     onOpenScreen={(id) => { setShow(null); onNavigate({ tab:"ops", view:"wms", screen:id }); }}
-    onOpenWmh={(id) => { setShow(null); onNavigate({ tab:"ops", view:"wmh", wmhScreen:id }); }}/>}
+    onOpenWmh={(id) => { setShow(null); onNavigate({ tab:"ops", view:"wmh", wmhScreen:id }); }}
+    onOpenSorter={(id) => { setShow(null); onNavigate({ tab:"ops", view:"sorter", sorterScreen:id }); }}/>}
   <ol style={{ margin:0, padding:0, listStyle:"none", display:"grid", gap:10 }}>
     {p.pasos.map((s,i) => <li key={i} style={{ display:"flex", gap:10 }}>
       <span style={{ width:20, height:20, borderRadius:"50%", background:DESIGN.sunken2, color:DESIGN.inkSoft, fontSize:10.5, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{i+1}</span>
@@ -202,6 +216,7 @@ function Pasos({ p, onNavigate }) {
           {s.sistema && <SistemaChip sys={s.sistema}/>}
           {links[i]
             ? links[i].map(id => <PantallaLink key={id} id={id} onNavigate={onNavigate}/>)
+            : srtDe(s) ? <SorterLink id={srtDe(s)} onNavigate={onNavigate}/>
             : wmhDe(s) ? <WmhLink id={wmhDe(s)} onNavigate={onNavigate}/>
             : s.pantalla && <span style={{ fontSize:10.5, color:DESIGN.muted }}>{s.pantalla}</span>}
         </div>

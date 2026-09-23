@@ -5,12 +5,14 @@
 import { supabase } from "./supabaseClient.js";
 import { PROCESOS } from "../data/procesos_fichas.js";
 import { WMS_INDEX, PASO_PANTALLA } from "../data/wms_links.js";
-import { WMH_BY_ID, WMH_FLUJO, pantallaWmhDePaso } from "../data/wmh_manual.js";
+import { WMH_BY_ID, pantallaWmhDePaso } from "../data/wmh_manual.js";
+import { SORTER_BY_ID } from "../data/sorter_manual.js";
 
 export const wmsImgUrl = (name) => supabase.storage.from("Detalles_Porcesos").getPublicUrl(`wms-manual/${name}`).data.publicUrl;
 export const wmhImgUrl = (name) => supabase.storage.from("Detalles_Porcesos").getPublicUrl(`wmh-manual/${name}`).data.publicUrl;
+export const sorterImgUrl = (name) => supabase.storage.from("Detalles_Porcesos").getPublicUrl(`sorter-manual/${name}`).data.publicUrl;
 
-const SIS = { eflow:"eFlow WMS", handheld:"Handheld RF", torre:"Torre de Control", softland:"Softland ERP", apolo:"Apolo",
+const SIS = { eflow:"eFlow WMS", handheld:"Handheld RF", torre:"Torre de Control", sorter:"SORTER CLIRO", softland:"Softland ERP", apolo:"Apolo",
   correo:"Correo", excel_drive:"Excel / Drive", fisico:"Acción física" };
 
 // Diapositivas de un proceso: una por paso (en orden). Si un paso de eFlow
@@ -24,6 +26,12 @@ export function slidesProceso(codigo) {
     const id = links[i]?.[0];
     const w = id && WMS_INDEX[id];
     const wmh = !w && s.sistema === "torre" ? WMH_BY_ID[pantallaWmhDePaso(s.texto)] : null;
+    const srt = !w && s.sistema === "sorter" ? SORTER_BY_ID[s.screen] : null;
+    if (srt) return {
+      img: sorterImgUrl(srt.img), titulo: `Paso ${i + 1} de ${p.pasos.length}`, texto: s.texto,
+      donde: `SORTER CLIRO › ${srt.modulo} › ${srt.nombre}`, sistema: SIS.sorter,
+      contexto: `${codigo} · ${p.nombre}${p.borrador ? " · borrador" : ""}`, origen: s.origen || null, sorterId: srt.id,
+    };
     if (wmh) return {
       img: wmhImgUrl(wmh.img), titulo: `Paso ${i + 1} de ${p.pasos.length}`, texto: s.texto,
       donde: `Torre de Control › ${wmh.modulo === wmh.nombre ? wmh.nombre : `${wmh.modulo} › ${wmh.nombre}`}`, sistema: SIS.torre,
@@ -50,20 +58,4 @@ export function slidesPantalla(s) {
   for (const t of s.subtabs) if (t.img) out.push({ ...base, img: wmsImgUrl(t.img), titulo: `Pestaña «${t.name}»`, texto: `Se abre desde la pestaña «${t.name}» de la misma ventana.`, donde: `${s.option} › ${t.name}` });
   for (const n of s.nav) if (n.img && !s.subtabs.some(t => t.img === n.img)) out.push({ ...base, img: wmsImgUrl(n.img), titulo: n.toTitle, texto: `Se abre con: ${n.action}.`, donde: n.toTitle });
   return out;
-}
-
-
-// Torre de Control: recorrido del flujo operativo típico (sección 7 del manual)
-export function slidesWmhFlujo() {
-  return WMH_FLUJO.map((f, i) => {
-    const p = WMH_BY_ID[f.pantalla];
-    return { img: wmhImgUrl(p.img), titulo: `Paso ${i + 1} de ${WMH_FLUJO.length}`, texto: f.texto,
-      donde: `Torre de Control › ${p.modulo} › ${p.nombre}`, sistema: "Torre de Control", contexto: "Flujo operativo típico · Control Tower (WMH)", wmhId: p.id };
-  });
-}
-
-// Torre de Control: todas las pantallas de un módulo, en el orden del manual
-export function slidesWmhPantallas(lista) {
-  return lista.map(p => ({ img: wmhImgUrl(p.img), titulo: p.nombre, texto: p.descripcion,
-    donde: `Torre de Control › ${p.modulo} · ${p.url}`, contexto: `Manual Control Tower (WMH) · ${p.figura}`, wmhId: p.id }));
 }

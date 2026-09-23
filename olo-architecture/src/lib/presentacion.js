@@ -2,7 +2,7 @@
 // recorrido de un proceso (sus pasos en orden) o de una pantalla del manual
 // eFlow WMS (la ventana, sus pestañas y lo que abre).
 import { supabase } from "./supabaseClient.js";
-import { PROCESOS_CEDI } from "../data/procesos_cedi.js";
+import { PROCESOS } from "../data/procesos_fichas.js";
 import { WMS_INDEX, PASO_PANTALLA } from "../data/wms_links.js";
 
 export const wmsImgUrl = (name) => supabase.storage.from("Detalles_Porcesos").getPublicUrl(`wms-manual/${name}`).data.publicUrl;
@@ -14,7 +14,7 @@ const SIS = { eflow:"eFlow WMS", handheld:"Handheld RF", torre:"Torre de Control
 // abre la misma pantalla que el anterior, se muestra igual: el texto del paso
 // explica qué se hace en ella en ese momento.
 export function slidesProceso(codigo) {
-  const p = PROCESOS_CEDI[codigo];
+  const p = PROCESOS[codigo];
   const links = PASO_PANTALLA[codigo] || {};
   return p.pasos.map((s, i) => {
     const id = links[i]?.[0];
@@ -25,7 +25,8 @@ export function slidesProceso(codigo) {
       texto: s.texto,
       donde: w ? `${w.module} › ${w.option}` : (s.pantalla || null),
       sistema: SIS[s.sistema] || null,
-      contexto: `${codigo} · ${p.nombre}`,
+      contexto: `${codigo} · ${p.nombre}${p.borrador ? " · borrador" : ""}`,
+      origen: s.origen || null,
       screenId: id || null,
     };
   });

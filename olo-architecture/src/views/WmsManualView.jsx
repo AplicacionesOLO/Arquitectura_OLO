@@ -11,7 +11,8 @@ import { useNav } from "../lib/nav.js";
 import { DESIGN } from "../data/constants.js";
 import { SearchIcon } from "../components/icons.jsx";
 import { PANTALLA_PROCESOS, PANTALLA_TABLAS, PASO_PANTALLA } from "../data/wms_links.js";
-import { PROCESOS_CEDI, PROCESOS_CEDI_ORDEN } from "../data/procesos_cedi.js";
+import { PROCESOS_CEDI_ORDEN } from "../data/procesos_cedi.js";
+import { PROCESOS } from "../data/procesos_fichas.js";
 import { Presentacion } from "../components/Presentacion.jsx";
 import { slidesPantalla, slidesProceso, wmsImgUrl as imgUrl } from "../lib/presentacion.js";
 
@@ -92,15 +93,17 @@ export function WmsManualView({ focus }) {
 // Recorridos guiados: cada proceso CEDI con pasos en eFlow se puede presentar
 // pantalla por pantalla, en el orden de su procedimiento.
 function RecorridosProceso({ onPlay }) {
-  const codes = PROCESOS_CEDI_ORDEN.filter(c => PASO_PANTALLA[c]);
+  const cedi = PROCESOS_CEDI_ORDEN.filter(c => PASO_PANTALLA[c]);
+  const borradores = Object.keys(PROCESOS).filter(c => PROCESOS[c].borrador && PASO_PANTALLA[c]);
   return <div style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:10, padding:"10px 14px", marginBottom:14 }}>
     <div style={{ fontSize:11, fontWeight:700, color:DESIGN.muted, marginBottom:6 }}>▶ Recorridos guiados por proceso <span style={{ fontWeight:400, color:DESIGN.mutedSoft }}>· las pantallas en el orden en que se usan</span></div>
-    <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-      {codes.map(c => <button key={c} onClick={()=>onPlay(c)} title={`Presentar los pasos de ${PROCESOS_CEDI[c].nombre}`}
-        style={{ fontSize:11, color:DESIGN.inkSoft, background:DESIGN.sunken, border:`1px solid ${DESIGN.border}`, borderRadius:6, padding:"3px 8px", cursor:"pointer", fontFamily:DESIGN.font }}>
-        <b>{c}</b> {PROCESOS_CEDI[c].nombre}
+    {[["Procedimientos CEDI", cedi, false], ["Borradores de silos de referencia", borradores, true]].map(([titulo, codes, borr]) => codes.length > 0 && <div key={titulo} style={{ display:"flex", gap:6, flexWrap:"wrap", alignItems:"center", marginTop:4 }}>
+      <span style={{ fontSize:10.5, color:DESIGN.mutedSoft, marginRight:2 }}>{titulo}</span>
+      {codes.map(c => <button key={c} onClick={()=>onPlay(c)} title={`Presentar los pasos de ${PROCESOS[c].nombre}`}
+        style={{ fontSize:11, color:DESIGN.inkSoft, background:DESIGN.sunken, border:`1px ${borr?"dashed":"solid"} ${DESIGN.border}`, borderRadius:6, padding:"3px 8px", cursor:"pointer", fontFamily:DESIGN.font }}>
+        <b>{c}</b> {PROCESOS[c].nombre}
       </button>)}
-    </div>
+    </div>)}
   </div>;
 }
 
@@ -159,7 +162,7 @@ function ScreenPanel({ s, byId, onOpen, onClose, onPlay }) {
         {procs.length === 0 && <T>Ningún procedimiento CEDI la cita todavía.</T>}
         <div style={{ display:"grid", gap:6 }}>
           {procs.map(({ codigo, pasos }) => {
-            const p = PROCESOS_CEDI[codigo];
+            const p = PROCESOS[codigo];
             return <div key={codigo} style={linkBox}>
               <div style={{ display:"flex", gap:8, alignItems:"baseline" }}>
                 <button onClick={()=>navigate({ tab:"olo-arch", codigo })} title="Abrir la ficha del proceso" style={{ ...inlineLink, fontSize:12, color:DESIGN.ink, flex:1, textAlign:"left" }}>{codigo} · {p.nombre} ↗</button>

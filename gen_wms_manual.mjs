@@ -18,6 +18,9 @@ const manual = JSON.parse(fs.readFileSync(`${SRC}/manual/manual_data.json`, "utf
 const appMap = JSON.parse(fs.readFileSync(`${SRC}/app_map.json`, "utf8"));
 const { EFW_TABLE_DEFS } = await imp(`${APP}/efw_constants.js`);
 const { PROCESOS_CEDI } = await imp(`${APP}/data/procesos_cedi.js`);
+// Borradores de los silos de referencia: cada paso ya trae su pantalla (screen)
+const { PROCESOS_SILOS } = await imp(`${APP}/data/procesos_silos.js`);
+const TODOS = { ...PROCESOS_CEDI, ...PROCESOS_SILOS };
 
 // Descripción de cada módulo: se toma del generador del .docx para no divergir.
 const buildJs = fs.readFileSync(`${SRC}/manual/build.js`, "utf8");
@@ -130,13 +133,25 @@ for (const p of Object.values(PROCESOS_CEDI)) {
       e.pasos.push(i + 1);
     }
   });
-  for (const pt of p.pantallas) {
+  for (const pt of p.pantallas || []) {
     if (pt.sistema !== "eflow") continue;
     for (const id of matchScreens(pt.ruta)) {
       const arr = (PANTALLA_PROCESOS[id] ||= []);
       if (!arr.some(x => x.codigo === p.codigo)) arr.push({ codigo: p.codigo, pasos: [] });
     }
   }
+}
+
+// Pasos de los borradores (procesos_silos.js): la pantalla viene en cada paso.
+for (const p of Object.values(PROCESOS_SILOS)) {
+  p.pasos.forEach((st, i) => {
+    if (!st.screen) return;
+    (PASO_PANTALLA[p.codigo] ||= {})[i] = [st.screen];
+    const arr = (PANTALLA_PROCESOS[st.screen] ||= []);
+    let e = arr.find(x => x.codigo === p.codigo);
+    if (!e) arr.push(e = { codigo: p.codigo, pasos: [] });
+    e.pasos.push(i + 1);
+  });
 }
 
 // Pantalla ↔ tabla por proceso: si la pantalla se usa en un paso y ese proceso
@@ -147,7 +162,7 @@ for (const [sid, procs] of Object.entries(PANTALLA_PROCESOS)) {
   const st = stems(screenById[sid]);
   const arr = (PANTALLA_TABLAS[sid] ||= []);
   for (const { codigo } of procs) {
-    for (const t of PROCESOS_CEDI[codigo].tablas) {
+    for (const t of TODOS[codigo].tablas) {
       if (t.schema !== "efw" || arr.some(x => x.tabla === t.tabla)) continue;
       if (st.some(w => key(t.tabla).includes(w))) arr.push({ tabla: t.tabla, coinciden: 0, columnas: [], porNombre: true, porProceso: codigo });
     }
@@ -183,5 +198,5 @@ export const TABLA_PANTALLAS = ${JSON.stringify(TABLA_PANTALLAS)};
 `);
 
 const pasosLigados = Object.values(PASO_PANTALLA).reduce((s, o) => s + Object.keys(o).length, 0);
-const pasosEflow = Object.values(PROCESOS_CEDI).reduce((s, p) => s + p.pasos.filter(x => x.sistema === "eflow" && x.pantalla).length, 0);
+const pasosEflow = Object.values(TODOS).reduce((s, p) => s + p.pasos.filter(x => x.screen || (x.sistema === "eflow" && x.pantalla)).length, 0);
 console.log(`pantallas: ${screens.length} · con tablas inferidas: ${Object.keys(PANTALLA_TABLAS).length} · pasos eFlow ligados: ${pasosLigados}/${pasosEflow} · pantallas usadas por procesos: ${Object.keys(PANTALLA_PROCESOS).length}`);

@@ -28,7 +28,7 @@ import { ERDiagram } from "./ERDiagram.jsx";
 import { deriveRowsFromTableDefs } from "./fkUtils.js";
 import { KeyIcon, LinkIcon } from "../components/icons.jsx";
 import { DESIGN } from "../data/constants.js";
-import { PROCESOS_CEDI, PROCESOS_CEDI_ORDEN } from "../data/procesos_cedi.js";
+import { PROCESOS } from "../data/procesos_fichas.js";
 import { useNav } from "../lib/nav.js";
 import { TABLA_PANTALLAS, WMS_INDEX } from "../data/wms_links.js";
 
@@ -37,8 +37,7 @@ const PROC_SCHEMA = { efw:"efw", wmh_cr:"wmh_cr" };
 function procesosQueUsan(schema, table) {
   const sc = PROC_SCHEMA[schema];
   if (!sc || !table) return [];
-  return PROCESOS_CEDI_ORDEN
-    .map(c => PROCESOS_CEDI[c])
+  return Object.values(PROCESOS)
     .filter(p => p.tablas.some(t => t.schema === sc && t.tabla === table))
     .map(p => ({ p, t: p.tablas.find(t => t.schema === sc && t.tabla === table) }));
 }

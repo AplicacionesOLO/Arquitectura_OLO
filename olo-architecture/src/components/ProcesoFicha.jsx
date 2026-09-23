@@ -7,7 +7,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 import { DESIGN, DESIGN_STATUS } from "../data/constants.js";
-import { PROCESOS_CEDI } from "../data/procesos_cedi.js";
+import { PROCESOS } from "../data/procesos_fichas.js";
 import { DrawioFlowchart } from "../schemas/DrawioFlowchart.jsx";
 import { WMS_INDEX, PASO_PANTALLA, PANTALLA_PROCESOS } from "../data/wms_links.js";
 import { Presentacion } from "./Presentacion.jsx";
@@ -31,7 +31,10 @@ const SCHEMA_META = {
   wmh_cr:   { label: "Torre de Control · WMH", cat: "wmh_cr" },
   softland: { label: "Softland ERP", cat: null },
 };
-const CIA_COLOR = { COFERSA: "#1d4ed8", EPA: "#b45309", CEDI: "#475569" };
+const CIA_COLOR = { COFERSA: "#1d4ed8", EPA: "#b45309", CEDI: "#475569", Borrador: "#b45309" };
+// Origen de cada paso de un borrador: hecho verificable en el WMS vs. supuesto a revisar
+const ORIGEN = { eflow_wms: { label: "eFlow WMS", color: "#0891b2", title: "La pantalla, campo o botón citado existe en eFlow WMS" },
+  inferido: { label: "Inferido", color: "#b45309", title: "Paso o regla sin documento de OLO: revisar y validar" } };
 
 export function SistemaChip({ sys }) {
   const s = SISTEMAS[sys];
@@ -47,7 +50,7 @@ function sistemasDe(p) {
 const TABS = [["resumen","Resumen"],["pasos","Pasos"],["datos","Datos y BD"],["flujo","Diagrama"],["docs","Documentos"]];
 
 export function ProcesoFicha({ codigo, onClose, onOpen, onSearch, onNavigate, onViewFile }) {
-  const p = PROCESOS_CEDI[codigo];
+  const p = PROCESOS[codigo];
   const [tab, setTab] = useState("resumen");
   if (!p) return null;
   const color = CIA_COLOR[p.compania] || DESIGN.ink;
@@ -65,6 +68,10 @@ export function ProcesoFicha({ codigo, onClose, onOpen, onSearch, onNavigate, on
         </div>
         <button onClick={onClose} title="Cerrar" style={{ background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:16, flexShrink:0 }}>✕</button>
       </div>
+      {p.borrador && <div style={{ marginTop:8, fontSize:11, lineHeight:1.45, color:DESIGN_STATUS.warning.color, background:DESIGN_STATUS.warning.bg, border:`1px solid ${DESIGN_STATUS.warning.border}`, borderRadius:6, padding:"6px 9px" }}>
+        <b>Borrador sin procedimiento de OLO.</b> {p.fuente}
+        {" "}{(() => { const n = p.pasos.filter(s => s.origen === "inferido").length; return `${n} de ${p.pasos.length} pasos inferidos.`; })()}
+      </div>}
       <div style={{ display:"flex", gap:2, marginTop:10, borderBottom:`1px solid ${DESIGN.border}` }}>
         {TABS.map(([id,label]) => {
           const isA = tab === id;
@@ -101,7 +108,7 @@ function Bullets({ items, color }) {
   </ul>;
 }
 function ProcChip({ code, onOpen }) {
-  const q = PROCESOS_CEDI[code];
+  const q = PROCESOS[code];
   if (!q) return null;
   return <Chip onClick={()=>onOpen(code)} title="Abrir ficha" color={CIA_COLOR[q.compania]}><b>{code}</b> {q.nombre}</Chip>;
 }
@@ -178,6 +185,7 @@ function Pasos({ p, onNavigate }) {
       <div style={{ minWidth:0 }}>
         <div style={{ fontSize:12.5, color:DESIGN.ink, lineHeight:1.5 }}>{s.texto}</div>
         <div style={{ display:"flex", gap:6, alignItems:"center", flexWrap:"wrap", marginTop:3 }}>
+          {s.origen && <span title={ORIGEN[s.origen].title} style={{ fontSize:9.5, fontWeight:700, color:ORIGEN[s.origen].color, border:`1px ${s.origen==="inferido"?"dashed":"solid"} ${ORIGEN[s.origen].color}80`, borderRadius:4, padding:"0 5px" }}>{ORIGEN[s.origen].label}</span>}
           {s.sistema && <SistemaChip sys={s.sistema}/>}
           {links[i]
             ? links[i].map(id => <PantallaLink key={id} id={id} onNavigate={onNavigate}/>)
@@ -247,6 +255,7 @@ function Flujo({ p }) {
     if (loader) loader().then(x => { if (alive) setXml(x); });
     return () => { alive = false; };
   }, [p.codigo]);
+  if (!DRAWIO[`../assets/procesos_cedi/${p.codigo}.drawio`]) return <Txt>Este proceso todavía no tiene diagrama de flujo. {p.pasos.length > 0 && "Usa «▶ Recorrido en pantallas» en la pestaña Pasos para verlo paso a paso."}</Txt>;
   if (!xml) return <Txt>Cargando diagrama…</Txt>;
   return <div style={{ height:520, border:`1px solid ${DESIGN.border}`, borderRadius:8, overflow:"hidden" }}>
     <DrawioFlowchart key={p.codigo} xml={xml} title={`Diagrama de flujo — ${p.nombre}`}/>

@@ -33,7 +33,7 @@ export function Presentacion({ slides, start = 0, onClose, onOpenScreen }) {
     {/* Encabezado: dónde estoy */}
     <div style={{ display:"flex", alignItems:"center", gap:14, padding:"12px 20px", borderBottom:"1px solid rgba(255,255,255,0.1)", flexShrink:0 }}>
       <div style={{ flex:1, minWidth:0 }}>
-        <div style={{ fontSize:11, color:"#94a3b8" }}>{s.contexto}</div>
+        <div style={{ fontSize:11, color:"#94a3b8" }}>{s.contexto}{s.origen === "inferido" && <span style={{ marginLeft:8, color:"#fbbf24", fontWeight:700 }}>· paso inferido (sin documento de OLO)</span>}</div>
         <div style={{ fontSize:16, fontWeight:700, color:"#fff" }}>{s.titulo}</div>
       </div>
       <span style={{ fontSize:12, color:"#94a3b8" }}>{i + 1} / {slides.length}</span>

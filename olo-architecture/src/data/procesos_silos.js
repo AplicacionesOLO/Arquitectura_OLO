@@ -1,0 +1,260 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// DATOS · Procesos BORRADOR de los silos de referencia (P1.5, P1.13, …)
+// Escrito a mano — NO son procedimientos aprobados de OLO.
+//
+// Fuente: pantallas reales de eFlow WMS 3.2.8.5 (crawl del 23/09/2026 →
+// wms_manual.json): cada paso cita la pantalla, pestaña, campo o botón que
+// existe en el sistema. La SECUENCIA, las reglas de negocio y los responsables
+// son práctica estándar de un 3PL y quedan marcados como inferidos.
+//
+//   pasos[].origen: "eflow_wms" → la pantalla/campo/botón citado existe en el WMS
+//                   "inferido"  → paso o regla sin documento de OLO (revisar)
+//   pasos[].screen: id de la pantalla del manual (abre captura y recorrido)
+//   tablas[].confianza: "media" = relacionada por nombre/semántica con eFlow
+//
+// Cada proceso se liga a su nodo de Procesos por procesos_nodes.codigo
+// (ver gen_procesos_silos_sql.mjs → supabase_procesos_silos_seed.sql).
+// ═══════════════════════════════════════════════════════════════════════════
+
+const FUENTE_WMS = "Borrador: pantallas reales de eFlow WMS 3.2.8.5 (crawl 23/09/2026). Secuencia, reglas y responsables inferidos de práctica 3PL — sin procedimiento aprobado de OLO.";
+
+const e = (texto, screen, sistema = "eflow") => ({ texto, sistema, screen, origen: "eflow_wms" });
+const i = (texto, sistema = "fisico", screen = null) => ({ texto, sistema, screen, origen: "inferido" });
+const t = (tabla, motivo) => ({ schema: "efw", tabla, motivo, confianza: "media" });
+
+const S = {
+  toma: "screen_inventario__generacion_de_tomas_fisicas",
+  tomaConteo: "screen_inventario__generacion_de_tomas_fisicas",
+  comparador: "screen_inventario__comparador_de_tomas_fisicas",
+  consulta: "screen_inventario__consulta_de_inventario",
+  ajuste: "screen_inventario__ajustes_de_inventario",
+  ajusteMasivo: "screen_inventario__ajustes_masivos",
+  inicial: "screen_inventario__inventario_inicial",
+  palets: "screen_inventario__palets",
+  paletsArt: "screen_inventario__palets_articulos",
+  paletsSeries: "screen_inventario__pallets_series",
+  movs: "screen_control__movimientos",
+  movsSeries: "screen_control__movimientos_series",
+  kardex: "screen_reportes__kardex_diario",
+  kardexRango: "screen_reportes__rep_kardex_diario_rango",
+  invArticulo: "screen_reportes__inventario_por_articulo",
+  alertaInv: "screen_paneles__alerta_inventario",
+  situacionUbic: "screen_reportes__detalle_de_situacion_de_las_ubicaciones",
+  inicio: "screen_inicio__inicio",
+};
+
+export const PROCESOS_SILOS = {
+  // ── P1.5 · Gestión de inventario físico ──────────────────────────────────
+  "INV-01": {
+    nombre: "Toma física cíclica por ubicación", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S1 · Conteos cíclicos",
+    objetivo: "Contar periódicamente una parte de las ubicaciones del almacén para detectar diferencias sin detener la operación.",
+    alcance: "Desde la definición de la toma física en eFlow hasta el ajuste o la investigación de las diferencias encontradas.",
+    responsables: ["Encargado de inventario", "Contadores"],
+    pasos: [
+      i("Definir qué ubicaciones o artículos se cuentan en el ciclo (por rotación, valor o zona) según el calendario de conteos", "fisico"),
+      e("Crear la toma en Inventario › Generación de Tomas Físicas con «Agregar», indicando compañía, sucursal, tipo de toma y modo", S.toma),
+      e("Excluir del conteo ubicaciones o artículos que no aplican desde la pestaña «Exclusiones» (botón «Excluir»)", S.toma),
+      i("Ejecutar el conteo físico ubicación por ubicación con el handheld", "handheld"),
+      e("Revisar el avance en la pestaña «Conteo de la Toma» y los indicadores REF CONTADAS / REF CORRECTAS / UBICACION CONTADAS del grid", S.toma),
+      e("Analizar las diferencias en las pestañas «Diferencia por Ubicación» y «Diferencia por Artículo»", S.toma),
+      e("Generar un reconteo de lo que quedó con diferencia con «Genera T.F. Diferencias»", S.toma),
+      e("Aplicar el resultado con «Ajustar» o, si la diferencia no se explica, pasar a investigación de diferencias", S.toma),
+      e("Exportar los reportes «Diferencia Ubicación Artículo» y «Conteo» desde el menú «…» › Reportes como respaldo", S.toma),
+    ],
+    registros: ["Toma física y su conteo en eFlow", "Reportes de diferencias y conteo exportados"],
+    noConformidades: ["Ajustar sin reconteo diferencias que eran errores de conteo", "Contar ubicaciones con movimiento en curso (tareas abiertas)"],
+    tablas: [t("TOMAFISICA_CABECERA", "Toma física definida"), t("TOMAFISICA_CALENDARIO", "Calendario de conteos cíclicos"), t("TOMAFISICA_CONTEOCABECERA", "Conteo de la toma"), t("TOMAFISICA_CONTEODETALLE", "Detalle contado por ubicación/artículo"), t("TOMAFISICA_CONTEO_EXCLUIR", "Exclusiones de la toma"), t("TOMAFISICA_RESPONSABLES", "Responsables de la toma (menú «Ver Responsables»)")],
+    datosClave: ["Toma física", "Tipo de toma y modo", "Ubicaciones contadas", "Referencias contadas vs. correctas", "Diferencia por ubicación y por artículo"],
+    conceptos: [{ termino: "Toma cíclica", definicion: "Conteo parcial y recurrente de ubicaciones, a diferencia del inventario general que cuenta todo el almacén." }],
+    salidaA: ["INV-03", "INV-04", "INV-08"],
+  },
+  "INV-02": {
+    nombre: "Inventario general del almacén", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S2 · Inventario general",
+    objetivo: "Contar la totalidad del inventario de una compañía o sucursal para validar las existencias del WMS.",
+    alcance: "Desde la preparación del almacén y la creación de la toma hasta el cierre con ajustes y reportes.",
+    responsables: ["Encargado de inventario", "Contadores", "Representante del cliente (si aplica)"],
+    pasos: [
+      i("Programar el inventario con el cliente y congelar movimientos (recepciones, despachos, reposiciones) durante el conteo", "fisico"),
+      e("Verificar en Control › Acciones de Trabajo que no queden tareas abiertas sobre las ubicaciones a contar", "screen_control__acciones_de_trabajo"),
+      e("Crear la toma general en Inventario › Generación de Tomas Físicas con «Agregar» por compañía y sucursal", S.toma),
+      i("Contar por zonas con el handheld; cada ubicación se cuenta y se cierra", "handheld"),
+      e("Unir conteos parciales de la misma toma con «Combinar» cuando se contó por equipos o por fases", S.toma),
+      e("Revisar las pestañas «Diferencia por Artículo», «Diferencia por Ubicación» y «Diferencias por Lote»", S.toma),
+      e("Comparar dos tomas (conteo y reconteo) en Inventario › Comparador de Tomas Físicas", S.comparador),
+      e("Aplicar el resultado con «Ajustar» o cancelar la toma con «Cancelar Toma» si debe repetirse", S.toma),
+      i("Firmar el acta de inventario con el cliente y liberar la operación", "fisico"),
+    ],
+    registros: ["Toma física general", "Comparación de tomas", "Acta de inventario firmada"],
+    noConformidades: ["Movimientos no congelados durante el conteo", "Ubicaciones sin contar al cierre"],
+    tablas: [t("TOMAFISICA_CABECERA", "Toma general"), t("TOMAFISICA_CONTEODETALLE", "Conteos por ubicación"), t("TOMAFISICA_AJUSTECABECERA", "Ajuste generado por la toma"), t("TOMAFISICA_AJUSTEDETALLE", "Líneas del ajuste"), t("INVENTARIO_TOMA", "Foto del inventario del sistema al momento de la toma")],
+    datosClave: ["Toma física general", "Conteo y reconteo", "Diferencias por artículo, ubicación y lote", "Ajuste resultante"],
+    conceptos: [{ termino: "Comparador de tomas", definicion: "Pantalla que contrasta dos tomas; muestra «No hay diferencias entre ambas tomas» cuando coinciden." }],
+    salidaA: ["INV-03", "INV-05", "INV-09"],
+  },
+  "INV-03": {
+    nombre: "Investigación de diferencias de inventario", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S3 · Investigación de diferencias",
+    objetivo: "Encontrar la causa de una diferencia entre el conteo físico y el WMS antes de ajustarla.",
+    alcance: "Diferencias detectadas en tomas físicas, chequeo o picking.",
+    responsables: ["Encargado de inventario", "Analista de control"],
+    pasos: [
+      e("Identificar el artículo y la ubicación con diferencia en las pestañas de diferencias de la toma física", S.toma),
+      e("Consultar el inventario actual del artículo en Inventario › Consulta de Inventario (pestañas «Inventario» y «Artículos»)", S.consulta),
+      e("Revisar los cambios hechos sobre el inventario en la pestaña «Modificaciones» de la consulta", S.consulta),
+      e("Rastrear las entradas y salidas del período en Control › Movimientos (filtro por artículo o palet)", S.movs),
+      e("Revisar el saldo día a día en Reportes › Kardex Diario o Rep. Kardex Diario Rango", S.kardexRango),
+      e("Validar el contenido físico del palet en Inventario › Palets y Palets Artículos", S.palets),
+      i("Clasificar la causa (error de conteo, de ubicación, de recepción, de picking o merma) y documentarla", "fisico"),
+      i("Si la diferencia se explica por un error de ubicación, corregir con un traslado; si es real, pasar a ajuste", "fisico"),
+    ],
+    registros: ["Bitácora de investigación con la causa de cada diferencia"],
+    noConformidades: ["Ajustar sin investigar la causa", "No registrar la causa de la diferencia"],
+    tablas: [t("INVENTARIO_UBICADO", "Existencia por ubicación"), t("INVENTARIO_UBICADO_PALET", "Existencia por palet"), t("KARDEX_ARTICULO", "Kardex del artículo"), t("EPALETMOVIMIENTOENTRADA", "Movimientos de entrada del palet"), t("EPALETMOVIMIENTOSALIDA", "Movimientos de salida del palet"), t("CONTROL_PALLET_DIFERENCIAS", "Diferencias registradas por palet")],
+    datosClave: ["Artículo y ubicación con diferencia", "Movimientos del período", "Saldo de kardex", "Causa de la diferencia"],
+    conceptos: [{ termino: "Kardex", definicion: "Registro cronológico de entradas, salidas y saldo de un artículo." }],
+    entradaDe: ["INV-01", "INV-02"], salidaA: ["INV-04"],
+  },
+  "INV-04": {
+    nombre: "Ajuste individual de inventario", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S4 · Ajustes de inventario",
+    objetivo: "Corregir en el WMS una diferencia de inventario ya investigada y aprobada.",
+    alcance: "Ajustes puntuales de uno o pocos artículos.",
+    responsables: ["Encargado de inventario", "Aprobador del cliente (según contrato)"],
+    pasos: [
+      i("Obtener la aprobación del ajuste (según monto o política del cliente)", "correo"),
+      e("Abrir Inventario › Ajustes de Inventario y crear el documento con «Agregar»", S.ajuste),
+      e("Indicar Compañía, Tipo de Ajuste y una Descripción que explique la causa", S.ajuste),
+      e("Agregar cada artículo con «Agregar Línea» (ubicación, palet y cantidad a ajustar)", S.ajuste),
+      e("Cerrar el documento con «Finalizar» para que el ajuste afecte el inventario", S.ajuste),
+      e("Verificar la existencia corregida en Inventario › Consulta de Inventario", S.consulta),
+      i("Informar el ajuste al cliente y, si aplica, reflejarlo en su ERP", "correo"),
+    ],
+    registros: ["Documento de ajuste en eFlow", "Aprobación del ajuste"],
+    noConformidades: ["Ajuste sin aprobación", "Tipo de ajuste que no corresponde a la causa"],
+    tablas: [t("TOMAFISICA_AJUSTECABECERA", "Cabecera del ajuste"), t("TOMAFISICA_AJUSTEDETALLE", "Líneas ajustadas"), t("MOTIVOAJUSTES", "Motivos / tipos de ajuste"), t("INVENTARIO_UBICADO", "Existencia corregida")],
+    datosClave: ["Compañía", "Tipo de ajuste", "Descripción / causa", "Artículo, ubicación, palet y cantidad"],
+    conceptos: [],
+    entradaDe: ["INV-01", "INV-03"], salidaA: ["INV-09"],
+  },
+  "INV-05": {
+    nombre: "Ajuste masivo desde toma física o archivo", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S4 · Ajustes de inventario",
+    objetivo: "Aplicar en bloque los ajustes resultantes de un inventario general o de un archivo validado.",
+    alcance: "Cierres de inventario general y cargas masivas acordadas con el cliente.",
+    responsables: ["Encargado de inventario"],
+    pasos: [
+      e("Abrir Inventario › Ajustes Masivos", S.ajusteMasivo),
+      e("Traer las diferencias con «Cargar Toma» o importar un archivo con «Cargar Archivo»", S.ajusteMasivo),
+      i("Revisar el detalle cargado contra el acta de inventario aprobada", "fisico"),
+      e("Aplicar con «Aplicar Ajustes» (o descartar con «Cancelar»)", S.ajusteMasivo),
+      e("Confirmar las existencias resultantes en Reportes › Inventario por Artículo y exportarlo a Excel", S.invArticulo),
+    ],
+    registros: ["Ajuste masivo aplicado", "Reporte de inventario por artículo posterior"],
+    noConformidades: ["Aplicar un archivo no validado", "Cargar la toma equivocada"],
+    tablas: [t("TOMAFISICA_AJUSTECABECERA", "Ajuste generado"), t("TOMAFISICA_AJUSTEDETALLE", "Líneas del ajuste"), t("TOMAFISICA_DATAEXTERNA", "Datos cargados desde archivo externo")],
+    datosClave: ["Toma o archivo de origen", "Líneas a ajustar", "Existencia final"],
+    conceptos: [],
+    entradaDe: ["INV-02"], salidaA: ["INV-09"],
+  },
+  "INV-06": {
+    nombre: "Control de vencimientos y alertas de inventario", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S5 · Gestión de obsoletos",
+    objetivo: "Detectar a tiempo inventario vencido, próximo a vencer o sin movimiento para gestionarlo con el cliente.",
+    alcance: "Artículos con control de lote o fecha de caducidad y artículos de baja rotación.",
+    responsables: ["Encargado de inventario", "Ejecutivo de servicio al cliente"],
+    pasos: [
+      e("Revisar en Inicio los indicadores «Cant Vencida», «20 % Vencimiento» y «Ant. Inventario» del panel de operación", S.inicio),
+      e("Abrir Paneles › Alerta Inventario y revisar las alertas con «Ver hoja de datos»", S.alertaInv),
+      e("Consultar lote y ubicación de lo alertado en Inventario › Consulta de Inventario", S.consulta),
+      i("Informar al cliente el inventario vencido o sin movimiento y acordar la acción (destrucción, devolución, liquidación)", "correo"),
+      i("Bloquear o segregar físicamente la mercancía vencida", "fisico"),
+      i("Ejecutar la salida acordada (expedición de destrucción o devolución) y el ajuste correspondiente", "eflow"),
+    ],
+    registros: ["Reporte de alertas de inventario", "Acuerdo con el cliente sobre la mercancía"],
+    noConformidades: ["Despachar mercancía vencida", "Mantener inventario sin movimiento sin informar al cliente"],
+    tablas: [t("WMSLOTES", "Lotes y fechas de caducidad"), t("INVENTARIO_UBICADO_LOTE", "Existencia por lote y ubicación"), t("WMS_KPI_FOTO_INVENTARIO", "Foto de indicadores de inventario")],
+    datosClave: ["Lote", "Fecha de caducidad", "Antigüedad del inventario", "Cantidad vencida"],
+    conceptos: [{ termino: "Antigüedad de inventario", definicion: "Tiempo que lleva un artículo en el almacén; el panel de Inicio la compara «según media»." }],
+    salidaA: ["INV-04"],
+  },
+  "INV-07": {
+    nombre: "Trazabilidad de un artículo, palet o serie", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S6 · Trazabilidad de movimientos",
+    objetivo: "Reconstruir la historia de un artículo, palet o número de serie: de dónde vino, dónde estuvo y a dónde salió.",
+    alcance: "Reclamos de clientes, auditorías y recuperación de productos.",
+    responsables: ["Analista de control", "Ejecutivo de servicio al cliente"],
+    pasos: [
+      e("Buscar el palet o el artículo en Inventario › Palets (recepción de origen, cliente propietario, fechas)", S.palets),
+      e("Si el artículo se controla por serie, ubicarlo en Inventario › Pallets Series", S.paletsSeries),
+      e("Revisar todos sus movimientos en Control › Movimientos (tipo de movimiento, tipo de trabajo, fecha)", S.movs),
+      e("Para series, revisar Control › Movimientos Series (incluye el número de viaje de salida)", S.movsSeries),
+      e("Confirmar saldos por fecha en Reportes › Kardex Diario", S.kardex),
+      i("Documentar la trazabilidad y responder al cliente o al auditor", "correo"),
+    ],
+    registros: ["Consulta de trazabilidad exportada"],
+    noConformidades: ["Trazabilidad incompleta por movimientos hechos fuera del sistema"],
+    tablas: [t("EPALETMOVIMIENTOENTRADA", "Entradas del palet"), t("EPALETMOVIMIENTOSALIDA", "Salidas del palet"), t("EPALETMOVIMIENTOSALIDASERIES", "Salidas por serie"), t("KARDEX_ARTICULO", "Kardex del artículo"), t("SERIE_CONTROL", "Control de series"), t("TRANSACCION", "Transacciones del WMS")],
+    datosClave: ["Palet", "Serie", "Tipo de movimiento", "Tipo de trabajo", "Número de viaje", "Fecha"],
+    conceptos: [],
+  },
+  "INV-08": {
+    nombre: "Medición de exactitud de inventario (IRA)", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S7 · Exactitud de inventario (IRA)",
+    objetivo: "Medir qué tan exacto es el inventario del WMS frente al físico y reportarlo al cliente.",
+    alcance: "Resultado de cada toma cíclica o general.",
+    responsables: ["Encargado de inventario", "Jefe de operaciones"],
+    pasos: [
+      e("Tomar de la toma física cerrada los valores REF CONTADAS, REF CORRECTAS y UBICACION CONTADAS del grid", S.toma),
+      i("Calcular el IRA = referencias correctas ÷ referencias contadas (y por ubicación si se requiere)", "excel_drive"),
+      i("Comparar el IRA con la meta acordada con el cliente y con el mes anterior", "excel_drive"),
+      i("Si el IRA está bajo la meta, priorizar las zonas con más diferencias para el próximo ciclo de conteo", "fisico"),
+      i("Reportar el IRA en la revisión mensual con el cliente", "correo"),
+    ],
+    registros: ["Indicador IRA por toma y por mes"],
+    noConformidades: ["IRA calculado sobre tomas no cerradas"],
+    tablas: [t("TOMAFISICA_CONTEOINDICADORES", "Indicadores de conteo de la toma"), t("TOMAFISICA_CABECERA", "Toma de referencia")],
+    datosClave: ["Referencias contadas", "Referencias correctas", "Ubicaciones contadas", "IRA %"],
+    conceptos: [{ termino: "IRA", definicion: "Inventory Record Accuracy: porcentaje de registros del sistema que coinciden con el conteo físico." }],
+    entradaDe: ["INV-01"],
+  },
+  "INV-09": {
+    nombre: "Conciliación de existencias WMS vs. ERP del cliente", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S8 · Conciliación WMS-ERP",
+    objetivo: "Asegurar que las existencias del WMS coinciden con las que el cliente tiene en su ERP.",
+    alcance: "Conciliación periódica por cliente y después de cada inventario o ajuste masivo.",
+    responsables: ["Analista de control", "Contraparte del cliente"],
+    pasos: [
+      e("Exportar a Excel las existencias por artículo desde Reportes › Inventario por Artículo", S.invArticulo),
+      i("Obtener el reporte de existencias del ERP del cliente para la misma fecha de corte", "correo"),
+      i("Cruzar ambos reportes por código de artículo e identificar diferencias", "excel_drive"),
+      e("Revisar en Control › Movimientos las transacciones en tránsito (recibidas o despachadas pero no reflejadas en el ERP)", S.movs),
+      i("Separar diferencias de tiempo (en tránsito) de diferencias reales y enviar estas últimas a investigación", "excel_drive"),
+      i("Firmar la conciliación con el cliente", "correo"),
+    ],
+    registros: ["Conciliación WMS-ERP firmada"],
+    noConformidades: ["Fechas de corte distintas entre WMS y ERP", "Diferencias reales sin investigar"],
+    tablas: [t("INVENTARIO_DIARIO_CLIENTE", "Existencia diaria por cliente"), t("HISTORICO_INVENTARIO_AB", "Histórico de inventario"), t("TRANSACCION", "Transacciones del período")],
+    datosClave: ["Fecha de corte", "Existencia WMS", "Existencia ERP", "Diferencias en tránsito vs. reales"],
+    conceptos: [],
+    entradaDe: ["INV-02", "INV-04", "INV-05"],
+  },
+  "INV-10": {
+    nombre: "Carga de inventario inicial de un cliente", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S2 · Inventario general",
+    objetivo: "Registrar en el WMS el inventario con el que arranca un cliente nuevo o un almacén nuevo.",
+    alcance: "Arranque de operación de un cliente o migración de inventario.",
+    responsables: ["Encargado de inventario", "Implementación"],
+    pasos: [
+      i("Contar físicamente la mercancía inicial y armar la lista por artículo, lote y ubicación", "fisico"),
+      e("Abrir Inventario › Inventario Inicial y capturar Presentación, Cantidad, Factor, Lote de Producción y fechas de producción/caducidad", S.inicial),
+      e("Registrar cada línea con «Insertar» y crear el palet con «Crear Palet»", S.inicial),
+      e("Validar el inventario cargado en Inventario › Consulta de Inventario", S.consulta),
+      i("Conciliar el total cargado con el inventario del cliente antes de iniciar operación", "excel_drive"),
+    ],
+    registros: ["Inventario inicial cargado", "Conciliación de arranque"],
+    noConformidades: ["Cargar lotes o caducidades incorrectas"],
+    tablas: [t("INVENTARIOASUBIR", "Inventario pendiente de subir"), t("INVENTARIO_SUBIR", "Inventario inicial cargado"), t("INVENTARIO_UBICADO", "Existencia resultante")],
+    datosClave: ["Presentación", "Cantidad y factor", "Lote de producción", "Fecha de caducidad", "Palet"],
+    conceptos: [],
+    salidaA: ["INV-09"],
+  },
+};
+
+// Metadatos comunes a todos los borradores
+for (const [codigo, p] of Object.entries(PROCESOS_SILOS)) {
+  p.codigo = codigo;
+  p.borrador = true;
+  p.fuente = FUENTE_WMS;
+}

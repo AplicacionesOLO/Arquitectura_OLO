@@ -18,6 +18,7 @@ import { DESIGN } from "../data/constants.js";
 import { SearchIcon, EyeIcon } from "../components/icons.jsx";
 import { ProcesoFicha } from "../components/ProcesoFicha.jsx";
 import { PROCESOS_CEDI, PROCESOS_CEDI_ORDEN } from "../data/procesos_cedi.js";
+import { PROCESOS } from "../data/procesos_fichas.js";
 
 // Ficha lateral de los procesos CEDI (P1–P14): cualquier ProcesoRow con
 // codigo conocido puede abrirla sin pasar props por todo el árbol.
@@ -534,7 +535,8 @@ function ProcesoRow({ node, canEdit, collapsed, onToggle, onReload, setErr, forc
   const isCollapsed = !forceOpen && collapsed.has(node.id);
   const subCount = node.children.length;
   const fichaCtx = useContext(FichaContext);
-  const hasFicha = !!(node.codigo && PROCESOS_CEDI[node.codigo]);
+  const hasFicha = !!(node.codigo && PROCESOS[node.codigo]);
+  const esBorrador = hasFicha && PROCESOS[node.codigo].borrador;
   const fichaActive = hasFicha && fichaCtx.active === node.codigo;
 
   useEffect(() => { setName(node.name); }, [node.name]);
@@ -578,6 +580,8 @@ function ProcesoRow({ node, canEdit, collapsed, onToggle, onReload, setErr, forc
           style={{ fontSize:10.5, fontWeight:700, color:fichaActive?"#fff":DESIGN.inkSoft, background:fichaActive?DESIGN.ink:DESIGN.sunken, border:`1px solid ${fichaActive?DESIGN.ink:DESIGN.border}`, borderRadius:6, padding:"2px 8px", cursor:"pointer", fontFamily:"inherit", flexShrink:0 }}>
           Ficha ›
         </button>}
+        {esBorrador && <span title="Borrador: pasos de eFlow WMS + inferidos, sin procedimiento aprobado de OLO"
+          style={{ fontSize:9.5, fontWeight:700, color:"#b45309", border:"1px dashed #b4530980", borderRadius:4, padding:"0 5px", flexShrink:0 }}>borrador</span>}
         <CountPill n={subCount}/>
         {canEdit && (hover || editing || confirmDelete) && <span style={{ display:"flex", alignItems:"center", gap:6, flexShrink:0 }} onClick={e=>e.stopPropagation()}>
           {confirmDelete ? <>

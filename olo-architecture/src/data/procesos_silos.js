@@ -78,6 +78,16 @@ Object.assign(S, {
   prodEmpaqueDia: "screen_reportes__productividad_de_empaque_por_dia",
 });
 const VAS = { silo: "neg_valor_agregado", siloLabel: "P1.21 · Servicios de Valor Agregado" };
+Object.assign(S, {
+  prodPickRec: "screen_reportes__productividad_picking_x_recurso",
+  prodAlmHora: "screen_reportes__productividad_de_almacenamiento_x_hora",
+  tiempoTareas: "screen_reportes__tiempo_atencion_tareas",
+  ordenesDesp: "screen_reportes__control_de_ordenes_despachadas",
+  detalleSalida: "screen_reportes__detalle_ordenes_de_salida",
+});
+// El módulo de cobro de almacenaje (eInv) tiene tablas reales en EFLOW_OLO
+// pero sus pantallas no están en el crawl del WMS de escritorio.
+const SLC = { silo: "log_servicio_cliente", siloLabel: "P1.6 · Servicio logístico a clientes" };
 
 export const PROCESOS_SILOS = {
   // ── P1.5 · Gestión de inventario físico ──────────────────────────────────
@@ -544,7 +554,7 @@ export const PROCESOS_SILOS = {
     tablas: [t("SERVICIOSESPECIALES", "Servicios especiales registrados"), t("CATALOGOSERVICIOS", "Tarifa del servicio"), t("EINV_COBROEVENTOS", "Eventos de cobro (módulo eInv)")],
     datosClave: ["Servicio", "Cliente", "Cantidad", "Monto", "Evidencia"],
     conceptos: [],
-    entradaDe: ["VAS-01", "VAS-02", "VAS-03", "VAS-04", "VAS-05"],
+    entradaDe: ["VAS-01", "VAS-02", "VAS-03", "VAS-04", "VAS-05"], salidaA: ["SLC-01"],
   },
   "VAS-07": {
     ...VAS, nombre: "Productividad de los servicios de valor agregado", macro: "S8 · Reportes de productividad de VAS",
@@ -563,6 +573,66 @@ export const PROCESOS_SILOS = {
     datosClave: ["Unidades por hora", "Recurso", "Servicio"],
     conceptos: [],
     entradaDe: ["VAS-06"],
+  },
+  // ── P1.6 · Servicio logístico a clientes ─────────────────────────────────
+  "SLC-01": {
+    ...SLC, nombre: "Corte y facturación de almacenaje y servicios", macro: "S2 · Facturación de servicios logísticos",
+    objetivo: "Calcular al cierre del período lo que se cobra a cada cliente por almacenaje (estadía de palets), movimientos y servicios especiales.",
+    alcance: "Cierre mensual o quincenal de cada cliente con contrato de almacenaje.",
+    responsables: ["Facturación", "Ejecutivo de servicio al cliente"],
+    pasos: [
+      i("Solicitar el corte del período para el cliente en el módulo de cobro de almacenaje (eInv)", "eflow"),
+      i("Revisar el cálculo diario de estadía por palet y los eventos de cobro (entradas, salidas, servicios)", "eflow"),
+      e("Validar los servicios especiales del período en Documentos › Registro Servicios Especiales", S.regServicios),
+      e("Confirmar tarifas vigentes en Catálogos › Catálogo de servicios", S.catServicios),
+      i("Generar la pre-proforma y enviarla al cliente para aprobación", "correo"),
+      i("Emitir la factura en el ERP con el detalle aprobado", "softland"),
+    ],
+    registros: ["Corte del período", "Pre-proforma aprobada", "Factura emitida"],
+    noConformidades: ["Servicios del período sin registrar", "Tarifa del catálogo distinta a la del contrato"],
+    tablas: [t("EINV_GENERACION_CORTE_SOLICITUD", "Solicitud de corte del período"), t("EINV_GENERACION_CORTE_BITACORA", "Bitácora del corte"), t("EINV_COBRO_DIARIO", "Cobro diario calculado"), t("EINV_ESTADIA_PALET", "Estadía por palet"), t("EINV_COBROEVENTOS", "Eventos de cobro"), t("EINV_PRE_PROFORMA", "Pre-proforma"), t("EINV_FACTURA", "Factura del cobro")],
+    datosClave: ["Período de corte", "Días de estadía por palet", "Eventos de cobro", "Servicios especiales", "Pre-proforma"],
+    conceptos: [{ termino: "Estadía de palet", definicion: "Días que un palet permanece en el almacén; base del cobro de almacenaje." }, { termino: "eInv", definicion: "Módulo de cobro de inventario de eFlow; sus tablas existen en EFLOW_OLO, pero sus pantallas no se capturaron." }],
+    entradaDe: ["VAS-06"], salidaA: ["SLC-02"],
+  },
+  "SLC-02": {
+    ...SLC, nombre: "Costeo por actividad con el costo hora de los recursos", macro: "S3 · Costeo por actividad (Slotting → Almacenaje → Picking)",
+    objetivo: "Estimar cuánto cuesta atender a cada cliente según las horas de recurso que consumen sus operaciones.",
+    alcance: "Análisis mensual por cliente o por actividad.",
+    responsables: ["Control de gestión", "Jefe de operaciones"],
+    pasos: [
+      e("Tomar el «Costo Hora» de cada perfil de recurso en Seguridad › Recursos Perfiles", S.recPerfiles),
+      e("Exportar las horas y unidades por recurso de Reportes › Productividad Picking x Recurso", S.prodPickRec),
+      e("Exportar Reportes › Productividad de Almacenamiento x Hora y Productividad de Empaque por recurso", S.prodAlmHora),
+      e("Complementar con Reportes › Tiempo atención tareas para las actividades sin reporte propio", S.tiempoTareas),
+      i("Calcular el costo por actividad = horas × costo hora, y repartirlo por cliente según sus unidades", "excel_drive"),
+      i("Comparar el costo con lo facturado al cliente para ver el margen", "excel_drive"),
+    ],
+    registros: ["Modelo de costeo por actividad"],
+    noConformidades: ["Costo hora de los perfiles desactualizado"],
+    tablas: [t("RECURSOSPERFILES", "Perfiles de recurso con costo hora"), t("RENDIMIENTO_USUARIO_ALISTO", "Rendimiento de picking por usuario"), t("RENDIMIENTO_USUARIO_PACKING", "Rendimiento de empaque por usuario")],
+    datosClave: ["Costo hora por perfil", "Horas por actividad", "Unidades por cliente", "Costo por actividad"],
+    conceptos: [{ termino: "Costeo por actividad (ABC)", definicion: "Asigna el costo de la operación a cada cliente según las actividades que consume." }],
+    entradaDe: ["SLC-01"],
+  },
+  "SLC-03": {
+    ...SLC, nombre: "Atención de reclamos de servicio", macro: "S5 · Reclamos de servicio",
+    objetivo: "Investigar y responder los reclamos de un cliente (faltantes, daños, entregas equivocadas) con evidencia del sistema.",
+    alcance: "Reclamos recibidos por correo o por el ejecutivo de cuenta.",
+    responsables: ["Ejecutivo de servicio al cliente", "Analista de control"],
+    pasos: [
+      i("Registrar el reclamo (cliente, pedido, artículo, tipo de problema) y confirmar recepción al cliente", "correo"),
+      e("Revisar la orden despachada en Reportes › Control de Ordenes Despachadas y Detalle Ordenes de Salida", S.ordenesDesp),
+      e("Rastrear el palet o artículo en Control › Movimientos", S.movs),
+      e("Buscar la evidencia fotográfica del despacho en Documentos › Gestor de Imagenes", S.imagenes),
+      i("Determinar la causa y la responsabilidad (OLO, transportista o cliente)", "fisico"),
+      i("Responder al cliente con la evidencia y, si corresponde, la nota de crédito o reposición", "correo"),
+    ],
+    registros: ["Reclamo con causa y respuesta"],
+    noConformidades: ["Reclamo respondido sin evidencia", "Reclamo sin causa raíz registrada"],
+    tablas: [t("EXPEDICIONESCABECERA", "Orden despachada"), t("EPALETMOVIMIENTOSALIDA", "Salida del palet")],
+    datosClave: ["Cliente", "Pedido / expedición", "Artículo", "Tipo de problema", "Evidencia"],
+    conceptos: [],
   },
 };
 

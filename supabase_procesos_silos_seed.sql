@@ -796,4 +796,97 @@ begin
       values ('neg_valor_agregado', v_proc, 2, '4. Proponer ajustes de tarifa o de dotación si el costo real supera lo cobrado', 3, 'VAS-07.04') returning id into v_sub;
   end if;
   v_macro := null; v_proc := null;
+
+  -- SLC-01 · Corte y facturación de almacenaje y servicios  (P1.6 · Servicio logístico a clientes › S2 · Facturación de servicios logísticos)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'log_servicio_cliente' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S2 · Facturación de servicios logísticos'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S2 · Facturación de servicios logísticos', 'log_servicio_cliente'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'SLC-01') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'log_servicio_cliente', v_macro, 1, 'Corte y facturación de almacenaje y servicios', coalesce(max(sort_order), -1) + 1, 'SLC-01'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '1. Solicitar el corte del período para el cliente en el módulo de cobro de almacenaje (eInv)', 0, 'SLC-01.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '2. Revisar el cálculo diario de estadía por palet y los eventos de cobro (entradas, salidas, servicios)', 1, 'SLC-01.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '3. Validar los servicios especiales del período en Documentos › Registro Servicios Especiales', 2, 'SLC-01.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__registro_servicios_especiales.jpg', 'eFlow WMS · Documentos › Registro Servicios Especiales.jpg', 'image/jpeg', 60036);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '4. Confirmar tarifas vigentes en Catálogos › Catálogo de servicios', 3, 'SLC-01.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_catalogos__catalogo_de_servicios.jpg', 'eFlow WMS · Catálogos › Catálogo de servicios.jpg', 'image/jpeg', 88205);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '5. Generar la pre-proforma y enviarla al cliente para aprobación', 4, 'SLC-01.05') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '6. Emitir la factura en el ERP con el detalle aprobado', 5, 'SLC-01.06') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- SLC-02 · Costeo por actividad con el costo hora de los recursos  (P1.6 · Servicio logístico a clientes › S3 · Costeo por actividad (Slotting → Almacenaje → Picking))
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'log_servicio_cliente' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Costeo por actividad (Slotting → Almacenaje → Picking)'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S3 · Costeo por actividad (Slotting → Almacenaje → Picking)', 'log_servicio_cliente'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'SLC-02') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'log_servicio_cliente', v_macro, 1, 'Costeo por actividad con el costo hora de los recursos', coalesce(max(sort_order), -1) + 1, 'SLC-02'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '1. Tomar el «Costo Hora» de cada perfil de recurso en Seguridad › Recursos Perfiles', 0, 'SLC-02.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_seguridad__recursos_perfiles.jpg', 'eFlow WMS · Seguridad › Recursos Perfiles.jpg', 'image/jpeg', 131231);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '2. Exportar las horas y unidades por recurso de Reportes › Productividad Picking x Recurso', 1, 'SLC-02.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__productividad_picking_x_recurso.jpg', 'eFlow WMS · Reportes › Productividad Picking x Recurso.jpg', 'image/jpeg', 50526);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '3. Exportar Reportes › Productividad de Almacenamiento x Hora y Productividad de Empaque por recurso', 2, 'SLC-02.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__productividad_de_almacenamiento_x_hora.jpg', 'eFlow WMS · Reportes › Productividad de Almacenamiento x Hora.jpg', 'image/jpeg', 50817);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '4. Complementar con Reportes › Tiempo atención tareas para las actividades sin reporte propio', 3, 'SLC-02.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__tiempo_atencion_tareas.jpg', 'eFlow WMS · Reportes › Tiempo atención tareas.jpg', 'image/jpeg', 50127);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '5. Calcular el costo por actividad = horas × costo hora, y repartirlo por cliente según sus unidades', 4, 'SLC-02.05') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '6. Comparar el costo con lo facturado al cliente para ver el margen', 5, 'SLC-02.06') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- SLC-03 · Atención de reclamos de servicio  (P1.6 · Servicio logístico a clientes › S5 · Reclamos de servicio)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'log_servicio_cliente' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S5 · Reclamos de servicio'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S5 · Reclamos de servicio', 'log_servicio_cliente'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'SLC-03') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'log_servicio_cliente', v_macro, 1, 'Atención de reclamos de servicio', coalesce(max(sort_order), -1) + 1, 'SLC-03'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '1. Registrar el reclamo (cliente, pedido, artículo, tipo de problema) y confirmar recepción al cliente', 0, 'SLC-03.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '2. Revisar la orden despachada en Reportes › Control de Ordenes Despachadas y Detalle Ordenes de Salida', 1, 'SLC-03.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__control_de_ordenes_despachadas.jpg', 'eFlow WMS · Reportes › Control de Ordenes Despachadas.jpg', 'image/jpeg', 50554);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '3. Rastrear el palet o artículo en Control › Movimientos', 2, 'SLC-03.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_control__movimientos.jpg', 'eFlow WMS · Control › Movimientos.jpg', 'image/jpeg', 59568);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '4. Buscar la evidencia fotográfica del despacho en Documentos › Gestor de Imagenes', 3, 'SLC-03.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__gestor_de_imagenes.jpg', 'eFlow WMS · Documentos › Gestor de Imagenes.jpg', 'image/jpeg', 52684);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '5. Determinar la causa y la responsabilidad (OLO, transportista o cliente)', 4, 'SLC-03.05') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_servicio_cliente', v_proc, 2, '6. Responder al cliente con la evidencia y, si corresponde, la nota de crédito o reposición', 5, 'SLC-03.06') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
 end $$;

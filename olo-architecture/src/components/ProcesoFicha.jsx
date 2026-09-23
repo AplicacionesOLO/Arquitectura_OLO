@@ -1,0 +1,258 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// COMPONENTE · Ficha de proceso CEDI (P1–P14) — panel lateral fijo del módulo
+// Procesos. Conecta el procedimiento con: sistemas y pantallas, tablas reales
+// de BD (eFlow / Torre de Control), procesos anteriores/siguientes del flujo,
+// silos de referencia P1.x, diagrama de flujo y documentos fuente.
+// ═══════════════════════════════════════════════════════════════════════════
+import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabaseClient.js";
+import { DESIGN, DESIGN_STATUS } from "../data/constants.js";
+import { PROCESOS_CEDI } from "../data/procesos_cedi.js";
+import { DrawioFlowchart } from "../schemas/DrawioFlowchart.jsx";
+
+const BUCKET = "Detalles_Porcesos";
+const DRAWIO = import.meta.glob("../assets/procesos_cedi/*.drawio", { query: "?raw", import: "default" });
+
+const SISTEMAS = {
+  eflow:       { label: "eFlow WMS",        color: "#0891b2" },
+  handheld:    { label: "Handheld RF",      color: "#0d9488" },
+  torre:       { label: "Torre de Control", color: "#16a34a" },
+  softland:    { label: "Softland ERP",     color: "#c0392b" },
+  apolo:       { label: "Apolo",            color: "#7c3aed" },
+  correo:      { label: "Correo",           color: "#b45309" },
+  excel_drive: { label: "Excel / Drive",    color: "#2563eb" },
+  fisico:      { label: "Físico",           color: "#64748b" },
+};
+const SCHEMA_META = {
+  efw:      { label: "eFlow WMS · EFLOW_OLO", cat: "efw" },
+  wmh_cr:   { label: "Torre de Control · WMH", cat: "wmh_cr" },
+  softland: { label: "Softland ERP", cat: null },
+};
+const CIA_COLOR = { COFERSA: "#1d4ed8", EPA: "#b45309", CEDI: "#475569" };
+
+export function SistemaChip({ sys }) {
+  const s = SISTEMAS[sys];
+  if (!s) return null;
+  return <span style={{ fontSize:10, fontWeight:700, color:s.color, background:s.color+"14", border:`1px solid ${s.color}40`, padding:"1px 7px", borderRadius:DESIGN.radiusPill, whiteSpace:"nowrap" }}>{s.label}</span>;
+}
+
+function sistemasDe(p) {
+  const set = new Set(p.pasos.map(s => s.sistema).filter(Boolean));
+  return Object.keys(SISTEMAS).filter(k => set.has(k));
+}
+
+const TABS = [["resumen","Resumen"],["pasos","Pasos"],["datos","Datos y BD"],["flujo","Diagrama"],["docs","Documentos"]];
+
+export function ProcesoFicha({ codigo, onClose, onOpen, onSearch, onNavigate, onViewFile }) {
+  const p = PROCESOS_CEDI[codigo];
+  const [tab, setTab] = useState("resumen");
+  if (!p) return null;
+  const color = CIA_COLOR[p.compania] || DESIGN.ink;
+
+  return <aside style={{ width:440, flexShrink:0, position:"sticky", top:20, maxHeight:"calc(100vh - 40px)", display:"flex", flexDirection:"column", background:"#fff", border:`1px solid ${DESIGN.border}`, borderLeft:`4px solid ${color}`, borderRadius:10, overflow:"hidden", boxSizing:"border-box" }}>
+    <div style={{ padding:"12px 16px 0", flexShrink:0 }}>
+      <div style={{ display:"flex", alignItems:"flex-start", gap:8 }}>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ display:"flex", gap:6, alignItems:"center", flexWrap:"wrap", marginBottom:3 }}>
+            <span style={{ fontSize:10.5, fontWeight:800, color:"#fff", background:color, borderRadius:4, padding:"1px 6px" }}>{p.codigo}</span>
+            <span style={{ fontSize:10.5, fontWeight:700, color }}>{p.compania}</span>
+            <span style={{ fontSize:10.5, color:DESIGN.muted }}>· {p.siloLabel} › {p.macro}</span>
+          </div>
+          <div style={{ fontSize:15, fontWeight:700, color:DESIGN.ink }}>{p.nombre}</div>
+        </div>
+        <button onClick={onClose} title="Cerrar" style={{ background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:16, flexShrink:0 }}>✕</button>
+      </div>
+      <div style={{ display:"flex", gap:2, marginTop:10, borderBottom:`1px solid ${DESIGN.border}` }}>
+        {TABS.map(([id,label]) => {
+          const isA = tab === id;
+          return <button key={id} onClick={()=>setTab(id)} style={{ fontSize:11.5, fontWeight:isA?700:500, color:isA?DESIGN.ink:DESIGN.muted, background:"none", border:"none", borderBottom:`2px solid ${isA?color:"transparent"}`, padding:"6px 8px", cursor:"pointer", fontFamily:DESIGN.font, marginBottom:-1 }}>{label}</button>;
+        })}
+      </div>
+    </div>
+    <div style={{ padding:"12px 16px 16px", overflowY:"auto", flex:1 }}>
+      {tab==="resumen" && <Resumen p={p} onOpen={onOpen} onSearch={onSearch} onNavigate={onNavigate}/>}
+      {tab==="pasos"   && <Pasos p={p}/>}
+      {tab==="datos"   && <Datos p={p} onNavigate={onNavigate}/>}
+      {tab==="flujo"   && <Flujo p={p}/>}
+      {tab==="docs"    && <Documentos p={p} onViewFile={onViewFile} onNavigate={onNavigate}/>}
+    </div>
+  </aside>;
+}
+
+// ── Piezas ─────────────────────────────────────────────────────────────────
+function L({ children, n }) {
+  return <div style={{ fontSize:10, fontWeight:700, color:DESIGN.muted, letterSpacing:"0.07em", textTransform:"uppercase", margin:"14px 0 6px" }}>
+    {children}{n != null && <span style={{ color:DESIGN.mutedSoft, fontWeight:400 }}> · {n}</span>}
+  </div>;
+}
+function Txt({ children }) {
+  return <p style={{ fontSize:12.5, color:DESIGN.inkSoft, lineHeight:1.6, margin:0 }}>{children}</p>;
+}
+function Chip({ children, onClick, title, color }) {
+  const c = color || DESIGN.inkSoft;
+  return <button onClick={onClick} disabled={!onClick} title={title} style={{ fontSize:11, color:c, background:onClick?"#fff":DESIGN.sunken2, border:`1px solid ${onClick?c+"55":DESIGN.border}`, borderRadius:6, padding:"3px 8px", cursor:onClick?"pointer":"default", fontFamily:DESIGN.font, textAlign:"left" }}>{children}</button>;
+}
+function Bullets({ items, color }) {
+  return <ul style={{ margin:0, paddingLeft:16, display:"grid", gap:4 }}>
+    {items.map((t,i) => <li key={i} style={{ fontSize:12, color:color||DESIGN.inkSoft, lineHeight:1.5 }}>{t}</li>)}
+  </ul>;
+}
+function ProcChip({ code, onOpen }) {
+  const q = PROCESOS_CEDI[code];
+  if (!q) return null;
+  return <Chip onClick={()=>onOpen(code)} title="Abrir ficha" color={CIA_COLOR[q.compania]}><b>{code}</b> {q.nombre}</Chip>;
+}
+
+// ── Pestañas ───────────────────────────────────────────────────────────────
+function Resumen({ p, onOpen, onSearch, onNavigate }) {
+  return <>
+    <L>Objetivo</L><Txt>{p.objetivo}</Txt>
+    <L>Alcance</L><Txt>{p.alcance}</Txt>
+    <L>Responsables</L>
+    <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>{p.responsables.map(r => <Chip key={r}>{r}</Chip>)}</div>
+    <L>Sistemas que intervienen</L>
+    <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>{sistemasDe(p).map(s => <SistemaChip key={s} sys={s}/>)}</div>
+
+    {(p.entradaDe.length > 0 || p.salidaA.length > 0) && <>
+      <L>Flujo de valor</L>
+      <div style={{ display:"grid", gridTemplateColumns:"1fr auto 1fr", gap:8, alignItems:"start" }}>
+        <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+          <span style={{ fontSize:10, color:DESIGN.mutedSoft }}>Recibe de</span>
+          {p.entradaDe.length ? p.entradaDe.map(c => <ProcChip key={c} code={c} onOpen={onOpen}/>) : <span style={{ fontSize:11, color:DESIGN.mutedSoft }}>— inicio</span>}
+        </div>
+        <span style={{ color:DESIGN.mutedSoft, paddingTop:16 }}>→</span>
+        <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+          <span style={{ fontSize:10, color:DESIGN.mutedSoft }}>Entrega a</span>
+          {p.salidaA.length ? p.salidaA.map(c => <ProcChip key={c} code={c} onOpen={onOpen}/>) : <span style={{ fontSize:11, color:DESIGN.mutedSoft }}>— fin</span>}
+        </div>
+      </div>
+    </>}
+
+    {p.relacionados.length > 0 && <>
+      <L>Relacionado en el modelo de referencia</L>
+      <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+        {p.relacionados.map(r => <Chip key={r.nombre} onClick={()=>onSearch(r.nombre)} title="Buscar en el árbol de Procesos">{r.nombre} ↗</Chip>)}
+      </div>
+    </>}
+
+    {p.codigo === "P1" && <>
+      <L>Aplicación</L>
+      <Chip onClick={()=>onNavigate({ tab:"ops", view:"wmh" })}>Operación › Torre de Control · WMH ↗</Chip>
+    </>}
+
+    <L n={p.registros.length}>Registros generados</L><Bullets items={p.registros}/>
+    <L n={p.noConformidades.length}>No conformidades / fallos</L>
+    {p.noConformidades.length
+      ? <Bullets items={p.noConformidades} color={DESIGN_STATUS.critical.color}/>
+      : <Txt>No se reportan no conformidades específicas.</Txt>}
+    {p.notas.length > 0 && <><L>Notas del manual y del diagrama</L><Bullets items={p.notas}/></>}
+  </>;
+}
+
+function Pasos({ p }) {
+  return <ol style={{ margin:0, padding:0, listStyle:"none", display:"grid", gap:10 }}>
+    {p.pasos.map((s,i) => <li key={i} style={{ display:"flex", gap:10 }}>
+      <span style={{ width:20, height:20, borderRadius:"50%", background:DESIGN.sunken2, color:DESIGN.inkSoft, fontSize:10.5, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{i+1}</span>
+      <div style={{ minWidth:0 }}>
+        <div style={{ fontSize:12.5, color:DESIGN.ink, lineHeight:1.5 }}>{s.texto}</div>
+        <div style={{ display:"flex", gap:6, alignItems:"center", flexWrap:"wrap", marginTop:3 }}>
+          {s.sistema && <SistemaChip sys={s.sistema}/>}
+          {s.pantalla && <span style={{ fontSize:10.5, color:DESIGN.muted }}>{s.pantalla}</span>}
+        </div>
+      </div>
+    </li>)}
+    {p.decisiones.length > 0 && <li><L>Decisiones del diagrama</L><Bullets items={p.decisiones}/></li>}
+  </ol>;
+}
+
+function Datos({ p, onNavigate }) {
+  const bySchema = {};
+  p.tablas.forEach(t => (bySchema[t.schema] ||= []).push(t));
+  return <>
+    {p.datosClave.length > 0 && <>
+      <L n={p.datosClave.length}>Datos clave del proceso</L>
+      <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>{p.datosClave.map(d => <Chip key={d}>{d}</Chip>)}</div>
+    </>}
+    {p.pantallas.length > 0 && <>
+      <L n={p.pantallas.length}>Pantallas</L>
+      <div style={{ display:"grid", gap:6 }}>
+        {p.pantallas.map((s,i) => <div key={i} style={{ fontSize:12, lineHeight:1.45 }}>
+          <div style={{ display:"flex", gap:6, alignItems:"center", flexWrap:"wrap" }}><SistemaChip sys={s.sistema}/><b style={{ color:DESIGN.ink }}>{s.ruta}</b></div>
+          <div style={{ color:DESIGN.muted, marginTop:2 }}>{s.uso}</div>
+        </div>)}
+      </div>
+    </>}
+    {Object.entries(bySchema).map(([schema, rows]) => <div key={schema}>
+      <L n={rows.length}>Tablas · {SCHEMA_META[schema]?.label || schema}</L>
+      <div style={{ display:"grid", gap:5 }}>
+        {rows.map(t => {
+          const cat = SCHEMA_META[schema]?.cat;
+          return <div key={t.tabla} style={{ display:"flex", gap:8, alignItems:"baseline" }}>
+            {cat
+              ? <button onClick={()=>onNavigate({ tab:"integrations", cat, table:t.tabla })} title="Ver la tabla en Integraciones" style={{ fontSize:11.5, fontWeight:700, color:"#0891b2", background:"none", border:"none", padding:0, cursor:"pointer", fontFamily:"'Courier New', monospace", flexShrink:0 }}>{t.tabla}</button>
+              : <span style={{ fontSize:11.5, fontWeight:700, color:DESIGN.ink, fontFamily:"'Courier New', monospace", flexShrink:0 }}>{t.tabla}</span>}
+            <span style={{ fontSize:11, color:DESIGN.muted, flex:1 }}>{t.motivo}</span>
+            {t.confianza === "media" && <span title="Inferido por semántica, no por columna o pantalla" style={{ fontSize:9.5, color:DESIGN.mutedSoft, flexShrink:0 }}>inferida</span>}
+          </div>;
+        })}
+      </div>
+    </div>)}
+    {p.tablas.length === 0 && <Txt>Sin tablas mapeadas todavía.</Txt>}
+    {p.conceptos.length > 0 && <>
+      <L n={p.conceptos.length}>Glosario</L>
+      <div style={{ display:"grid", gap:5 }}>
+        {p.conceptos.map(c => <div key={c.termino} style={{ fontSize:12, lineHeight:1.45 }}><b style={{ color:DESIGN.ink }}>{c.termino}:</b> <span style={{ color:DESIGN.inkSoft }}>{c.definicion}</span></div>)}
+      </div>
+    </>}
+  </>;
+}
+
+function Flujo({ p }) {
+  const [xml, setXml] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    const loader = DRAWIO[`../assets/procesos_cedi/${p.codigo}.drawio`];
+    if (loader) loader().then(x => { if (alive) setXml(x); });
+    return () => { alive = false; };
+  }, [p.codigo]);
+  if (!xml) return <Txt>Cargando diagrama…</Txt>;
+  return <div style={{ height:520, border:`1px solid ${DESIGN.border}`, borderRadius:8, overflow:"hidden" }}>
+    <DrawioFlowchart key={p.codigo} xml={xml} title={`Diagrama de flujo — ${p.nombre}`}/>
+  </div>;
+}
+
+function Documentos({ p, onViewFile, onNavigate }) {
+  const [available, setAvailable] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    // Cada documento vive en su carpeta (procedimientos/, manuales/): se lista
+    // cada una buscando el nombre exacto para saber si ya fue subido.
+    Promise.all(p.documentos.map(d => {
+      const i = d.path.lastIndexOf("/");
+      return supabase.storage.from(BUCKET).list(d.path.slice(0, i), { search: d.path.slice(i + 1) })
+        .then(({ data }) => (data || []).some(f => f.name === d.path.slice(i + 1)) ? d.path : null);
+    })).then(paths => { if (alive) setAvailable(new Set(paths.filter(Boolean))); });
+    return () => { alive = false; };
+  }, [p.codigo]);
+  const urlOf = (path) => supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+  return <>
+    <div style={{ display:"grid", gap:8 }}>
+      {p.documentos.map(d => {
+        const ok = available?.has(d.path);
+        return <button key={d.path} disabled={!ok} onClick={()=>onViewFile({ file_name:d.archivo }, urlOf(d.path))}
+          style={{ display:"flex", alignItems:"center", gap:10, textAlign:"left", background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:8, padding:"10px 12px", cursor:ok?"pointer":"default", fontFamily:DESIGN.font, opacity:ok?1:0.6 }}>
+          <span style={{ fontSize:9.5, fontWeight:700, color:"#fff", background:"#2b579a", borderRadius:4, padding:"3px 6px" }}>DOCX</span>
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ fontSize:12.5, fontWeight:700, color:DESIGN.ink }}>{d.titulo}</div>
+            <div style={{ fontSize:11, color:DESIGN.muted, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{d.archivo}</div>
+          </div>
+          <span style={{ fontSize:11, color:ok?DESIGN.inkSoft:DESIGN.mutedSoft }}>{available==null ? "…" : ok ? "Ver ↗" : "pendiente de subir"}</span>
+        </button>;
+      })}
+    </div>
+    {p.codigo === "P1" && <>
+      <L>Levantamiento de Torre de Control</L>
+      <Chip onClick={()=>onNavigate({ tab:"ops", view:"wmh" })}>Mapeo funcional, datos reales y modelo de datos ↗</Chip>
+    </>}
+  </>;
+}

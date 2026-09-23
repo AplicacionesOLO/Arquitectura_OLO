@@ -8,7 +8,7 @@
 // con etiqueta + insignias de conteo a la derecha, Proceso en fila con borde,
 // Subprocesos como lista plana con ícono de ojo cuando hay documento.
 // ═══════════════════════════════════════════════════════════════════════════
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo, createContext, useContext } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { PROCESO_COLOR_PALETTE } from "../data/procesosOperativos.js";
@@ -16,6 +16,12 @@ import { DrawioFlowchart } from "../schemas/DrawioFlowchart.jsx";
 import { PdfViewer } from "../components/PdfViewer.jsx";
 import { DESIGN } from "../data/constants.js";
 import { SearchIcon, EyeIcon } from "../components/icons.jsx";
+import { ProcesoFicha } from "../components/ProcesoFicha.jsx";
+import { PROCESOS_CEDI, PROCESOS_CEDI_ORDEN } from "../data/procesos_cedi.js";
+
+// Ficha lateral de los procesos CEDI (P1–P14): cualquier ProcesoRow con
+// codigo conocido puede abrirla sin pasar props por todo el árbol.
+const FichaContext = createContext({ active: null, open: () => {} });
 
 const BUCKET = "Detalles_Porcesos";
 
@@ -213,8 +219,11 @@ export function FileViewerModal({ file, url, onClose }) {
   </div>;
 }
 
-export function ProcesosOperativosView() {
+export function ProcesosOperativosView({ onNavigate = () => {}, focusCodigo = null }) {
   const { role } = useAuth();
+  const [ficha, setFicha] = useState(focusCodigo);
+  const [viewingFile, setViewingFile] = useState(null); // { file, url }
+  useEffect(() => { if (focusCodigo) setFicha(focusCodigo); }, [focusCodigo]);
   const canEdit = role === "admin" || role === "editor";
   const [categorias, setCategorias] = useState(null);
   const [collapsed, setCollapsed] = useState(() => new Set());
@@ -290,7 +299,11 @@ export function ProcesosOperativosView() {
   const subprocesos = categorias.reduce((s, c) => s + countAtDepth(c.tree, 2), 0);
   const detalles = categorias.reduce((s, c) => s + countFiles(c.tree), 0);
 
-  return <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+  const fichaCtx = { active: ficha, open: setFicha };
+
+  return <FichaContext.Provider value={fichaCtx}>
+  <div style={{ display:"flex", gap:16, alignItems:"flex-start" }}>
+  <div style={{ flex:1, minWidth:0, display:"flex", flexDirection:"column", gap:14 }}>
     <div style={{ display:"flex", gap:10, alignItems:"center", justifyContent:"space-between", flexWrap:"wrap" }}>
       <div style={{ position:"relative", width:360, maxWidth:"100%", flexShrink:0 }}>
         <SearchIcon style={{ position:"absolute", left:11, top:"50%", transform:"translateY(-50%)", fontSize:13, color:DESIGN.mutedSoft, pointerEvents:"none" }}/>
@@ -314,6 +327,8 @@ export function ProcesosOperativosView() {
       <span><b style={{ color:DESIGN.ink }}>{detalles}</b> documentos adjuntos</span>
     </div>
 
+    <FlujoCedi active={ficha} onOpen={setFicha}/>
+
     {filteredCategorias.length === 0
       ? <div style={{ padding:"24px 16px", textAlign:"center", color:DESIGN.muted, fontSize:13, border:`1px dashed ${DESIGN.border}`, borderRadius:10 }}>Sin resultados para "{search}".</div>
       : filteredCategorias.map((cat, idx) => (
@@ -322,6 +337,39 @@ export function ProcesosOperativosView() {
     {canEdit && <button onClick={addProceso} style={{ alignSelf:"flex-start", fontSize:12, fontWeight:600, color:DESIGN.ink, background:"#fff", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:6, padding:"6px 14px", cursor:"pointer", fontFamily:"inherit" }}>
       + Agregar silo
     </button>}
+  </div>
+  {ficha && <ProcesoFicha codigo={ficha} onClose={()=>setFicha(null)} onOpen={setFicha}
+    onSearch={setSearch} onNavigate={onNavigate} onViewFile={(file, url)=>setViewingFile({ file, url })}/>}
+  </div>
+  {viewingFile && <FileViewerModal file={viewingFile.file} url={viewingFile.url} onClose={()=>setViewingFile(null)}/>}
+  </FichaContext.Provider>;
+}
+
+// Cadena de los 14 procedimientos del CEDI en orden de flujo físico — acceso
+// directo a cada ficha, aunque el proceso esté colapsado en el árbol.
+function FlujoCedi({ active, onOpen }) {
+  const grupos = [...new Set(PROCESOS_CEDI_ORDEN.map(c => PROCESOS_CEDI[c].silo))]
+    .map(silo => [PROCESOS_CEDI[PROCESOS_CEDI_ORDEN.find(c => PROCESOS_CEDI[c].silo === silo)].siloLabel, silo]);
+  return <div style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:10, padding:"10px 14px" }}>
+    <div style={{ fontSize:11, fontWeight:700, color:DESIGN.muted, marginBottom:8 }}>Procedimientos operativos CEDI · flujo físico</div>
+    <div style={{ display:"flex", gap:14, flexWrap:"wrap" }}>
+      {grupos.map(([label, silo]) => {
+        const codes = PROCESOS_CEDI_ORDEN.filter(c => PROCESOS_CEDI[c].silo === silo);
+        return <div key={silo} style={{ display:"flex", alignItems:"center", gap:4, flexWrap:"wrap" }}>
+          <span style={{ fontSize:10.5, color:DESIGN.mutedSoft, marginRight:2 }}>{label}</span>
+          {codes.map((c, i) => {
+            const isA = active === c;
+            return <span key={c} style={{ display:"inline-flex", alignItems:"center", gap:4 }}>
+              {i > 0 && <span style={{ color:DESIGN.mutedSoft, fontSize:10 }}>›</span>}
+              <button onClick={()=>onOpen(isA ? null : c)} title={PROCESOS_CEDI[c].nombre}
+                style={{ fontSize:11, fontWeight:isA?700:500, color:isA?"#fff":DESIGN.inkSoft, background:isA?DESIGN.ink:DESIGN.sunken, border:`1px solid ${isA?DESIGN.ink:DESIGN.border}`, borderRadius:6, padding:"2px 7px", cursor:"pointer", fontFamily:DESIGN.font, whiteSpace:"nowrap" }}>
+                {c} {PROCESOS_CEDI[c].nombre}
+              </button>
+            </span>;
+          })}
+        </div>;
+      })}
+    </div>
   </div>;
 }
 
@@ -485,6 +533,9 @@ function ProcesoRow({ node, canEdit, collapsed, onToggle, onReload, setErr, forc
   const nameInputRef = useRef(null);
   const isCollapsed = !forceOpen && collapsed.has(node.id);
   const subCount = node.children.length;
+  const fichaCtx = useContext(FichaContext);
+  const hasFicha = !!(node.codigo && PROCESOS_CEDI[node.codigo]);
+  const fichaActive = hasFicha && fichaCtx.active === node.codigo;
 
   useEffect(() => { setName(node.name); }, [node.name]);
   useEffect(() => { if (editing) nameInputRef.current?.focus(); }, [editing]);
@@ -512,7 +563,7 @@ function ProcesoRow({ node, canEdit, collapsed, onToggle, onReload, setErr, forc
   // angosta); los Subprocesos, al expandir, flotan debajo sin caja ni fondo
   // propio — igual que el estándar del Grupo.
   return <div>
-    <div style={{ border:`1px solid ${DESIGN.border}`, borderRadius:8, background:"#fff" }}>
+    <div style={{ border:`1px solid ${fichaActive?DESIGN.ink:DESIGN.border}`, borderRadius:8, background:"#fff" }}>
       <div onClick={()=>onToggle(node.id)} onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)} title={isCollapsed?"Expandir":"Contraer"}
         style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", padding:"8px 12px" }}>
         <span style={{ color:DESIGN.mutedSoft, fontSize:11, flexShrink:0 }}><Chevron collapsed={isCollapsed}/></span>
@@ -523,6 +574,10 @@ function ProcesoRow({ node, canEdit, collapsed, onToggle, onReload, setErr, forc
               placeholder="Nombre del proceso…"
               style={{ flex:1, fontSize:13, fontWeight:700, color:DESIGN.ink, border:"none", borderBottom:`1px solid ${DESIGN.border}`, background:"transparent", outline:"none", fontFamily:"inherit", minWidth:80 }}/>
           : <span style={{ flex:1, fontSize:13, fontWeight:700, color: name?DESIGN.ink:DESIGN.mutedSoft, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{name || "Nombre del proceso…"}</span>}
+        {hasFicha && <button onClick={e=>{ e.stopPropagation(); fichaCtx.open(fichaActive ? null : node.codigo); }} title="Ver ficha del proceso al lado"
+          style={{ fontSize:10.5, fontWeight:700, color:fichaActive?"#fff":DESIGN.inkSoft, background:fichaActive?DESIGN.ink:DESIGN.sunken, border:`1px solid ${fichaActive?DESIGN.ink:DESIGN.border}`, borderRadius:6, padding:"2px 8px", cursor:"pointer", fontFamily:"inherit", flexShrink:0 }}>
+          Ficha ›
+        </button>}
         <CountPill n={subCount}/>
         {canEdit && (hover || editing || confirmDelete) && <span style={{ display:"flex", alignItems:"center", gap:6, flexShrink:0 }} onClick={e=>e.stopPropagation()}>
           {confirmDelete ? <>

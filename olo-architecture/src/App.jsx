@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { TABS, DESIGN } from "./data/constants.js";
 import { SearchIcon, ShieldIcon } from "./components/icons.jsx";
 import { OLOArchView } from "./views/OLOArchView.jsx";
@@ -14,6 +14,7 @@ import { RelacionesSistemasView } from "./views/RelacionesSistemasView.jsx";
 import { BpaBotWidget } from "./components/BpaBotWidget.jsx";
 import { NovedadesModal, useNovedades } from "./components/NovedadesModal.jsx";
 import { useAuth } from "./auth/AuthContext.jsx";
+import { NavContext } from "./lib/nav.js";
 import { LoginScreen } from "./auth/LoginScreen.jsx";
 import { PendingScreen } from "./auth/PendingScreen.jsx";
 import oloLogo from "./assets/olo-logo.png";
@@ -65,14 +66,25 @@ export default function SoftlandArchitectureMap() {
     if (!navTabs.some(t => t.id === tab)) setTab(navTabs[0].id);
   }, [permsLoading, navTabs, tab]);
 
-  const handleTab = id => { setTab(id); setBpaSel(null); setSlSel(null); setOpsSel(null); };
+  const handleTab = id => { setTab(id); setBpaSel(null); setSlSel(null); setOpsSel(null); setNavFocus(null); };
+  // Navegación cruzada entre módulos: { tab, ...foco }; `n` fuerza re-aplicar
+  // el mismo foco dos veces seguidas.
+  const [navFocus, setNavFocus] = useState(null);
+  const navSeq = useRef(0);
+  const navigate = (target) => {
+    setTab(target.tab); setBpaSel(null); setSlSel(null); setOpsSel(null);
+    setNavFocus({ ...target, n: ++navSeq.current });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const focusFor = (id) => navFocus?.tab === id ? navFocus : null;
   const activeTab = navTabs.find(t => t.id === tab);
 
   if (loading || (user && !profileLoaded)) return <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#f8f9fa", color:"#94a3b8", fontFamily:"'Segoe UI','Helvetica Neue',system-ui,sans-serif", fontSize:13 }}>Cargando…</div>;
   if (!user) return <LoginScreen/>;
   if (!isActive) return <PendingScreen/>;
 
-  return <div style={{ fontFamily:DESIGN.font, background:"#f8f9fa", color:DESIGN.ink, minHeight:"100vh", display:"flex" }}>
+  return <NavContext.Provider value={{ navigate }}>
+  <div style={{ fontFamily:DESIGN.font, background:"#f8f9fa", color:DESIGN.ink, minHeight:"100vh", display:"flex" }}>
     <style>{`body{margin:0;}::selection{background:${DESIGN.ink};color:#fff;}`}</style>
 
     {/* Sidebar */}
@@ -147,7 +159,7 @@ export default function SoftlandArchitectureMap() {
     </aside>
 
     {/* Main Content */}
-    <main style={{ flex:1, padding:"20px 40px 64px 40px", overflow:"auto", minWidth:0 }}>
+    <main style={{ flex:1, padding:"20px 40px 64px 40px", overflowX:"clip", minWidth:0 }}>
       <div>
 
         {/* Header */}
@@ -179,12 +191,12 @@ export default function SoftlandArchitectureMap() {
             los permisos por rol ya configurados (keyed por id). */}
         {tab==="bpa"          && <BPAView selected={bpaSel} setSelected={setBpaSel}/>}
         {tab==="infra"        && <OLOArchView     searchQuery={globalSearch}/>}
-        {tab==="olo-arch"     && <ProcesosOperativosView/>}
+        {tab==="olo-arch"     && <ProcesosOperativosView onNavigate={navigate} focusCodigo={focusFor("olo-arch")?.codigo}/>}
         {tab==="relaciones"   && <RelacionesSistemasView/>}
         {tab==="ecosystem"    && <EcosystemView   searchQuery={globalSearch}/>}
         {tab==="softland"     && <SoftlandView selected={slSel} setSelected={setSlSel}/>}
-        {tab==="ops"          && <OpsView selected={opsSel} setSelected={setOpsSel}/>}
-        {tab==="integrations" && <IntegrationsView searchQuery={globalSearch}/>}
+        {tab==="ops"          && <OpsView selected={opsSel} setSelected={setOpsSel} focus={focusFor("ops")}/>}
+        {tab==="integrations" && <IntegrationsView searchQuery={globalSearch} focus={focusFor("integrations")}/>}
         {tab==="context"      && <ContextView/>}
         {tab==="admin" && isAdmin && <AdminView/>}
 
@@ -198,5 +210,6 @@ export default function SoftlandArchitectureMap() {
 
     <BpaBotWidget/>
     {novedades.open && <NovedadesModal titulo={novedades.doc?.titulo} fecha={novedades.doc?.fecha} items={novedades.items} onClose={novedades.close}/>}
-  </div>;
+  </div>
+  </NavContext.Provider>;
 }

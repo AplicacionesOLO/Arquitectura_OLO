@@ -75,7 +75,7 @@ const VE_CATS = ["ve_global", ...WMS_VE_CATS, ...ERP_VE_CATS, ...VE_DIRECT_CATS]
 // grupo colapsable), con su propio "Global · Todos" (el ya existente "global").
 const CR_CATS = Object.keys(CAT_META).filter(k => !VE_CATS.includes(k));
 
-export function IntegrationsView({ searchQuery="" }) {
+export function IntegrationsView({ searchQuery="", focus=null }) {
   const [mainView, setMainView] = useState("modulos"); // "modulos" | "backbone"
   const [cat, setCat] = useState("global");
   const [fFrom, setFFrom] = useState("*");
@@ -89,6 +89,12 @@ export function IntegrationsView({ searchQuery="" }) {
   const [erpVeExpanded, setErpVeExpanded] = useState(false);
   // Sync external search into filter
   useEffect(()=>{ if(searchQuery) setFWhat(searchQuery); }, [searchQuery]);
+  // Foco desde otro módulo (ej. ficha de proceso): abre el schema y la tabla.
+  useEffect(()=>{
+    if (!focus?.cat) return;
+    setMainView("modulos"); setCat(focus.cat);
+    if (VE_CATS.includes(focus.cat)) setVeExpanded(true); else setCrExpanded(true);
+  }, [focus]);
 
   const handleCat = c => { setCat(c); setFFrom("*"); setFTo("*"); setFStatus("*"); setFWhat(""); };
 
@@ -258,7 +264,7 @@ export function IntegrationsView({ searchQuery="" }) {
 
     /* Schema ER views (sro / sco / efw / wmh_cr / ve schemas) */
     (cat==="sro"||cat==="sco"||cat==="efw"||cat==="wmh_cr"||cat==="efwbeval"||cat==="efwfebeca"||cat==="efwsillaca"||cat==="efwwmh"||cat==="eintegra_ve"||cat==="softland_beval"||cat==="softland_febeca"||cat==="softland_sillaca"||cat==="softland_trexa"||cat==="softland_prisma")
-      ? <ERSchemaView schema={cat} searchQuery={searchQuery} overrideRows={SCHEMA_ROWS[cat]||null}/> : <>
+      ? <ERSchemaView schema={cat} searchQuery={searchQuery} overrideRows={SCHEMA_ROWS[cat]||null} focusTable={focus?.cat===cat ? focus.table : null}/> : <>
 
     {cat!=="global" && <div style={{ background:CAT_META[cat].bg, border:`1px solid ${CAT_META[cat].border}`, borderLeft:`3px solid ${CAT_META[cat].color}`, borderRadius:8, padding:"10px 14px", marginBottom:14, fontSize:12, color:"#555", lineHeight:1.5 }}>
       <b style={{ color:CAT_META[cat].color }}>{CAT_META[cat].icon} {CAT_META[cat].label}</b>

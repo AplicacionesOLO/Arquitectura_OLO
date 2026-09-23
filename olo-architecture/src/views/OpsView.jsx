@@ -4,8 +4,24 @@
 import { OPS_MODULES, SATELLITE_MODULES } from "../data/softland.js";
 import { OPS_COLORS, DESIGN } from "../data/constants.js";
 import { StatusBadge, DetailPanel } from "../components/ui.jsx";
+import { useState, useEffect } from "react";
+import { ControlTowerView } from "./ControlTowerView.jsx";
 
-export function OpsView({ selected, setSelected }) {
+export function OpsView({ selected, setSelected, focus }) {
+  const [mainView, setMainView] = useState(focus?.view || "modulos"); // "modulos" | "wmh"
+  useEffect(() => { if (focus?.view) setMainView(focus.view); }, [focus]);
+  return <div>
+    <div style={{ display:"flex", gap:6, marginBottom:16 }}>
+      {[["modulos","Módulos eflow"],["wmh","Torre de Control · WMH"]].map(([id,label]) => {
+        const active = mainView===id;
+        return <button key={id} onClick={()=>setMainView(id)} style={{ padding:"7px 16px", borderRadius:8, border:`1px solid ${active?DESIGN.ink:DESIGN.border}`, background:active?DESIGN.ink:"#fff", color:active?"#fff":DESIGN.inkSoft, fontWeight:active?700:400, fontSize:13, cursor:"pointer", fontFamily:DESIGN.font }}>{label}</button>;
+      })}
+    </div>
+    {mainView==="wmh" ? <ControlTowerView/> : <OpsModules selected={selected} setSelected={setSelected}/>}
+  </div>;
+}
+
+function OpsModules({ selected, setSelected }) {
   const sel = OPS_MODULES.find(m => m.code === selected);
   return <div>
     {sel && <DetailPanel item={{...sel, color:OPS_COLORS[sel.code]??"#1abc9c"}} onClose={()=>setSelected(null)}/>}

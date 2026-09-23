@@ -28,6 +28,19 @@ import { ERDiagram } from "./ERDiagram.jsx";
 import { deriveRowsFromTableDefs } from "./fkUtils.js";
 import { KeyIcon, LinkIcon } from "../components/icons.jsx";
 import { DESIGN } from "../data/constants.js";
+import { PROCESOS_CEDI, PROCESOS_CEDI_ORDEN } from "../data/procesos_cedi.js";
+import { useNav } from "../lib/nav.js";
+
+// Índice inverso tabla → procesos CEDI que la usan (por schema de la ficha).
+const PROC_SCHEMA = { efw:"efw", wmh_cr:"wmh_cr" };
+function procesosQueUsan(schema, table) {
+  const sc = PROC_SCHEMA[schema];
+  if (!sc || !table) return [];
+  return PROCESOS_CEDI_ORDEN
+    .map(c => PROCESOS_CEDI[c])
+    .filter(p => p.tablas.some(t => t.schema === sc && t.tabla === table))
+    .map(p => ({ p, t: p.tablas.find(t => t.schema === sc && t.tabla === table) }));
+}
 
 export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null, focusTable=null }) {
   const GR  = schema==="sco"       ? SCO_GROUPS
@@ -94,6 +107,7 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null, 
   const [selectedTable, setSelectedTable] = useState(null);
   const [viewMode, setViewMode] = useState("cards"); // "cards" | "diagram" | "radial"
   const [viewingGuia, setViewingGuia] = useState(null); // capítulo abierto en el visor de PDF
+  const { navigate } = useNav();
 
   // Al cambiar de schema, los keys de GR cambian — resetear selección para no heredar un Set vacío/obsoleto
   useEffect(() => {
@@ -197,61 +211,10 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null, 
       </div>
 
       {/* Contenido principal */}
+      {/* Contenido principal: vista a la izquierda + panel de detalle fijo a la derecha
+          (sticky) — así el detalle queda visible aunque la tabla elegida esté más abajo. */}
+      <div style={{ flex:1, minWidth:0, display:"flex", gap:16, alignItems:"flex-start" }}>
       <div style={{ flex:1, minWidth:0 }}>
-        {selectedTable && (
-          <div style={{ background:"#fff", border:`1px solid ${COL[selectedTable]}44`, borderLeft:`4px solid ${COL[selectedTable]}`, borderRadius:10, padding:"14px 18px", marginBottom:16 }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
-              <div>
-                <span style={{ fontFamily:DESIGN.font, fontWeight:700, fontSize:15, color:COL[selectedTable] }}>{selectedTable}</span>
-                <span style={{ fontSize:11, color:"#888", marginLeft:10 }}>{(TD[selectedTable]?.cols||[]).length} columnas · {fkOutMap[selectedTable]||0} FK out · {fkInMap[selectedTable]||0} FK in</span>
-              </div>
-              <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                {EFW_CONFIG_CAPITULOS[selectedTable] && (
-                  <button onClick={()=>setViewingGuia(EFW_CONFIG_CAPITULOS[selectedTable])}
-                    title="Abrir el capítulo de la Guía de Configuración que documenta esta tabla"
-                    style={{ display:"flex", alignItems:"center", gap:6, background:"#fff", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:6, color:DESIGN.inkSoft, cursor:"pointer", fontSize:11, fontWeight:600, padding:"5px 10px", fontFamily:DESIGN.font }}>
-                    <FileIcon style={{ fontSize:12 }}/> Cap. {EFW_CONFIG_CAPITULOS[selectedTable].capitulo} · {EFW_CONFIG_CAPITULOS[selectedTable].titulo}
-                  </button>
-                )}
-                <button onClick={()=>setSelectedTable(null)} style={{ background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:16 }}>✕</button>
-              </div>
-            </div>
-            <div style={{ marginTop:10, display:"flex", flexWrap:"wrap", gap:6 }}>
-              <span style={{ fontSize:10, background:"#fff8dc", border:"1px solid #fcd34d", color:"#92400e", padding:"2px 8px", borderRadius:4, fontFamily:DESIGN.font, display:"inline-flex", alignItems:"center", gap:4 }}><KeyIcon style={{ fontSize:10 }}/> {TD[selectedTable]?.pk||"id"}</span>
-              {(TD[selectedTable]?.cols||[]).map(c=>{
-                const isFK=c.includes('→');
-                const color=COL[selectedTable];
-                return <span key={c} style={{ fontSize:10, background:isFK?color+"10":"#f5f5f5", border:`1px solid ${isFK?color+"44":"#e0e0e0"}`, color:isFK?color:"#555", padding:"2px 8px", borderRadius:4, fontFamily:DESIGN.font, display:"inline-flex", alignItems:"center", gap:4 }}>{isFK?<LinkIcon style={{ fontSize:9 }}/>:null}{c}</span>;
-              })}
-            </div>
-            {selRelated.length > 0 && (
-              <div style={{ marginTop:12, borderTop:"1px solid #f0f0f0", paddingTop:10 }}>
-                <div style={{ fontSize:10, fontWeight:700, color:"#888", letterSpacing:"0.07em", textTransform:"uppercase", marginBottom:6 }}>Relaciones FK</div>
-                <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
-                  {selRelated.map((r,i)=>(
-                    <div key={i} style={{ fontSize:11, display:"flex", alignItems:"center", gap:8 }}>
-                      <span style={{ fontFamily:DESIGN.font, color:COL[r.from]||"#888", fontWeight:600 }}>{r.from}</span>
-                      <span style={{ color:"#bbb" }}>→</span>
-                      <span style={{ fontFamily:DESIGN.font, color:COL[r.to]||"#888", fontWeight:600 }}>{r.to}</span>
-                      <span style={{ color:"#999", fontSize:10, flex:1 }}>{r.what}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {selectedTable && (
-          <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:12, padding:"8px 14px", background:"#f8faff", border:"1px solid #dbeafe", borderRadius:8, alignItems:"center" }}>
-            <span style={{ fontSize:11, fontWeight:700, color:COL[selectedTable]||"#555", fontFamily:DESIGN.font }}>{selectedTable}</span>
-            <span style={{ fontSize:10, color:"#888" }}>análisis de impacto:</span>
-            {depSet.size>0    && <span style={{ fontSize:11, background:"#fffbeb", border:"1px solid #f59e0b", color:"#b45309", padding:"2px 10px", borderRadius:12, fontWeight:600 }}>⬆ {depSet.size} dependencia{depSet.size!==1?"s":""}</span>}
-            {impactSet.size>0 && <span style={{ fontSize:11, background:"#fef2f2", border:"1px solid #ef4444", color:"#b91c1c", padding:"2px 10px", borderRadius:12, fontWeight:600 }}>⬇ {impactSet.size} tabla{impactSet.size!==1?"s":""} afectada{impactSet.size!==1?"s":""}</span>}
-            {impact2Set.size>0 && <span style={{ fontSize:11, background:"#fff5f5", border:"1px solid #fca5a5", color:"#dc2626", padding:"2px 10px", borderRadius:12, fontWeight:600 }}>~ {impact2Set.size} impacto{impact2Set.size!==1?"s":""} indirecto{impact2Set.size!==1?"s":""}</span>}
-            <span style={{ fontSize:10, color:"#aaa", marginLeft:"auto" }}>Leyenda: <b style={{color:"#f59e0b"}}>⬆ dep</b> · <b style={{color:"#ef4444"}}>⬇ impacto</b> · <b style={{color:"#fca5a5"}}>~ 2do nivel</b></span>
-          </div>
-        )}
 
         <div style={{ display:"flex", gap:6, marginBottom:14, alignItems:"center" }}>
           <button style={btnStyle(viewMode==="cards")}    onClick={()=>setViewMode("cards")}>⊞ Tarjetas por módulo</button>
@@ -300,6 +263,78 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null, 
           />
         )}
         {viewMode==="radial" && <ERDiagram rows={diagRows}/>}
+      </div>
+
+      {selectedTable && (
+        <aside style={{ width:360, flexShrink:0, position:"sticky", top:20, maxHeight:"calc(100vh - 40px)", overflowY:"auto", background:"#fff", border:`1px solid ${COL[selectedTable]}44`, borderLeft:`4px solid ${COL[selectedTable]}`, borderRadius:10, padding:"14px 16px", boxSizing:"border-box" }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:8 }}>
+            <div style={{ minWidth:0 }}>
+              <div style={{ fontFamily:DESIGN.font, fontWeight:700, fontSize:15, color:COL[selectedTable], wordBreak:"break-word" }}>{selectedTable}</div>
+              <div style={{ fontSize:11, color:"#888", marginTop:2 }}>{(TD[selectedTable]?.cols||[]).length} columnas · {fkOutMap[selectedTable]||0} FK out · {fkInMap[selectedTable]||0} FK in</div>
+            </div>
+            <button onClick={()=>setSelectedTable(null)} title="Cerrar" style={{ background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:16, flexShrink:0 }}>✕</button>
+          </div>
+          {EFW_CONFIG_CAPITULOS[selectedTable] && (
+            <button onClick={()=>setViewingGuia(EFW_CONFIG_CAPITULOS[selectedTable])}
+              title="Abrir el capítulo de la Guía de Configuración que documenta esta tabla"
+              style={{ display:"flex", alignItems:"center", gap:6, marginTop:10, background:"#fff", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:6, color:DESIGN.inkSoft, cursor:"pointer", fontSize:11, fontWeight:600, padding:"5px 10px", fontFamily:DESIGN.font, textAlign:"left" }}>
+              <FileIcon style={{ fontSize:12, flexShrink:0 }}/> Cap. {EFW_CONFIG_CAPITULOS[selectedTable].capitulo} · {EFW_CONFIG_CAPITULOS[selectedTable].titulo}
+            </button>
+          )}
+
+          {/* Análisis de impacto */}
+          {(depSet.size>0 || impactSet.size>0 || impact2Set.size>0) && (
+            <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:12, padding:"8px 10px", background:"#f8faff", border:"1px solid #dbeafe", borderRadius:8 }}>
+              <span style={{ fontSize:10, color:"#888", width:"100%" }}>Análisis de impacto</span>
+              {depSet.size>0    && <span style={{ fontSize:11, background:"#fffbeb", border:"1px solid #f59e0b", color:"#b45309", padding:"2px 10px", borderRadius:12, fontWeight:600 }}>⬆ {depSet.size} dependencia{depSet.size!==1?"s":""}</span>}
+              {impactSet.size>0 && <span style={{ fontSize:11, background:"#fef2f2", border:"1px solid #ef4444", color:"#b91c1c", padding:"2px 10px", borderRadius:12, fontWeight:600 }}>⬇ {impactSet.size} tabla{impactSet.size!==1?"s":""} afectada{impactSet.size!==1?"s":""}</span>}
+              {impact2Set.size>0 && <span style={{ fontSize:11, background:"#fff5f5", border:"1px solid #fca5a5", color:"#dc2626", padding:"2px 10px", borderRadius:12, fontWeight:600 }}>~ {impact2Set.size} impacto{impact2Set.size!==1?"s":""} indirecto{impact2Set.size!==1?"s":""}</span>}
+              <span style={{ fontSize:10, color:"#aaa", width:"100%" }}>Leyenda: <b style={{color:"#f59e0b"}}>⬆ dep</b> · <b style={{color:"#ef4444"}}>⬇ impacto</b> · <b style={{color:"#fca5a5"}}>~ 2do nivel</b></span>
+            </div>
+          )}
+
+          <div style={{ fontSize:10, fontWeight:700, color:"#888", letterSpacing:"0.07em", textTransform:"uppercase", margin:"12px 0 6px" }}>Columnas</div>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+            <span style={{ fontSize:10, background:"#fff8dc", border:"1px solid #fcd34d", color:"#92400e", padding:"2px 8px", borderRadius:4, fontFamily:DESIGN.font, display:"inline-flex", alignItems:"center", gap:4 }}><KeyIcon style={{ fontSize:10 }}/> {TD[selectedTable]?.pk||"id"}</span>
+            {(TD[selectedTable]?.cols||[]).map(c=>{
+              const isFK=c.includes('→');
+              const color=COL[selectedTable];
+              return <span key={c} style={{ fontSize:10, background:isFK?color+"10":"#f5f5f5", border:`1px solid ${isFK?color+"44":"#e0e0e0"}`, color:isFK?color:"#555", padding:"2px 8px", borderRadius:4, fontFamily:DESIGN.font, display:"inline-flex", alignItems:"center", gap:4, wordBreak:"break-all" }}>{isFK?<LinkIcon style={{ fontSize:9 }}/>:null}{c}</span>;
+            })}
+          </div>
+
+          {selRelated.length > 0 && (
+            <div style={{ marginTop:12, borderTop:"1px solid #f0f0f0", paddingTop:10 }}>
+              <div style={{ fontSize:10, fontWeight:700, color:"#888", letterSpacing:"0.07em", textTransform:"uppercase", marginBottom:6 }}>Relaciones FK</div>
+              <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                {selRelated.map((r,i)=>(
+                  <div key={i} style={{ fontSize:11, display:"flex", alignItems:"baseline", gap:6, flexWrap:"wrap" }}>
+                    <span style={{ fontFamily:DESIGN.font, color:COL[r.from]||"#888", fontWeight:600 }}>{r.from}</span>
+                    <span style={{ color:"#bbb" }}>→</span>
+                    <span style={{ fontFamily:DESIGN.font, color:COL[r.to]||"#888", fontWeight:600 }}>{r.to}</span>
+                    {r.what && <span style={{ color:"#999", fontSize:10, width:"100%" }}>{r.what}</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {procesosQueUsan(schema, selectedTable).length > 0 && (
+            <div style={{ marginTop:12, borderTop:"1px solid #f0f0f0", paddingTop:10 }}>
+              <div style={{ fontSize:10, fontWeight:700, color:"#888", letterSpacing:"0.07em", textTransform:"uppercase", marginBottom:6 }}>Usado en procesos</div>
+              <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                {procesosQueUsan(schema, selectedTable).map(({ p, t }) => (
+                  <button key={p.codigo} onClick={()=>navigate({ tab:"olo-arch", codigo:p.codigo })} title="Abrir la ficha del proceso"
+                    style={{ textAlign:"left", background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:6, padding:"6px 8px", cursor:"pointer", fontFamily:DESIGN.font }}>
+                    <div style={{ fontSize:11.5, fontWeight:700, color:DESIGN.ink }}>{p.codigo} · {p.nombre} ↗</div>
+                    <div style={{ fontSize:10.5, color:"#888", marginTop:1 }}>{t.motivo}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </aside>
+      )}
       </div>
       {viewingGuia && (
         <FileViewerModal

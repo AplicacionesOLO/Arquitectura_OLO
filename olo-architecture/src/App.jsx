@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { TABS, DESIGN } from "./data/constants.js";
+import { TABS, DESIGN, NAV_LAYERS } from "./data/constants.js";
 import { SearchIcon, ShieldIcon } from "./components/icons.jsx";
 import { OLOArchView } from "./views/OLOArchView.jsx";
 import { EcosystemView } from "./views/EcosystemView.jsx";
@@ -102,12 +102,24 @@ export default function SoftlandArchitectureMap() {
 
       {/* Nav Items */}
       <nav style={{ flex:1, padding:"8px 0", overflowY:"auto" }}>
-        {navTree.map(t => {
+        {navTree.map((t, idx) => {
           const isA = tab === t.id;
+          // Encabezado de capa (Procesos → Operación → Sistemas → Datos) al cambiar de capa
+          const layer = NAV_LAYERS.find(l => l.id === t.layer);
+          const newLayer = t.layer !== navTree[idx - 1]?.layer;
+          const layerHeader = newLayer && (sidebarCollapsed
+            ? idx > 0 && <div style={{ height:1, background:DESIGN.border, margin:"6px 12px" }}/>
+            : <div style={{ display:"flex", alignItems:"baseline", gap:6, padding:"12px 14px 4px", borderTop: idx > 0 ? `1px solid ${DESIGN.sunken2}` : "none", marginTop: idx > 0 ? 4 : 0 }}>
+                {layer
+                  ? <><span style={{ fontSize:10.5, fontWeight:700, color:DESIGN.ink, letterSpacing:"0.04em", textTransform:"uppercase" }}>{layer.label}</span>
+                      <span style={{ fontSize:10, color:DESIGN.mutedSoft }}>{layer.sub}</span></>
+                  : <span style={{ fontSize:10.5, fontWeight:700, color:DESIGN.muted, letterSpacing:"0.04em", textTransform:"uppercase" }}>Administración</span>}
+              </div>);
           const hasChildren = t.children.length > 0;
           const childActive = t.children.some(c => c.id === tab);
           const expanded = expandedGroups.has(t.id) || childActive;
           return <div key={t.id}>
+            {layerHeader}
             <div style={{ display:"flex", alignItems:"stretch", background:isA?DESIGN.sunken2:"transparent", borderLeft:isA?`3px solid ${DESIGN.ink}`:"3px solid transparent", transition:"background 0.15s" }}
               onMouseEnter={e=>{ if(!isA) e.currentTarget.style.background=DESIGN.sunken; }}
               onMouseLeave={e=>{ if(!isA) e.currentTarget.style.background="transparent"; }}>

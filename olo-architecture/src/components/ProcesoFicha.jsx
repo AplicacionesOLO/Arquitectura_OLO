@@ -9,6 +9,9 @@ import { supabase } from "../lib/supabaseClient.js";
 import { DESIGN, DESIGN_STATUS } from "../data/constants.js";
 import { PROCESOS_CEDI } from "../data/procesos_cedi.js";
 import { DrawioFlowchart } from "../schemas/DrawioFlowchart.jsx";
+import { WMS_INDEX, PASO_PANTALLA, PANTALLA_PROCESOS } from "../data/wms_links.js";
+import { Presentacion } from "./Presentacion.jsx";
+import { slidesProceso } from "../lib/presentacion.js";
 
 const BUCKET = "Detalles_Porcesos";
 const DRAWIO = import.meta.glob("../assets/procesos_cedi/*.drawio", { query: "?raw", import: "default" });
@@ -71,7 +74,7 @@ export function ProcesoFicha({ codigo, onClose, onOpen, onSearch, onNavigate, on
     </div>
     <div style={{ padding:"12px 16px 16px", overflowY:"auto", flex:1 }}>
       {tab==="resumen" && <Resumen p={p} onOpen={onOpen} onSearch={onSearch} onNavigate={onNavigate}/>}
-      {tab==="pasos"   && <Pasos p={p}/>}
+      {tab==="pasos"   && <Pasos p={p} onNavigate={onNavigate}/>}
       {tab==="datos"   && <Datos p={p} onNavigate={onNavigate}/>}
       {tab==="flujo"   && <Flujo p={p}/>}
       {tab==="docs"    && <Documentos p={p} onViewFile={onViewFile} onNavigate={onNavigate}/>}
@@ -149,20 +152,42 @@ function Resumen({ p, onOpen, onSearch, onNavigate }) {
   </>;
 }
 
-function Pasos({ p }) {
-  return <ol style={{ margin:0, padding:0, listStyle:"none", display:"grid", gap:10 }}>
+// Pantalla del manual eFlow WMS ligada a un paso (hilo Paso → Pantalla)
+function PantallaLink({ id, onNavigate }) {
+  const w = WMS_INDEX[id];
+  return <button onClick={()=>onNavigate({ tab:"ops", view:"wms", screen:id })} title="Ver la pantalla en el manual de eFlow WMS"
+    style={{ fontSize:10.5, fontWeight:700, color:"#0891b2", background:"#0891b214", border:"1px solid #0891b240", borderRadius:5, padding:"1px 6px", cursor:"pointer", fontFamily:DESIGN.font }}>
+    {w.module} › {w.option} ↗
+  </button>;
+}
+
+function Pasos({ p, onNavigate }) {
+  const links = PASO_PANTALLA[p.codigo] || {};
+  const [show, setShow] = useState(null);
+  const conPantalla = Object.keys(links).length;
+  return <>
+  {conPantalla > 0 && <button onClick={()=>setShow(0)} title="Presentar el proceso pantalla por pantalla"
+    style={{ width:"100%", marginBottom:12, fontSize:12, fontWeight:700, color:"#fff", background:"#0891b2", border:"none", borderRadius:7, padding:"8px 12px", cursor:"pointer", fontFamily:DESIGN.font }}>
+    ▶ Recorrido en pantallas · {p.pasos.length} pasos, {conPantalla} con captura de eFlow
+  </button>}
+  {show != null && <Presentacion slides={slidesProceso(p.codigo)} start={show} onClose={()=>setShow(null)}
+    onOpenScreen={(id) => { setShow(null); onNavigate({ tab:"ops", view:"wms", screen:id }); }}/>}
+  <ol style={{ margin:0, padding:0, listStyle:"none", display:"grid", gap:10 }}>
     {p.pasos.map((s,i) => <li key={i} style={{ display:"flex", gap:10 }}>
       <span style={{ width:20, height:20, borderRadius:"50%", background:DESIGN.sunken2, color:DESIGN.inkSoft, fontSize:10.5, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{i+1}</span>
       <div style={{ minWidth:0 }}>
         <div style={{ fontSize:12.5, color:DESIGN.ink, lineHeight:1.5 }}>{s.texto}</div>
         <div style={{ display:"flex", gap:6, alignItems:"center", flexWrap:"wrap", marginTop:3 }}>
           {s.sistema && <SistemaChip sys={s.sistema}/>}
-          {s.pantalla && <span style={{ fontSize:10.5, color:DESIGN.muted }}>{s.pantalla}</span>}
+          {links[i]
+            ? links[i].map(id => <PantallaLink key={id} id={id} onNavigate={onNavigate}/>)
+            : s.pantalla && <span style={{ fontSize:10.5, color:DESIGN.muted }}>{s.pantalla}</span>}
         </div>
       </div>
     </li>)}
     {p.decisiones.length > 0 && <li><L>Decisiones del diagrama</L><Bullets items={p.decisiones}/></li>}
-  </ol>;
+  </ol>
+  </>;
 }
 
 function Datos({ p, onNavigate }) {
@@ -173,6 +198,13 @@ function Datos({ p, onNavigate }) {
       <L n={p.datosClave.length}>Datos clave del proceso</L>
       <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>{p.datosClave.map(d => <Chip key={d}>{d}</Chip>)}</div>
     </>}
+    {(() => {
+      const ids = Object.keys(PANTALLA_PROCESOS).filter(id => PANTALLA_PROCESOS[id].some(x => x.codigo === p.codigo));
+      return ids.length > 0 && <>
+        <L n={ids.length}>Pantallas del manual eFlow WMS</L>
+        <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>{ids.map(id => <PantallaLink key={id} id={id} onNavigate={onNavigate}/>)}</div>
+      </>;
+    })()}
     {p.pantallas.length > 0 && <>
       <L n={p.pantallas.length}>Pantallas</L>
       <div style={{ display:"grid", gap:6 }}>
@@ -233,7 +265,7 @@ function Documentos({ p, onViewFile, onNavigate }) {
         .then(({ data }) => (data || []).some(f => f.name === d.path.slice(i + 1)) ? d.path : null);
     })).then(paths => { if (alive) setAvailable(new Set(paths.filter(Boolean))); });
     return () => { alive = false; };
-  }, [p.codigo]);
+  }, [p]);
   const urlOf = (path) => supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
   return <>
     <div style={{ display:"grid", gap:8 }}>

@@ -67,17 +67,25 @@ export const CLUSTER_COLORS = {
   "Power BI":"#D97706","Tec. Tiempo":"#94A3B8","eflow":"#185FA5",
 };
 
-// `parent` anida el tab bajo otro en el sidebar (ej. Módulos ERP e Integraciones
-// dentro de Ecosistema) sin afectar permisos (siguen gateados por su propio
-// tab_id) ni el enrutado de contenido en App.jsx (sin cambios).
+// El menú se ordena en 4 capas que siguen el hilo del BPA:
+//   Procesos (qué hacemos) → Operación (cómo se hace, en qué pantalla) →
+//   Sistemas (con qué) → Datos (dónde queda el dato).
+// `layer` solo agrupa visualmente; los ids no cambian, así que los permisos
+// por rol (keyed por tab_id) y el enrutado de App.jsx siguen igual.
+export const NAV_LAYERS = [
+  { id:"procesos",  label:"Procesos",  sub:"qué hacemos" },
+  { id:"operacion", label:"Operación", sub:"cómo se hace" },
+  { id:"sistemas",  label:"Sistemas",  sub:"con qué" },
+  { id:"datos",     label:"Datos",     sub:"dónde queda el dato" },
+];
 export const TABS = [
-  { id:"bpa",          label:"◈ BPA · OLO",           sub:"Modelo de procesos · 4 áreas · 30 procesos · cobertura por sistema" },
-  { id:"olo-arch",     label:"◇ Procesos",             sub:"Silos · Macroprocesos · Procesos · Subprocesos · Detalle", parent:"bpa" },
-  { id:"relaciones",   label:"▨ Relaciones de sistemas", sub:"Cómo se relacionan sistemas, entidades y campos · ER por silo · linaje de dato", parent:"bpa" },
-  { id:"infra",        label:"▭ Infraestructura",      sub:"Diagrama operativo · eFlow (CR/VE) · Lago de Datos · Suite OLO · Middleware · Sistemas del Estado", parent:"ecosystem" },
-  { id:"ecosystem",    label:"◉ Ecosistema",          sub:"Mapa de capas: externos · ERP · operación · satélites" },
-  { id:"softland",     label:"⬡ Módulos ERP",         sub:"Catálogo de módulos Softland · click para detalle y entidades inferidas", parent:"ecosystem" },
-  { id:"integrations", label:"⟳ Integraciones",      sub:"Matriz inter-módulo · qué fluye, en qué dirección, con qué estado", parent:"ecosystem" },
-  { id:"ops",          label:"◒ Operación",           sub:"eflow Cloud Suite · WMS Desktop / RF / WMH Torre de Control" },
-  { id:"context",      label:"◐ Contexto",            sub:"Localizaciones · puntos de extensión · brechas declaradas" },
+  { id:"bpa",          layer:"procesos",  label:"◈ BPA · OLO",           sub:"Modelo de procesos · 4 áreas · 30 procesos · cobertura por sistema" },
+  { id:"olo-arch",     layer:"procesos",  label:"◇ Procesos",             sub:"Silos · Macroprocesos · Procesos · Subprocesos · fichas de los procedimientos CEDI" },
+  { id:"ops",          layer:"operacion", label:"◒ Operación",           sub:"eflow WMS (manual de 122 pantallas) · RF · WMH Torre de Control" },
+  { id:"ecosystem",    layer:"sistemas",  label:"◉ Ecosistema",          sub:"Mapa de capas: externos · ERP · operación · satélites" },
+  { id:"infra",        layer:"sistemas",  label:"▭ Infraestructura",      sub:"Diagrama operativo · eFlow (CR/VE) · Lago de Datos · Suite OLO · Middleware · Sistemas del Estado" },
+  { id:"softland",     layer:"sistemas",  label:"⬡ Módulos ERP",         sub:"Catálogo de módulos Softland · click para detalle y entidades inferidas" },
+  { id:"context",      layer:"sistemas",  label:"◐ Contexto",            sub:"Localizaciones · puntos de extensión · brechas declaradas" },
+  { id:"integrations", layer:"datos",     label:"⟳ Integraciones",      sub:"Esquemas de BD reales · qué fluye entre módulos · backbone SQL" },
+  { id:"relaciones",   layer:"datos",     label:"▨ Relaciones de sistemas", sub:"Cómo se relacionan sistemas, entidades y campos · ER por silo · linaje de dato" },
 ];

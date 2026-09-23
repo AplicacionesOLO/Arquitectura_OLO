@@ -30,6 +30,7 @@ import { KeyIcon, LinkIcon } from "../components/icons.jsx";
 import { DESIGN } from "../data/constants.js";
 import { PROCESOS_CEDI, PROCESOS_CEDI_ORDEN } from "../data/procesos_cedi.js";
 import { useNav } from "../lib/nav.js";
+import { TABLA_PANTALLAS, WMS_INDEX } from "../data/wms_links.js";
 
 // Índice inverso tabla → procesos CEDI que la usan (por schema de la ficha).
 const PROC_SCHEMA = { efw:"efw", wmh_cr:"wmh_cr" };
@@ -314,6 +315,20 @@ export function ERSchemaView({ schema="sro", searchQuery="", overrideRows=null, 
                     <span style={{ fontFamily:DESIGN.font, color:COL[r.to]||"#888", fontWeight:600 }}>{r.to}</span>
                     {r.what && <span style={{ color:"#999", fontSize:10, width:"100%" }}>{r.what}</span>}
                   </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {schema === "efw" && TABLA_PANTALLAS[selectedTable] && (
+            <div style={{ marginTop:12, borderTop:"1px solid #f0f0f0", paddingTop:10 }}>
+              <div style={{ fontSize:10, fontWeight:700, color:"#888", letterSpacing:"0.07em", textTransform:"uppercase", marginBottom:6 }}>Pantallas eFlow WMS</div>
+              <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>
+                {TABLA_PANTALLAS[selectedTable].map(id => (
+                  <button key={id} onClick={()=>navigate({ tab:"ops", view:"wms", screen:id })} title="Ver la pantalla en el manual de eFlow WMS"
+                    style={{ fontSize:10.5, fontWeight:700, color:"#0891b2", background:"#0891b214", border:"1px solid #0891b240", borderRadius:5, padding:"2px 7px", cursor:"pointer", fontFamily:DESIGN.font }}>
+                    {WMS_INDEX[id].module} › {WMS_INDEX[id].option} ↗
+                  </button>
                 ))}
               </div>
             </div>

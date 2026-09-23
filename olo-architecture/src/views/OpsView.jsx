@@ -7,18 +7,20 @@ import { StatusBadge, DetailPanel } from "../components/ui.jsx";
 import { useState, useEffect } from "react";
 import { ControlTowerView } from "./ControlTowerView.jsx";
 import { WmsManualView } from "./WmsManualView.jsx";
+import { SorterManualView } from "./SorterManualView.jsx";
+import { OPS_RELACIONES } from "../data/ops_relaciones.js";
 
 export function OpsView({ selected, setSelected, focus }) {
-  const [mainView, setMainView] = useState(focus?.view || "modulos"); // "modulos" | "wms" | "wmh"
+  const [mainView, setMainView] = useState(focus?.view || "modulos"); // "modulos" | "wms" | "wmh" | "sorter"
   useEffect(() => { if (focus?.view) setMainView(focus.view); }, [focus]);
   return <div>
     <div style={{ display:"flex", gap:6, marginBottom:16 }}>
-      {[["modulos","Módulos eflow"],["wms","eFlow WMS · Manual"],["wmh","Torre de Control · WMH"]].map(([id,label]) => {
+      {[["modulos","Módulos de operación"],["wms","eFlow WMS · Manual"],["wmh","Torre de Control · WMH"],["sorter","SORTER CLIRO · Manual"]].map(([id,label]) => {
         const active = mainView===id;
         return <button key={id} onClick={()=>setMainView(id)} style={{ padding:"7px 16px", borderRadius:8, border:`1px solid ${active?DESIGN.ink:DESIGN.border}`, background:active?DESIGN.ink:"#fff", color:active?"#fff":DESIGN.inkSoft, fontWeight:active?700:400, fontSize:13, cursor:"pointer", fontFamily:DESIGN.font }}>{label}</button>;
       })}
     </div>
-    {mainView==="wmh" ? <ControlTowerView focus={focus}/> : mainView==="wms" ? <WmsManualView focus={focus}/> : <OpsModules selected={selected} setSelected={setSelected}/>}
+    {mainView==="wmh" ? <ControlTowerView focus={focus}/> : mainView==="sorter" ? <SorterManualView focus={focus}/> : mainView==="wms" ? <WmsManualView focus={focus}/> : <OpsModules selected={selected} setSelected={setSelected}/>}
   </div>;
 }
 
@@ -40,6 +42,24 @@ function OpsModules({ selected, setSelected }) {
           {mod.vendor && <div style={{ fontSize:10, color:"#999" }}>Vendor: <b style={{ color:"#777" }}>{mod.vendor}</b></div>}
         </div>;
       })}
+    </div>
+    <h3 style={{ fontSize:14, fontWeight:700, color:"#1D1D1B", margin:"0 0 4px 0" }}>Cómo se relacionan</h3>
+    <p style={{ fontSize:12, color:"#777", margin:"0 0 10px 0" }}>Qué dato pasa entre los sistemas de operación y qué tan documentado está.</p>
+    <div style={{ display:"grid", gap:6, marginBottom:24 }}>
+      {OPS_RELACIONES.map((r,i) => (
+        <div key={i} style={{ display:"flex", gap:12, alignItems:"flex-start", background:"#fff", border:`1px ${r.status==="inferred"?"dashed":"solid"} ${DESIGN.border}`, borderRadius:8, padding:"8px 12px" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:5, flexShrink:0, width:170 }}>
+            <span style={{ fontSize:11, fontWeight:800, color:OPS_COLORS[r.a], fontFamily:DESIGN.font }}>{r.a}</span>
+            <span style={{ color:DESIGN.mutedSoft, fontSize:11 }}>⇄</span>
+            <span style={{ fontSize:11, fontWeight:800, color:OPS_COLORS[r.b], fontFamily:DESIGN.font }}>{r.b}</span>
+          </div>
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ fontSize:12, color:"#444", lineHeight:1.5 }}>{r.que}</div>
+            <div style={{ fontSize:10.5, color:DESIGN.mutedSoft, marginTop:2 }}>Fuente: {r.fuente}</div>
+          </div>
+          <StatusBadge status={r.status}/>
+        </div>
+      ))}
     </div>
     <h3 style={{ fontSize:14, fontWeight:700, color:"#1D1D1B", margin:"0 0 4px 0" }}>Sistemas satélite · inferidos</h3>
     <p style={{ fontSize:12, color:"#777", margin:"0 0 14px 0" }}>Mencionados parcialmente en manuales pero sin documentación dedicada en el corpus accesible.</p>

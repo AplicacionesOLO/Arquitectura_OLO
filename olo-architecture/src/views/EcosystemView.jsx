@@ -17,7 +17,8 @@ export function EcosystemView() {
   const all=[...erpNodes.map(n=>({...n,kind:"erp"})),...opsNodes.map(n=>({...n,kind:"ops"})),...extNodes.map(n=>({...n,kind:"ext"}))];
   const lookup=Object.fromEntries(all.map(n=>[n.code,n]));
 
-  const getDetail = (code) => SOFTLAND_MODULES.find(m=>m.code===code) || OPS_MODULES.find(m=>m.code===code) || SATELLITE_MODULES.find(m=>m.name===code) || null;
+  // El nodo "Mecalux" del diagrama es el SORTER CLIRO (módulo de Operación)
+  const getDetail = (code) => SOFTLAND_MODULES.find(m=>m.code===code) || OPS_MODULES.find(m=>m.code===(code==="Mecalux"?"SORTER":code)) || SATELLITE_MODULES.find(m=>m.name===code) || null;
   const active = hoveredNode || selectedNode;
   const isNodeHl = (code) => { if(!active) return false; if(active===code) return true; return links.some(l=>(l.a===active&&l.b===code)||(l.b===active&&l.a===code)); };
   const isLinkHl = (link) => active && (link.a===active||link.b===active);
@@ -41,7 +42,7 @@ export function EcosystemView() {
     <div style={{ display:"flex", flexDirection:"column", marginBottom:24 }}>
       <LayerBlock icon="◇" label="Sistemas Externos · inferidos por contexto 3PL" color="#7f8c8d" bg="rgba(127,140,141,0.08)" border="rgba(127,140,141,0.25)" radiusTop sub="Inferidos a partir del informe BPA y prácticas estándar de operadores logísticos. Sin documentación formal en el corpus accesible.">
         <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
-          {[{code:"EDI",label:"Portal · EDI · Clientes"},{code:"Aduanas",label:"Sistema Aduanero · TICA"},{code:"Mecalux",label:"Mecalux · racks"},{code:"TMSI",label:"TMS Internacional"},{code:"BI",label:"BI / Data Warehouse"},{code:"ZF",label:"Zona Franca SEL"}].map(e=>(
+          {[{code:"EDI",label:"Portal · EDI · Clientes"},{code:"Aduanas",label:"Sistema Aduanero · TICA"},{code:"Mecalux",label:"Mecalux · SORTER CLIRO"},{code:"TMSI",label:"TMS Internacional"},{code:"BI",label:"BI / Data Warehouse"},{code:"ZF",label:"Zona Franca SEL"}].map(e=>(
             <span key={e.code} style={{ fontSize:11, fontWeight:600, color:"#5e6b7a", background:"#ffffff", border:"1px dashed #b0bec5", padding:"5px 11px", borderRadius:6 }}>
               <b style={{ color:"#455A64", marginRight:6, fontFamily:DESIGN.font }}>{e.code}</b>{e.label}
             </span>

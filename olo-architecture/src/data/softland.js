@@ -40,13 +40,16 @@ export const OPS_MODULES = [
     role:"Aplicación web (Angular + Material + AG Grid) · v4.18.4.4 · http://10.17.225.22:8080",
     purpose:"Planifica y controla los viajes de distribución. Dashboard «Operación en tiempo real (Viajes)» con KPIs (viajes, rutas, órdenes, líneas, montos, peso, volumen, unidades, clientes) y acciones Nuevo Viaje, Anular Viaje y Fusionar; Catálogos (Almacenes, Bajadas, Choferes, Compañías de Transporte, Rutas y Zonas de Distribución, Unidades de Transporte); Documentos (Órdenes, Órdenes Inactivas, Visor de viajes con Despachar y Guía de Carga PDF/Excel, Nuevo Viaje); Reportes (Reporte de viaje); Seguridad (8 reglas FLOW, usuarios). Devuelve a eFlow el número de viaje, la prioridad y la banda asignada.",
     note:"Detalle, datos reales y capturas: Operación › Torre de Control · WMH." },
+  { code:"SORTER", name:"Mecalux · SORTER CLIRO (CliroSorter)", status:"confirmed", vendor:"Mecalux",
+    role:"Sistema de clasificación automática (sorter) / cross-docking EPA · web · http://10.17.225.85:2030/",
+    purpose:"Cross-docking de EPA: cada expediente u orden de recepción (ej. CONSOL) se descompone por producto y tienda de destino y cada bulto se clasifica hacia una bajada (= tienda / viaje), automática o manualmente. Nivel 1 recibe y clasifica (Control de órdenes con Estatus de bajadas, Orden de recepción y Líneas; Escaner; Catálogo de productos; Reportes). Planta Baja agrupa en viajes de despacho (Control de viajes con Estatus de bajadas, Viajes y Cajas; Escaner; Reportes). Home muestra el avance de las 7 bajadas de Planta Baja y las 6 de Nivel 1.",
+    note:"GAP: el mapeo es funcional (12 pantallas). La integración técnica con eFlow WMS / EPA —cómo llegan las órdenes al sorter y cómo vuelve la clasificación— no está documentada. Manual con capturas: Operación › SORTER CLIRO · Manual." },
 ];
 
 export const SATELLITE_MODULES = [
   { name:"Sistema Aduanero (TICA o equivalente)", purpose:"Soporta proceso 'Administración de procesos aduaneros' en BPA OLO. Sistema NO documentado.", status:"inferred" },
   { name:"Sistema de Zona Franca (régimen SEL)", purpose:"Soporta proceso 'Gestión de Internamiento Zona Franca SEL'. Sistema NO documentado.", status:"inferred" },
   { name:"TMS Internacional", purpose:"WMH cubre transporte de distribución local. Para 'Gestión de transporte internacional' debe existir un sistema separado o servicio externo. NO documentado.", status:"inferred" },
-  { name:"Mecalux (sistema de almacenaje automatizado)", purpose:"Regla MECALUX (FLOW) confirmada en WMH; módulo Bajadas dedica viajes a Mecalux. Integración técnica NO documentada.", status:"partial" },
   { name:"Portal de clientes / EDI", purpose:"Típico en operación 3PL para órdenes y forecasts. NO documentado.", status:"inferred" },
   { name:"BI / Data Warehouse", purpose:"Proceso 'Inteligencia de negocio' aparece en BPA con madurez 1. Sistema NO implementado / NO documentado.", status:"inferred" },
   { name:"Portal de Personas / Capital Humano", purpose:"Mencionado en manual de GN como punto de integración para autoservicio de empleados (consulta de pagos). NO confirmado si está implementado.", status:"partial" },

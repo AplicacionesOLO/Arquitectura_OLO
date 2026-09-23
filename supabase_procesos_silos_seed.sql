@@ -593,4 +593,207 @@ begin
       values ('neg_almacenamiento', v_proc, 2, '5. Revisar las ubicaciones bloqueadas y liberar las que ya no deben estarlo', 4, 'ALM-07.05') returning id into v_sub;
   end if;
   v_macro := null; v_proc := null;
+
+  -- VAS-01 · Alta de un servicio de valor agregado en el catálogo  (P1.21 · Servicios de Valor Agregado › S1 · Levantamiento de requerimientos de VAS)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_valor_agregado' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Levantamiento de requerimientos de VAS'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S1 · Levantamiento de requerimientos de VAS', 'neg_valor_agregado'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'VAS-01') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_valor_agregado', v_macro, 1, 'Alta de un servicio de valor agregado en el catálogo', coalesce(max(sort_order), -1) + 1, 'VAS-01'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '1. Levantar con el cliente el requerimiento: qué se hace, a qué artículos, volumen esperado, instrucciones y materiales', 0, 'VAS-01.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '2. Estimar tiempo y costo del servicio y acordar la tarifa', 1, 'VAS-01.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '3. Registrar el servicio en Catálogos › Catálogo de servicios con «Agregar» (compañía, Id Servicio, Descripción, Monto, Moneda, Estado)', 2, 'VAS-01.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_catalogos__catalogo_de_servicios.jpg', 'eFlow WMS · Catálogos › Catálogo de servicios.jpg', 'image/jpeg', 88205);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '4. Documentar el instructivo del servicio (fotos de referencia, tolerancias) y compartirlo con operación', 3, 'VAS-01.04') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- VAS-02 · Etiquetado de artículos y palets  (P1.21 · Servicios de Valor Agregado › S2 · Etiquetado y reempaque)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_valor_agregado' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S2 · Etiquetado y reempaque'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S2 · Etiquetado y reempaque', 'neg_valor_agregado'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'VAS-02') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_valor_agregado', v_macro, 1, 'Etiquetado de artículos y palets', coalesce(max(sort_order), -1) + 1, 'VAS-02'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '1. Abrir Catálogos › Impresion Etiquetas EAN y elegir el origen: «Por Recepción», «Por Confirmación» o «Por Artículo»', 0, 'VAS-02.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_catalogos__impresion_etiquetas_ean.jpg', 'eFlow WMS · Catálogos › Impresion Etiquetas EAN.jpg', 'image/jpeg', 77898);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '2. Indicar artículo, presentación, lote, fecha de caducidad y cantidad (Qty) de etiquetas; imprimir con «Aceptar» o desde archivo con «Impresión Archivo»', 1, 'VAS-02.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_catalogos__impresion_etiquetas_ean.jpg', 'eFlow WMS · Catálogos › Impresion Etiquetas EAN.jpg', 'image/jpeg', 77898);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '3. Para etiquetas de palet, usar Control › Creación de Etiquetas y elegir el tipo (Master, Cross Docking, Multi Artículo, Merma, Packing, Despacho, Muestra, Devolución…)', 2, 'VAS-02.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_control__creacion_de_etiquetas.jpg', 'eFlow WMS · Control › Creación de Etiquetas.jpg', 'image/jpeg', 74667);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '4. Colocar las etiquetas según el instructivo del cliente y verificar legibilidad con el lector', 3, 'VAS-02.04') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '5. Registrar el servicio realizado para su cobro', 4, 'VAS-02.05') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- VAS-03 · Armado y verificación de kits  (P1.21 · Servicios de Valor Agregado › S3 · Kitting y ensamble)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_valor_agregado' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Kitting y ensamble'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S3 · Kitting y ensamble', 'neg_valor_agregado'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'VAS-03') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_valor_agregado', v_macro, 1, 'Armado y verificación de kits', coalesce(max(sort_order), -1) + 1, 'VAS-03'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '1. Definir la composición del kit en Catálogos › Artículos KITS con «Agregar»', 0, 'VAS-03.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_catalogos__articulos_kits.jpg', 'eFlow WMS · Catálogos › Artículos KITS.jpg', 'image/jpeg', 52460);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '2. Preparar los componentes y armar el kit según el instructivo del cliente', 1, 'VAS-03.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '3. Revisar en Documentos › Verificación KITS (ventana «Exp. Kits») las expediciones con kits y su avance', 2, 'VAS-03.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__verificacion_kits.jpg', 'eFlow WMS · Documentos › Verificación KITS.jpg', 'image/jpeg', 167918);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '4. Comparar «Artículos Expedición Original» (UD pedidas vs. preparadas, ESKIT) con lo armado', 3, 'VAS-03.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__verificacion_kits.jpg', 'eFlow WMS · Documentos › Verificación KITS.jpg', 'image/jpeg', 167918);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '5. Registrar los componentes sobrantes en «Artículos a Devolver» y confirmar con «Aplicar»', 4, 'VAS-03.05') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__verificacion_kits.jpg', 'eFlow WMS · Documentos › Verificación KITS.jpg', 'image/jpeg', 167918);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '6. Registrar el servicio de kitting para su cobro', 5, 'VAS-03.06') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- VAS-04 · Transformación de artículos (reempaque / co-packing)  (P1.21 · Servicios de Valor Agregado › S5 · Personalización y co-packing)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_valor_agregado' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S5 · Personalización y co-packing'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S5 · Personalización y co-packing', 'neg_valor_agregado'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'VAS-04') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_valor_agregado', v_macro, 1, 'Transformación de artículos (reempaque / co-packing)', coalesce(max(sort_order), -1) + 1, 'VAS-04'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '1. Verificar que la transformación esté definida en Catálogos › Artículos Transformación (artículo origen → destino)', 0, 'VAS-04.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_catalogos__articulos_transformacion.jpg', 'eFlow WMS · Catálogos › Artículos Transformación.jpg', 'image/jpeg', 53833);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '2. Trasladar la mercancía a la zona de transformación y ejecutar el trabajo físico', 1, 'VAS-04.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '3. Registrar en Documentos › Transformación: Sucursal, Proceso, Artículo, Ubicación transformación, Pallet destino, Fecha caducidad y Observaciones', 2, 'VAS-04.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__transformacion.jpg', 'eFlow WMS · Documentos › Transformación.jpg', 'image/jpeg', 77302);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '4. Confirmar con «Aplicar» para que el WMS descuente el origen y genere el artículo transformado', 3, 'VAS-04.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__transformacion.jpg', 'eFlow WMS · Documentos › Transformación.jpg', 'image/jpeg', 77302);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '5. Verificar el inventario resultante en Inventario › Consulta de Inventario', 4, 'VAS-04.05') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_inventario__consulta_de_inventario.jpg', 'eFlow WMS · Inventario › Consulta de Inventario.jpg', 'image/jpeg', 80735);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '6. Registrar el servicio para su cobro', 5, 'VAS-04.06') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- VAS-05 · Consumo de insumos por expedición  (P1.21 · Servicios de Valor Agregado › S6 · Gestión de materiales para VAS)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_valor_agregado' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S6 · Gestión de materiales para VAS'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S6 · Gestión de materiales para VAS', 'neg_valor_agregado'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'VAS-05') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_valor_agregado', v_macro, 1, 'Consumo de insumos por expedición', coalesce(max(sort_order), -1) + 1, 'VAS-05'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '1. Abrir Documentos › Insumos Expedición', 0, 'VAS-05.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__insumos_expedicion.jpg', 'eFlow WMS · Documentos › Insumos Expedición.jpg', 'image/jpeg', 97967);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '2. Indicar Sucursal, Compañía y Expedición (y DUA o lote cuando aplique)', 1, 'VAS-05.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__insumos_expedicion.jpg', 'eFlow WMS · Documentos › Insumos Expedición.jpg', 'image/jpeg', 97967);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '3. Registrar cada Insumo con su cantidad y guardar con «Guardar»', 2, 'VAS-05.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__insumos_expedicion.jpg', 'eFlow WMS · Documentos › Insumos Expedición.jpg', 'image/jpeg', 97967);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '4. Confirmar el consumo con «Aplicar»', 3, 'VAS-05.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__insumos_expedicion.jpg', 'eFlow WMS · Documentos › Insumos Expedición.jpg', 'image/jpeg', 97967);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '5. Revisar periódicamente el stock de insumos y reponer', 4, 'VAS-05.05') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- VAS-06 · Registro de servicios especiales para facturación  (P1.21 · Servicios de Valor Agregado › S7 · Facturación de servicios de valor agregado)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_valor_agregado' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S7 · Facturación de servicios de valor agregado'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S7 · Facturación de servicios de valor agregado', 'neg_valor_agregado'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'VAS-06') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_valor_agregado', v_macro, 1, 'Registro de servicios especiales para facturación', coalesce(max(sort_order), -1) + 1, 'VAS-06'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '1. Registrar el servicio ejecutado en Documentos › Registro Servicios Especiales con «Agregar» (servicio, cliente, cantidad)', 0, 'VAS-06.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__registro_servicios_especiales.jpg', 'eFlow WMS · Documentos › Registro Servicios Especiales.jpg', 'image/jpeg', 60036);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '2. Validar que el servicio y su monto existen en Catálogos › Catálogo de servicios', 1, 'VAS-06.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_catalogos__catalogo_de_servicios.jpg', 'eFlow WMS · Catálogos › Catálogo de servicios.jpg', 'image/jpeg', 88205);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '3. Adjuntar evidencia (fotos) del trabajo realizado', 2, 'VAS-06.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '4. Consultar las fotos de evidencia en Documentos › Gestor de Imagenes (Listado / Galería)', 3, 'VAS-06.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__gestor_de_imagenes.jpg', 'eFlow WMS · Documentos › Gestor de Imagenes.jpg', 'image/jpeg', 52684);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '5. Enviar al cierre del período el resumen de servicios a facturación', 4, 'VAS-06.05') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- VAS-07 · Productividad de los servicios de valor agregado  (P1.21 · Servicios de Valor Agregado › S8 · Reportes de productividad de VAS)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_valor_agregado' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S8 · Reportes de productividad de VAS'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S8 · Reportes de productividad de VAS', 'neg_valor_agregado'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'VAS-07') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_valor_agregado', v_macro, 1, 'Productividad de los servicios de valor agregado', coalesce(max(sort_order), -1) + 1, 'VAS-07'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '1. Exportar Reportes › Productividad de Empaque por recurso', 0, 'VAS-07.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__productividad_de_empaque_por_recurso.jpg', 'eFlow WMS · Reportes › Productividad de Empaque por recurso.jpg', 'image/jpeg', 50755);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '2. Exportar Reportes › Productividad de Empaque por dia para ver la tendencia', 1, 'VAS-07.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__productividad_de_empaque_por_dia.jpg', 'eFlow WMS · Reportes › Productividad de Empaque por dia.jpg', 'image/jpeg', 50511);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '3. Cruzar la productividad con los servicios registrados en el período (unidades por hora por servicio)', 2, 'VAS-07.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_valor_agregado', v_proc, 2, '4. Proponer ajustes de tarifa o de dotación si el costo real supera lo cobrado', 3, 'VAS-07.04') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
 end $$;

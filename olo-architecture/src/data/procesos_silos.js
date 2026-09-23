@@ -105,6 +105,13 @@ Object.assign(S, {
 });
 const DES = { silo: "log_desempeno", siloLabel: "P1.8 · Desempeño logístico" };
 
+Object.assign(S, {
+  usuariosActivos: "screen_control__usuarios_activos",
+  almRecursos: "screen_seguridad__almacen_recursos",
+  pedidosMuelle: "screen_reportes__control_de_pedidos_por_muelle",
+});
+const SEG = { silo: "neg_seguimiento_operacion", siloLabel: "P1.19 · Seguimiento y control de la Operación" };
+
 export const PROCESOS_SILOS = {
   // ── P1.5 · Gestión de inventario físico ──────────────────────────────────
   "INV-01": {
@@ -729,6 +736,66 @@ export const PROCESOS_SILOS = {
     datosClave: ["Tipo de incidencia", "Diferencia de cantidad", "Expediciones sin inventario", "Errores del sistema", "Causa"],
     conceptos: [],
     entradaDe: ["DES-02"],
+  },
+
+  // ── P1.19 · Seguimiento y control de la Operación ────────────────────────
+  "SEG-01": {
+    ...SEG, nombre: "Monitoreo diario de la operación del almacén", macro: "S1 · Monitoreo de indicadores operativos diarios",
+    objetivo: "Controlar durante el turno que el trabajo avance, que haya personal asignado y que no se acumulen tareas.",
+    alcance: "Cada turno de operación del CEDI.",
+    responsables: ["Supervisor de turno", "Encargado de Torre de Control"],
+    pasos: [
+      e("Revisar quién está conectado y en qué módulo en Control › Usuarios Activos", S.usuariosActivos),
+      e("Revisar la carga de trabajo en Control › Acciones de Trabajo (indicadores Acciones, Atendiendo, Disponibles, Bloqueadas, Problema)", S.acciones),
+      e("Seguir las actividades en curso por proceso en Control › Monitor Actividades", S.monitorAct),
+      e("Revisar el avance del alisto en Paneles › Operación Alisto", S.opAlisto),
+      e("Reasignar recursos a otra zona de trabajo en Seguridad › Almacén Recursos si una zona se atrasa", S.almRecursos),
+      i("Registrar al cierre del turno lo pendiente y entregarlo al siguiente supervisor", "excel_drive"),
+    ],
+    registros: ["Bitácora de turno"],
+    noConformidades: ["Tareas acumuladas sin reasignar personal", "Cambio de turno sin entrega de pendientes"],
+    tablas: [t("MONITORACCIONES", "Acciones de trabajo del turno"), t("ALMACENRECURSOS", "Recursos asignados por zona"), t("RECURSOS", "Recursos del almacén")],
+    datosClave: ["Usuarios activos", "Acciones disponibles / atendiendo / bloqueadas / con problema", "Avance del alisto", "Zona de trabajo del recurso"],
+    conceptos: [{ termino: "Acción de trabajo", definicion: "Tarea que el WMS asigna a un recurso (picking, reposición, almacenaje, expedición)." }],
+    salidaA: ["SEG-02"],
+  },
+  "SEG-02": {
+    ...SEG, nombre: "Gestión de incidencias operativas", macro: "S3 · Gestión de incidencias operativas",
+    objetivo: "Resolver durante el turno las tareas con problema, las alertas de picking y los errores del sistema para que no frenen la operación.",
+    alcance: "Incidencias que aparecen en el WMS durante la operación.",
+    responsables: ["Supervisor de turno", "Encargado de inventario", "Soporte de sistemas"],
+    pasos: [
+      e("Filtrar en Control › Acciones de Trabajo las acciones en situación «Problema» o «Bloqueadas»", S.acciones),
+      e("Corregir o cancelar la acción con «Modificar acciones» o «Anular acciones» según el caso", S.acciones),
+      e("Atender las diferencias de picking en Control › Alerta Picking y cerrarlas con «Confirmar Alerta» o «Eliminar Alerta»", S.alertaPicking),
+      e("Revisar en Control › Monitor Errores los errores de procesos del sistema (proceso, procedimiento, mensaje)", S.monitorErrores),
+      i("Escalar a soporte de sistemas los errores que se repiten o bloquean la operación", "correo"),
+      i("Registrar la incidencia y su solución para el análisis de fallas", "excel_drive"),
+    ],
+    registros: ["Registro de incidencias del turno"],
+    noConformidades: ["Anular acciones sin revisar la causa", "Errores de sistema sin escalar"],
+    tablas: [t("MONITORACCIONES", "Acciones con problema"), t("MONITORACCION_PROBLEMA_MOTIVO", "Motivo del problema")],
+    datosClave: ["Acción con problema", "Tipo de incidencia", "Diferencia leída vs. teórica", "Error del sistema"],
+    conceptos: [],
+    entradaDe: ["SEG-01"], salidaA: ["DES-04"],
+  },
+  "SEG-03": {
+    ...SEG, nombre: "Control de despacho por muelle", macro: "S5 · Semáforos y tableros de control",
+    objetivo: "Verificar al final del día que cada muelle despachó sus pedidos y que no quedan palets pendientes por viaje.",
+    alcance: "Cierre diario del despacho.",
+    responsables: ["Supervisor de despacho"],
+    pasos: [
+      e("Exportar Reportes › Control de Pedidos por Muelle", S.pedidosMuelle),
+      e("Revisar los palets pendientes por viaje en Reportes › Rep. Palets Pend x Viaje", "screen_reportes__rep_palets_pend_x_viaje"),
+      e("Revisar los palets pendientes de chequeo en Reportes › Rpt. Palets Pend x Chequear", "screen_reportes__rpt_palets_pend_x_chequear"),
+      i("Resolver con despacho los pedidos o palets que no salieron y reprogramarlos", "fisico"),
+    ],
+    registros: ["Cierre diario de despacho por muelle"],
+    noConformidades: ["Palets pendientes sin reprogramar"],
+    tablas: [t("MUELLE_X_RUTA", "Muelle asignado por ruta"), t("CHEQUEO_PALET", "Palets pendientes de chequeo")],
+    datosClave: ["Muelle", "Pedidos despachados", "Palets pendientes por viaje", "Palets pendientes de chequeo"],
+    conceptos: [],
+    entradaDe: ["P8", "P10"],
   },
 };
 

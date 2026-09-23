@@ -1017,4 +1017,99 @@ begin
       values ('log_desempeno', v_proc, 2, '6. Definir un plan de acción por causa con responsable y fecha', 5, 'DES-04.06') returning id into v_sub;
   end if;
   v_macro := null; v_proc := null;
+
+  -- SEG-01 · Monitoreo diario de la operación del almacén  (P1.19 · Seguimiento y control de la Operación › S1 · Monitoreo de indicadores operativos diarios)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_seguimiento_operacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Monitoreo de indicadores operativos diarios'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S1 · Monitoreo de indicadores operativos diarios', 'neg_seguimiento_operacion'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'SEG-01') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_seguimiento_operacion', v_macro, 1, 'Monitoreo diario de la operación del almacén', coalesce(max(sort_order), -1) + 1, 'SEG-01'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '1. Revisar quién está conectado y en qué módulo en Control › Usuarios Activos', 0, 'SEG-01.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_control__usuarios_activos.jpg', 'eFlow WMS · Control › Usuarios Activos.jpg', 'image/jpeg', 185757);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '2. Revisar la carga de trabajo en Control › Acciones de Trabajo (indicadores Acciones, Atendiendo, Disponibles, Bloqueadas, Problema)', 1, 'SEG-01.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_control__acciones_de_trabajo.jpg', 'eFlow WMS · Control › Acciones de Trabajo.jpg', 'image/jpeg', 229646);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '3. Seguir las actividades en curso por proceso en Control › Monitor Actividades', 2, 'SEG-01.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_control__monitor_actividades.jpg', 'eFlow WMS · Control › Monitor Actividades.jpg', 'image/jpeg', 71750);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '4. Revisar el avance del alisto en Paneles › Operación Alisto', 3, 'SEG-01.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_paneles__operacion_alisto.jpg', 'eFlow WMS · Paneles › Operación Alisto.jpg', 'image/jpeg', 128596);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '5. Reasignar recursos a otra zona de trabajo en Seguridad › Almacén Recursos si una zona se atrasa', 4, 'SEG-01.05') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_seguridad__almacen_recursos.jpg', 'eFlow WMS · Seguridad › Almacén Recursos.jpg', 'image/jpeg', 219466);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '6. Registrar al cierre del turno lo pendiente y entregarlo al siguiente supervisor', 5, 'SEG-01.06') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- SEG-02 · Gestión de incidencias operativas  (P1.19 · Seguimiento y control de la Operación › S3 · Gestión de incidencias operativas)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_seguimiento_operacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Gestión de incidencias operativas'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S3 · Gestión de incidencias operativas', 'neg_seguimiento_operacion'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'SEG-02') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_seguimiento_operacion', v_macro, 1, 'Gestión de incidencias operativas', coalesce(max(sort_order), -1) + 1, 'SEG-02'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '1. Filtrar en Control › Acciones de Trabajo las acciones en situación «Problema» o «Bloqueadas»', 0, 'SEG-02.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_control__acciones_de_trabajo.jpg', 'eFlow WMS · Control › Acciones de Trabajo.jpg', 'image/jpeg', 229646);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '2. Corregir o cancelar la acción con «Modificar acciones» o «Anular acciones» según el caso', 1, 'SEG-02.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_control__acciones_de_trabajo.jpg', 'eFlow WMS · Control › Acciones de Trabajo.jpg', 'image/jpeg', 229646);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '3. Atender las diferencias de picking en Control › Alerta Picking y cerrarlas con «Confirmar Alerta» o «Eliminar Alerta»', 2, 'SEG-02.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_control__alerta_picking.jpg', 'eFlow WMS · Control › Alerta Picking.jpg', 'image/jpeg', 204199);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '4. Revisar en Control › Monitor Errores los errores de procesos del sistema (proceso, procedimiento, mensaje)', 3, 'SEG-02.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_control__monitor_errores.jpg', 'eFlow WMS · Control › Monitor Errores.jpg', 'image/jpeg', 225171);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '5. Escalar a soporte de sistemas los errores que se repiten o bloquean la operación', 4, 'SEG-02.05') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '6. Registrar la incidencia y su solución para el análisis de fallas', 5, 'SEG-02.06') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- SEG-03 · Control de despacho por muelle  (P1.19 · Seguimiento y control de la Operación › S5 · Semáforos y tableros de control)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_seguimiento_operacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S5 · Semáforos y tableros de control'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S5 · Semáforos y tableros de control', 'neg_seguimiento_operacion'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'SEG-03') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_seguimiento_operacion', v_macro, 1, 'Control de despacho por muelle', coalesce(max(sort_order), -1) + 1, 'SEG-03'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '1. Exportar Reportes › Control de Pedidos por Muelle', 0, 'SEG-03.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__control_de_pedidos_por_muelle.jpg', 'eFlow WMS · Reportes › Control de Pedidos por Muelle.jpg', 'image/jpeg', 50313);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '2. Revisar los palets pendientes por viaje en Reportes › Rep. Palets Pend x Viaje', 1, 'SEG-03.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__rep_palets_pend_x_viaje.jpg', 'eFlow WMS · Reportes › Rep. Palets Pend x Viaje.jpg', 'image/jpeg', 49562);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '3. Revisar los palets pendientes de chequeo en Reportes › Rpt. Palets Pend x Chequear', 2, 'SEG-03.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__rpt_palets_pend_x_chequear.jpg', 'eFlow WMS · Reportes › Rpt. Palets Pend x Chequear.jpg', 'image/jpeg', 49903);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_seguimiento_operacion', v_proc, 2, '4. Resolver con despacho los pedidos o palets que no salieron y reprogramarlos', 3, 'SEG-03.04') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
 end $$;

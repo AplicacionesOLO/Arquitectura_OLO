@@ -85,7 +85,7 @@ export const TABS = [
   { id:"ecosystem",    layer:"sistemas",  label:"◉ Ecosistema",          sub:"Mapa de capas: externos · ERP · operación · satélites" },
   { id:"infra",        layer:"sistemas",  label:"▭ Infraestructura",      sub:"Diagrama operativo · eFlow (CR/VE) · Lago de Datos · Suite OLO · Middleware · Sistemas del Estado" },
   { id:"softland",     layer:"sistemas",  label:"⬡ Módulos ERP",         sub:"Catálogo de módulos Softland · click para detalle y entidades inferidas" },
-  { id:"context",      layer:"sistemas",  label:"◐ Contexto",            sub:"Localizaciones · puntos de extensión · brechas declaradas" },
+  { id:"context",      layer:"sistemas",  label:"◐ Contexto",            sub:"Estado del conocimiento · localizaciones · aplicaciones · clientes y reglas · bases de datos · fuentes · glosario · brechas" },
   { id:"integrations", layer:"datos",     label:"⟳ Integraciones",      sub:"Esquemas de BD reales · qué fluye entre módulos · backbone SQL" },
   { id:"relaciones",   layer:"datos",     label:"▨ Relaciones de sistemas", sub:"Cómo se relacionan sistemas, entidades y campos · ER por silo · linaje de dato" },
 ];

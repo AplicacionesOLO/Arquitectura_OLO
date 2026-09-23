@@ -111,6 +111,7 @@ export function IntegrationsView({ searchQuery="", focus=null }) {
   useEffect(()=>{ if(searchQuery) setFWhat(searchQuery); }, [searchQuery]);
   // Foco desde otro módulo (ej. ficha de proceso): abre el schema y la tabla.
   useEffect(()=>{
+    if (focus?.view === "backbone") { setMainView("backbone"); return; }
     if (!focus?.cat) return;
     setMainView("modulos"); setCat(focus.cat);
     if (VE_CATS.includes(focus.cat)) setVeExpanded(true); else setCrExpanded(true);

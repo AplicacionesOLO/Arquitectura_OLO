@@ -362,4 +362,235 @@ begin
       values ('log_inventario', v_proc, 2, '5. Conciliar el total cargado con el inventario del cliente antes de iniciar operación', 4, 'INV-10.05') returning id into v_sub;
   end if;
   v_macro := null; v_proc := null;
+
+  -- ALM-01 · Recepción de mercancía contra orden de recepción  (P1.13 · Gestión de Almacenamiento (zona franca-nacional) › S1 · Recepción y clasificación de mercancía)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_almacenamiento' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Recepción y clasificación de mercancía'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S1 · Recepción y clasificación de mercancía', 'neg_almacenamiento'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'ALM-01') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_almacenamiento', v_macro, 1, 'Recepción de mercancía contra orden de recepción', coalesce(max(sort_order), -1) + 1, 'ALM-01'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '1. Ubicar la orden en Documentos › Ordenes de Recepción (ventana «Entradas»); las órdenes del ERP se revisan con «Consultar Interfaz»', 0, 'ALM-01.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__ordenes_de_recepcion.jpg', 'eFlow WMS · Documentos › Ordenes de Recepción.jpg', 'image/jpeg', 101415);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '2. Verificar la documentación de la mercancía y el régimen (zona franca o nacional) antes de descargar', 1, 'ALM-01.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '3. Revisar las líneas esperadas con «Ver Detalle» (artículos, cantidades, cliente propietario, muelle de recepción)', 2, 'ALM-01.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__ordenes_de_recepcion.jpg', 'eFlow WMS · Documentos › Ordenes de Recepción.jpg', 'image/jpeg', 101415);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '4. Descargar y contar la mercancía por palet en el muelle asignado', 3, 'ALM-01.04') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '5. Registrar lo recibido con «Crear Confirmación»; cada confirmación queda con su palet y cantidad', 4, 'ALM-01.05') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__ordenes_de_recepcion.jpg', 'eFlow WMS · Documentos › Ordenes de Recepción.jpg', 'image/jpeg', 101415);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '6. Revisar las confirmaciones en Documentos › Recepciones Confirmaciones y reimprimir etiquetas de palet si hace falta', 5, 'ALM-01.06') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__recepciones_confirmaciones.jpg', 'eFlow WMS · Documentos › Recepciones Confirmaciones.jpg', 'image/jpeg', 211446);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '7. Registrar factura y motivos de diferencia con «Factura / Motivos»', 6, 'ALM-01.07') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__ordenes_de_recepcion.jpg', 'eFlow WMS · Documentos › Ordenes de Recepción.jpg', 'image/jpeg', 101415);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '8. Cerrar la recepción con «Cerrar Documento» cuando el avance llegue al 100 %', 7, 'ALM-01.08') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__ordenes_de_recepcion.jpg', 'eFlow WMS · Documentos › Ordenes de Recepción.jpg', 'image/jpeg', 101415);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '9. Dar seguimiento a las recepciones abiertas en Paneles › Avance de Recepciónes y Reportes › Control de Ordenes de Recepciones', 8, 'ALM-01.09') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_paneles__avance_de_recepciones.jpg', 'eFlow WMS · Paneles › Avance de Recepciónes.jpg', 'image/jpeg', 77815);
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- ALM-02 · Consolidación y desconsolidación de recepciones  (P1.13 · Gestión de Almacenamiento (zona franca-nacional) › S1 · Recepción y clasificación de mercancía)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_almacenamiento' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Recepción y clasificación de mercancía'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S1 · Recepción y clasificación de mercancía', 'neg_almacenamiento'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'ALM-02') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_almacenamiento', v_macro, 1, 'Consolidación y desconsolidación de recepciones', coalesce(max(sort_order), -1) + 1, 'ALM-02'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '1. Abrir Documentos › Consolidación de Recepciones y filtrar las órdenes del mismo embarque (proveedor, factura, fecha)', 0, 'ALM-02.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__consolidacion_de_recepciones.jpg', 'eFlow WMS · Documentos › Consolidación de Recepciones.jpg', 'image/jpeg', 73302);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '2. Seleccionar las órdenes y unirlas con «Consolidar»', 1, 'ALM-02.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__consolidacion_de_recepciones.jpg', 'eFlow WMS · Documentos › Consolidación de Recepciones.jpg', 'image/jpeg', 73302);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '3. Recibir el embarque consolidado como una sola descarga', 2, 'ALM-02.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '4. Si hay que separar una orden consolidada, usar Documentos › Desconsolidación Recepciones con «Des Consolidar»', 3, 'ALM-02.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__desconsolidacion_recepciones.jpg', 'eFlow WMS · Documentos › Desconsolidación Recepciones.jpg', 'image/jpeg', 87200);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '5. Confirmar en Documentos › Ordenes de Recepción que cada orden quedó con su avance correcto', 4, 'ALM-02.05') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__ordenes_de_recepcion.jpg', 'eFlow WMS · Documentos › Ordenes de Recepción.jpg', 'image/jpeg', 101415);
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- ALM-03 · Asignación de zonas de almacenaje por artículo y régimen  (P1.13 · Gestión de Almacenamiento (zona franca-nacional) › S2 · Asignación de espacio zona franca vs. nacional)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_almacenamiento' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S2 · Asignación de espacio zona franca vs. nacional'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S2 · Asignación de espacio zona franca vs. nacional', 'neg_almacenamiento'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'ALM-03') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_almacenamiento', v_macro, 1, 'Asignación de zonas de almacenaje por artículo y régimen', coalesce(max(sort_order), -1) + 1, 'ALM-03'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '1. Definir con el cliente qué mercancía es de zona franca y cuál nacional, y el espacio reservado para cada una', 0, 'ALM-03.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '2. Crear o revisar las zonas en Configuración › Zonas de Almacenaje (cantidad de ubicaciones, «Permite Mezcla Lote»)', 1, 'ALM-03.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_configuracion__zonas_de_almacenaje.jpg', 'eFlow WMS · Configuración › Zonas de Almacenaje.jpg', 'image/jpeg', 157537);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '3. Relacionar cada zona con su bodega del ERP en Configuración › Zonas de Homologación', 2, 'ALM-03.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_configuracion__zonas_de_homologacion.jpg', 'eFlow WMS · Configuración › Zonas de Homologación.jpg', 'image/jpeg', 142039);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '4. Asignar cada artículo a su zona en Configuración › Artículos Zonas de Almacenaje (compañía, sucursal, artículo, zona)', 3, 'ALM-03.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_configuracion__articulos_zonas_de_almacenaje.jpg', 'eFlow WMS · Configuración › Artículos Zonas de Almacenaje.jpg', 'image/jpeg', 209987);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '5. Verificar las ubicaciones de la zona en Configuración › Almacenamientos Ubicaciones', 4, 'ALM-03.05') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_configuracion__almacenamientos_ubicaciones.jpg', 'eFlow WMS · Configuración › Almacenamientos Ubicaciones.jpg', 'image/jpeg', 62512);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '6. Rotular físicamente las zonas por régimen', 5, 'ALM-03.06') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- ALM-04 · Control de inventario por régimen  (P1.13 · Gestión de Almacenamiento (zona franca-nacional) › S3 · Control de inventario por régimen)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_almacenamiento' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Control de inventario por régimen'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S3 · Control de inventario por régimen', 'neg_almacenamiento'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'ALM-04') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_almacenamiento', v_macro, 1, 'Control de inventario por régimen', coalesce(max(sort_order), -1) + 1, 'ALM-04'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '1. Consultar existencias en Inventario › Consulta de Inventario filtrando por compañía y sucursal (IdSucursal)', 0, 'ALM-04.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_inventario__consulta_de_inventario.jpg', 'eFlow WMS · Inventario › Consulta de Inventario.jpg', 'image/jpeg', 80735);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '2. Exportar las existencias por artículo desde Reportes › Inventario por Artículo', 1, 'ALM-04.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__inventario_por_articulo.jpg', 'eFlow WMS · Reportes › Inventario por Artículo.jpg', 'image/jpeg', 49586);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '3. Cruzar el inventario de zona franca con los movimientos declarados ante aduana', 2, 'ALM-04.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '4. Reportar diferencias al área aduanera antes del cierre del período', 3, 'ALM-04.04') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- ALM-05 · Condiciones y capacidad de almacenaje  (P1.13 · Gestión de Almacenamiento (zona franca-nacional) › S4 · Custodia y condiciones de almacenaje)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_almacenamiento' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S4 · Custodia y condiciones de almacenaje'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S4 · Custodia y condiciones de almacenaje', 'neg_almacenamiento'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'ALM-05') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_almacenamiento', v_macro, 1, 'Condiciones y capacidad de almacenaje', coalesce(max(sort_order), -1) + 1, 'ALM-05'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '1. Definir cada almacenamiento en Configuración › Almacenamientos (tipo, columnas, niveles, posiciones, % de utilización)', 0, 'ALM-05.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_configuracion__almacenamientos.jpg', 'eFlow WMS · Configuración › Almacenamientos.jpg', 'image/jpeg', 173964);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '2. Generar sus ubicaciones con «Generar Ubicaciones» y recalcular coordenadas si cambió el layout', 1, 'ALM-05.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_configuracion__almacenamientos.jpg', 'eFlow WMS · Configuración › Almacenamientos.jpg', 'image/jpeg', 173964);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '3. Registrar las dimensiones de palet en Catálogos › Dimensión de Campos (ancho, largo, altura, cúbicos)', 2, 'ALM-05.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_catalogos__dimension_de_campos.jpg', 'eFlow WMS · Catálogos › Dimensión de Campos.jpg', 'image/jpeg', 67795);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '4. Fijar la capacidad por almacenamiento y dimensión en Configuración › Capacidad del Bloque', 3, 'ALM-05.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_configuracion__capacidad_del_bloque.jpg', 'eFlow WMS · Configuración › Capacidad del Bloque.jpg', 'image/jpeg', 60618);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '5. Limitar lo que puede mover cada equipo en Seguridad › Recursos Perfiles (nivel máximo, peso máximo, cubicaje máximo)', 4, 'ALM-05.05') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_seguridad__recursos_perfiles.jpg', 'eFlow WMS · Seguridad › Recursos Perfiles.jpg', 'image/jpeg', 131231);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '6. Revisar periódicamente el estado físico de racks y condiciones especiales (temperatura, humedad, mercancía peligrosa)', 5, 'ALM-05.06') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- ALM-06 · Traslado de inventario entre sucursales (régimen)  (P1.13 · Gestión de Almacenamiento (zona franca-nacional) › S5 · Traslados entre régimen zona franca y nacional)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_almacenamiento' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S5 · Traslados entre régimen zona franca y nacional'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S5 · Traslados entre régimen zona franca y nacional', 'neg_almacenamiento'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'ALM-06') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_almacenamiento', v_macro, 1, 'Traslado de inventario entre sucursales (régimen)', coalesce(max(sort_order), -1) + 1, 'ALM-06'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '1. Confirmar que el trámite aduanero de cambio de régimen está aprobado (DUA de nacionalización)', 0, 'ALM-06.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '2. Abrir Inventario › Traslado Sucursal (ventana «Cambio Inventario Sucursal»)', 1, 'ALM-06.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_inventario__traslado_sucursal.jpg', 'eFlow WMS · Inventario › Traslado Sucursal.jpg', 'image/jpeg', 65259);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '3. Seleccionar zona, ubicación y palet de origen y la Sucursal Destino, con una Descripción que cite el trámite', 2, 'ALM-06.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_inventario__traslado_sucursal.jpg', 'eFlow WMS · Inventario › Traslado Sucursal.jpg', 'image/jpeg', 65259);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '4. Ejecutar el cambio con «Procesar»', 3, 'ALM-06.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_inventario__traslado_sucursal.jpg', 'eFlow WMS · Inventario › Traslado Sucursal.jpg', 'image/jpeg', 65259);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '5. Mover físicamente la mercancía a la zona del régimen destino si corresponde', 4, 'ALM-06.05') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '6. Verificar el inventario en la sucursal destino en Inventario › Consulta de Inventario', 5, 'ALM-06.06') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_inventario__consulta_de_inventario.jpg', 'eFlow WMS · Inventario › Consulta de Inventario.jpg', 'image/jpeg', 80735);
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- ALM-07 · Reporte de ocupación y capacidad del almacén  (P1.13 · Gestión de Almacenamiento (zona franca-nacional) › S7 · Reportes de ocupación y capacidad)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_almacenamiento' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S7 · Reportes de ocupación y capacidad'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S7 · Reportes de ocupación y capacidad', 'neg_almacenamiento'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'ALM-07') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_almacenamiento', v_macro, 1, 'Reporte de ocupación y capacidad del almacén', coalesce(max(sort_order), -1) + 1, 'ALM-07'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '1. Revisar en Inicio el bloque «% Ocupación» y las ubicaciones Ocupadas / Disponibles / Bloqueadas', 0, 'ALM-07.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_inicio__inicio.jpg', 'eFlow WMS · Inicio › Panel de Inicio.jpg', 'image/jpeg', 127686);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '2. Exportar el detalle en Reportes › Detalle de Situación de las Ubicaciones (Excel o PDF)', 1, 'ALM-07.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__detalle_de_situacion_de_las_ubicaciones.jpg', 'eFlow WMS · Reportes › Detalle de Situación de las Ubicaciones.jpg', 'image/jpeg', 50691);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '3. Comparar con el % de utilización configurado por almacenamiento en Configuración › Almacenamientos', 2, 'ALM-07.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_configuracion__almacenamientos.jpg', 'eFlow WMS · Configuración › Almacenamientos.jpg', 'image/jpeg', 173964);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '4. Calcular la ocupación por régimen y por cliente y enviarla a comercial y facturación', 3, 'ALM-07.04') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_almacenamiento', v_proc, 2, '5. Revisar las ubicaciones bloqueadas y liberar las que ya no deben estarlo', 4, 'ALM-07.05') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
 end $$;

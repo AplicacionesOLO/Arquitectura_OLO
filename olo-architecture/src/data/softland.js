@@ -23,10 +23,23 @@ export const SOFTLAND_MODULES = [
   { code:"AC", name:"Administración de Contratos", role:"Servicios recurrentes", status:"partial", purpose:"Confirmado por integración en MF. Facturación de contratos.", entities:[] },
 ];
 
+// Módulos de la suite eflow (ePRAC) en OLO — datos verificados:
+//  · WMS-D: crawl de la app en vivo (23/09/2026, wms_manual.json)
+//  · WMS-RF: capturas del handheld en los manuales de los procesos CEDI
+//  · WMH: levantamiento de Torre de Control + Manual de Usuario Control Tower (09/2026)
 export const OPS_MODULES = [
-  { code:"WMS-D", name:"eflow WMS · Desktop", vendor:"eco-efficiency", purpose:"Núcleo del CEDI. Catálogos (artículos, proveedores, clientes, unidades de transporte), Documentos (Órdenes de Recepción/Expedición, Asignación Camión, Carga Camión, Servicios Especiales), Inventario (inicial, ajuste, tomas físicas), Configuración (zonas, almacenamientos, ubicaciones, rutas y secuencias de picking), Reportes, Seguridad." },
-  { code:"WMS-RF", name:"eflow WMS · RF (PDT)", vendor:"eco-efficiency", purpose:"Terminales handheld Android. Cuatro flujos: Recibo (validación general, recepción, IRB), Almacenaje (almacenamiento de recepciones, traslados), Picking/Despacho/Reposiciones (carga camión, trabajo automático), Inventario (toma física, ajustes)." },
-  { code:"WMH", name:"WMH Torre de Control", vendor:"eflow Cloud Suite v4.17.0.2", purpose:"Web app de monitoreo en tiempo real. Catálogos de transporte (almacenes, bajadas, choferes, compañías, rutas, unidades, zonas de distribución), Documentos (órdenes, visor de viajes), Reportes de Viaje, Seguridad (reglas FLOW del sistema, usuarios)." },
+  { code:"WMS-D", name:"eflow WMS · Desktop", status:"confirmed", vendor:"ePRAC · eflow Cloud Suite",
+    role:"Aplicación de escritorio Windows (eFlow-WMS.exe) · v3.2.8.5 · almacén 0001 - CEDI OLO · BD EFLOW_OLO",
+    purpose:"Núcleo del CEDI. 9 módulos y 122 opciones mapeadas del sistema en vivo: Control (12: acciones de trabajo, alerta picking, chequeo, citas de proveedores, monitores de actividades y errores, movimientos), Catálogos (14: artículos, EAN, kits, transformación, clientes, proveedores, servicios, unidades de transporte), Documentos (15: órdenes de recepción y expedición, confirmaciones, consolidación, carga camión, comparación alisto vs packing, transformación, verificación de kits, servicios especiales), Inventario (11: consulta, ajustes individuales y masivos, tomas físicas, palets, slotting, traslado de sucursal), Configuración (20: almacenes, compañías, sucursales, zonas, almacenamientos y ubicaciones, rutas y secuencias de picking), Reportes (29: productividad, kardex, control de órdenes, palets pendientes), Seguridad (16) y Paneles (4).",
+    note:"Manual completo con capturas: Operación › eFlow WMS · Manual." },
+  { code:"WMS-RF", name:"eflow WMS · RF (handheld)", status:"partial", vendor:"ePRAC · eflow Cloud Suite",
+    role:"Terminal handheld · menú «eWMS - CEDI OLO» con usuario, recurso y almacén",
+    purpose:"Ejecución física en piso. Opciones vistas en las capturas de los manuales: Recibo (Recibo de mercadería: Cross Banda, Recepción, Validación Crossdocking General, Validación General; Artículos recepción), Almacenaje (Almacenamiento de mercadería › Ubicación Libre, ubicación de palet) y Picking, despacho y reposiciones (Trabajo automático, Picking, Contenedor Máster › Finalizar Máster, Despacho › Despachar máster completo, Carga Camión).",
+    note:"El crawl automático cubre solo el WMS de escritorio: las opciones del handheld salen de las capturas de los manuales de los procesos CEDI y pueden no estar completas." },
+  { code:"WMH", name:"WMH · Torre de Control (Control Tower)", status:"confirmed", vendor:"ePRAC (eprac.com) · eflow Cloud Suite",
+    role:"Aplicación web (Angular + Material + AG Grid) · v4.18.4.4 · http://10.17.225.22:8080",
+    purpose:"Planifica y controla los viajes de distribución. Dashboard «Operación en tiempo real (Viajes)» con KPIs (viajes, rutas, órdenes, líneas, montos, peso, volumen, unidades, clientes) y acciones Nuevo Viaje, Anular Viaje y Fusionar; Catálogos (Almacenes, Bajadas, Choferes, Compañías de Transporte, Rutas y Zonas de Distribución, Unidades de Transporte); Documentos (Órdenes, Órdenes Inactivas, Visor de viajes con Despachar y Guía de Carga PDF/Excel, Nuevo Viaje); Reportes (Reporte de viaje); Seguridad (8 reglas FLOW, usuarios). Devuelve a eFlow el número de viaje, la prioridad y la banda asignada.",
+    note:"Detalle, datos reales y capturas: Operación › Torre de Control · WMH." },
 ];
 
 export const SATELLITE_MODULES = [

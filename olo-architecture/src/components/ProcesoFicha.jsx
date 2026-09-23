@@ -12,6 +12,7 @@ import { DrawioFlowchart } from "../schemas/DrawioFlowchart.jsx";
 import { WMS_INDEX, PASO_PANTALLA, PANTALLA_PROCESOS } from "../data/wms_links.js";
 import { Presentacion } from "./Presentacion.jsx";
 import { slidesProceso } from "../lib/presentacion.js";
+import { WMH_BY_ID, pantallaWmhDePaso } from "../data/wmh_manual.js";
 
 const BUCKET = "Detalles_Porcesos";
 const DRAWIO = import.meta.glob("../assets/procesos_cedi/*.drawio", { query: "?raw", import: "default" });
@@ -169,17 +170,28 @@ function PantallaLink({ id, onNavigate }) {
   </button>;
 }
 
+// Pantalla del manual de Torre de Control ligada a un paso en "torre"
+function WmhLink({ id, onNavigate }) {
+  const w = WMH_BY_ID[id];
+  return <button onClick={()=>onNavigate({ tab:"ops", view:"wmh", wmhScreen:id })} title="Ver la pantalla en el manual de Torre de Control"
+    style={{ fontSize:10.5, fontWeight:700, color:"#16a34a", background:"#16a34a14", border:"1px solid #16a34a40", borderRadius:5, padding:"1px 6px", cursor:"pointer", fontFamily:DESIGN.font }}>
+    Torre › {w.nombre} ↗
+  </button>;
+}
+
 function Pasos({ p, onNavigate }) {
   const links = PASO_PANTALLA[p.codigo] || {};
   const [show, setShow] = useState(null);
-  const conPantalla = Object.keys(links).length;
+  const wmhDe = (s) => s.sistema === "torre" ? pantallaWmhDePaso(s.texto) : null;
+  const conPantalla = p.pasos.filter((s, i) => links[i] || wmhDe(s)).length;
   return <>
   {conPantalla > 0 && <button onClick={()=>setShow(0)} title="Presentar el proceso pantalla por pantalla"
     style={{ width:"100%", marginBottom:12, fontSize:12, fontWeight:700, color:"#fff", background:"#0891b2", border:"none", borderRadius:7, padding:"8px 12px", cursor:"pointer", fontFamily:DESIGN.font }}>
-    ▶ Recorrido en pantallas · {p.pasos.length} pasos, {conPantalla} con captura de eFlow
+    ▶ Recorrido en pantallas · {p.pasos.length} pasos, {conPantalla} con captura
   </button>}
   {show != null && <Presentacion slides={slidesProceso(p.codigo)} start={show} onClose={()=>setShow(null)}
-    onOpenScreen={(id) => { setShow(null); onNavigate({ tab:"ops", view:"wms", screen:id }); }}/>}
+    onOpenScreen={(id) => { setShow(null); onNavigate({ tab:"ops", view:"wms", screen:id }); }}
+    onOpenWmh={(id) => { setShow(null); onNavigate({ tab:"ops", view:"wmh", wmhScreen:id }); }}/>}
   <ol style={{ margin:0, padding:0, listStyle:"none", display:"grid", gap:10 }}>
     {p.pasos.map((s,i) => <li key={i} style={{ display:"flex", gap:10 }}>
       <span style={{ width:20, height:20, borderRadius:"50%", background:DESIGN.sunken2, color:DESIGN.inkSoft, fontSize:10.5, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{i+1}</span>
@@ -190,6 +202,7 @@ function Pasos({ p, onNavigate }) {
           {s.sistema && <SistemaChip sys={s.sistema}/>}
           {links[i]
             ? links[i].map(id => <PantallaLink key={id} id={id} onNavigate={onNavigate}/>)
+            : wmhDe(s) ? <WmhLink id={wmhDe(s)} onNavigate={onNavigate}/>
             : s.pantalla && <span style={{ fontSize:10.5, color:DESIGN.muted }}>{s.pantalla}</span>}
         </div>
       </div>

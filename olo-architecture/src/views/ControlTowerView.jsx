@@ -3,7 +3,8 @@
 // Contenido de los documentos de levantamiento de Control Tower y del mapeo
 // del proceso de Alistamiento COFERSA (ver src/data/control_tower.js).
 // ═══════════════════════════════════════════════════════════════════════════
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { WmhManualSection } from "./WmhManualSection.jsx";
 import { DESIGN, DESIGN_STATUS } from "../data/constants.js";
 import { KPICard } from "../components/ui.jsx";
 import flujoPng from "../assets/control-tower-flujo.png";
@@ -24,6 +25,7 @@ const SYS = {
 
 const SECTIONS = [
   { id: "resumen",   label: "Resumen",                 sub: "Qué es · flujo · KPIs" },
+  { id: "manual",    label: "Manual · pantallas",      sub: "17 capturas · recorridos guiados" },
   { id: "diagrama",  label: "Diagrama de flujo",       sub: "Flujo operativo TMS" },
   { id: "pantallas", label: "Pantallas y navegación",  sub: `${CT_NAV.length} módulos · URLs` },
   { id: "datos",     label: "Datos reales por columna", sub: `${CT_DATOS.length} módulos con muestra` },
@@ -33,8 +35,10 @@ const SECTIONS = [
   { id: "docs",      label: "Documentos",              sub: "Descargas" },
 ];
 
-export function ControlTowerView() {
-  const [section, setSection] = useState("resumen");
+export function ControlTowerView({ focus }) {
+  const [section, setSection] = useState(focus?.wmhScreen ? "manual" : "resumen");
+  // Foco desde otro módulo (paso de proceso en Torre de Control): abre la pantalla del manual
+  useEffect(() => { if (focus?.wmhScreen) setSection("manual"); }, [focus]);
 
   return <div style={{ display:"flex", gap:20, alignItems:"flex-start" }}>
     <nav style={{ width:215, minWidth:215, background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:10, overflow:"hidden", flexShrink:0, position:"sticky", top:20 }}>
@@ -50,6 +54,7 @@ export function ControlTowerView() {
 
     <div style={{ flex:1, minWidth:0 }}>
       {section==="resumen"   && <Resumen/>}
+      {section==="manual"    && <WmhManualSection focusScreen={focus?.wmhScreen}/>}
       {section==="diagrama"  && <Diagrama/>}
       {section==="pantallas" && <Pantallas/>}
       {section==="datos"     && <Datos/>}

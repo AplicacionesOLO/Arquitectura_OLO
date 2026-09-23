@@ -53,7 +53,7 @@ export function EcosystemView() {
           {SOFTLAND_MODULES.map(m=>{ const c=MODULE_COLORS[m.code]??"#888"; return <div key={m.code} style={{ display:"flex", alignItems:"center", gap:7, background:"#ffffff", border:`1px solid ${c}44`, borderLeft:`3px solid ${c}`, padding:"6px 12px", borderRadius:6 }}><span style={{ fontSize:11, fontWeight:700, color:c, fontFamily:DESIGN.font }}>{m.code}</span><span style={{ fontSize:11, color:"#555" }}>{m.name}</span></div>; })}
         </div>
       </LayerBlock>
-      <LayerBlock icon="◒" label="Operación logística · eco-efficiency / eflow" color="#1abc9c" bg="rgba(26,188,156,0.08)" border="rgba(26,188,156,0.25)" sub="eflow Cloud Suite v4.17.0.2 · Desktop coordina catálogos y configuración · RF ejecuta operaciones físicas · WMH es la torre de control">
+      <LayerBlock icon="◒" label="Operación logística · ePRAC / eflow" color="#1abc9c" bg="rgba(26,188,156,0.08)" border="rgba(26,188,156,0.25)" sub="eflow Cloud Suite · WMS Desktop v3.2.8.5 coordina documentos, inventario y configuración · RF ejecuta operaciones físicas · WMH v4.18.4.4 es la torre de control de viajes">
         <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
           {OPS_MODULES.map(m=>{ const c=OPS_COLORS[m.code]??"#1abc9c"; return <div key={m.code} style={{ background:"#ffffff", border:`1px solid ${c}44`, borderLeft:`3px solid ${c}`, padding:"8px 14px", borderRadius:6, minWidth:160 }}><div style={{ fontSize:11, fontWeight:700, color:c, fontFamily:DESIGN.font, marginBottom:2 }}>{m.code}</div><div style={{ fontSize:12, color:"#444", fontWeight:600 }}>{m.name}</div></div>; })}
         </div>
@@ -86,7 +86,7 @@ export function EcosystemView() {
     </div>
     <div style={{ marginTop:24, padding:"14px 18px", background:"rgba(243,156,18,0.06)", border:"1px solid rgba(243,156,18,0.25)", borderLeft:"3px solid #f39c12", borderRadius:8 }}>
       <div style={{ fontSize:11, fontWeight:700, color:"#d35400", letterSpacing:"0.1em", marginBottom:6 }}>◆ NOTA METODOLÓGICA</div>
-      <p style={{ fontSize:12, color:"#444", lineHeight:1.65, margin:0 }}>El ERP es <b style={{ color:"#c0392b" }}>Softland v7.00</b> sobre motor configurable Exactus. El WMS y la Torre de Control son productos separados de <b style={{ color:"#1abc9c" }}>eco-efficiency / eflow Cloud Suite</b>. La integración Softland↔eflow se realiza por interfaz documental — su mecanismo concreto (batch, archivos, WS, BD intermedia) no está descrito en los manuales accesibles.</p>
+      <p style={{ fontSize:12, color:"#444", lineHeight:1.65, margin:0 }}>El ERP es <b style={{ color:"#c0392b" }}>Softland v7.00</b> sobre motor configurable Exactus. El WMS y la Torre de Control son productos separados de <b style={{ color:"#1abc9c" }}>ePRAC / eflow Cloud Suite</b> sobre la base EFLOW_OLO. Las órdenes del ERP entran al WMS por interfaz («Consultar Interfaz» en Órdenes de Recepción) y la Torre de Control lee de eFlow mediante tablas de staging (ext_tms_*); el mecanismo exacto de la interfaz Softland↔eflow sigue sin documentar.</p>
     </div>
   </div>;
 }

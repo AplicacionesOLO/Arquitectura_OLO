@@ -9,7 +9,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { useState, useEffect, useCallback } from "react";
 
-export function Presentacion({ slides, start = 0, onClose, onOpenScreen }) {
+export function Presentacion({ slides, start = 0, onClose, onOpenScreen, onOpenWmh }) {
   const [i, setI] = useState(Math.min(start, slides.length - 1));
   const [zoom, setZoom] = useState(false);
   const go = useCallback((d) => { setZoom(false); setI(x => Math.max(0, Math.min(slides.length - 1, x + d))); }, [slides.length]);
@@ -49,7 +49,7 @@ export function Presentacion({ slides, start = 0, onClose, onOpenScreen }) {
             <div style={{ fontSize:12, fontWeight:700, color:"#5eead4", textTransform:"uppercase", letterSpacing:"0.06em" }}>{s.sistema || "Paso"}</div>
             <div style={{ fontSize:18, color:"#fff", lineHeight:1.5, marginTop:10 }}>{s.texto}</div>
             {s.donde && <div style={{ fontSize:12, color:"#94a3b8", marginTop:10 }}>{s.donde}</div>}
-            <div style={{ fontSize:11, color:"#64748b", marginTop:14 }}>Este paso no ocurre en una pantalla de eFlow WMS de escritorio.</div>
+            <div style={{ fontSize:11, color:"#64748b", marginTop:14 }}>Este paso no tiene captura: no ocurre en una pantalla de eFlow WMS ni de Torre de Control.</div>
           </div>}
     </div>
 
@@ -61,6 +61,7 @@ export function Presentacion({ slides, start = 0, onClose, onOpenScreen }) {
         <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginTop:3, fontSize:11.5, color:"#94a3b8" }}>
           {s.img && s.donde && <span>{s.sistema ? `${s.sistema} · ` : ""}{s.donde}</span>}
           {s.screenId && onOpenScreen && <button onClick={()=>onOpenScreen(s.screenId)} style={{ background:"none", border:"none", padding:0, color:"#67e8f9", cursor:"pointer", fontSize:11.5, fontFamily:"inherit" }}>Ver ficha de la pantalla ↗</button>}
+          {s.wmhId && onOpenWmh && <button onClick={()=>onOpenWmh(s.wmhId)} style={{ background:"none", border:"none", padding:0, color:"#67e8f9", cursor:"pointer", fontSize:11.5, fontFamily:"inherit" }}>Ver pantalla en el manual de Torre de Control ↗</button>}
         </div>
       </div>
       <div style={{ textAlign:"right", maxWidth:340 }}>

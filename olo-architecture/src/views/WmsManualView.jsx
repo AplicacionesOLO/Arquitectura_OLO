@@ -27,6 +27,7 @@ export function WmsManualView({ focus }) {
   const [screenId, setScreenId] = useState(null);
   const [q, setQ] = useState("");
   const [show, setShow] = useState(null); // { slides, start }
+  const { navigate } = useNav();
 
   useEffect(() => { import("../data/wms_manual.json").then(m => setData(m.default)); }, []);
 
@@ -86,7 +87,8 @@ export function WmsManualView({ focus }) {
 
     {sel && <ScreenPanel key={sel.id} s={sel} byId={byId} onOpen={setScreenId} onClose={()=>setScreenId(null)} onPlay={setShow}/>}
     {show && <Presentacion slides={show.slides} start={show.start} onClose={()=>setShow(null)}
-      onOpenScreen={(id) => { setShow(null); setModName(byId[id].module); setScreenId(id); setQ(""); }}/>}
+      onOpenScreen={(id) => { setShow(null); setModName(byId[id].module); setScreenId(id); setQ(""); }}
+      onOpenWmh={(id) => { setShow(null); navigate({ tab:"ops", view:"wmh", wmhScreen:id }); }}/>}
   </div>;
 }
 

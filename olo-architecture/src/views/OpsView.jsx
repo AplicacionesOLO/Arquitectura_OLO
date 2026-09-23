@@ -18,7 +18,7 @@ export function OpsView({ selected, setSelected, focus }) {
         return <button key={id} onClick={()=>setMainView(id)} style={{ padding:"7px 16px", borderRadius:8, border:`1px solid ${active?DESIGN.ink:DESIGN.border}`, background:active?DESIGN.ink:"#fff", color:active?"#fff":DESIGN.inkSoft, fontWeight:active?700:400, fontSize:13, cursor:"pointer", fontFamily:DESIGN.font }}>{label}</button>;
       })}
     </div>
-    {mainView==="wmh" ? <ControlTowerView/> : mainView==="wms" ? <WmsManualView focus={focus}/> : <OpsModules selected={selected} setSelected={setSelected}/>}
+    {mainView==="wmh" ? <ControlTowerView focus={focus}/> : mainView==="wms" ? <WmsManualView focus={focus}/> : <OpsModules selected={selected} setSelected={setSelected}/>}
   </div>;
 }
 

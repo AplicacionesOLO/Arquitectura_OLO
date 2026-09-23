@@ -7,8 +7,9 @@
 // existe en el sistema. La SECUENCIA, las reglas de negocio y los responsables
 // son práctica estándar de un 3PL y quedan marcados como inferidos.
 //
-//   pasos[].origen: "eflow_wms" → la pantalla/campo/botón citado existe en el WMS
-//                   "inferido"  → paso o regla sin documento de OLO (revisar)
+//   pasos[].origen: "eflow_wms"     → la pantalla/campo/botón citado existe en el WMS
+//                   "control_tower" → documentado en el levantamiento de Torre de Control (WMH)
+//                   "inferido"      → paso o regla sin documento de OLO (revisar)
 //   pasos[].screen: id de la pantalla del manual (abre captura y recorrido)
 //   tablas[].confianza: "media" = relacionada por nombre/semántica con eFlow
 //
@@ -20,6 +21,7 @@ const FUENTE_WMS = "Borrador: pantallas reales de eFlow WMS 3.2.8.5 (crawl 23/09
 
 const e = (texto, screen, sistema = "eflow") => ({ texto, sistema, screen, origen: "eflow_wms" });
 const i = (texto, sistema = "fisico", screen = null) => ({ texto, sistema, screen, origen: "inferido" });
+const ct = (texto) => ({ texto, sistema: "torre", screen: null, origen: "control_tower" });
 const t = (tabla, motivo) => ({ schema: "efw", tabla, motivo, confianza: "media" });
 
 const S = {
@@ -111,6 +113,15 @@ Object.assign(S, {
   pedidosMuelle: "screen_reportes__control_de_pedidos_por_muelle",
 });
 const SEG = { silo: "neg_seguimiento_operacion", siloLabel: "P1.19 · Seguimiento y control de la Operación" };
+
+Object.assign(S, {
+  distRutas: "screen_reportes__distribucion_de_rutas",
+  unidades: "screen_catalogos__unidades_de_transporte",
+  asignaCamion: "screen_documentos__asignacion_exp_camion",
+  cargaCamion: "screen_documentos__carga_camion",
+  cargaDirecta: "screen_documentos__carga_camion_directa",
+});
+const TRL = { silo: "neg_transporte_local", siloLabel: "P1.18 · Gestión de transporte Local" };
 
 export const PROCESOS_SILOS = {
   // ── P1.5 · Gestión de inventario físico ──────────────────────────────────
@@ -796,6 +807,65 @@ export const PROCESOS_SILOS = {
     datosClave: ["Muelle", "Pedidos despachados", "Palets pendientes por viaje", "Palets pendientes de chequeo"],
     conceptos: [],
     entradaDe: ["P8", "P10"],
+  },
+
+  // ── P1.18 · Gestión de transporte Local ──────────────────────────────────
+  "TRL-01": {
+    ...TRL, nombre: "Planificación de rutas y viajes de distribución", macro: "S1 · Planificación de rutas de distribución local",
+    objetivo: "Agrupar los pedidos del día en viajes por ruta respetando el horario de corte y la capacidad de las unidades.",
+    alcance: "Distribución local desde el CEDI (rutas GAM y rurales).",
+    responsables: ["Encargado de Torre de Control", "Encargado de transporte"],
+    pasos: [
+      e("Revisar la distribución de los pedidos por ruta en Reportes › Distribucion de Rutas", S.distRutas),
+      e("Filtrar los pedidos disponibles por compañía y ruta en Documentos › Ordenes de Expedición", S.expediciones),
+      ct("Crear el viaje en Torre de Control › Nuevo Viaje (almacén, compañía, ruta): los indicadores de rutas, líneas, peso, volumen y monto se recalculan al añadir órdenes"),
+      ct("Validar peso y volumen del viaje contra la capacidad de la unidad (hoy las capacidades de flota están en 0 en Torre de Control)"),
+      ct("Asignar el muelle del viaje (Detalles › Cambiar muelle; todo viaje de pesado va a la puerta 29)"),
+      i("Confirmar la programación del día con el área de despacho", "correo"),
+    ],
+    registros: ["Viajes del día en Torre de Control"],
+    noConformidades: ["Viajes creados fuera del horario de corte", "Viajes sin validar contra la capacidad de la unidad"],
+    tablas: [t("VIAJE_WMH", "Viaje de Torre de Control visto desde eFlow"), t("MUELLE_X_RUTA", "Muelle por ruta"), t("CONFIGURACION_RUTA", "Configuración de rutas"), { schema: "wmh_cr", tabla: "journeys", motivo: "Viajes en Torre de Control", confianza: "alta" }, { schema: "wmh_cr", tabla: "distribution_routes", motivo: "Rutas de distribución", confianza: "alta" }],
+    datosClave: ["Ruta", "Viaje", "Peso y volumen", "Capacidad de la unidad", "Muelle"],
+    conceptos: [],
+    entradaDe: ["P1"], salidaA: ["TRL-02"],
+  },
+  "TRL-02": {
+    ...TRL, nombre: "Asignación de unidades y conductores", macro: "S2 · Asignación de unidades y conductores",
+    objetivo: "Asignar a cada viaje un camión con capacidad suficiente y su chofer.",
+    alcance: "Viajes de distribución local del día.",
+    responsables: ["Encargado de transporte"],
+    pasos: [
+      e("Mantener la flota en Catálogos › Unidades de Transporte (placa, peso, capacidad de tarimas, cubicaje, tipo, cédula y nombre del chofer)", S.unidades),
+      i("Elegir la unidad según el peso, volumen y tarimas del viaje", "fisico"),
+      e("Asignar el camión a las expediciones en Documentos › Asignacion Exp. Camión (Exp. Camión, Camión Asignado, fecha de asignación)", S.asignaCamion),
+      ct("Asignar chofer y unidad al viaje en Torre de Control (catálogos Choferes y Unidades de Transporte)"),
+    ],
+    registros: ["Expediciones con camión asignado"],
+    noConformidades: ["Unidad asignada sin capacidad suficiente", "Datos de flota incompletos (capacidades en 0)"],
+    tablas: [t("EXPEDICIONCAMION", "Expedición ↔ camión"), { schema: "wmh_cr", tabla: "trasportation_units", motivo: "Unidades de transporte en Torre de Control", confianza: "alta" }, { schema: "wmh_cr", tabla: "drivers", motivo: "Choferes", confianza: "alta" }],
+    datosClave: ["Placa", "Capacidad de peso, tarimas y cubicaje", "Chofer (cédula)", "Camión asignado"],
+    conceptos: [],
+    entradaDe: ["TRL-01"], salidaA: ["TRL-03"],
+  },
+  "TRL-03": {
+    ...TRL, nombre: "Carga del camión y control de salida de la ruta", macro: "S3 · Despacho y control de salida de rutas",
+    objetivo: "Registrar la carga de cada camión contra su viaje y controlar que salga completo.",
+    alcance: "Salida de cada ruta de distribución local.",
+    responsables: ["Personal de despacho", "Encargado de transporte"],
+    pasos: [
+      e("Registrar la carga en Documentos › Carga Camión (número de viaje, expedición, cliente, placa y cédula del chofer)", S.cargaCamion),
+      e("Para cargas sin preparación previa por viaje, usar Documentos › Carga Camión Directa (Viaje, Placa, Cédula, Observaciones) con «Cargar»", S.cargaDirecta),
+      e("Verificar que no queden palets del viaje en Reportes › Rep. Palets Pend x Viaje", "screen_reportes__rep_palets_pend_x_viaje"),
+      e("Revisar el despacho por muelle en Reportes › Control de Pedidos por Muelle", S.pedidosMuelle),
+      i("Entregar al chofer la guía y las facturas del viaje y registrar la hora de salida", "fisico"),
+    ],
+    registros: ["Carga de camión por viaje", "Guía de despacho"],
+    noConformidades: ["Camión que sale con palets pendientes del viaje", "Carga registrada en otro viaje"],
+    tablas: [t("EXPEDICIONCAMION", "Carga por camión"), t("CARGACAMION_TRAMITE", "Trámite de carga"), t("CONTENEDORVIAJE", "Palets por viaje")],
+    datosClave: ["Número de viaje", "Placa", "Cédula del chofer", "Palets pendientes", "Hora de salida"],
+    conceptos: [],
+    entradaDe: ["TRL-02"], salidaA: ["P9"],
   },
 };
 

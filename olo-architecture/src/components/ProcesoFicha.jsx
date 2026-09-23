@@ -34,6 +34,7 @@ const SCHEMA_META = {
 const CIA_COLOR = { COFERSA: "#1d4ed8", EPA: "#b45309", CEDI: "#475569", Borrador: "#b45309" };
 // Origen de cada paso de un borrador: hecho verificable en el WMS vs. supuesto a revisar
 const ORIGEN = { eflow_wms: { label: "eFlow WMS", color: "#0891b2", title: "La pantalla, campo o botón citado existe en eFlow WMS" },
+  control_tower: { label: "Torre de Control", color: "#16a34a", title: "Documentado en el levantamiento de Torre de Control (Operación › Torre de Control · WMH)" },
   inferido: { label: "Inferido", color: "#b45309", title: "Paso o regla sin documento de OLO: revisar y validar" } };
 
 export function SistemaChip({ sys }) {

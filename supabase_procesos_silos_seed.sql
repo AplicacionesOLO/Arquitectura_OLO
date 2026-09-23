@@ -1112,4 +1112,89 @@ begin
       values ('neg_seguimiento_operacion', v_proc, 2, '4. Resolver con despacho los pedidos o palets que no salieron y reprogramarlos', 3, 'SEG-03.04') returning id into v_sub;
   end if;
   v_macro := null; v_proc := null;
+
+  -- TRL-01 · Planificación de rutas y viajes de distribución  (P1.18 · Gestión de transporte Local › S1 · Planificación de rutas de distribución local)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_transporte_local' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Planificación de rutas de distribución local'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S1 · Planificación de rutas de distribución local', 'neg_transporte_local'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'TRL-01') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_transporte_local', v_macro, 1, 'Planificación de rutas y viajes de distribución', coalesce(max(sort_order), -1) + 1, 'TRL-01'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_transporte_local', v_proc, 2, '1. Revisar la distribución de los pedidos por ruta en Reportes › Distribucion de Rutas', 0, 'TRL-01.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__distribucion_de_rutas.jpg', 'eFlow WMS · Reportes › Distribucion de Rutas.jpg', 'image/jpeg', 50231);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_transporte_local', v_proc, 2, '2. Filtrar los pedidos disponibles por compañía y ruta en Documentos › Ordenes de Expedición', 1, 'TRL-01.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__ordenes_de_expedicion.jpg', 'eFlow WMS · Documentos › Ordenes de Expedición.jpg', 'image/jpeg', 205564);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_transporte_local', v_proc, 2, '3. Crear el viaje en Torre de Control › Nuevo Viaje (almacén, compañía, ruta): los indicadores de rutas, líneas, peso, volumen y monto se recalculan al añadir órdenes', 2, 'TRL-01.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_transporte_local', v_proc, 2, '4. Validar peso y volumen del viaje contra la capacidad de la unidad (hoy las capacidades de flota están en 0 en Torre de Control)', 3, 'TRL-01.04') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_transporte_local', v_proc, 2, '5. Asignar el muelle del viaje (Detalles › Cambiar muelle; todo viaje de pesado va a la puerta 29)', 4, 'TRL-01.05') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_transporte_local', v_proc, 2, '6. Confirmar la programación del día con el área de despacho', 5, 'TRL-01.06') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- TRL-02 · Asignación de unidades y conductores  (P1.18 · Gestión de transporte Local › S2 · Asignación de unidades y conductores)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_transporte_local' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S2 · Asignación de unidades y conductores'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S2 · Asignación de unidades y conductores', 'neg_transporte_local'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'TRL-02') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_transporte_local', v_macro, 1, 'Asignación de unidades y conductores', coalesce(max(sort_order), -1) + 1, 'TRL-02'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_transporte_local', v_proc, 2, '1. Mantener la flota en Catálogos › Unidades de Transporte (placa, peso, capacidad de tarimas, cubicaje, tipo, cédula y nombre del chofer)', 0, 'TRL-02.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_catalogos__unidades_de_transporte.jpg', 'eFlow WMS · Catálogos › Unidades de Transporte.jpg', 'image/jpeg', 204696);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_transporte_local', v_proc, 2, '2. Elegir la unidad según el peso, volumen y tarimas del viaje', 1, 'TRL-02.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_transporte_local', v_proc, 2, '3. Asignar el camión a las expediciones en Documentos › Asignacion Exp. Camión (Exp. Camión, Camión Asignado, fecha de asignación)', 2, 'TRL-02.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__asignacion_exp_camion.jpg', 'eFlow WMS · Documentos › Asignacion Exp. Camión.jpg', 'image/jpeg', 183078);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_transporte_local', v_proc, 2, '4. Asignar chofer y unidad al viaje en Torre de Control (catálogos Choferes y Unidades de Transporte)', 3, 'TRL-02.04') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- TRL-03 · Carga del camión y control de salida de la ruta  (P1.18 · Gestión de transporte Local › S3 · Despacho y control de salida de rutas)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_transporte_local' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Despacho y control de salida de rutas'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S3 · Despacho y control de salida de rutas', 'neg_transporte_local'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'TRL-03') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_transporte_local', v_macro, 1, 'Carga del camión y control de salida de la ruta', coalesce(max(sort_order), -1) + 1, 'TRL-03'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_transporte_local', v_proc, 2, '1. Registrar la carga en Documentos › Carga Camión (número de viaje, expedición, cliente, placa y cédula del chofer)', 0, 'TRL-03.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__carga_camion.jpg', 'eFlow WMS · Documentos › Carga Camión.jpg', 'image/jpeg', 225559);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_transporte_local', v_proc, 2, '2. Para cargas sin preparación previa por viaje, usar Documentos › Carga Camión Directa (Viaje, Placa, Cédula, Observaciones) con «Cargar»', 1, 'TRL-03.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__carga_camion_directa.jpg', 'eFlow WMS · Documentos › Carga Camión Directa.jpg', 'image/jpeg', 61027);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_transporte_local', v_proc, 2, '3. Verificar que no queden palets del viaje en Reportes › Rep. Palets Pend x Viaje', 2, 'TRL-03.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__rep_palets_pend_x_viaje.jpg', 'eFlow WMS · Reportes › Rep. Palets Pend x Viaje.jpg', 'image/jpeg', 49562);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_transporte_local', v_proc, 2, '4. Revisar el despacho por muelle en Reportes › Control de Pedidos por Muelle', 3, 'TRL-03.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__control_de_pedidos_por_muelle.jpg', 'eFlow WMS · Reportes › Control de Pedidos por Muelle.jpg', 'image/jpeg', 50313);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_transporte_local', v_proc, 2, '5. Entregar al chofer la guía y las facturas del viaje y registrar la hora de salida', 4, 'TRL-03.05') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
 end $$;

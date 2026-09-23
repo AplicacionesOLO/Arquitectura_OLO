@@ -889,4 +889,132 @@ begin
       values ('log_servicio_cliente', v_proc, 2, '6. Responder al cliente con la evidencia y, si corresponde, la nota de crédito o reposición', 5, 'SLC-03.06') returning id into v_sub;
   end if;
   v_macro := null; v_proc := null;
+
+  -- DES-01 · Medición de productividad por proceso  (P1.8 · Desempeño logístico › S3 · Productividad por proceso)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'log_desempeno' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Productividad por proceso'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S3 · Productividad por proceso', 'log_desempeno'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'DES-01') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'log_desempeno', v_macro, 1, 'Medición de productividad por proceso', coalesce(max(sort_order), -1) + 1, 'DES-01'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '1. Exportar Reportes › Productividad Picking x Dia / x Hora / x Recurso', 0, 'DES-01.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__productividad_picking_x_recurso.jpg', 'eFlow WMS · Reportes › Productividad Picking x Recurso.jpg', 'image/jpeg', 50526);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '2. Exportar Reportes › Productividad de Almacenamiento x Hora', 1, 'DES-01.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__productividad_de_almacenamiento_x_hora.jpg', 'eFlow WMS · Reportes › Productividad de Almacenamiento x Hora.jpg', 'image/jpeg', 50817);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '3. Exportar Reportes › Productitividad de Validación x dia y Productividad de Empaque por dia', 2, 'DES-01.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__productitividad_de_validacion_x_dia.jpg', 'eFlow WMS · Reportes › Productitividad de Validación x dia.jpg', 'image/jpeg', 50482);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '4. Revisar los tiempos de atención de tareas en Reportes › Tiempo atención tareas', 3, 'DES-01.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__tiempo_atencion_tareas.jpg', 'eFlow WMS · Reportes › Tiempo atención tareas.jpg', 'image/jpeg', 50127);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '5. Consolidar en un tablero líneas/hora por proceso y compararlas con la meta', 4, 'DES-01.05') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '6. Identificar recursos o turnos bajo la meta y definir acciones (capacitación, redistribución)', 5, 'DES-01.06') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- DES-02 · Semáforos operativos del centro de distribución  (P1.8 · Desempeño logístico › S4 · Semáforos operativos del centro de distribución)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'log_desempeno' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S4 · Semáforos operativos del centro de distribución'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S4 · Semáforos operativos del centro de distribución', 'log_desempeno'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'DES-02') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'log_desempeno', v_macro, 1, 'Semáforos operativos del centro de distribución', coalesce(max(sort_order), -1) + 1, 'DES-02'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '1. Revisar el panel de Inicio «Operación en tiempo real»: Total Tareas, Recepciones y Expediciones con su % de avance', 0, 'DES-02.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_inicio__inicio.jpg', 'eFlow WMS · Inicio › Panel de Inicio.jpg', 'image/jpeg', 127686);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '2. Revisar en el mismo panel Fill Rate Alisto / Recibo, Prod. Alisto / Recibo, Alerta Picking y % Ocupación', 1, 'DES-02.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_inicio__inicio.jpg', 'eFlow WMS · Inicio › Panel de Inicio.jpg', 'image/jpeg', 127686);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '3. Abrir Paneles › Operación Alisto filtrando por sucursal y compañía', 2, 'DES-02.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_paneles__operacion_alisto.jpg', 'eFlow WMS · Paneles › Operación Alisto.jpg', 'image/jpeg', 128596);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '4. Seguir el avance en Paneles › Avance de Expedición y Paneles › Avance de Recepciónes', 3, 'DES-02.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_paneles__avance_de_expedicion.jpg', 'eFlow WMS · Paneles › Avance de Expedición.jpg', 'image/jpeg', 113790);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '5. Definir rangos verde/amarillo/rojo por indicador y escalar los que estén en rojo', 4, 'DES-02.05') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- DES-03 · Cálculo del OTIF de entrega  (P1.8 · Desempeño logístico › S1 · OTIF de entrega)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'log_desempeno' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · OTIF de entrega'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S1 · OTIF de entrega', 'log_desempeno'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'DES-03') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'log_desempeno', v_macro, 1, 'Cálculo del OTIF de entrega', coalesce(max(sort_order), -1) + 1, 'DES-03'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '1. Exportar los pedidos despachados en Reportes › Control de Ordenes Despachadas', 0, 'DES-03.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__control_de_ordenes_despachadas.jpg', 'eFlow WMS · Reportes › Control de Ordenes Despachadas.jpg', 'image/jpeg', 50554);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '2. Exportar las líneas pedidas vs. preparadas en Reportes › Detalle Ordenes de Salida', 1, 'DES-03.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__detalle_ordenes_de_salida.jpg', 'eFlow WMS · Reportes › Detalle Ordenes de Salida.jpg', 'image/jpeg', 50260);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '3. Revisar el avance de los pedidos no cerrados en Reportes › Avance de Pedidos', 2, 'DES-03.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__avance_de_pedidos.jpg', 'eFlow WMS · Reportes › Avance de Pedidos.jpg', 'image/jpeg', 49309);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '4. Marcar cada pedido como «a tiempo» según la fecha comprometida y «completo» si se despachó el 100 %', 3, 'DES-03.04') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '5. Calcular OTIF = pedidos a tiempo y completos ÷ pedidos despachados, por cliente', 4, 'DES-03.05') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '6. Presentar el OTIF en la revisión mensual con el cliente', 5, 'DES-03.06') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- DES-04 · Análisis de fallas de servicio  (P1.8 · Desempeño logístico › S6 · Análisis de fallas de servicio)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'log_desempeno' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S6 · Análisis de fallas de servicio'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S6 · Análisis de fallas de servicio', 'log_desempeno'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'DES-04') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'log_desempeno', v_macro, 1, 'Análisis de fallas de servicio', coalesce(max(sort_order), -1) + 1, 'DES-04'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '1. Revisar las diferencias de picking en Control › Alerta Picking (cantidad leída vs. teórica, tipo de incidencia)', 0, 'DES-04.01') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_control__alerta_picking.jpg', 'eFlow WMS · Control › Alerta Picking.jpg', 'image/jpeg', 204199);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '2. Revisar los pedidos que no se pudieron preparar en Reportes › Expediciones sin Inventario', 1, 'DES-04.02') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__expediciones_sin_inventario.jpg', 'eFlow WMS · Reportes › Expediciones sin Inventario.jpg', 'image/jpeg', 50568);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '3. Revisar Reportes › Rep. Análisis alisto vs Mínimos para detectar faltantes en picking', 2, 'DES-04.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_reportes__rep_analisis_alisto_vs_minimos.jpg', 'eFlow WMS · Reportes › Rep. Análisis alisto vs Mínimos.jpg', 'image/jpeg', 50000);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '4. Revisar los errores de procesos del sistema en Control › Monitor Errores', 3, 'DES-04.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_control__monitor_errores.jpg', 'eFlow WMS · Control › Monitor Errores.jpg', 'image/jpeg', 225171);
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '5. Agrupar las fallas por causa (Pareto) y elegir las principales', 4, 'DES-04.05') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('log_desempeno', v_proc, 2, '6. Definir un plan de acción por causa con responsable y fecha', 5, 'DES-04.06') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
 end $$;

@@ -89,6 +89,22 @@ Object.assign(S, {
 // pero sus pantallas no están en el crawl del WMS de escritorio.
 const SLC = { silo: "log_servicio_cliente", siloLabel: "P1.6 · Servicio logístico a clientes" };
 
+Object.assign(S, {
+  prodPickDia: "screen_reportes__productividad_picking_x_dia",
+  prodPickHora: "screen_reportes__productividad_picking_x_hora",
+  prodValidDia: "screen_reportes__productitividad_de_validacion_x_dia",
+  opAlisto: "screen_paneles__operacion_alisto",
+  avanceExp: "screen_paneles__avance_de_expedicion",
+  ctrlExp: "screen_reportes__control_ordenes_de_expedicion",
+  avancePedidos: "screen_reportes__avance_de_pedidos",
+  monitorErrores: "screen_control__monitor_errores",
+  monitorAct: "screen_control__monitor_actividades",
+  alertaPicking: "screen_control__alerta_picking",
+  expSinInv: "screen_reportes__expediciones_sin_inventario",
+  alistoMinimos: "screen_reportes__rep_analisis_alisto_vs_minimos",
+});
+const DES = { silo: "log_desempeno", siloLabel: "P1.8 · Desempeño logístico" };
+
 export const PROCESOS_SILOS = {
   // ── P1.5 · Gestión de inventario físico ──────────────────────────────────
   "INV-01": {
@@ -633,6 +649,86 @@ export const PROCESOS_SILOS = {
     tablas: [t("EXPEDICIONESCABECERA", "Orden despachada"), t("EPALETMOVIMIENTOSALIDA", "Salida del palet")],
     datosClave: ["Cliente", "Pedido / expedición", "Artículo", "Tipo de problema", "Evidencia"],
     conceptos: [],
+  },
+
+  // ── P1.8 · Desempeño logístico ───────────────────────────────────────────
+  "DES-01": {
+    ...DES, nombre: "Medición de productividad por proceso", macro: "S3 · Productividad por proceso",
+    objetivo: "Medir cuántas unidades o líneas procesa cada recurso por hora en picking, almacenaje, validación y empaque.",
+    alcance: "Reporte diario para supervisión y mensual para la revisión con clientes.",
+    responsables: ["Supervisores de operación", "Jefe de operaciones"],
+    pasos: [
+      e("Exportar Reportes › Productividad Picking x Dia / x Hora / x Recurso", S.prodPickRec),
+      e("Exportar Reportes › Productividad de Almacenamiento x Hora", S.prodAlmHora),
+      e("Exportar Reportes › Productitividad de Validación x dia y Productividad de Empaque por dia", S.prodValidDia),
+      e("Revisar los tiempos de atención de tareas en Reportes › Tiempo atención tareas", S.tiempoTareas),
+      i("Consolidar en un tablero líneas/hora por proceso y compararlas con la meta", "excel_drive"),
+      i("Identificar recursos o turnos bajo la meta y definir acciones (capacitación, redistribución)", "fisico"),
+    ],
+    registros: ["Tablero de productividad por proceso"],
+    noConformidades: ["Metas de productividad sin definir por proceso"],
+    tablas: [t("RENDIMIENTO_USUARIO_ALISTO", "Rendimiento de picking"), t("RENDIMIENTO_USUARIO_PACKING", "Rendimiento de empaque"), t("MOVIMIENTO_USUARIO", "Movimientos por usuario")],
+    datosClave: ["Líneas por hora", "Recurso", "Proceso", "Turno", "Tiempo de atención de tareas"],
+    conceptos: [],
+    salidaA: ["DES-02", "SLC-02"],
+  },
+  "DES-02": {
+    ...DES, nombre: "Semáforos operativos del centro de distribución", macro: "S4 · Semáforos operativos del centro de distribución",
+    objetivo: "Ver en tiempo real el estado de la operación del día con indicadores y paneles del WMS.",
+    alcance: "Seguimiento diario de la operación por la jefatura y los supervisores.",
+    responsables: ["Jefe de operaciones", "Supervisores"],
+    pasos: [
+      e("Revisar el panel de Inicio «Operación en tiempo real»: Total Tareas, Recepciones y Expediciones con su % de avance", S.inicio),
+      e("Revisar en el mismo panel Fill Rate Alisto / Recibo, Prod. Alisto / Recibo, Alerta Picking y % Ocupación", S.inicio),
+      e("Abrir Paneles › Operación Alisto filtrando por sucursal y compañía", S.opAlisto),
+      e("Seguir el avance en Paneles › Avance de Expedición y Paneles › Avance de Recepciónes", S.avanceExp),
+      i("Definir rangos verde/amarillo/rojo por indicador y escalar los que estén en rojo", "fisico"),
+    ],
+    registros: ["Revisión diaria de semáforos"],
+    noConformidades: ["Indicadores sin umbral definido"],
+    tablas: [t("WMS_KPI_FOTO_INVENTARIO", "Foto de indicadores")],
+    datosClave: ["Total de tareas y avance", "Fill rate de alisto y de recibo", "Productividad", "Alerta de picking", "% de ocupación"],
+    conceptos: [{ termino: "Fill rate", definicion: "Porcentaje de lo pedido que efectivamente se preparó (alisto) o se recibió (recibo)." }],
+    entradaDe: ["DES-01"], salidaA: ["DES-04"],
+  },
+  "DES-03": {
+    ...DES, nombre: "Cálculo del OTIF de entrega", macro: "S1 · OTIF de entrega",
+    objetivo: "Medir el porcentaje de pedidos entregados a tiempo y completos (On Time In Full).",
+    alcance: "Todos los pedidos despachados en el período, por cliente.",
+    responsables: ["Control de gestión"],
+    pasos: [
+      e("Exportar los pedidos despachados en Reportes › Control de Ordenes Despachadas", S.ordenesDesp),
+      e("Exportar las líneas pedidas vs. preparadas en Reportes › Detalle Ordenes de Salida", S.detalleSalida),
+      e("Revisar el avance de los pedidos no cerrados en Reportes › Avance de Pedidos", S.avancePedidos),
+      i("Marcar cada pedido como «a tiempo» según la fecha comprometida y «completo» si se despachó el 100 %", "excel_drive"),
+      i("Calcular OTIF = pedidos a tiempo y completos ÷ pedidos despachados, por cliente", "excel_drive"),
+      i("Presentar el OTIF en la revisión mensual con el cliente", "correo"),
+    ],
+    registros: ["OTIF por cliente y por mes"],
+    noConformidades: ["Fecha comprometida no registrada en el pedido"],
+    tablas: [t("EXPEDICIONESCABECERA", "Pedidos despachados"), t("EXPEDICIONESDETALLE", "Líneas pedidas vs. preparadas")],
+    datosClave: ["Pedido", "Fecha comprometida", "Fecha de despacho", "% completo", "OTIF"],
+    conceptos: [{ termino: "OTIF", definicion: "On Time In Full: pedidos entregados a tiempo y completos sobre el total de pedidos." }],
+  },
+  "DES-04": {
+    ...DES, nombre: "Análisis de fallas de servicio", macro: "S6 · Análisis de fallas de servicio",
+    objetivo: "Encontrar las causas repetidas de fallas (faltantes, errores de picking, errores de sistema) para corregirlas.",
+    alcance: "Revisión semanal de incidencias.",
+    responsables: ["Jefe de operaciones", "Analista de control"],
+    pasos: [
+      e("Revisar las diferencias de picking en Control › Alerta Picking (cantidad leída vs. teórica, tipo de incidencia)", S.alertaPicking),
+      e("Revisar los pedidos que no se pudieron preparar en Reportes › Expediciones sin Inventario", S.expSinInv),
+      e("Revisar Reportes › Rep. Análisis alisto vs Mínimos para detectar faltantes en picking", S.alistoMinimos),
+      e("Revisar los errores de procesos del sistema en Control › Monitor Errores", S.monitorErrores),
+      i("Agrupar las fallas por causa (Pareto) y elegir las principales", "excel_drive"),
+      i("Definir un plan de acción por causa con responsable y fecha", "excel_drive"),
+    ],
+    registros: ["Pareto de fallas", "Plan de acción"],
+    noConformidades: ["Fallas repetidas sin plan de acción"],
+    tablas: [t("MONITORACCION_PROBLEMA_MOTIVO", "Motivos de problema en acciones")],
+    datosClave: ["Tipo de incidencia", "Diferencia de cantidad", "Expediciones sin inventario", "Errores del sistema", "Causa"],
+    conceptos: [],
+    entradaDe: ["DES-02"],
   },
 };
 

@@ -126,6 +126,7 @@ export function OLOArchView({ searchQuery="" }) {
   const zoomRef    = useRef(1);
   const panRef     = useRef({x:0, y:0});
   const panDragRef = useRef(null);   // {mx0,my0,px0,py0}
+  const vbRef      = useRef({x:0, y:0, w:1160, h:620});   // viewBox vigente
 
   const setZoomPan = useCallback((z, p) => {
     zoomRef.current = z; panRef.current = p; setZoom(z); setPanXY(p);
@@ -135,7 +136,7 @@ export function OLOArchView({ searchQuery="" }) {
   const svgPt = useCallback((e) => {
     const r = svgRef.current?.getBoundingClientRect();
     if (!r) return {x:0,y:0};
-    const rx=(e.clientX-r.left)*(1160/r.width), ry=(e.clientY-r.top)*(620/r.height);
+    const rx=vbRef.current.x+(e.clientX-r.left)*(vbRef.current.w/r.width), ry=vbRef.current.y+(e.clientY-r.top)*(vbRef.current.h/r.height);
     const p=panRef.current, z=zoomRef.current;
     return { x:(rx-p.x)/z, y:(ry-p.y)/z };
   }, []);
@@ -172,7 +173,7 @@ export function OLOArchView({ searchQuery="" }) {
       const pd = panDragRef.current;
       if (pd) {
         const r = svgRef.current?.getBoundingClientRect(); if (!r) return;
-        const rx=(e.clientX-r.left)*(1160/r.width), ry=(e.clientY-r.top)*(620/r.height);
+        const rx=vbRef.current.x+(e.clientX-r.left)*(vbRef.current.w/r.width), ry=vbRef.current.y+(e.clientY-r.top)*(vbRef.current.h/r.height);
         const np={x:pd.px0+(rx-pd.mx0), y:pd.py0+(ry-pd.my0)};
         panRef.current=np; setPanXY(np); return;
       }
@@ -220,7 +221,7 @@ export function OLOArchView({ searchQuery="" }) {
       const f = e.deltaY < 0 ? 1.15 : 1/1.15;
       const newZ = Math.max(0.15, Math.min(6, zoomRef.current*f));
       const r = svg.getBoundingClientRect();
-      const rx=(e.clientX-r.left)*(1160/r.width), ry=(e.clientY-r.top)*(620/r.height);
+      const rx=vbRef.current.x+(e.clientX-r.left)*(vbRef.current.w/r.width), ry=vbRef.current.y+(e.clientY-r.top)*(vbRef.current.h/r.height);
       const dz=newZ/zoomRef.current;
       setZoomPan(newZ, {x:rx-dz*(rx-panRef.current.x), y:ry-dz*(ry-panRef.current.y)});
     };
@@ -346,6 +347,17 @@ export function OLOArchView({ searchQuery="" }) {
     )
   );
   const effConns = editConns ?? connections;
+
+  // viewBox recortado al contenido (sin franjas vacías); al editar se usa el lienzo completo
+  const vb = (() => {
+    if (editMode) return {x:0, y:0, w:1160, h:620};
+    const ns = Object.values(effNodes).filter(n => n.w && n.h);
+    const P = 14;
+    const x0 = Math.max(0, Math.min(...ns.map(n=>n.x))-P), y0 = Math.max(0, Math.min(...ns.map(n=>n.y))-P);
+    const x1 = Math.max(...ns.map(n=>n.x+n.w))+P, y1 = Math.max(...ns.map(n=>n.y+n.h))+P;
+    return {x:x0, y:y0, w:x1-x0, h:y1-y0};
+  })();
+  useEffect(() => { vbRef.current = vb; });
 
   // ── Edit mode handlers ─────────────────────────────────────────────────────
   const handleNodeDown = (e, id) => {
@@ -562,7 +574,8 @@ export function OLOArchView({ searchQuery="" }) {
         </div>
       )}
 
-      <svg ref={svgRef} viewBox="0 0 1160 620" style={{ width:"100%", height:"auto", display:"block", fontFamily:"'Segoe UI',sans-serif", cursor:editMode?(connectFrom?"crosshair":"default"):"default" }}
+      <div style={{ overflow:"hidden" }}>
+      <svg ref={svgRef} viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`} style={{ width:"100%", height:"auto", maxWidth:`calc(clamp(340px, 58vh, 520px) * ${(vb.w/vb.h).toFixed(4)})`, margin:"0 auto", overflow:"visible", display:"block", fontFamily:"'Segoe UI',sans-serif", cursor:editMode?(connectFrom?"crosshair":"default"):"default" }}
         onMouseMove={e=>{ if(editMode&&connectFrom) setMousePos(svgPt(e)); }}
         onClick={()=>{ if(editMode&&connectFrom) setConnectFrom(null); }}>
         <defs>
@@ -581,22 +594,22 @@ export function OLOArchView({ searchQuery="" }) {
         </defs>
 
         {/* Fondo con grid de puntos */}
-        <rect width="1160" height="620" fill={T.svgBg}/>
+        <rect x={vb.x} y={vb.y} width={vb.w} height={vb.h} fill={T.svgBg}/>
         <pattern id="dotgrid" x="0" y="0" width="22" height="22" patternUnits="userSpaceOnUse">
           <circle cx="11" cy="11" r="0.7" fill={T.dotFill}/>
         </pattern>
-        <rect width="1160" height="620" fill="url(#dotgrid)"/>
+        <rect x={vb.x} y={vb.y} width={vb.w} height={vb.h} fill="url(#dotgrid)"/>
 
         {/* ── Grupo zoom/pan ── */}
         <g transform={`translate(${panXY.x},${panXY.y}) scale(${zoom})`}>
-        {!editMode && <rect width="1160" height="620" fill="transparent"
+        {!editMode && <rect x={-4000} y={-4000} width={9000} height={9000} fill="transparent"
           style={{cursor:'grab'}}
           onMouseDown={e=>{
             if(dragRef.current) return;
             const r=svgRef.current?.getBoundingClientRect(); if(!r) return;
             panDragRef.current={
-              mx0:(e.clientX-r.left)*(1160/r.width),
-              my0:(e.clientY-r.top)*(620/r.height),
+              mx0:vbRef.current.x+(e.clientX-r.left)*(vbRef.current.w/r.width),
+              my0:vbRef.current.y+(e.clientY-r.top)*(vbRef.current.h/r.height),
               px0:panRef.current.x, py0:panRef.current.y
             };
           }}
@@ -759,6 +772,7 @@ export function OLOArchView({ searchQuery="" }) {
         })}
         </g>
       </svg>
+      </div>
     </div>
 
     {/* Cards de leyenda */}

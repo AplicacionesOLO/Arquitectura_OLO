@@ -149,7 +149,7 @@ export default function SoftlandArchitectureMap() {
       {/* Sidebar Footer */}
       {!sidebarCollapsed && <div style={{ borderTop:`1px solid ${DESIGN.border}`, background:DESIGN.sunken }}>
         <div style={{ padding:"10px 14px 0", fontSize:10, color:DESIGN.muted, lineHeight:1.5 }}>
-          17 manuales · 7 guías eflow · 1 BPA
+          Softland · eflow · Torre · SORTER
         </div>
         <div style={{ padding:"10px 14px 12px" }}>
           <div style={{ display:"flex", gap:8, alignItems:"center", marginBottom:8 }}>
@@ -214,8 +214,8 @@ export default function SoftlandArchitectureMap() {
 
         {/* Footer */}
         <footer style={{ marginTop:56, paddingTop:24, borderTop:`1px solid ${DESIGN.border}`, display:"flex", justifyContent:"space-between", alignItems:"baseline", flexWrap:"wrap", gap:12, fontSize:12, color:DESIGN.muted }}>
-          <span>17 manuales Softland · 7 guías eflow · 1 informe BPA · 0 acceso a esquema · 0 acceso a configuración real</span>
-          <span>v0.5 · próxima iteración: AS · POS · FR · AC · Capital Humano</span>
+          <span>Fuentes: 17 manuales Softland · manuales de eflow WMS, Torre de Control y SORTER CLIRO · 14 procedimientos CEDI · esquemas reales de EFLOW_OLO y WMH</span>
+          <span>v0.6 · pendiente: AS · POS · FR · AC · Capital Humano · handheld RF</span>
         </footer>
       </div>
     </main>

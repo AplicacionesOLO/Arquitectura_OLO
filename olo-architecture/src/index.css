@@ -1,2 +1,5 @@
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; }
+/* Mientras la presentación a pantalla completa está abierta, el chat flotante
+   no debe tapar la navegación del visor. */
+body.presentacion-abierta .bpabot-flotante { display: none !important; }

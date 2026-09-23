@@ -63,6 +63,7 @@ export function DetailPanel({ item, onClose }) {
       {item.vendor && <span><b style={{ color:"#888", fontWeight:500 }}>Vendor:</b> {item.vendor}</span>}
     </div>}
     {item.note && <div style={{ fontSize:12, color:"#666", lineHeight:1.6, padding:"10px 14px", background:"#fafafa", borderRadius:6, marginBottom:14, fontStyle:"italic" }}>{item.note}</div>}
+    {item.accion && <button onClick={item.accion.onClick} style={{ fontSize:13, fontWeight:700, color:"#fff", background:color, border:"none", borderRadius:7, padding:"8px 14px", cursor:"pointer", fontFamily:DESIGN.font, marginBottom:14 }}>{item.accion.label} →</button>}
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))", gap:10 }}>
       {item.coverage && item.coverage.length>0 && <DetailBox label="⬡ Módulos que lo soportan" accent="#f39c12"><div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>{item.coverage.map(c=><ModuleChip key={c} code={c} size="lg"/>)}</div></DetailBox>}
       {item.entities && item.entities.length>0 && <DetailBox label={`◫ Entidades inferidas · ${item.entities.length}`} accent="#7B1FA2"><div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>{item.entities.map(e=><span key={e} style={{ fontSize:10, color:"#555", background:"#f5f5f5", border:"1px solid #e0e0e0", padding:"2px 7px", borderRadius:3, fontFamily:DESIGN.font }}>{e}</span>)}</div></DetailBox>}

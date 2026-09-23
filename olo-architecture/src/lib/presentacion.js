@@ -54,7 +54,16 @@ export function slidesProceso(codigo) {
 export function slidesPantalla(s) {
   const base = { contexto: `${s.module} › ${s.option}` };
   const out = [];
-  if (s.img) out.push({ ...base, img: wmsImgUrl(s.img), titulo: s.title || s.option, texto: "Ventana principal de la opción.", donde: `${s.module} › ${s.option}`, screenId: s.id });
+  // Lo que se ve en la ventana, con los datos reales del crawl
+  const cols = s.tables.flatMap(t => t.columns.filter(c => !c.hidden).map(c => c.name));
+  const detalle = [
+    s.tabs.length && { k: "Pestañas", v: s.tabs.join(" · ") },
+    s.fields.length && { k: "Campos", v: s.fields.map(f => f.label).filter(Boolean).slice(0, 14).join(" · ") },
+    s.buttons.length && { k: "Acciones", v: s.buttons.map(b => b.name).join(" · ") },
+    cols.length && { k: "Columnas", v: cols.slice(0, 16).join(" · ") + (cols.length > 16 ? ` · +${cols.length - 16}` : "") },
+  ].filter(Boolean);
+  const resumen = [s.buttons.length && `${s.buttons.length} acciones`, cols.length && `${cols.length} columnas`, s.tabs.length > 1 && `${s.tabs.length} pestañas`].filter(Boolean).join(" · ");
+  if (s.img) out.push({ ...base, img: wmsImgUrl(s.img), titulo: s.title || s.option, texto: `Ventana «${s.title || s.option}» de ${s.module} › ${s.option}${resumen ? ` — ${resumen}` : ""}.`, donde: `${s.module} › ${s.option}`, screenId: s.id, detalle });
   for (const t of s.subtabs) if (t.img) out.push({ ...base, img: wmsImgUrl(t.img), titulo: `Pestaña «${t.name}»`, texto: `Se abre desde la pestaña «${t.name}» de la misma ventana.`, donde: `${s.option} › ${t.name}` });
   for (const n of s.nav) if (n.img && !s.subtabs.some(t => t.img === n.img)) out.push({ ...base, img: wmsImgUrl(n.img), titulo: n.toTitle, texto: `Se abre con: ${n.action}.`, donde: n.toTitle });
   return out;

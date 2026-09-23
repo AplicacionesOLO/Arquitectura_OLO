@@ -2,6 +2,7 @@
 // VISTA · INTEGRACIONES
 // ═══════════════════════════════════════════════════════════════════════════
 import { useState, useEffect } from "react";
+import { EFW_CONFIG_MOD } from "../data/efw_config.js";
 import { INTEGRATIONS, CAT_META, rowCategory, getModules,
          EFWBEVAL_MOD, EFWFEBECA_MOD, EFWSILLACA_MOD, EFWWMH_MOD,
          WMH_CR_MOD, EINTEGRA_VE_MOD, SFLBEVAL_MOD, SFLFEBECA_MOD, SFLSILLACA_MOD, SFLTREXA_MOD, SFLPRISMA_MOD,
@@ -23,6 +24,7 @@ const SCHEMA_TABLE_COUNTS = {
   softland_sillaca: () => SFLSILLACA_MOD.size,
   softland_trexa: () => SFLTREXA_MOD.size,
   softland_prisma: () => SFLPRISMA_MOD.size,
+  efw_config:  () => EFW_CONFIG_MOD.size,
 };
 // Mapa de arrays de integraciones por schema (no van al array global)
 const SCHEMA_ROWS = {
@@ -46,21 +48,39 @@ import { VeGlobalSummary } from "../schemas/VeGlobalSummary.jsx";
 import { SqlBackboneView } from "./SqlBackboneView.jsx";
 import { DESIGN } from "../data/constants.js";
 
+const POR_PAGINA = 50;
+
 function IntegTable({ rows }) {
+  const [pag, setPag] = useState(0);
   const thS={padding:"10px 14px",color:"#666",fontWeight:700,letterSpacing:"0.05em",fontSize:11,textTransform:"uppercase"};
   const tdS={padding:"10px 14px",verticalAlign:"top"};
   if (!rows.length) return <div style={{ padding:"24px", textAlign:"center", color:"#888", fontSize:13 }}>Sin resultados para los filtros seleccionados.</div>;
-  return <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
+  const paginas = Math.ceil(rows.length / POR_PAGINA);
+  const p = Math.min(pag, paginas - 1);
+  const vista = rows.slice(p * POR_PAGINA, (p + 1) * POR_PAGINA);
+  const nav = { fontSize:12, border:"1px solid #ddd", borderRadius:6, background:"#fff", padding:"4px 10px", cursor:"pointer", fontFamily:"inherit" };
+  return <>
+  <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12.5, tableLayout:"fixed" }}>
+    <colgroup><col style={{ width:130 }}/><col style={{ width:130 }}/><col/><col style={{ width:130 }}/></colgroup>
     <thead><tr style={{ background:"#fafafa", textAlign:"left" }}>
       <th style={thS}>Origen</th><th style={thS}>Destino</th><th style={thS}>Qué fluye</th><th style={{...thS,textAlign:"right"}}>Estado</th>
     </tr></thead>
-    <tbody>{rows.map((i,idx)=><tr key={idx} style={{ borderTop:"1px solid #f0f0f0" }}>
+    <tbody>{vista.map((i,idx)=><tr key={p * POR_PAGINA + idx} style={{ borderTop:"1px solid #f0f0f0" }}>
       <td style={tdS}><ModuleChip code={i.from}/></td>
       <td style={tdS}><ModuleChip code={i.to}/></td>
       <td style={{...tdS,color:"#444",lineHeight:1.5}}>{i.what}</td>
       <td style={{...tdS,textAlign:"right"}}><StatusBadge status={i.status}/></td>
     </tr>)}</tbody>
-  </table>;
+  </table>
+  {paginas > 1 && <div style={{ display:"flex", alignItems:"center", gap:8, justifyContent:"flex-end", padding:"10px 14px", borderTop:"1px solid #f0f0f0", fontSize:12, color:"#666" }}>
+    <span>{p * POR_PAGINA + 1}–{Math.min((p + 1) * POR_PAGINA, rows.length)} de {rows.length}</span>
+    <button onClick={()=>setPag(0)} disabled={p===0} style={{ ...nav, opacity:p===0?0.4:1 }}>«</button>
+    <button onClick={()=>setPag(p - 1)} disabled={p===0} style={{ ...nav, opacity:p===0?0.4:1 }}>‹ Anterior</button>
+    <span>Página {p + 1} de {paginas}</span>
+    <button onClick={()=>setPag(p + 1)} disabled={p>=paginas-1} style={{ ...nav, opacity:p>=paginas-1?0.4:1 }}>Siguiente ›</button>
+    <button onClick={()=>setPag(paginas - 1)} disabled={p>=paginas-1} style={{ ...nav, opacity:p>=paginas-1?0.4:1 }}>»</button>
+  </div>}
+  </>;
 }
 
 // Categorías que forman el grupo Venezuela, organizadas por capa:
@@ -153,7 +173,7 @@ export function IntegrationsView({ searchQuery="", focus=null }) {
           return <button key={key} onClick={()=>handleCat(key)} style={{ display:"flex", alignItems:"center", gap:7, width:"100%", padding:"8px 14px 8px 24px", border:"none", borderLeft:isA?`3px solid ${m.color}`:"3px solid transparent", borderBottom:"1px solid #f5f5f5", background:isA?m.bg:"transparent", cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s", textAlign:"left" }}>
             <span style={{ fontSize:12, lineHeight:1 }}>{m.icon}</span>
             <div style={{ flex:1, minWidth:0 }}>
-              <div style={{ fontSize:10.5, fontWeight:isA?700:500, color:isA?m.color:"#555", lineHeight:1.35 }}>{key==="global"?"Global · Todos":m.label.split("·")[0].trim()}</div>
+              <div style={{ fontSize:10.5, fontWeight:isA?700:500, color:isA?m.color:"#555", lineHeight:1.35 }}>{key==="global"?"Global · Todos":key==="efw_config"?"EFW · Configuración":m.label.split("·")[0].trim()}</div>
               {isA && key!=="global" && <div style={{ fontSize:9, color:m.color+"99", marginTop:1, lineHeight:1.3 }}>{m.label.split("·").slice(1).join("·").trim()}</div>}
             </div>
             <span style={{ fontSize:9.5, fontWeight:700, color:isA?m.color:"#999", background:isA?m.color+"15":"#f0f0f0", padding:"1px 5px", borderRadius:8, flexShrink:0, minWidth:22, textAlign:"center" }}>{count}</span>
@@ -263,7 +283,7 @@ export function IntegrationsView({ searchQuery="", focus=null }) {
     cat==="ve_cross" ? <CrossSchemaView/> :
 
     /* Schema ER views (sro / sco / efw / wmh_cr / ve schemas) */
-    (cat==="sro"||cat==="sco"||cat==="efw"||cat==="wmh_cr"||cat==="efwbeval"||cat==="efwfebeca"||cat==="efwsillaca"||cat==="efwwmh"||cat==="eintegra_ve"||cat==="softland_beval"||cat==="softland_febeca"||cat==="softland_sillaca"||cat==="softland_trexa"||cat==="softland_prisma")
+    (cat==="sro"||cat==="sco"||cat==="efw"||cat==="efw_config"||cat==="wmh_cr"||cat==="efwbeval"||cat==="efwfebeca"||cat==="efwsillaca"||cat==="efwwmh"||cat==="eintegra_ve"||cat==="softland_beval"||cat==="softland_febeca"||cat==="softland_sillaca"||cat==="softland_trexa"||cat==="softland_prisma")
       ? <ERSchemaView schema={cat} searchQuery={searchQuery} overrideRows={SCHEMA_ROWS[cat]||null} focusTable={focus?.cat===cat ? focus.table : null}/> : <>
 
     {cat!=="global" && <div style={{ background:CAT_META[cat].bg, border:`1px solid ${CAT_META[cat].border}`, borderLeft:`3px solid ${CAT_META[cat].color}`, borderRadius:8, padding:"10px 14px", marginBottom:14, fontSize:12, color:"#555", lineHeight:1.5 }}>
@@ -321,7 +341,7 @@ export function IntegrationsView({ searchQuery="", focus=null }) {
     </div>
 
     {viewMode==="table"
-      ? <div style={{ background:"#ffffff", border:"1px solid #e0e0e0", borderRadius:10, overflow:"hidden", overflowX:"auto" }}><IntegTable rows={filtered}/></div>
+      ? <div style={{ background:"#ffffff", border:"1px solid #e0e0e0", borderRadius:10, overflow:"hidden" }}><IntegTable key={`${cat}|${fFrom}|${fTo}|${fStatus}|${fWhat}`} rows={filtered}/></div>
       : <ERDiagram rows={filtered}/>
     }
     </>}

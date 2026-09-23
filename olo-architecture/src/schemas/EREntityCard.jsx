@@ -5,6 +5,15 @@ import { RELATION_META } from "../data/sro.js";
 import { KeyIcon, LinkIcon } from "../components/icons.jsx";
 import { DESIGN } from "../data/constants.js";
 
+// Oscurece un color #rrggbb para texto legible sobre fondos claros
+function oscurecer(hex, f = 0.45) {
+  const m = /^#([0-9a-f]{6})/i.exec(hex || "");
+  if (!m) return hex;
+  const n = parseInt(m[1], 16);
+  const c = (v) => Math.round(v * (1 - f)).toString(16).padStart(2, "0");
+  return `#${c((n >> 16) & 255)}${c((n >> 8) & 255)}${c(n & 255)}`;
+}
+
 export function EREntityCard({ table, def, color, fkIn, fkOut, relation, connRows, onClick }) {
   const fkCols   = (def?.cols || []).filter(c => c.includes('→'));
   const dataCols = (def?.cols || []).filter(c => !c.includes('→'));
@@ -19,7 +28,7 @@ export function EREntityCard({ table, def, color, fkIn, fkOut, relation, connRow
         </div>
       )}
       <div style={{ background:relation==="selected"?color:rm.border?rm.border+"18":color+"18", padding:"5px 10px", borderRadius:"5px 5px 0 0", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-        <span style={{ fontWeight:700, color:relation==="selected"?"#fff":topColor, fontFamily:DESIGN.font, letterSpacing:"0.03em", fontSize:11 }}>{table}</span>
+        <span style={{ fontWeight:700, color:relation==="selected"?"#fff":oscurecer(topColor), fontFamily:DESIGN.font, letterSpacing:"0.03em", fontSize:11.5 }}>{table}</span>
         <div style={{ display:"flex", gap:4 }}>
           {fkOut>0 && <span style={{ fontSize:9, background:"rgba(255,255,255,0.35)", color:relation==="selected"?"#fff":color, padding:"1px 5px", borderRadius:3, fontWeight:700 }}>→{fkOut}</span>}
           {fkIn>0  && <span style={{ fontSize:9, background:"rgba(100,100,100,0.12)", color:"#666", padding:"1px 5px", borderRadius:3, fontWeight:700 }}>←{fkIn}</span>}

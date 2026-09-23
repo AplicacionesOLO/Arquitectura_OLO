@@ -70,12 +70,12 @@ export function BpaBotWidget() {
 
   return <>
     {/* Botón flotante */}
-    <button onClick={()=>setOpen(o=>!o)} title="BPA-BOT"
+    <button className="bpabot-flotante" onClick={()=>setOpen(o=>!o)} title="BPA-BOT" aria-label="Abrir el asistente BPA-BOT"
       style={{
-        position:"fixed", right:24, bottom:24, zIndex:60,
-        width:52, height:52, borderRadius:"50%", border:"none", cursor:"pointer",
+        position:"fixed", right:18, bottom:18, zIndex:60,
+        width:44, height:44, borderRadius:"50%", border:"none", cursor:"pointer",
         background: open ? "#1D1D1B" : "#0f172a", color:"#fff",
-        fontSize:20, boxShadow:"0 6px 20px rgba(0,0,0,0.25)",
+        fontSize:18, boxShadow:"0 6px 20px rgba(0,0,0,0.25)",
         display:"flex", alignItems:"center", justifyContent:"center",
         transition:"background 0.15s",
       }}>
@@ -83,8 +83,8 @@ export function BpaBotWidget() {
     </button>
 
     {/* Panel de chat */}
-    {open && <div style={{
-      position:"fixed", right:24, bottom:86, zIndex:59,
+    {open && <div className="bpabot-flotante" style={{
+      position:"fixed", right:18, bottom:72, zIndex:59,
       width:360, maxWidth:"calc(100vw - 48px)", height:480, maxHeight:"calc(100vh - 140px)",
       background:"#fff", borderRadius:14, border:"1px solid #e0e0e0", boxShadow:"0 12px 40px rgba(15,23,42,0.22)",
       display:"flex", flexDirection:"column", overflow:"hidden",

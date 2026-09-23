@@ -7,7 +7,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 import { DESIGN, DESIGN_STATUS } from "../data/constants.js";
-import { PROCESOS } from "../data/procesos_fichas.js";
+import { PROCESOS, SILO_LABELS } from "../data/procesos_fichas.js";
 import { DrawioFlowchart } from "../schemas/DrawioFlowchart.jsx";
 import { WMS_INDEX, PASO_PANTALLA, PANTALLA_PROCESOS } from "../data/wms_links.js";
 import { Presentacion } from "./Presentacion.jsx";
@@ -146,7 +146,9 @@ function Resumen({ p, onOpen, onSearch, onNavigate }) {
     {p.relacionados.length > 0 && <>
       <L>Relacionado en el modelo de referencia</L>
       <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
-        {p.relacionados.map(r => <Chip key={r.nombre} onClick={()=>onSearch(r.nombre)} title="Buscar en el árbol de Procesos">{r.nombre} ↗</Chip>)}
+        {p.relacionados.map(r => <Chip key={r.silo + r.nombre} onClick={()=>onSearch(r.nombre)} title="Buscar en el árbol de Procesos">
+          {SILO_LABELS[r.silo] && <span style={{ color:DESIGN.mutedSoft }}>{SILO_LABELS[r.silo]} › </span>}{r.nombre} ↗
+        </Chip>)}
       </div>
     </>}
 

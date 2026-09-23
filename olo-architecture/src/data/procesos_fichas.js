@@ -22,6 +22,15 @@ function normalizarBorrador(p) {
   };
 }
 
+// Etiqueta de cada silo de referencia (para mostrar a qué silo apunta un "relacionado")
+export const SILO_LABELS = {
+  log_planificacion: "P1.1 · Planificación logística", log_almacenaje: "P1.2 · Almacenaje", log_preparacion: "P1.3 · Preparación de pedidos",
+  log_transporte: "P1.4 · Transporte", log_inventario: "P1.5 · Inventario físico", log_servicio_cliente: "P1.6 · Servicio logístico",
+  log_desempeno: "P1.8 · Desempeño logístico", neg_facturacion: "P1.12 · Facturación", neg_almacenamiento: "P1.13 · Almacenamiento ZF-nacional",
+  neg_transporte_local: "P1.18 · Transporte local", neg_seguimiento_operacion: "P1.19 · Seguimiento de la operación",
+  neg_valor_agregado: "P1.21 · Valor agregado", cross_docking: "Cross Docking",
+};
+
 export const PROCESOS = {
   ...PROCESOS_CEDI,
   ...Object.fromEntries(Object.entries(PROCESOS_SILOS).map(([c, p]) => [c, normalizarBorrador(p)])),

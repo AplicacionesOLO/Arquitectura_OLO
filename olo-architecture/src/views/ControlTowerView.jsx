@@ -42,12 +42,12 @@ export function ControlTowerView({ focus }) {
 
   return <div style={{ display:"flex", gap:20, alignItems:"flex-start" }}>
     <nav style={{ width:215, minWidth:215, background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:10, overflow:"hidden", flexShrink:0, position:"sticky", top:20 }}>
-      <div style={{ padding:"10px 14px", borderBottom:`1px solid ${DESIGN.sunken2}`, background:DESIGN.sunken, fontSize:10, fontWeight:700, color:DESIGN.muted, letterSpacing:"0.08em", textTransform:"uppercase" }}>Torre de Control · WMH</div>
+      <div style={{ padding:"10px 14px", borderBottom:`1px solid ${DESIGN.sunken2}`, background:DESIGN.sunken, fontSize:12, fontWeight:700, color:DESIGN.muted, letterSpacing:"0.08em", textTransform:"uppercase" }}>Torre de Control · WMH</div>
       {SECTIONS.map(s => {
         const isA = section === s.id;
         return <button key={s.id} onClick={()=>setSection(s.id)} style={{ display:"block", width:"100%", padding:"9px 14px", border:"none", borderLeft:`3px solid ${isA?ACCENT:"transparent"}`, borderBottom:`1px solid ${DESIGN.sunken}`, background:isA?ACCENT+"12":"transparent", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
-          <div style={{ fontSize:11.5, fontWeight:isA?700:500, color:isA?DESIGN.ink:DESIGN.inkSoft }}>{s.label}</div>
-          <div style={{ fontSize:9.5, color:DESIGN.mutedSoft, marginTop:1 }}>{s.sub}</div>
+          <div style={{ fontSize:13.5, fontWeight:isA?700:500, color:isA?DESIGN.ink:DESIGN.inkSoft }}>{s.label}</div>
+          <div style={{ fontSize:11.5, color:DESIGN.mutedSoft, marginTop:1 }}>{s.sub}</div>
         </button>;
       })}
     </nav>
@@ -69,25 +69,25 @@ export function ControlTowerView({ focus }) {
 // ── Piezas comunes ─────────────────────────────────────────────────────────
 function H({ children, sub }) {
   return <div style={{ margin:"0 0 12px" }}>
-    <h3 style={{ fontSize:16, fontWeight:700, color:DESIGN.ink, margin:0 }}>{children}</h3>
-    {sub && <div style={{ fontSize:12, color:DESIGN.muted, marginTop:3 }}>{sub}</div>}
+    <h3 style={{ fontSize:17, fontWeight:700, color:DESIGN.ink, margin:0 }}>{children}</h3>
+    {sub && <div style={{ fontSize:14, color:DESIGN.muted, marginTop:3 }}>{sub}</div>}
   </div>;
 }
 function Card({ children, style }) {
   return <div style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:10, padding:"14px 16px", marginBottom:16, ...style }}>{children}</div>;
 }
 function Label({ children }) {
-  return <div style={{ fontSize:10.5, fontWeight:700, color:DESIGN.muted, letterSpacing:"0.06em", textTransform:"uppercase", marginBottom:8 }}>{children}</div>;
+  return <div style={{ fontSize:12.5, fontWeight:700, color:DESIGN.muted, letterSpacing:"0.06em", textTransform:"uppercase", marginBottom:8 }}>{children}</div>;
 }
 function Note({ children, critical }) {
   const st = critical ? DESIGN_STATUS.critical : DESIGN_STATUS.warning;
-  return <div style={{ background:st.bg, border:`1px solid ${st.border}`, color:st.color, borderRadius:8, padding:"8px 12px", fontSize:12, lineHeight:1.55, marginTop:10 }}>► {children}</div>;
+  return <div style={{ background:st.bg, border:`1px solid ${st.border}`, color:st.color, borderRadius:8, padding:"8px 12px", fontSize:14, lineHeight:1.55, marginTop:10 }}>► {children}</div>;
 }
 function Table({ cols, rows, mono }) {
-  const th = { padding:"8px 12px", color:DESIGN.muted, fontWeight:700, fontSize:10.5, textTransform:"uppercase", letterSpacing:"0.04em", textAlign:"left", whiteSpace:"nowrap", background:DESIGN.sunken, borderBottom:`1px solid ${DESIGN.border}` };
+  const th = { padding:"8px 12px", color:DESIGN.muted, fontWeight:700, fontSize:12.5, textTransform:"uppercase", letterSpacing:"0.04em", textAlign:"left", whiteSpace:"nowrap", background:DESIGN.sunken, borderBottom:`1px solid ${DESIGN.border}` };
   const td = { padding:"8px 12px", verticalAlign:"top", borderTop:`1px solid ${DESIGN.sunken2}`, color:DESIGN.ink };
   return <div style={{ overflowX:"auto", border:`1px solid ${DESIGN.border}`, borderRadius:8 }}>
-    <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
+    <table style={{ width:"100%", borderCollapse:"collapse", fontSize:14 }}>
       <thead><tr>{cols.map(c => <th key={c} style={th}>{c}</th>)}</tr></thead>
       <tbody>{rows.map((r,i) => <tr key={i}>{r.map((v,j) =>
         <td key={j} style={{ ...td, fontFamily:mono?"'Courier New', monospace":undefined, whiteSpace:mono?"nowrap":undefined }}>
@@ -98,7 +98,7 @@ function Table({ cols, rows, mono }) {
 }
 function SysChip({ sys }) {
   const s = SYS[sys];
-  return <span style={{ fontSize:10, fontWeight:700, color:s.color, background:s.color+"14", border:`1px solid ${s.color}40`, padding:"2px 8px", borderRadius:DESIGN.radiusPill, whiteSpace:"nowrap" }}>{s.label}</span>;
+  return <span style={{ fontSize:12, fontWeight:700, color:s.color, background:s.color+"14", border:`1px solid ${s.color}40`, padding:"2px 8px", borderRadius:DESIGN.radiusPill, whiteSpace:"nowrap" }}>{s.label}</span>;
 }
 
 // ── Secciones ──────────────────────────────────────────────────────────────
@@ -107,10 +107,10 @@ function Resumen() {
   return <>
     <H sub="Mapeo funcional + datos reales extraídos en vivo de la aplicación">{CT_META.nombre}</H>
     <Card>
-      <p style={{ fontSize:13, color:DESIGN.inkSoft, lineHeight:1.65, margin:"0 0 14px" }}>{CT_RESUMEN}</p>
+      <p style={{ fontSize:14.5, color:DESIGN.inkSoft, lineHeight:1.65, margin:"0 0 14px" }}>{CT_RESUMEN}</p>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))", gap:"8px 16px" }}>
-        {meta.map(([k,v]) => <div key={k} style={{ fontSize:12 }}>
-          <div style={{ color:DESIGN.muted, fontSize:10.5 }}>{k}</div>
+        {meta.map(([k,v]) => <div key={k} style={{ fontSize:14 }}>
+          <div style={{ color:DESIGN.muted, fontSize:12.5 }}>{k}</div>
           <div style={{ color:DESIGN.ink, fontWeight:600, wordBreak:"break-word" }}>{v}</div>
         </div>)}
       </div>
@@ -121,8 +121,8 @@ function Resumen() {
     <Card>
       <Label>Flujo operativo principal (lo que el OMS debe automatizar)</Label>
       <ol style={{ margin:0, paddingLeft:0, listStyle:"none", display:"grid", gap:8 }}>
-        {CT_FLUJO.map((f,i) => <li key={i} style={{ display:"flex", gap:10, alignItems:"flex-start", fontSize:12.5, color:DESIGN.ink, lineHeight:1.5 }}>
-          <span style={{ width:22, height:22, borderRadius:"50%", background:ACCENT, color:"#fff", fontSize:11, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{i+1}</span>
+        {CT_FLUJO.map((f,i) => <li key={i} style={{ display:"flex", gap:10, alignItems:"flex-start", fontSize:14, color:DESIGN.ink, lineHeight:1.5 }}>
+          <span style={{ width:22, height:22, borderRadius:"50%", background:ACCENT, color:"#fff", fontSize:13, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{i+1}</span>
           <span>{f}</span>
         </li>)}
       </ol>
@@ -137,7 +137,7 @@ function Diagrama() {
       <a href={flujoPng} target="_blank" rel="noreferrer" title="Abrir en tamaño completo">
         <img src={flujoPng} alt="Flujo operativo de Control Tower: datos maestros, ingreso de órdenes, motor de planificación, validación de capacidad, viaje activo y cierre" style={{ maxWidth:"100%", maxHeight:"none", width:760, borderRadius:6 }}/>
       </a>
-      <div style={{ fontSize:11, color:DESIGN.muted, marginTop:6 }}>Clic en la imagen para verla en tamaño completo.</div>
+      <div style={{ fontSize:13, color:DESIGN.muted, marginTop:6 }}>Clic en la imagen para verla en tamaño completo.</div>
     </Card>
   </>;
 }
@@ -149,7 +149,7 @@ function Pantallas() {
       <Table cols={["Sección","Módulo","URL","Qué hace"]} rows={CT_NAV.map(n => [
         n.seccion,
         <b key="m" style={{ color:n.key?"#16a34a":DESIGN.ink }}>{n.modulo}</b>,
-        <code key="u" style={{ fontSize:11, color:DESIGN.inkSoft }}>{n.url}</code>,
+        <code key="u" style={{ fontSize:13, color:DESIGN.inkSoft }}>{n.url}</code>,
         n.desc,
       ])}/>
     </Card>
@@ -166,7 +166,7 @@ function Pantallas() {
     </div>
     <Card style={{ marginTop:16 }}>
       <Label>Componentes globales de la interfaz</Label>
-      <ul style={{ margin:0, paddingLeft:18, fontSize:12.5, color:DESIGN.inkSoft, lineHeight:1.7 }}>
+      <ul style={{ margin:0, paddingLeft:18, fontSize:14, color:DESIGN.inkSoft, lineHeight:1.7 }}>
         {CT_UI_GLOBAL.map((t,i) => <li key={i}>{t}</li>)}
       </ul>
     </Card>
@@ -181,15 +181,15 @@ function Datos() {
     <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
       {CT_DATOS.map(x => {
         const isA = x.id === mod;
-        return <button key={x.id} onClick={()=>setMod(x.id)} style={{ padding:"5px 12px", borderRadius:DESIGN.radiusPill, border:`1px solid ${isA?DESIGN.ink:DESIGN.border}`, background:isA?DESIGN.ink:"#fff", color:isA?"#fff":DESIGN.inkSoft, fontSize:12, cursor:"pointer", fontFamily:DESIGN.font, whiteSpace:"nowrap" }}>
+        return <button key={x.id} onClick={()=>setMod(x.id)} style={{ padding:"5px 12px", borderRadius:DESIGN.radiusPill, border:`1px solid ${isA?DESIGN.ink:DESIGN.border}`, background:isA?DESIGN.ink:"#fff", color:isA?"#fff":DESIGN.inkSoft, fontSize:14, cursor:"pointer", fontFamily:DESIGN.font, whiteSpace:"nowrap" }}>
           {x.critico && "⚠ "}{x.label}
         </button>;
       })}
     </div>
     <Card>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", gap:10, flexWrap:"wrap", marginBottom:10 }}>
-        <span style={{ fontSize:14, fontWeight:700, color:DESIGN.ink }}>{d.label}</span>
-        <span style={{ fontSize:11.5, color:DESIGN.muted }}><code>{d.url}</code> · Total en la app: <b style={{ color:DESIGN.ink }}>{d.total}</b> · muestra: {d.rows.length}</span>
+        <span style={{ fontSize:15.5, fontWeight:700, color:DESIGN.ink }}>{d.label}</span>
+        <span style={{ fontSize:13.5, color:DESIGN.muted }}><code>{d.url}</code> · Total en la app: <b style={{ color:DESIGN.ink }}>{d.total}</b> · muestra: {d.rows.length}</span>
       </div>
       <Table cols={d.cols} rows={d.rows} mono/>
       {d.nota && <Note critical={d.critico}>{d.nota}</Note>}
@@ -201,7 +201,7 @@ function Modelo() {
   return <>
     <H sub="Relaciones deducidas de las columnas visibles — no es el modelo físico de la BD">Modelo de datos inferido</H>
     <Card>
-      <pre style={{ margin:0, fontSize:12, lineHeight:1.8, fontFamily:"'Courier New', monospace", color:DESIGN.ink, whiteSpace:"pre-wrap" }}>{CT_MODELO.join("\n")}</pre>
+      <pre style={{ margin:0, fontSize:14, lineHeight:1.8, fontFamily:"'Courier New', monospace", color:DESIGN.ink, whiteSpace:"pre-wrap" }}>{CT_MODELO.join("\n")}</pre>
     </Card>
     <Card style={{ padding:0, overflow:"hidden" }}>
       <div style={{ padding:"12px 16px 0" }}><Label>Observaciones de formato (para el diseño de datos)</Label></div>
@@ -216,9 +216,9 @@ function Cofersa() {
   return <>
     <H sub={`eFlow WMS + Torre de Control · ${COFERSA_META.procedimiento} · preparado por ${COFERSA_META.autora}, ${COFERSA_META.fecha}`}>{COFERSA_META.titulo}</H>
     <Card>
-      <p style={{ fontSize:13, color:DESIGN.inkSoft, lineHeight:1.65, margin:"0 0 10px" }}>{COFERSA_RESUMEN}</p>
+      <p style={{ fontSize:14.5, color:DESIGN.inkSoft, lineHeight:1.65, margin:"0 0 10px" }}>{COFERSA_RESUMEN}</p>
       <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
-        {COFERSA_META.apps.map(a => <span key={a} style={{ fontSize:11, color:DESIGN.inkSoft, background:DESIGN.sunken2, padding:"3px 10px", borderRadius:6 }}>{a}</span>)}
+        {COFERSA_META.apps.map(a => <span key={a} style={{ fontSize:13, color:DESIGN.inkSoft, background:DESIGN.sunken2, padding:"3px 10px", borderRadius:6 }}>{a}</span>)}
       </div>
       <Note>{COFERSA_META.alcance}</Note>
     </Card>
@@ -229,7 +229,7 @@ function Cofersa() {
         <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
           {[["*","Todos"], ...Object.entries(SYS).map(([k,v]) => [k, v.label])].map(([k,l]) => {
             const isA = sysF === k;
-            return <button key={k} onClick={()=>setSysF(k)} style={{ padding:"3px 10px", borderRadius:DESIGN.radiusPill, border:`1px solid ${isA?DESIGN.ink:DESIGN.border}`, background:isA?DESIGN.ink:"#fff", color:isA?"#fff":DESIGN.inkSoft, fontSize:11, cursor:"pointer", fontFamily:DESIGN.font }}>{l}</button>;
+            return <button key={k} onClick={()=>setSysF(k)} style={{ padding:"3px 10px", borderRadius:DESIGN.radiusPill, border:`1px solid ${isA?DESIGN.ink:DESIGN.border}`, background:isA?DESIGN.ink:"#fff", color:isA?"#fff":DESIGN.inkSoft, fontSize:13, cursor:"pointer", fontFamily:DESIGN.font }}>{l}</button>;
           })}
         </div>
       </div>
@@ -258,7 +258,7 @@ function Cofersa() {
     </Card>
     <Card style={{ background:DESIGN_STATUS.warning.bg, borderColor:DESIGN_STATUS.warning.border }}>
       <Label>Pendiente por identificar en el mapeo</Label>
-      <ul style={{ margin:0, paddingLeft:18, fontSize:12.5, color:DESIGN_STATUS.warning.color, lineHeight:1.7 }}>
+      <ul style={{ margin:0, paddingLeft:18, fontSize:14, color:DESIGN_STATUS.warning.color, lineHeight:1.7 }}>
         {COFERSA_PENDIENTES.map((t,i) => <li key={i}>{t}</li>)}
       </ul>
     </Card>
@@ -270,8 +270,8 @@ function Recomendaciones() {
     <H sub="Especificación para construir el OMS/TMS de reemplazo">Recomendaciones para el OMS/TMS</H>
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:12 }}>
       {CT_RECOMENDACIONES.map(([t,d],i) => <div key={i} style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderLeft:`3px solid ${ACCENT}`, borderRadius:8, padding:"12px 14px" }}>
-        <div style={{ fontSize:13, fontWeight:700, color:DESIGN.ink, marginBottom:4 }}>{i+1}. {t}</div>
-        <div style={{ fontSize:12, color:DESIGN.inkSoft, lineHeight:1.55 }}>{d}</div>
+        <div style={{ fontSize:14.5, fontWeight:700, color:DESIGN.ink, marginBottom:4 }}>{i+1}. {t}</div>
+        <div style={{ fontSize:14, color:DESIGN.inkSoft, lineHeight:1.55 }}>{d}</div>
       </div>)}
     </div>
   </>;
@@ -282,20 +282,20 @@ function Documentos() {
     <H sub="Documentos originales del levantamiento">Documentos</H>
     <div style={{ display:"grid", gap:10 }}>
       {CT_DOCUMENTOS.map(d => <a key={d.file} href={`${import.meta.env.BASE_URL}${d.file}`} download style={{ display:"flex", alignItems:"center", gap:14, background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:8, padding:"12px 16px", textDecoration:"none" }}>
-        <span style={{ fontSize:10, fontWeight:700, color:"#fff", background:"#2b579a", borderRadius:4, padding:"4px 7px" }}>{d.tipo}</span>
+        <span style={{ fontSize:12, fontWeight:700, color:"#fff", background:"#2b579a", borderRadius:4, padding:"4px 7px" }}>{d.tipo}</span>
         <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontSize:13, fontWeight:700, color:DESIGN.ink }}>{d.titulo}</div>
-          <div style={{ fontSize:12, color:DESIGN.muted }}>{d.desc}</div>
+          <div style={{ fontSize:14.5, fontWeight:700, color:DESIGN.ink }}>{d.titulo}</div>
+          <div style={{ fontSize:14, color:DESIGN.muted }}>{d.desc}</div>
         </div>
-        <span style={{ fontSize:12, color:DESIGN.inkSoft, fontWeight:600 }}>Descargar ↓</span>
+        <span style={{ fontSize:14, color:DESIGN.inkSoft, fontWeight:600 }}>Descargar ↓</span>
       </a>)}
       <a href={flujoPng} download="Diagrama de Flujo — Control Tower.png" style={{ display:"flex", alignItems:"center", gap:14, background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:8, padding:"12px 16px", textDecoration:"none" }}>
-        <span style={{ fontSize:10, fontWeight:700, color:"#fff", background:"#64748b", borderRadius:4, padding:"4px 7px" }}>PNG</span>
+        <span style={{ fontSize:12, fontWeight:700, color:"#fff", background:"#64748b", borderRadius:4, padding:"4px 7px" }}>PNG</span>
         <div style={{ flex:1 }}>
-          <div style={{ fontSize:13, fontWeight:700, color:DESIGN.ink }}>Diagrama de Flujo — Control Tower</div>
-          <div style={{ fontSize:12, color:DESIGN.muted }}>Flujo operativo del TMS con datos reales.</div>
+          <div style={{ fontSize:14.5, fontWeight:700, color:DESIGN.ink }}>Diagrama de Flujo — Control Tower</div>
+          <div style={{ fontSize:14, color:DESIGN.muted }}>Flujo operativo del TMS con datos reales.</div>
         </div>
-        <span style={{ fontSize:12, color:DESIGN.inkSoft, fontWeight:600 }}>Descargar ↓</span>
+        <span style={{ fontSize:14, color:DESIGN.inkSoft, fontWeight:600 }}>Descargar ↓</span>
       </a>
     </div>
     <Note>El Documento Maestro y el de Datos Reales por Columna no se publican para descarga porque incluyen el valor de la regla ADMPASS (una contraseña). Su contenido está integrado en estas pantallas, sin ese valor.</Note>

@@ -17,7 +17,6 @@ import { PdfViewer } from "../components/PdfViewer.jsx";
 import { DESIGN } from "../data/constants.js";
 import { SearchIcon, EyeIcon } from "../components/icons.jsx";
 import { ProcesoFicha } from "../components/ProcesoFicha.jsx";
-import { PROCESOS_CEDI, PROCESOS_CEDI_ORDEN } from "../data/procesos_cedi.js";
 import { PROCESOS } from "../data/procesos_fichas.js";
 
 // Ficha lateral de los procesos CEDI (P1–P14): cualquier ProcesoRow con
@@ -31,9 +30,6 @@ function buildTree(nodes, filesByNode, parentId) {
     .filter(n => n.parent_id === parentId)
     .sort((a, b) => a.sort_order - b.sort_order)
     .map(n => ({ ...n, files: filesByNode[n.id] || [], children: buildTree(nodes, filesByNode, n.id) }));
-}
-function countAll(nodes) {
-  return nodes.reduce((s, n) => s + 1 + countAll(n.children || []), 0);
 }
 function countFiles(nodes) {
   return nodes.reduce((s, n) => s + (n.files?.length || 0) + countFiles(n.children || []), 0);
@@ -231,7 +227,7 @@ export function ProcesosOperativosView({ onNavigate = () => {}, focusCodigo = nu
   const [search, setSearch] = useState("");
   const [showAudit, setShowAudit] = useState(false);
   const [err, setErr] = useState(null);
-  const initedCollapse = useRef(false);
+  const vistos = useRef(new Set()); // ids ya cargados (para colapsar solo los nuevos)
 
   const toggle = (id) => setCollapsed(prev => {
     const next = new Set(prev);
@@ -253,12 +249,12 @@ export function ProcesosOperativosView({ onNavigate = () => {}, focusCodigo = nu
       tree: buildTree((nodes || []).filter(n => n.categoria_id === cat.id), filesByNode, null),
     }));
     setCategorias(withTree);
-    // Primera carga: todos los procesos inician colapsados. Recargas
-    // posteriores (agregar/editar) no deben reabrir lo que el usuario cerró.
-    if (!initedCollapse.current) {
-      initedCollapse.current = true;
-      setCollapsed(new Set(withTree.map(c => c.id)));
-    }
+    const ids = withTree.flatMap(c => [c.id, ...allIds(c.tree)]);
+    const nuevos = ids.filter(id => !vistos.current.has(id));
+    nuevos.forEach(id => vistos.current.add(id));
+    // Primera carga: todo colapsado. Recargas: solo los nodos nuevos quedan
+    // colapsados; lo que el usuario abrió o cerró se respeta.
+    if (nuevos.length) setCollapsed(prev => { const next = new Set(prev); nuevos.forEach(id => next.add(id)); return next; });
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -346,30 +342,38 @@ export function ProcesosOperativosView({ onNavigate = () => {}, focusCodigo = nu
   </FichaContext.Provider>;
 }
 
-// Cadena de los 14 procedimientos del CEDI en orden de flujo físico — acceso
-// directo a cada ficha, aunque el proceso esté colapsado en el árbol.
+// Los procedimientos del CEDI agrupados por la etapa física de la operación
+// (no por silo): se lee de izquierda a derecha como recorre la mercancía.
+const ETAPAS_CEDI = [
+  ["Almacenaje", ["P11", "P12", "P13"]],
+  ["Alistamiento", ["P1", "P2", "P5"]],
+  ["Chequeo", ["P6"]],
+  ["Facturación", ["P7"]],
+  ["Despacho", ["P8", "P10", "P4"]],
+  ["Transporte", ["P9"]],
+  ["Devoluciones", ["P14"]],
+  ["Cross docking", ["P3", "XDK-01", "XDK-02"]],
+];
+
 function FlujoCedi({ active, onOpen }) {
-  const grupos = [...new Set(PROCESOS_CEDI_ORDEN.map(c => PROCESOS_CEDI[c].silo))]
-    .map(silo => [PROCESOS_CEDI[PROCESOS_CEDI_ORDEN.find(c => PROCESOS_CEDI[c].silo === silo)].siloLabel, silo]);
-  return <div style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:10, padding:"10px 14px" }}>
-    <div style={{ fontSize:11, fontWeight:700, color:DESIGN.muted, marginBottom:8 }}>Procedimientos operativos CEDI · flujo físico</div>
-    <div style={{ display:"flex", gap:14, flexWrap:"wrap" }}>
-      {grupos.map(([label, silo]) => {
-        const codes = PROCESOS_CEDI_ORDEN.filter(c => PROCESOS_CEDI[c].silo === silo);
-        return <div key={silo} style={{ display:"flex", alignItems:"center", gap:4, flexWrap:"wrap" }}>
-          <span style={{ fontSize:10.5, color:DESIGN.mutedSoft, marginRight:2 }}>{label}</span>
-          {codes.map((c, i) => {
+  return <div style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:10, padding:"12px 14px" }}>
+    <div style={{ fontSize:12.5, fontWeight:700, color:DESIGN.ink, marginBottom:2 }}>Procedimientos operativos del CEDI</div>
+    <div style={{ fontSize:12, color:DESIGN.muted, marginBottom:10 }}>Agrupados por etapa, en el orden en que recorre la mercancía. Clic para abrir la ficha.</div>
+    <div style={{ display:"flex", gap:6, alignItems:"stretch", flexWrap:"wrap" }}>
+      {ETAPAS_CEDI.map(([etapa, codes], k) => <div key={etapa} style={{ display:"flex", alignItems:"stretch", gap:6 }}>
+        {k > 0 && k < ETAPAS_CEDI.length - 1 && <span style={{ alignSelf:"center", color:DESIGN.mutedSoft, fontSize:14 }}>→</span>}
+        {k === ETAPAS_CEDI.length - 1 && <span style={{ width:1, background:DESIGN.border, margin:"0 6px" }}/>}
+        <div style={{ background:DESIGN.sunken, border:`1px solid ${DESIGN.border}`, borderRadius:8, padding:"6px 8px", display:"flex", flexDirection:"column", gap:4 }}>
+          <span style={{ fontSize:10.5, fontWeight:700, color:DESIGN.muted, textTransform:"uppercase", letterSpacing:"0.05em" }}>{etapa}</span>
+          {codes.filter(c => PROCESOS[c]).map(c => {
             const isA = active === c;
-            return <span key={c} style={{ display:"inline-flex", alignItems:"center", gap:4 }}>
-              {i > 0 && <span style={{ color:DESIGN.mutedSoft, fontSize:10 }}>›</span>}
-              <button onClick={()=>onOpen(isA ? null : c)} title={PROCESOS_CEDI[c].nombre}
-                style={{ fontSize:11, fontWeight:isA?700:500, color:isA?"#fff":DESIGN.inkSoft, background:isA?DESIGN.ink:DESIGN.sunken, border:`1px solid ${isA?DESIGN.ink:DESIGN.border}`, borderRadius:6, padding:"2px 7px", cursor:"pointer", fontFamily:DESIGN.font, whiteSpace:"nowrap" }}>
-                {c} {PROCESOS_CEDI[c].nombre}
-              </button>
-            </span>;
+            return <button key={c} onClick={()=>onOpen(isA ? null : c)} title={`${PROCESOS[c].siloLabel} › ${PROCESOS[c].macro}`}
+              style={{ fontSize:12, fontWeight:isA?700:500, color:isA?"#fff":DESIGN.inkSoft, background:isA?DESIGN.ink:"#fff", border:`1px solid ${isA?DESIGN.ink:DESIGN.border}`, borderRadius:6, padding:"3px 8px", cursor:"pointer", fontFamily:DESIGN.font, whiteSpace:"nowrap", textAlign:"left" }}>
+              <b>{c}</b> {PROCESOS[c].nombre}
+            </button>;
           })}
-        </div>;
-      })}
+        </div>
+      </div>)}
     </div>
   </div>;
 }

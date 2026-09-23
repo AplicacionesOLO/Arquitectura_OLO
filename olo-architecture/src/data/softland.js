@@ -65,17 +65,17 @@ export const BPA_PROCESSES = {
   negocio: [
     { name:"Gestión de Comercialización", maturity:1, priority:1, owner:"—", coverage:["FA"] },
     { name:"Toma de Requerimientos de Clientes", maturity:1, priority:1, owner:"—", coverage:[], note:"Perfiles de cliente en drive." },
-    { name:"Gestión de Transporte Local", maturity:1, priority:1, owner:"—", coverage:["WMH"] },
+    { name:"Gestión de Transporte Local", maturity:1, priority:1, owner:"—", coverage:["WMH","WMS-D"], note:"Carga camión en eflow WMS y viajes en Torre de Control (Procesos › P1.18)." },
     { name:"Gestión de Transporte Internacional", maturity:1, priority:1, owner:"—", coverage:[], note:"Sin TMS internacional documentado." },
     { name:"Gestión de Internamiento Zona Franca SEL", maturity:1, priority:1, owner:"—", coverage:[], note:"Sin sistema dedicado documentado." },
     { name:"Administración de Procesos Aduaneros", maturity:1, priority:1, owner:"—", coverage:[], note:"Sin integración aduanera documentada." },
     { name:"Gestión de Almacenamiento (ZF + nacional)", maturity:1, priority:1, owner:"Gerente CEDI · vacante", coverage:["WMS-D","WMS-RF"] },
-    { name:"Servicios de Valor Agregado", maturity:1, priority:1, owner:"Gerente CEDI · vacante", coverage:[], note:"Drive de valor agregado · sin sistema." },
+    { name:"Servicios de Valor Agregado", maturity:1, priority:1, owner:"Gerente CEDI · vacante", coverage:["WMS-D"], note:"eflow WMS tiene pantallas de VAS (servicios especiales, kits, transformación, etiquetas); procesos borrador en Procesos › P1.21. Drive de valor agregado." },
     { name:"Administración Financiera Contable a Clientes", maturity:1, priority:1, owner:"Jorge Castro", coverage:["CG","CC"] },
     { name:"Servicio de Gestión de Talento al Cliente", maturity:1, priority:1, owner:"Mary Montanes", coverage:[] },
     { name:"Facturación", maturity:1, priority:1, owner:"Isabella López", coverage:["FA","MF"], note:"Manual interno: 'creación de pedido en Softland'." },
     { name:"Cobro", maturity:1, priority:1, owner:"Jorge Castro", coverage:["CC","CB"] },
-    { name:"Seguimiento y Control de la Operación", maturity:1, priority:1, owner:"Ignacio Vieto", coverage:["WMH"] },
+    { name:"Seguimiento y Control de la Operación", maturity:1, priority:1, owner:"Ignacio Vieto", coverage:["WMH","WMS-D"], note:"Monitores, acciones de trabajo y paneles de eflow WMS (Procesos › P1.19)." },
     { name:"Gestión de Relación con Clientes", maturity:1, priority:1, owner:"—", coverage:[] },
   ],
   apoyo: [
@@ -113,10 +113,12 @@ export const LOCALIZATIONS = [
 
 export const GAPS = [
   "Mecanismo concreto de la interfaz Softland↔eflow (batch / WS / archivos / BD intermedia / cola).",
-  "Modelo físico de stock real en eflow WMS — confirmado funcionalmente, no estructuralmente.",
+  "Semántica del esquema EFLOW_OLO: las tablas y sus claves se leyeron de la base, pero no hay diccionario de datos del proveedor; las relaciones pantalla ↔ tabla del manual de eFlow son inferidas.",
   "Manuales pendientes en el corpus accesible: Administración del Sistema (AS), Punto de Venta (POS), Facturación de Rutero (FR), Administración de Contratos (AC), Capital Humano, Caja Chica, Control de Proyectos, Flujo de Caja.",
   "Existencia, marca y endpoints de TMS internacional, sistema aduanero (TICA) y portal de clientes / EDI.",
-  "Modo de sincronización eflow WMS ↔ WMH Torre de Control — los conceptos compartidos sugieren BD común o sync API.",
-  "Funcionamiento del módulo 'Servicios Especiales' del WMS — listado pero no documentado en el corpus accesible.",
+  "Carga eflow WMS → WMH Torre de Control: la Torre lee de tablas de staging ext_tms_*, pero no está documentado qué proceso las llena ni cómo vuelven a eFlow el número de viaje, la prioridad y la banda.",
+  "Módulo de cobro de almacenaje eInv (corte, estadía por palet, pre-proforma, factura): sus tablas existen en EFLOW_OLO pero sus pantallas no se capturaron. Servicios Especiales y los demás VAS tienen pantallas, pero no procedimiento aprobado de OLO.",
+  "Integración técnica SORTER CLIRO (Mecalux) ↔ eflow WMS / EPA: cómo llegan las órdenes de recepción al sorter y cómo vuelve la clasificación; confirmar si las 7 bajadas de WMH son las 7 de la Planta Baja del sorter.",
+  "Handheld RF de eflow: el crawl automático cubre solo el WMS de escritorio; las opciones del handheld se conocen solo por las capturas de los manuales de los procesos CEDI.",
   "Para expansión a Venezuela: requerimientos SENIAT, formatos de libros fiscales VE, configuración de Monitor Fiscal para tarifas IVA venezolanas.",
 ];

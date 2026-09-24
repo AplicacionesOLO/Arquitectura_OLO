@@ -25,6 +25,7 @@ export const ORIGEN_WF = {
   eflow_wms:      { label:"Pantalla eFlow WMS", color:"#0891b2" },
   mecalux_sorter: { label:"Manual SORTER",      color:"#ea580c" },
   control_tower:  { label:"Torre de Control",   color:"#16a34a" },
+  softland_menu:  { label:"Menú Softland",      color:"#c0392b" },
   inferido:       { label:"Inferido · validar", color:"#b45309" },
 };
 

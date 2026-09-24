@@ -40,7 +40,8 @@ const FICHAS_POR_SILO = (() => {
   for (const p of Object.values(PROCESOS)) {
     const x = r[p.silo] ||= { cedi:0, manual:0, borrador:0, modulos:new Set() };
     x[tipoFicha(p)]++;
-    for (const st of p.pasos || []) { const m = SIS_A_MODULO[st.sistema]; if (m) x.modulos.add(m); }
+    // Softland: el módulo sale del código de la opción del menú (CC_DOCUMENTO → CC)
+    for (const st of p.pasos || []) { const m = st.sistema === "softland" && st.screen ? st.screen.split("_")[0] : SIS_A_MODULO[st.sistema]; if (m) x.modulos.add(m); }
   }
   return r;
 })();

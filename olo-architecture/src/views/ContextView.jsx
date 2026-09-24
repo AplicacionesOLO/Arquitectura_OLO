@@ -41,7 +41,7 @@ const GLOSARIO = (() => {
   for (const c of SORTER_CONCEPTOS) if (!m.has(c.termino.toLowerCase())) m.set(c.termino.toLowerCase(), { ...c, codigo: "XDK-01" });
   return [...m.values()].sort((a, b) => a.termino.localeCompare(b.termino, "es"));
 })();
-const ORIGEN_LABEL = { procedimiento: ["Procedimiento de OLO", "#0f766e"], eflow_wms: ["Pantalla de eflow WMS", "#0891b2"], mecalux_sorter: ["Manual del SORTER", "#ea580c"], control_tower: ["Levantamiento de Torre", "#16a34a"], inferido: ["Inferido", "#b45309"] };
+const ORIGEN_LABEL = { procedimiento: ["Procedimiento de OLO", "#0f766e"], eflow_wms: ["Pantalla de eflow WMS", "#0891b2"], mecalux_sorter: ["Manual del SORTER", "#ea580c"], control_tower: ["Levantamiento de Torre", "#16a34a"], softland_menu: ["Menú de Softland", "#c0392b"], inferido: ["Inferido", "#b45309"] };
 
 const SECCIONES = [
   ["resumen", "Estado del conocimiento", "qué está mapeado"],

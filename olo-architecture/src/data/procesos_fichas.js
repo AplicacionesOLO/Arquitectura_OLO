@@ -18,7 +18,7 @@ function normalizarBorrador(p) {
     // la pantalla del paso se muestra con su ruta en el manual
     pasos: p.pasos.map(s => ({ ...s, pantalla:
       s.sistema === "sorter" && SORTER_BY_ID[s.screen] ? `SORTER CLIRO › ${SORTER_BY_ID[s.screen].modulo} › ${SORTER_BY_ID[s.screen].nombre}`
-      : s.screen && WMS_INDEX[s.screen] ? `${WMS_INDEX[s.screen].module} › ${WMS_INDEX[s.screen].option}` : null })),
+      : s.screen && WMS_INDEX[s.screen] ? `${WMS_INDEX[s.screen].module} › ${WMS_INDEX[s.screen].option}` : s.pantalla ?? null })),
   };
 }
 
@@ -29,6 +29,7 @@ export const SILO_LABELS = {
   log_desempeno: "P1.8 · Desempeño logístico", neg_facturacion: "P1.12 · Facturación", neg_almacenamiento: "P1.13 · Almacenamiento ZF-nacional",
   neg_transporte_local: "P1.18 · Transporte local", neg_seguimiento_operacion: "P1.19 · Seguimiento de la operación",
   neg_valor_agregado: "P1.21 · Valor agregado", cross_docking: "Cross Docking",
+  neg_fin_contable: "P1.10 · Financiero contable a clientes", neg_cobro: "P1.11 · Cobro", neg_comercializacion: "P1.14 · Comercialización",
 };
 
 export const PROCESOS = {

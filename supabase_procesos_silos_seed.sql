@@ -1296,4 +1296,326 @@ begin
       values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__pb_reportes.jpg', 'SORTER CLIRO · Planta Baja › Reportes (Planta Baja).jpg', 'image/jpeg', null);
   end if;
   v_macro := null; v_proc := null;
+
+  -- COB-01 · Registro y aplicación de pagos de clientes  (P1.11 · Cobro › S4 · Aplicación de pagos recibidos)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_cobro' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S4 · Aplicación de pagos recibidos'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S4 · Aplicación de pagos recibidos', 'neg_cobro'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'COB-01') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_cobro', v_macro, 1, 'Registro y aplicación de pagos de clientes', coalesce(max(sort_order), -1) + 1, 'COB-01'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '1. Identificar el pago del cliente (depósito, transferencia o cheque) y el comprobante o detalle de facturas que cancela', 0, 'COB-01.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '2. Registrar o cargar el movimiento reportado por el banco en Control Bancario › Movimientos en Bancos', 1, 'COB-01.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '3. Crear el recibo del cliente en Cuentas por Cobrar › Documentos (tipo Recibo o Transferencia Elect.) con «Agregar»', 2, 'COB-01.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '4. Aplicar el recibo a las facturas que cancela con «Aplicar Documentos»; si queda saldo a favor, dejarlo como crédito del cliente', 3, 'COB-01.04') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '5. Revisar la aplicación en Consulta › Aplicaciones y corregir con «Reversar Aplicación» si se aplicó a la factura equivocada', 4, 'COB-01.05') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '6. Conciliar el depósito contra el estado de cuenta del banco en Control Bancario › Conciliar Cuentas', 5, 'COB-01.06') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '7. Generar el asiento de los recibos del período en Cuentas por Cobrar › Administración › Procesos Contables', 6, 'COB-01.07') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- COB-02 · Seguimiento de cartera vencida  (P1.11 · Cobro › S2 · Gestión de cartera vencida)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_cobro' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S2 · Gestión de cartera vencida'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S2 · Gestión de cartera vencida', 'neg_cobro'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'COB-02') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_cobro', v_macro, 1, 'Seguimiento de cartera vencida', coalesce(max(sort_order), -1) + 1, 'COB-02'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '1. Revisar el Análisis de Vencimiento por cliente para ver lo vencido por rangos de días', 0, 'COB-02.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '2. Listar los Documentos Pendientes de los clientes con saldo vencido', 1, 'COB-02.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '3. Enviar el Estado de Cuenta al cliente (opción «Mail CC») con el detalle de lo pendiente', 2, 'COB-02.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '4. Contactar al cliente y registrar el compromiso de pago (fecha y monto)', 3, 'COB-02.04') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '5. Calcular y generar los intereses de mora que correspondan según las condiciones del cliente', 4, 'COB-02.05') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '6. Si el cliente no cumple, limitar el crédito en Cuentas por Cobrar › Clientes («Definir Lím. Crédito»)', 5, 'COB-02.06') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '7. Retener los pedidos nuevos del cliente en Facturación › Autorizaciones de Pedidos por Crédito hasta que regularice', 6, 'COB-02.07') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- COB-03 · Convenio de pago con el cliente  (P1.11 · Cobro › S3 · Negociación de planes de pago)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_cobro' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Negociación de planes de pago'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S3 · Negociación de planes de pago', 'neg_cobro'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'COB-03') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_cobro', v_macro, 1, 'Convenio de pago con el cliente', coalesce(max(sort_order), -1) + 1, 'COB-03'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '1. Negociar con el cliente el monto, el número de cuotas y la garantía del plan', 0, 'COB-03.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '2. Registrar el convenio en Cuentas por Cobrar › Convenios con los documentos que incluye', 1, 'COB-03.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '3. Definir las cuotas del plan en Parcialidades CC', 2, 'COB-03.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '4. Registrar la garantía o pagaré que respalda el convenio en Garantías Doc. CC', 3, 'COB-03.04') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '5. Dar seguimiento al cumplimiento de las cuotas con la Proyección por Vencimiento', 4, 'COB-03.05') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- COB-04 · Conciliación de cobros con facturación  (P1.11 · Cobro › S8 · Conciliación de cobros con facturación)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_cobro' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S8 · Conciliación de cobros con facturación'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S8 · Conciliación de cobros con facturación', 'neg_cobro'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'COB-04') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_cobro', v_macro, 1, 'Conciliación de cobros con facturación', coalesce(max(sort_order), -1) + 1, 'COB-04'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '1. Cargar a Cuentas por Cobrar las facturas del período en Administración › Facturación - Cargar', 0, 'COB-04.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '2. Comparar el reporte de Facturas del período contra la Consulta General de Documentos de CC', 1, 'COB-04.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '3. Revisar en la Consulta General de Documentos que no queden facturas sin cargar ni recibos sin aplicar', 2, 'COB-04.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '4. Revisar los Documentos no Conciliados de Control Bancario y resolver las diferencias', 3, 'COB-04.04') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_cobro', v_proc, 2, '5. Emitir el Reporte de Conciliación como respaldo del cierre', 4, 'COB-04.05') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- FAC-01 · Facturación sin pedido (servicios y cargos)  (P1.12 · Facturación › S1 · Generación de la factura electrónica)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_facturacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Generación de la factura electrónica'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S1 · Generación de la factura electrónica', 'neg_facturacion'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'FAC-01') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_facturacion', v_macro, 1, 'Facturación sin pedido (servicios y cargos)', coalesce(max(sort_order), -1) + 1, 'FAC-01'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_facturacion', v_proc, 2, '1. Recibir el detalle del cargo a facturar (servicio, cantidad, tarifa) aprobado por el área que lo origina', 0, 'FAC-01.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_facturacion', v_proc, 2, '2. Verificar que el cliente exista y tenga condiciones de pago correctas en Facturación › Clientes', 1, 'FAC-01.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_facturacion', v_proc, 2, '3. Crear la factura en Facturación sin Pedido con el cliente, los artículos o servicios y sus precios', 2, 'FAC-01.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_facturacion', v_proc, 2, '4. Verificar que el comprobante electrónico quede aceptado por Hacienda antes de entregarlo al cliente', 3, 'FAC-01.04') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_facturacion', v_proc, 2, '5. Cargar la factura a Cuentas por Cobrar (Administración › Facturación - Cargar) para su cobro', 4, 'FAC-01.05') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- FAC-02 · Anulación, devolución y refacturación  (P1.12 · Facturación › S6 · Corrección y refacturación)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_facturacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S6 · Corrección y refacturación'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S6 · Corrección y refacturación', 'neg_facturacion'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'FAC-02') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_facturacion', v_macro, 1, 'Anulación, devolución y refacturación', coalesce(max(sort_order), -1) + 1, 'FAC-02'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_facturacion', v_proc, 2, '1. Recibir el reclamo o detectar el error de la factura (precio, cantidad, cliente)', 0, 'FAC-02.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_facturacion', v_proc, 2, '2. Si la factura se puede anular (mismo período, no aceptada por el cliente), anularla en Facturación › Anulaciones', 1, 'FAC-02.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_facturacion', v_proc, 2, '3. Si no, registrar la devolución en Devoluciones con Documento, que genera la nota de crédito', 2, 'FAC-02.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_facturacion', v_proc, 2, '4. Aplicar la nota de crédito a la factura original en Cuentas por Cobrar › Documentos', 3, 'FAC-02.04') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_facturacion', v_proc, 2, '5. Emitir la factura corregida desde el pedido (Facturación › Pedidos › «Facturar») o sin pedido', 4, 'FAC-02.05') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- FAC-03 · Control de pedidos pendientes de facturar  (P1.12 · Facturación › S7 · Control de facturación pendiente)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_facturacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S7 · Control de facturación pendiente'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S7 · Control de facturación pendiente', 'neg_facturacion'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'FAC-03') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_facturacion', v_macro, 1, 'Control de pedidos pendientes de facturar', coalesce(max(sort_order), -1) + 1, 'FAC-03'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_facturacion', v_proc, 2, '1. Consultar los pedidos pendientes de facturar en Facturación › Consultas › Pedidos', 0, 'FAC-03.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_facturacion', v_proc, 2, '2. Revisar los pedidos retenidos en Autorizaciones de Pedidos por Crédito y gestionar su aprobación', 1, 'FAC-03.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_facturacion', v_proc, 2, '3. Revisar las Remisiones abiertas y facturarlas («Facturar») cuando corresponda', 2, 'FAC-03.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_facturacion', v_proc, 2, '4. Verificar en el Registro de Ventas que lo facturado en el día coincida con lo despachado', 3, 'FAC-03.04') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- FIN-01 · Cierre contable mensual  (P1.10 · Administración financiera contable a clientes › S6 · Cierre contable mensual por cliente)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_fin_contable' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S6 · Cierre contable mensual por cliente'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S6 · Cierre contable mensual por cliente', 'neg_fin_contable'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'FIN-01') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_fin_contable', v_macro, 1, 'Cierre contable mensual', coalesce(max(sort_order), -1) + 1, 'FIN-01'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '1. Cargar a Contabilidad los documentos de Facturación del mes (Administración › Carga a Contabilidad)', 0, 'FIN-01.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '2. Generar los asientos de Cuentas por Cobrar en Administración › Procesos Contables', 1, 'FIN-01.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '3. Revisar y mayorizar los asientos del mes en Contabilidad General › Transacciones › Diario', 2, 'FIN-01.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '4. Ajustar la diferencia cambiaria de las cuentas en moneda extranjera (Administración › Diferencias Cambiarias)', 3, 'FIN-01.04') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '5. Cuadrar los auxiliares contra el mayor en Administración › Cuadre de Auxiliares', 4, 'FIN-01.05') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '6. Recalcular saldos si hubo correcciones (Administración › Recálculo de Saldos)', 5, 'FIN-01.06') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '7. Emitir el Balance de Comprobación del mes y revisarlo', 6, 'FIN-01.07') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- FIN-02 · Conciliación de la cuenta de un cliente  (P1.10 · Administración financiera contable a clientes › S2 · Conciliación de cuentas por cliente)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_fin_contable' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S2 · Conciliación de cuentas por cliente'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S2 · Conciliación de cuentas por cliente', 'neg_fin_contable'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'FIN-02') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_fin_contable', v_macro, 1, 'Conciliación de la cuenta de un cliente', coalesce(max(sort_order), -1) + 1, 'FIN-02'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '1. Emitir el Estado de Cuenta del cliente para el período', 0, 'FIN-02.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '2. Revisar los documentos y aplicaciones en la Consulta General de Documentos', 1, 'FIN-02.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '3. Comparar con el saldo de la cuenta por cobrar en Contabilidad General › Consulta › Del Mayor', 2, 'FIN-02.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '4. Documentar las diferencias y proponer los ajustes al cliente o a contabilidad', 3, 'FIN-02.04') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- FIN-03 · Estados financieros del período  (P1.10 · Administración financiera contable a clientes › S4 · Reportes financieros a clientes)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_fin_contable' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S4 · Reportes financieros a clientes'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S4 · Reportes financieros a clientes', 'neg_fin_contable'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'FIN-03') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_fin_contable', v_macro, 1, 'Estados financieros del período', coalesce(max(sort_order), -1) + 1, 'FIN-03'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '1. Emitir el Balance General del período', 0, 'FIN-03.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '2. Emitir el Estado de Resultados del período', 1, 'FIN-03.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '3. Consultar los resultados por centro de costo (Consulta › De Centros de Costo)', 2, 'FIN-03.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '4. Preparar el paquete de estados financieros y enviarlo al cliente', 3, 'FIN-03.04') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- FIN-04 · Ajustes con notas de crédito y débito  (P1.10 · Administración financiera contable a clientes › S7 · Gestión de ajustes y notas de crédito/débito)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_fin_contable' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S7 · Gestión de ajustes y notas de crédito/débito'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S7 · Gestión de ajustes y notas de crédito/débito', 'neg_fin_contable'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'FIN-04') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_fin_contable', v_macro, 1, 'Ajustes con notas de crédito y débito', coalesce(max(sort_order), -1) + 1, 'FIN-04'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '1. Obtener la aprobación del ajuste (motivo y monto)', 0, 'FIN-04.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '2. Registrar la Nota de Crédito o de Débito en Cuentas por Cobrar › Documentos', 1, 'FIN-04.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '3. Aplicar la nota al documento que ajusta («Aplicar Documentos»)', 2, 'FIN-04.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_fin_contable', v_proc, 2, '4. Generar el asiento en Procesos Contables y verificarlo en el Reporte de Asientos', 3, 'FIN-04.04') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- COM-01 · Alta de un cliente en Softland  (P1.14 · Gestión de comercialización › S4 · Onboarding comercial de nuevos clientes)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_comercializacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S4 · Onboarding comercial de nuevos clientes'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S4 · Onboarding comercial de nuevos clientes', 'neg_comercializacion'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'COM-01') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_comercializacion', v_macro, 1, 'Alta de un cliente en Softland', coalesce(max(sort_order), -1) + 1, 'COM-01'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_comercializacion', v_proc, 2, '1. Recibir la solicitud de alta con los datos fiscales, condiciones de pago y nivel de precios acordados', 0, 'COM-01.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_comercializacion', v_proc, 2, '2. Crear el cliente en Facturación › Clientes con «Agregar»', 1, 'COM-01.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_comercializacion', v_proc, 2, '3. Definir vendedor, direcciones de embarque y límite de crédito en Cuentas por Cobrar › Clientes', 2, 'COM-01.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_comercializacion', v_proc, 2, '4. Asignar el nivel de precios y las condiciones especiales en Facturación › Configuración Clientes', 3, 'COM-01.04') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- COM-02 · Actualización de precios y descuentos  (P1.14 · Gestión de comercialización › S3 · Negociación de tarifas y contratos)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_comercializacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Negociación de tarifas y contratos'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S3 · Negociación de tarifas y contratos', 'neg_comercializacion'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'COM-02') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_comercializacion', v_macro, 1, 'Actualización de precios y descuentos', coalesce(max(sort_order), -1) + 1, 'COM-02'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_comercializacion', v_proc, 2, '1. Formalizar el acuerdo de tarifas o precios con el cliente y su fecha de vigencia', 0, 'COM-02.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_comercializacion', v_proc, 2, '2. Crear o ajustar el nivel de precios en Administración › Niveles de Precio', 1, 'COM-02.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_comercializacion', v_proc, 2, '3. Registrar una nueva versión de precios con su fecha de rige (Versiones de Precios de Artículos)', 2, 'COM-02.03') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_comercializacion', v_proc, 2, '4. Cargar los precios por artículo o servicio en Precios de Artículos', 3, 'COM-02.04') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_comercializacion', v_proc, 2, '5. Configurar descuentos y bonificaciones en Paquetes y Reglas de Desc y Bon.', 4, 'COM-02.05') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_comercializacion', v_proc, 2, '6. Emitir la Lista de Precios para verificar y comunicar lo vigente', 5, 'COM-02.06') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
+
+  -- COM-03 · Reporte de ventas y margen  (P1.14 · Gestión de comercialización › S8 · Reportes de ventas y cumplimiento de metas)
+  select id into v_macro from public.procesos_nodes
+    where categoria_id = 'neg_comercializacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S8 · Reportes de ventas y cumplimiento de metas'), '\s+', ' ', 'g'))
+    order by sort_order limit 1;
+  if v_macro is null then raise exception 'No existe el macroproceso % en %', 'S8 · Reportes de ventas y cumplimiento de metas', 'neg_comercializacion'; end if;
+  if not exists (select 1 from public.procesos_nodes where codigo = 'COM-03') then
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      select 'neg_comercializacion', v_macro, 1, 'Reporte de ventas y margen', coalesce(max(sort_order), -1) + 1, 'COM-03'
+      from public.procesos_nodes where parent_id = v_macro
+      returning id into v_proc;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_comercializacion', v_proc, 2, '1. Consultar el Registro de Ventas del período', 0, 'COM-03.01') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_comercializacion', v_proc, 2, '2. Emitir el reporte de Utilidad Bruta por cliente o artículo', 1, 'COM-03.02') returning id into v_sub;
+    insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
+      values ('neg_comercializacion', v_proc, 2, '3. Comparar contra las metas del período y preparar el informe comercial', 2, 'COM-03.03') returning id into v_sub;
+  end if;
+  v_macro := null; v_proc := null;
 end $$;

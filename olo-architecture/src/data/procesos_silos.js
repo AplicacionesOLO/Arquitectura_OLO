@@ -18,6 +18,7 @@
 // (ver gen_procesos_silos_sql.mjs → supabase_procesos_silos_seed.sql).
 // ═══════════════════════════════════════════════════════════════════════════
 
+import { PROCESOS_SOFTLAND, FUENTE_SOFTLAND } from "./procesos_softland.js";
 const FUENTE_WMS = "Borrador: pantallas reales de eFlow WMS 3.2.8.5 (crawl 23/09/2026). Secuencia, reglas y responsables inferidos de práctica 3PL — sin procedimiento aprobado de OLO.";
 
 const e = (texto, screen, sistema = "eflow") => ({ texto, sistema, screen, origen: "eflow_wms" });
@@ -929,6 +930,9 @@ export const PROCESOS_SILOS = {
     entradaDe: ["XDK-01"], salidaA: ["P4"],
   },
 };
+
+// Borradores de los silos financieros y comerciales sobre el menú real de Softland
+for (const [codigo, p] of Object.entries(PROCESOS_SOFTLAND)) PROCESOS_SILOS[codigo] = { ...p, fuente: FUENTE_SOFTLAND };
 
 // Metadatos comunes: por defecto son borradores sobre pantallas de eFlow; los
 // procesos con fuente propia (p. ej. el manual del sorter) lo declaran.

@@ -61,7 +61,7 @@ export const CUESTIONARIO = [
     id: "finanzas", destinatario: "Finanzas y administración de Softland",
     preguntas: [
       { gap: "GAP·03", p: "¿Nos pueden compartir los manuales de Softland (CC, CB, FA, CG y los pendientes AS, POS, FR, AC, Capital Humano, Caja Chica, Control de Proyectos, Flujo de Caja)? Con ellos se arman los procesos de Cobro, Facturación y Financiero a clientes.", va: "Silos P1.10, P1.11, P1.12 y P1.14" },
-      { gap: "Silos vacíos", p: "¿Cómo se hace hoy el cobro a clientes (del documento en Softland al recibo aplicado) y quién lo ejecuta?", va: "Silo P1.11 Cobro" },
+      { gap: "Borradores Softland", p: "Ya hay 14 procesos borrador de Cobro, Facturación, Financiero a clientes y Comercialización armados sobre el menú real del Softland de Cofersa: ¿la secuencia y los responsables son los reales? ¿OLO los ejecuta en el Softland del cliente o en uno propio?", va: "Workflows › silos P1.10, P1.11, P1.12 y P1.14 (validación)" },
       { gap: "GAP·09", p: "Para Venezuela: requisitos del SENIAT, formato de los libros fiscales y configuración de IVA en el Monitor Fiscal.", va: "Contexto › Localizaciones" },
     ],
   },

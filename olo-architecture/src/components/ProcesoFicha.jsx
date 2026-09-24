@@ -41,6 +41,7 @@ const CIA_COLOR = { COFERSA: "#1d4ed8", EPA: "#b45309", CEDI: "#475569", Borrado
 const ORIGEN = { eflow_wms: { label: "eFlow WMS", color: "#0891b2", title: "La pantalla, campo o botón citado existe en eFlow WMS" },
   mecalux_sorter: { label: "SORTER Mecalux", color: "#ea580c", title: "Del manual del SORTER CLIRO (Mecalux): mapeo funcional real" },
   control_tower: { label: "Torre de Control", color: "#16a34a", title: "Documentado en el levantamiento de Torre de Control (Operación › Torre de Control · WMH)" },
+  softland_menu: { label: "Menú Softland", color: "#c0392b", title: "La opción citada existe en el menú real de Softland (diccionario de la compañía COFER)" },
   inferido: { label: "Inferido", color: "#b45309", title: "Paso o regla sin documento de OLO: revisar y validar" } };
 
 export function SistemaChip({ sys }) {

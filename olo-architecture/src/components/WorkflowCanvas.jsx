@@ -8,7 +8,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { DESIGN } from "../data/constants.js";
 import { PROCESOS, SILO_LABELS } from "../data/procesos_fichas.js";
-import { SISTEMAS_WF, ORIGEN_WF, TIPO_FICHA, tipoFicha, CARD, CARD_M, IMPACTO_SISTEMA } from "../data/workflows.js";
+import { SISTEMAS_WF, ORIGEN_WF, TIPO_FICHA, tipoFicha, CARD, CARD_M, IMPACTO_SISTEMA, rolInferido, partirDecision } from "../data/workflows.js";
 import { useValidaciones, ESTADO_VAL } from "../lib/useValidaciones.js";
 
 const HEAD = 64, PAD = 22;
@@ -138,7 +138,7 @@ export function WorkflowCanvas({ modelo, maestro, layout, canEdit, onSave, resal
       setDesde(null); return;
     }
     if (n.tipo === "entrada" || n.tipo === "salida") { onIr(n.refs[0]); return; }
-    onSelect(n.tipo === "proceso" ? { tipo:"proceso", codigo:n.codigo } : { tipo:"paso", codigo:n.codigo, i:n.i });
+    onSelect(n.tipo === "proceso" ? { tipo:"proceso", codigo:n.codigo } : n.tipo === "decision" ? { tipo:"decision", codigo:n.codigo, j:n.j } : { tipo:"paso", codigo:n.codigo, i:n.i });
   };
   const clickArista = a => {
     if (!editar) return;
@@ -158,7 +158,10 @@ export function WorkflowCanvas({ modelo, maestro, layout, canEdit, onSave, resal
     if (n.tipo === "proceso") return !IMPACTO_SISTEMA[resaltar]?.procesos[n.codigo];
     return true;
   };
-  const selId = sel ? (sel.tipo === "paso" ? `${sel.codigo}:s${sel.i}` : maestro ? `m:${sel.codigo}` : null) : null;
+  const selId = sel ? (sel.tipo === "paso" ? `${sel.codigo}:s${sel.i}` : sel.tipo === "decision" ? `${sel.codigo}:d${sel.j}` : maestro ? `m:${sel.codigo}` : null) : null;
+  // rol de cada paso: el asignado a mano en este lienzo o, si no, el inferido
+  const rolesMano = layout?.roles || {};
+  const rolDe = n => rolesMano[n.id] ? { rol:rolesMano[n.id], mano:true } : rolInferido(n.codigo, n.i);
   const sistemasAqui = useMemo(() => [...new Set(modelo.nodos.flatMap(n => n.tipo === "paso" ? [n.paso.sistema] : n.tipo === "proceso" ? PROCESOS[n.codigo].pasos.map(s => s.sistema) : []))], [modelo]);
 
   const btn = { fontSize:12, fontWeight:600, color:DESIGN.inkSoft, background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:7, padding:"5px 10px", cursor:"pointer", fontFamily:DESIGN.font };
@@ -210,7 +213,7 @@ export function WorkflowCanvas({ modelo, maestro, layout, canEdit, onSave, resal
             </g>;
           })}
         </svg>
-        {nodos.map(n => <Nodo key={n.id} n={n} card={card} val={n.tipo === "paso" ? val.estadoPaso(n.codigo, n.i) : n.tipo === "proceso" ? val.resumen(n.codigo) : null} sel={selId === n.id} origen={desde === n.id} apagado={apagado(n)} editar={editar}
+        {nodos.map(n => <Nodo key={n.id} n={n} card={card} rol={n.tipo === "paso" ? rolDe(n) : null} val={n.tipo === "paso" ? val.estadoPaso(n.codigo, n.i) : n.tipo === "proceso" ? val.resumen(n.codigo) : null} sel={selId === n.id} origen={desde === n.id} apagado={apagado(n)} editar={editar}
           onDown={e => { if (editar && desde === "elige") { e.stopPropagation(); setDesde(n.id); return; } empezarArrastre(e, [n.id], () => clickNodo(n)); }}/>)}
       </div>
     </div>
@@ -259,7 +262,7 @@ function Grupo({ g, maestro, editar, onDown, res }) {
   </div>;
 }
 
-function Nodo({ n, card, sel, origen, apagado, editar, onDown, val }) {
+function Nodo({ n, card, sel, origen, apagado, editar, onDown, val, rol }) {
   const base = { position:"absolute", left:n.x, top:n.y, width:card.w, height:card.h, opacity: apagado ? 0.22 : 1, transition:"opacity .15s", cursor: editar ? "move" : "pointer" };
   if (n.tipo === "entrada" || n.tipo === "salida") {
     const refs = n.refs.map(c => PROCESOS[c]);
@@ -269,6 +272,19 @@ function Nodo({ n, card, sel, origen, apagado, editar, onDown, val }) {
         <div style={{ fontSize:9.5, fontWeight:700, color:"#7c3aed", letterSpacing:"0.05em" }}>{entrada ? "VIENE DE" : "SIGUE EN"}</div>
         <div style={{ fontSize:11, fontWeight:700, color:"#4c1d95", lineHeight:1.2 }}>{refs.slice(0, 3).map(r => r.codigo).join(" · ")}{refs.length > 3 ? " …" : ""}</div>
         {refs.length === 1 && <div style={{ fontSize:9.5, color:"#6d28d9", lineHeight:1.2, overflow:"hidden", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical" }}>{refs[0].nombre}</div>}
+      </div>
+    </div>;
+  }
+  if (n.tipo === "decision") {
+    const { pregunta, opciones } = partirDecision(n.texto);
+    const c = n.ubicada ? "#d97706" : "#94a3b8";
+    return <div onMouseDown={onDown} style={{ ...base, display:"flex", alignItems:"center", justifyContent:"center" }} title={n.ubicada ? "Decisión (ubicación inferida)" : "Decisión sin ubicar: en modo edición arrástrala a su lugar y conéctala"}>
+      <div style={{ position:"absolute", inset:"2px 18px", background: sel || origen ? "#0f172a" : c, clipPath:"polygon(50% 0, 100% 50%, 50% 100%, 0 50%)" }}/>
+      <div style={{ position:"absolute", inset:"4px 21px", background: n.ubicada ? "#fffbeb" : "#f8fafc", clipPath:"polygon(50% 0, 100% 50%, 50% 100%, 0 50%)" }}/>
+      <div style={{ position:"relative", width:"58%", textAlign:"center" }}>
+        <div style={{ fontSize:9, fontWeight:700, color:c, letterSpacing:"0.05em" }}>{n.ubicada ? "DECISIÓN" : "SIN UBICAR"}</div>
+        <div style={{ fontSize:10.5, fontWeight:600, color:DESIGN.ink, lineHeight:1.2, overflow:"hidden", display:"-webkit-box", WebkitLineClamp:3, WebkitBoxOrient:"vertical" }}>{pregunta}</div>
+        {opciones.length > 0 && <div style={{ fontSize:9, color:DESIGN.muted }}>{opciones.length} opciones</div>}
       </div>
     </div>;
   }
@@ -294,6 +310,8 @@ function Nodo({ n, card, sel, origen, apagado, editar, onDown, val }) {
       <span style={{ fontSize:10, color:DESIGN.mutedSoft, fontWeight:600 }}>{n.i + 1}/{total}</span>
     </div>
     <div style={{ fontSize:11.5, color:DESIGN.ink, lineHeight:1.3, overflow:"hidden", display:"-webkit-box", WebkitLineClamp:3, WebkitBoxOrient:"vertical", flex:1 }}>{s.texto}</div>
+    <div title={rol ? (rol.mano ? "Rol asignado a mano" : `Rol inferido: ${rol.motivo}`) : "Sin rol asignado"} style={{ fontSize:9.5, color: rol ? "#6d28d9" : DESIGN.mutedSoft, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontStyle: rol && !rol.mano ? "italic" : "normal" }}>
+      👤 {rol ? rol.rol : "sin rol"}{rol && !rol.mano ? " · inferido" : ""}</div>
     {(s.pantalla || o) && <div style={{ display:"flex", gap:5, alignItems:"center", minWidth:0 }}>
       {s.pantalla && <span title={s.pantalla} style={{ fontSize:9.5, color:DESIGN.muted, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1 }}>▸ {s.pantalla}</span>}
       {o && s.origen === "inferido" && <span style={{ fontSize:9, fontWeight:700, color:o.color, background:o.color + "18", borderRadius:3, padding:"0 4px", whiteSpace:"nowrap" }}>inferido</span>}

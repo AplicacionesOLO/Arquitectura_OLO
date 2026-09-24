@@ -11,7 +11,7 @@ import { useAuth } from "../auth/AuthContext.jsx";
 import { useNav } from "../lib/nav.js";
 import { DESIGN } from "../data/constants.js";
 import { PROCESOS, SILO_LABELS } from "../data/procesos_fichas.js";
-import { SILOS_WF, SISTEMAS_WF, ORIGEN_WF, TIPO_FICHA, tipoFicha, IMPACTO_SISTEMA, ROLES_WF, lienzoSilo, lienzoMaestro, siloDe, entradasDe, salidasDe } from "../data/workflows.js";
+import { SILOS_WF, SISTEMAS_WF, ORIGEN_WF, TIPO_FICHA, tipoFicha, IMPACTO_SISTEMA, ROLES_WF, lienzoSilo, lienzoMaestro, siloDe, entradasDe, salidasDe, rolInferido, decisionesDe, partirDecision } from "../data/workflows.js";
 import { WorkflowCanvas, Icono } from "../components/WorkflowCanvas.jsx";
 import { Presentacion } from "../components/Presentacion.jsx";
 import { slidesProceso } from "../lib/presentacion.js";
@@ -59,9 +59,19 @@ export function WorkflowsView({ focus }) {
   const guardar = useCallback(async (datos) => {
     const fila = { id:lienzo, ...datos, updated_at:new Date().toISOString() };
     const { error } = await supabase.from("workflow_layouts").upsert(fila);
-    if (!error) setLayouts(l => ({ ...l, [lienzo]: fila }));
+    if (!error) setLayouts(l => ({ ...l, [lienzo]: { ...l[lienzo], ...fila } }));
     return !error;
   }, [lienzo]);
+  // rol de un paso asignado a mano (null = volver al inferido); se guarda en el lienzo de su silo
+  const guardarRol = useCallback(async (codigo, i, rol) => {
+    const silo = siloDe(codigo), nodo = `${codigo}:s${i}`;
+    const roles = { ...(layouts?.[silo]?.roles || {}) };
+    if (rol) roles[nodo] = rol; else delete roles[nodo];
+    const fila = { id:silo, roles, updated_at:new Date().toISOString() };
+    const { error } = await supabase.from("workflow_layouts").upsert(fila);
+    if (!error) setLayouts(l => ({ ...l, [silo]: { ...(l[silo] || { posiciones:{}, conexiones:[], ocultas:[] }), ...fila } }));
+    return error ? error.message : null;
+  }, [layouts]);
 
   const onSelect = s => {
     if (s.tipo === "resaltar") { setResaltar(s.sistema); return; }
@@ -91,7 +101,7 @@ export function WorkflowsView({ focus }) {
             {lienzo === "maestro" && " En el mapa maestro, toca el título de un silo para abrir su lienzo."}
           </div>
         </div>
-        {sel && <Panel sel={sel} canEdit={canEdit} onClose={() => setSel(null)} onIr={irA} onPresentar={(codigo, start) => setShow({ codigo, start })} navigate={navigate} lienzo={lienzo}/>}
+        {sel && <Panel sel={sel} canEdit={canEdit} rolesMano={layouts?.[siloDe(sel.codigo)]?.roles || {}} onGuardarRol={guardarRol} onClose={() => setSel(null)} onIr={irA} onPresentar={(codigo, start) => setShow({ codigo, start })} navigate={navigate} lienzo={lienzo}/>}
       </div>
     </>}
     {pestana === "sistemas" && <VistaSistemas onIr={irA} navigate={navigate}/>}
@@ -117,14 +127,27 @@ function SelectorLienzo({ lienzo, onChange }) {
 }
 
 // ── Panel lateral: paso o proceso ────────────────────────────────────────────
-function Panel({ sel, canEdit, onClose, onIr, onPresentar, navigate, lienzo }) {
+function Panel({ sel, canEdit, rolesMano, onGuardarRol, onClose, onIr, onPresentar, navigate, lienzo }) {
   const slides = useMemo(() => PROCESOS[sel.codigo] ? slidesProceso(sel.codigo) : [], [sel.codigo]);
   const p = PROCESOS[sel.codigo]; if (!p) return null;
   const tipo = TIPO_FICHA[tipoFicha(p)];
   const ir = { fontSize:12.5, fontWeight:700, border:"none", borderRadius:7, padding:"7px 12px", cursor:"pointer", fontFamily:DESIGN.font };
 
   let cuerpo;
-  if (sel.tipo === "paso") {
+  if (sel.tipo === "decision") {
+    const d = decisionesDe(p.codigo)[sel.j], { pregunta, opciones } = partirDecision(d.texto);
+    cuerpo = <>
+      <div style={{ fontSize:11.5, fontWeight:700, color:"#d97706", letterSpacing:"0.05em" }}>DECISIÓN · {d.despuesDe != null ? `después del paso ${d.despuesDe + 1} (ubicación inferida)` : "sin ubicar"}</div>
+      <div style={{ fontSize:16, color:DESIGN.ink, lineHeight:1.45, fontWeight:600, marginTop:4 }}>{pregunta}</div>
+      {opciones.length > 0 && <><Titulo>Opciones</Titulo>
+        {opciones.map((o, k) => <div key={k} style={{ fontSize:13, color:DESIGN.inkSoft, background:"#fffbeb", border:"1px solid #fde68a", borderRadius:7, padding:"6px 9px", marginBottom:5 }}>{o}</div>)}</>}
+      <div style={{ fontSize:12, color:DESIGN.muted, marginTop:10, lineHeight:1.5 }}>
+        {d.despuesDe != null ? "Se ubicó junto al paso con el que comparte palabras clave: verifica que esté en su lugar." : "No se encontró un paso que coincida claramente. En modo edición, arrástrala a su lugar y conéctala con «Conectar»."}
+      </div>
+      <Titulo>Proceso</Titulo>
+      <button onClick={() => onIr({ codigo:p.codigo })} style={{ ...ir, fontWeight:600, width:"100%", textAlign:"left", color:DESIGN.ink, background:DESIGN.sunken, border:`1px solid ${DESIGN.border}` }}>{p.codigo} · {p.nombre}</button>
+    </>;
+  } else if (sel.tipo === "paso") {
     const s = p.pasos[sel.i], m = SISTEMAS_WF[s.sistema] || SISTEMAS_WF.fisico, o = s.origen && ORIGEN_WF[s.origen], sl = slides[sel.i];
     const abrirPantalla = sl?.screenId ? () => navigate({ tab:"ops", view:"wms", screen:sl.screenId })
       : sl?.wmhId ? () => navigate({ tab:"ops", view:"wmh", wmhScreen:sl.wmhId })
@@ -143,6 +166,7 @@ function Panel({ sel, canEdit, onClose, onIr, onPresentar, navigate, lienzo }) {
         <button onClick={() => onPresentar(p.codigo, sel.i)} style={{ ...ir, color:"#fff", background:"#0891b2" }}>▶ Presentar desde aquí</button>
         {abrirPantalla && <button onClick={abrirPantalla} style={{ ...ir, color:DESIGN.ink, background:DESIGN.sunken2 }}>Abrir en el manual ›</button>}
       </div>
+      <RolPaso key={`rol-${p.codigo}#${sel.i}`} p={p} i={sel.i} canEdit={canEdit} mano={rolesMano[`${p.codigo}:s${sel.i}`]} onGuardar={onGuardarRol}/>
       <ValidacionPaso key={`${p.codigo}#${sel.i}`} codigo={p.codigo} i={sel.i} canEdit={canEdit}/>
       <Titulo>Proceso</Titulo>
       <button onClick={() => onIr({ codigo:p.codigo })} style={{ ...ir, fontWeight:600, width:"100%", textAlign:"left", color:DESIGN.ink, background:DESIGN.sunken, border:`1px solid ${DESIGN.border}` }}>{p.codigo} · {p.nombre}</button>
@@ -186,6 +210,26 @@ function Panel({ sel, canEdit, onClose, onIr, onPresentar, navigate, lienzo }) {
     </div>
     {cuerpo}
   </aside>;
+}
+
+// Rol del paso: asignado a mano o inferido (con el motivo), editable por admin/editor
+function RolPaso({ p, i, canEdit, mano, onGuardar }) {
+  const inf = rolInferido(p.codigo, i);
+  const [err, setErr] = useState(null);
+  const propios = p.responsables || [];
+  const otros = [...new Set(ROLES_WF.map(r => r.nombre))].filter(r => !propios.includes(r));
+  const cambiar = async v => setErr(await onGuardar(p.codigo, i, v === "__inferido" ? null : v));
+  return <div style={{ marginTop:14 }}>
+    <Titulo>Rol que lo ejecuta</Titulo>
+    <div style={{ fontSize:13, color: mano || inf ? "#6d28d9" : DESIGN.muted, fontWeight:600 }}>👤 {mano || inf?.rol || "Sin rol asignado"}</div>
+    <div style={{ fontSize:11.5, color:DESIGN.muted, marginTop:2 }}>{mano ? "Asignado a mano" : inf ? `Inferido: ${inf.motivo} · validar` : "Ninguno de los roles del proceso coincide claramente con este paso"}</div>
+    {canEdit && <select value={mano || "__inferido"} onChange={e => cambiar(e.target.value)} style={{ marginTop:6, width:"100%", fontSize:12.5, padding:"6px 8px", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:7, fontFamily:DESIGN.font, background:"#fff" }}>
+      <option value="__inferido">{inf ? `Automático (${inf.rol})` : "Automático (sin rol)"}</option>
+      {propios.length > 0 && <optgroup label="Roles de este proceso">{propios.map(r => <option key={r} value={r}>{r}</option>)}</optgroup>}
+      <optgroup label="Otros roles">{otros.map(r => <option key={r} value={r}>{r}</option>)}</optgroup>
+    </select>}
+    {err && <div style={{ fontSize:11.5, color:"#b91c1c", marginTop:4 }}>No se pudo guardar: {err}</div>}
+  </div>;
 }
 
 function Titulo({ children }) {

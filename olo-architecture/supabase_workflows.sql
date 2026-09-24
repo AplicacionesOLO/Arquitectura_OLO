@@ -23,3 +23,6 @@ insert into public.role_permissions (role_key, tab_id, access)
 select role_key, 'workflows', access from public.role_permissions r
 where tab_id = 'olo-arch'
   and not exists (select 1 from public.role_permissions x where x.role_key = r.role_key and x.tab_id = 'workflows');
+
+-- Fase 2: rol asignado a mano a un paso ({ nodoId: rol }); sin entrada = el inferido
+alter table public.workflow_layouts add column if not exists roles jsonb not null default '{}'::jsonb;

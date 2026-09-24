@@ -52,8 +52,42 @@ export function entradasDe(codigo) {
 }
 export const salidasDe = codigo => (PROCESOS[codigo].salidaA || []).filter(c => PROCESOS[c] && c !== codigo);
 
+// ── Inferencia (fase 2): rol de cada paso y ubicación de las decisiones ─────
+// Todo lo inferido se marca como tal para validarlo; nada se inventa: si no hay
+// coincidencia clara, el paso queda sin rol y la decisión "sin ubicar".
+const STOP = new Set("para como cada este esta esto desde donde entre sobre segun pedido pedidos proceso sistema personal encargado ingresar realizar verificar revisar registrar".split(" "));
+const tokens = t => new Set(String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/[^a-z0-9]+/).filter(w => w.length >= 4 && !STOP.has(w)));
+const comunes = (a, b) => { let n = 0; a.forEach(w => { if (b.has(w)) n++; }); return n; };
+
+export function rolInferido(codigo, i) {
+  const p = PROCESOS[codigo], roles = p?.responsables || [];
+  if (!roles.length) return null;
+  if (roles.length === 1) return { rol: roles[0], motivo: "es el único rol del proceso" };
+  const t = tokens(`${p.pasos[i].texto} ${p.pasos[i].sistema}`);
+  const pts = roles.map(r => comunes(tokens(r), t)), max = Math.max(...pts);
+  if (max === 0 || pts.filter(x => x === max).length > 1) return null;
+  return { rol: roles[pts.indexOf(max)], motivo: "el texto del paso lo menciona" };
+}
+
+// Decisiones: se ubican después del paso con el que comparten ≥2 palabras clave
+export function decisionesDe(codigo) {
+  const p = PROCESOS[codigo], pt = p.pasos.map(s => tokens(s.texto));
+  return (p.decisiones || []).map((texto, j) => {
+    const q = tokens(texto.split("→")[0]);
+    let best = null, bs = 1;
+    pt.forEach((t, i) => { const sc = comunes(q, t); if (sc > bs) { bs = sc; best = i; } });
+    return { j, texto, despuesDe: best };
+  });
+}
+export const partirDecision = texto => {
+  const k = texto.indexOf("?");
+  const pregunta = k > 0 ? texto.slice(0, k + 1) : texto.split("→")[0].trim();
+  const opciones = (k > 0 ? texto.slice(k + 1) : "").split(/;\s*/).map(o => o.trim()).filter(Boolean);
+  return { pregunta, opciones };
+};
+
 // ── Geometría ───────────────────────────────────────────────────────────────
-export const CARD = { w:210, h:96 };
+export const CARD = { w:210, h:108 };
 const GX = 46, GY = 44, COLS = 4, PAD = 22, HEAD = 64;
 
 // Lienzo de un silo: un recuadro por proceso; dentro, los pasos en serpentina
@@ -67,10 +101,16 @@ export function lienzoSilo(siloId) {
   for (const cod of silo.procesos) {
     const p = PROCESOS[cod];
     const ent = entradasDe(cod), sal = salidasDe(cod);
+    const dec = decisionesDe(cod);
     const seq = [];
     if (ent.length) seq.push({ id:`${cod}:in`, tipo:"entrada", codigo:cod, refs:ent });
-    p.pasos.forEach((s, i) => seq.push({ id:`${cod}:s${i}`, tipo:"paso", codigo:cod, i, paso:s }));
+    p.pasos.forEach((s, i) => {
+      seq.push({ id:`${cod}:s${i}`, tipo:"paso", codigo:cod, i, paso:s });
+      dec.filter(d => d.despuesDe === i).forEach(d => seq.push({ id:`${cod}:d${d.j}`, tipo:"decision", codigo:cod, j:d.j, texto:d.texto, ubicada:true }));
+    });
     sal.forEach(d => seq.push({ id:`${cod}:out:${d}`, tipo:"salida", codigo:cod, refs:[d] }));
+    // las que no se pudieron ubicar van al final, sueltas, para acomodarlas a mano
+    dec.filter(d => d.despuesDe == null).forEach(d => seq.push({ id:`${cod}:d${d.j}`, tipo:"decision", codigo:cod, j:d.j, texto:d.texto, ubicada:false }));
     const filas = Math.ceil(seq.length / COLS);
     const gw = COLS * CARD.w + (COLS - 1) * GX + PAD * 2, gh = HEAD + filas * CARD.h + (filas - 1) * GY + PAD;
     const col = colY[0] <= colY[1] ? 0 : 1;
@@ -82,7 +122,8 @@ export function lienzoSilo(siloId) {
       const c = fila % 2 === 0 ? enFila : COLS - 1 - enFila;
       nodos.push({ ...n, grupo:`g:${cod}`, x: gx + PAD + c * (CARD.w + GX), y: gy + HEAD + fila * (CARD.h + GY) });
     });
-    const pasos = seq.filter(n => n.tipo === "paso");
+    // cadena del flujo: pasos y decisiones ubicadas, en orden
+    const pasos = seq.filter(n => n.tipo === "paso" || (n.tipo === "decision" && n.ubicada));
     if (ent.length && pasos[0]) aristas.push({ from:`${cod}:in`, to:pasos[0].id });
     for (let k = 1; k < pasos.length; k++) aristas.push({ from:pasos[k-1].id, to:pasos[k].id });
     const ult = pasos[pasos.length - 1];

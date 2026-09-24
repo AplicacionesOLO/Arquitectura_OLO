@@ -20,6 +20,8 @@ export const CUESTIONARIO = [
     id: "ti", destinatario: "TI de OLO y equipo del proyecto de integración WMS–OLO–3PL–Softland",
     nota: "El plan del proyecto (feb–jul 2026) prevé un documento funcional, un modelo de datos y un diseño técnico (fases 3 y 4): si ya existen, responden buena parte de este bloque.",
     preguntas: [
+      { gap: "Accesos", p: "El monitoreo de bases (24-sep-2026) detectó que el usuario de integración perdió acceso: ¿pueden devolverle permiso de lectura de metadatos (VIEW DEFINITION) en EFLOW_OLO (PROD CR) y acceso a SOFTLANDQA (QA VE)? Sin eso no se puede verificar lo que el BPA documenta del WMS de Costa Rica ni de Softland Venezuela.", va: "Contexto › Cambios en bases" },
+      { gap: "Accesos", p: "Las bases QA_EFLOW_OLO, QA_EINTEGRA_CONFIG, OLO_CLIRO_EFLOW y HSAPRUEBA (QA CR) están fuera de línea: ¿es definitivo? ¿Dónde quedó el ambiente de QA de eFlow y del sorter?", va: "Contexto › Cambios en bases" },
       { gap: "GAP·01", p: "¿Cómo se comunican Softland y eFlow: servicio web, archivos, base de datos intermedia o cola de mensajes? ¿Qué datos viajan en cada sentido y cada cuánto?", va: "Relaciones de sistemas y Contexto › Aplicaciones" },
       { gap: "GAP·01", p: "¿Nos pueden compartir el documento funcional, el modelo de datos y el diseño técnico del proyecto de integración, aunque sean borradores?", va: "Contexto › Fuentes" },
       { gap: "GAP·05", p: "¿Qué proceso llena las tablas ext_tms_* que lee la Torre de Control? ¿Cómo vuelven a eFlow el número de viaje, la prioridad y la banda?", va: "Operación › Cómo se relacionan (WMS ↔ WMH)" },

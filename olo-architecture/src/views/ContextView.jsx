@@ -16,6 +16,7 @@ import { WMH_PANTALLAS } from "../data/wmh_manual.js";
 import { SORTER_PANTALLAS, SORTER_CONCEPTOS } from "../data/sorter_manual.js";
 import { COFERSA_PENDIENTES } from "../data/control_tower.js";
 import { CUESTIONARIO, textoParaEnviar } from "../data/cuestionario.js";
+import { MonitoreoBases } from "../components/MonitoreoBases.jsx";
 import { CAT_META, INTEGRATIONS, SRO_MOD, SCO_MOD, EFW_MOD, WMH_CR_MOD, EFWBEVAL_MOD, EFWFEBECA_MOD, EFWSILLACA_MOD, EFWWMH_MOD,
          EINTEGRA_VE_MOD, SFLBEVAL_MOD, SFLFEBECA_MOD, SFLSILLACA_MOD, SFLTREXA_MOD, SFLPRISMA_MOD } from "../data/integrations.js";
 import { EFW_CONFIG_MOD } from "../data/efw_config.js";
@@ -50,6 +51,7 @@ const SECCIONES = [
   ["clientes", "Clientes y operación", "COFERSA · EPA"],
   ["reglas", "Reglas de negocio", `${REGLAS_OPERATIVAS.length} operativas · ${REGLAS_WMH.length} WMH`],
   ["datos", "Bases de datos", `${ESQUEMAS.length} esquemas · backbone SQL`],
+  ["monitoreo", "Cambios en bases", "monitoreo automático"],
   ["fuentes", "Fuentes del levantamiento", `${FUENTES.length} fuentes`],
   ["extension", "Puntos de extensión", `${EXTENSION_POINTS.length + EXTENSION_EFLOW.length} mecanismos`],
   ["glosario", "Glosario", `${GLOSARIO.length} términos`],
@@ -81,6 +83,7 @@ export function ContextView() {
       {sec === "clientes" && <Clientes ir={ir}/>}
       {sec === "reglas" && <Reglas ir={ir}/>}
       {sec === "datos" && <Datos ir={ir}/>}
+      {sec === "monitoreo" && <><H sub="Un job revisa periódicamente las bases de eFlow, Torre de Control, eIntegra y Softland: si cambió algo que el BPA documenta, si aparecieron tablas o bases nuevas y qué no se puede verificar por falta de acceso. Claude resume lo relevante.">Cambios en las bases de datos</H><MonitoreoBases/></>}
       {sec === "fuentes" && <Fuentes ir={ir}/>}
       {sec === "extension" && <Extension ir={ir}/>}
       {sec === "glosario" && <Glosario ir={ir}/>}

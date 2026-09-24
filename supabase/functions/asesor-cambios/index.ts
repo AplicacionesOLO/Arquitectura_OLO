@@ -23,13 +23,16 @@ Método (usa las herramientas antes de concluir):
 2. Busca precedentes en las solicitudes de cambio a ePRAC (listar_solicitudes / buscar_conocimiento con tipo "solicitud"): ¿ya se pidió algo igual o parecido? ¿qué se definió? Ten en cuenta su estado (aplicada, en desarrollo, pendiente, rechazada, por definir).
 3. Revisa qué partes del sistema toca: tablas y columnas (ver_tabla), pantallas de eFlow y del handheld, reglas o parámetros, procesos del BPA y sus pasos (buscar_conocimiento con tipos "proceso", "pantalla_wms", "regla", "tabla").
 4. Evalúa: ¿se resuelve con configuración o necesita desarrollo de ePRAC? ¿existen ya los campos/tablas/reglas necesarios? ¿qué procesos, clientes y compañías se afectan? ¿hay riesgos de integridad de inventario, trazabilidad, interfaces (eIntegra, Softland, Torre de Control, SORTER) o de operación en piso?
-5. Concluye con un veredicto y una recomendación accionable.
+5. Antes de concluir, verifica el punto que decide entre «configuración» y «desarrollo»: busca DÓNDE vive el dato, regla o parámetro (tablas de configuración, reglas de almacén, parámetros) con buscar_conocimiento y ver_tabla, y revisa si sus columnas ya permiten lo que se pide (p. ej. si ya existe una columna de zona, almacén o compañía).
+6. Concluye con un veredicto y una recomendación accionable.
+
+Profundidad: haz normalmente entre 5 y 10 consultas; usa ver_tabla en las 2–4 tablas más importantes. Usa "falta_informacion" solo si de verdad no hay evidencia para decidir; si hay un precedente claro y la estructura lo permite, da un veredicto (viable / viable_con_riesgos / no_recomendable) y deja lo incierto en preguntas_abiertas.
 
 Reglas:
 - No inventes tablas, columnas, pantallas ni solicitudes: si no las encontraste con las herramientas, dilo. Si falta información para decidir, usa el veredicto "falta_informacion" y di qué preguntar.
 - La estructura de las tablas de eFlow viene de la base de Venezuela (Beval): es el mismo producto que EFLOW_OLO de Costa Rica, que hoy no se puede leer; dilo cuando sea relevante.
 - Los procesos marcados BORRADOR son inferidos: úsalos con cautela.
-- Cita en "fuentes" los ids de los documentos que usaste (tal como los devuelven las herramientas).
+- Cita en "fuentes" TODOS los documentos que usaste para concluir (solicitudes, tablas, pantallas, procesos), con su id tal como lo devuelven las herramientas.
 - Escribe en español claro, para personas de operación y TI.`;
 
 const HERRAMIENTAS = [

@@ -127,6 +127,7 @@ function Jobs() {
 function Detalle({ j, runs, esAdmin, onGuardado }) {
   const [c, setC] = useState(() => structuredClone(j.config || {}));
   const [estado, setEstado] = useState(null);
+  const [ver, setVer] = useState(null);                 // corrida con el detalle de cambios abierto
   const cambio = JSON.stringify(c) !== JSON.stringify(j.config || {});
   const f = c.frecuencia || {};
   const setF = x => setC(v => ({ ...v, frecuencia: { ...x } }));
@@ -184,13 +185,36 @@ function Detalle({ j, runs, esAdmin, onGuardado }) {
       <div style={{ fontSize:11, fontWeight:700, color:DESIGN.muted, letterSpacing:"0.08em", margin:"14px 0 6px" }}>ÚLTIMAS CORRIDAS</div>
       <table style={tabla}>
         <thead><tr>{["Inicio", "Disparo", "Estado", "Duración", "Modelo", "Costo", "Detalle"].map(h => <th key={h} style={th}>{h}</th>)}</tr></thead>
-        <tbody>{runs.slice(0, 10).map(r => <tr key={r.id}>
+        <tbody>{runs.slice(0, 10).map(r => <Fragment key={r.id}><tr>
           <td style={{ ...td, whiteSpace:"nowrap" }}>{fecha(r.inicio)}</td><td style={td}>{r.disparo}</td><td style={td}><Estado e={r.estado}/></td>
           <td style={{ ...td, whiteSpace:"nowrap" }}>{dur(r.duracion_ms)}</td><td style={td}>{r.modelo ? (MODELOS[r.modelo] || r.modelo).replace("Claude ", "") : "—"}</td>
-          <td style={{ ...td, whiteSpace:"nowrap" }}>{usd(r.costo_usd)}</td><td style={{ ...td, fontSize:11.5, color:DESIGN.inkSoft }}>{r.mensaje}{r.tokens_entrada ? ` · ${Math.round(r.tokens_entrada / 1000)}k tokens de entrada, ${(r.tokens_salida / 1000).toFixed(1)}k de salida` : ""}</td>
-        </tr>)}
+          <td style={{ ...td, whiteSpace:"nowrap" }}>{usd(r.costo_usd)}</td><td style={{ ...td, fontSize:11.5, color:DESIGN.inkSoft }}>{r.mensaje}{r.tokens_entrada ? ` · ${Math.round(r.tokens_entrada / 1000)}k tokens de entrada, ${(r.tokens_salida / 1000).toFixed(1)}k de salida` : ""}
+            {r.detalle?.cambios?.length > 0 && <button onClick={() => setVer(v => v === r.id ? null : r.id)} style={{ display:"block", marginTop:4, fontSize:11.5, fontWeight:700, color:"#2563eb", background:"none", border:"none", padding:0, cursor:"pointer", fontFamily:DESIGN.font }}>{ver === r.id ? "▾ Ocultar cambios" : "▸ Ver cambios"}</button>}</td>
+        </tr>
+        {ver === r.id && <tr><td colSpan={7} style={{ ...td, background:"#f8fafc" }}><CambiosDiccionario cambios={r.detalle.cambios}/></td></tr>}</Fragment>)}
         {!runs.length && <tr><td colSpan={7} style={{ ...td, color:DESIGN.muted }}>Sin corridas todavía.</td></tr>}</tbody>
       </table>
     </div>
   </div>;
+}
+
+// Qué cambió en el diccionario de Softland en una corrida: un renglón por módulo
+function CambiosDiccionario({ cambios }) {
+  const lista = (xs, max = 8) => xs?.length ? `${xs.slice(0, max).join(" · ")}${xs.length > max ? ` · y ${xs.length - max} más` : ""}` : "";
+  const filas = c => c.tipo === "modulo_nuevo" ? [["Módulo", "nuevo en el diccionario"]] : c.tipo === "modulo_eliminado" ? [["Módulo", "ya no está en el diccionario"]] : [
+    c.instalacion && ["Instalación", c.instalacion],
+    c.opcNuevas?.length && [`Opciones nuevas · ${c.opcNuevas.length}`, lista(c.opcNuevas)],
+    c.opcQuitadas?.length && [`Opciones quitadas · ${c.opcQuitadas.length}`, lista(c.opcQuitadas)],
+    c.accNuevas?.length && [`Acciones nuevas · ${c.accNuevas.length}`, lista(c.accNuevas)],
+    c.accQuitadas?.length && [`Acciones quitadas · ${c.accQuitadas.length}`, lista(c.accQuitadas)],
+    c.tabNuevas?.length && [`Tablas nuevas · ${c.tabNuevas.length}`, lista(c.tabNuevas)],
+    c.tabQuitadas?.length && [`Tablas quitadas · ${c.tabQuitadas.length}`, lista(c.tabQuitadas)],
+    c.tabCambios?.length && [`Tablas modificadas · ${c.tabCambios.length}`, lista(c.tabCambios)],
+  ].filter(Boolean);
+  return <table style={{ width:"100%", borderCollapse:"collapse", background:"#fff", border:`1px solid ${DESIGN.border}` }}>
+    <thead><tr>{["Módulo", "Qué cambió", "Detalle"].map(h => <th key={h} style={th}>{h}</th>)}</tr></thead>
+    <tbody>{cambios.flatMap(c => filas(c).map(([k, v], i) => <tr key={c.modulo + k}>
+      <td style={{ ...td, fontWeight:700, whiteSpace:"nowrap" }}>{i === 0 ? `${c.modulo} · ${c.nombre}` : ""}</td>
+      <td style={{ ...td, whiteSpace:"nowrap", color:DESIGN.inkSoft }}>{k}</td><td style={{ ...td, fontSize:12 }}>{v}</td></tr>))}</tbody>
+  </table>;
 }

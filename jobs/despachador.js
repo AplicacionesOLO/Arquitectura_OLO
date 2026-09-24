@@ -23,6 +23,7 @@ const JOBS = {
     if (cfg.solo_si_cambios === false) a.push('--analizar');
     return a;
   },
+  softland_dd: () => [path.join(RAIZ, 'softland_dd', 'run.js')],
 };
 
 const env = {};
@@ -85,7 +86,7 @@ function correr(args, timeoutMin) {
       await api('POST', 'bpa_job_runs', {
         job_id: j.id, inicio: inicio.toISOString(), fin: fin.toISOString(), duracion_ms: fin - inicio, estado: ok ? 'ok' : 'error',
         disparo: manual ? 'manual' : 'programado', modelo: r.modelo || null, costo_usd: r.costo_usd || 0,
-        tokens_entrada: r.tokens_entrada || null, tokens_salida: r.tokens_salida || null,
+        tokens_entrada: r.tokens_entrada || null, tokens_salida: r.tokens_salida || null, detalle: r.detalle || null,
         mensaje: ok ? (r.mensaje || 'ok') + nota : (res.err || res.out).trim().split('\n').slice(-3).join(' ').slice(0, 500),
       });
       log(`${j.id}: ${ok ? 'ok' : 'error'} en ${((fin - inicio) / 1000).toFixed(0)} s · US$ ${(r.costo_usd || 0).toFixed(4)}`);

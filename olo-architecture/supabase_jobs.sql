@@ -81,3 +81,18 @@ on conflict (id) do nothing;
 insert into public.role_permissions (role_key, tab_id, access)
 select r, 'monitor', 'view' from unnest(array['admin','editor']) r
 where not exists (select 1 from public.role_permissions x where x.role_key = r and x.tab_id = 'monitor');
+
+-- Detalle estructurado de una corrida (p. ej. qué cambió en el diccionario de Softland)
+alter table public.bpa_job_runs add column if not exists detalle jsonb;
+
+insert into public.bpa_jobs (id, nombre, descripcion, tipo, motor, ubicacion, config, limitaciones, orden) values
+('softland_dd', 'Diccionario de Softland',
+ 'Extrae el diccionario de Softland Costa Rica (menú, acciones, tablas y entidades de la compañía COFER) y lo compara con el del BPA. Si cambió, actualiza softland_dd.json y deja el detalle de qué cambió en cada módulo.',
+ 'Nativo Windows · Programador de tareas', 'Node.js (sin IA)',
+ '{"equipo":"OLOL-03N0013192","ruta":"C:\\GitHub\\Arquitectura_OLO\\softland_dd","comando":"node softland_dd/run.js","tarea_windows":"BPA OLO - Despachador de jobs"}',
+ '{"activo":true,"frecuencia":{"tipo":"semanal","dias":[1],"hora":"06:30"},"modelo":null,"limite_mensual_usd":0,"timeout_min":15}',
+ '["Corre en el equipo indicado, encendido, con sesión iniciada y dentro de la red de OLO o con VPN.",
+   "Lee la base MAR de Softland QA Costa Rica: es el ambiente de QA y la compañía COFER (Cofersa), no el Softland propio de OLO.",
+   "Actualiza softland_dd.json en el equipo: para que el cambio se vea en el BPA publicado hay que hacer commit y deploy.",
+   "Solo ve las 17 bases del servidor a las que el usuario de integración tiene acceso; OLO_INTERFACE y otras 12 quedan fuera."]', 2)
+on conflict (id) do nothing;

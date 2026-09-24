@@ -6,13 +6,15 @@
 // Cruza cada tabla con la compañía COFER (Cofersa): si existe, cuántas columnas
 // tiene y si tiene datos. Solo lee diccionario y configuración (ninguna tabla de
 // clientes ni movimientos). Salida: olo-architecture/src/data/softland_dd.json
-// Uso: node softland_dd/extraer.js
+// Uso: node softland_dd/extraer.js [--salida <archivo>]
 const fs = require('fs');
 const path = require('path');
 const sql = require('mssql');
 const I = require('../db_config.js');
 
-const OUT = path.join(__dirname, '..', 'olo-architecture', 'src', 'data', 'softland_dd.json');
+// --salida <archivo> permite extraer a otro lado (lo usa run.js para comparar antes de reemplazar)
+const iSal = process.argv.indexOf('--salida');
+const OUT = iSal > 0 ? path.resolve(process.argv[iSal + 1]) : path.join(__dirname, '..', 'olo-architecture', 'src', 'data', 'softland_dd.json');
 const CIA = 'COFER';
 // DD_MODULO trae la descripción con doble codificación (UTF-8 leído como latin1)
 const fix = s => { if (s == null) return s; const t = String(s); return /Ã|Â/.test(t) ? Buffer.from(t, 'latin1').toString('utf8') : t; };

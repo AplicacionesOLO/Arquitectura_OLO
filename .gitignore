@@ -19,3 +19,4 @@ schema_watch/snapshots/
 schema_watch/reports/
 jobs/.lock
 jobs/despachador.log
+softland_dd/historial/

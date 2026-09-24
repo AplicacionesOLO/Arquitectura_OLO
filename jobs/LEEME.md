@@ -16,6 +16,13 @@ En cada revisión hace esto:
 5. Deja un latido (`ultima_revision`) para que el BPA muestre si el despachador
    está vivo.
 
+## Jobs actuales
+
+| Job | Qué hace | IA |
+|---|---|---|
+| `schema_watch` | Monitorea las bases SQL Server contra el BPA (Monitor › Cambios en bases) | Claude, solo si hay cambios |
+| `softland_dd` | Compara el diccionario de Softland (menú, acciones, tablas) y actualiza `softland_dd.json` si cambió | No |
+
 ## Agregar un job nuevo
 
 1. Agrega su fila en `bpa_jobs`, igual que en `olo-architecture/supabase_jobs.sql`.

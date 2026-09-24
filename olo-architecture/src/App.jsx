@@ -23,6 +23,7 @@ const AdminView = vista("AdminView");
 const ProcesosOperativosView = vista("ProcesosOperativosView");
 const RelacionesSistemasView = vista("RelacionesSistemasView");
 const MonitorView = vista("MonitorView");
+const AsesorView = vista("AsesorView");
 
 const ADMIN_TAB = { id:"admin", label:"◆ Administración", sub:"Usuarios · Roles · Permisos del sistema" };
 
@@ -218,6 +219,7 @@ export default function SoftlandArchitectureMap() {
           {tab==="integrations" && <IntegrationsView searchQuery={globalSearch} focus={focusFor("integrations")}/>}
           {tab==="context"      && <ContextView/>}
           {tab==="monitor"      && <MonitorView/>}
+          {tab==="asesor"       && <AsesorView/>}
           {tab==="admin" && isAdmin && <AdminView/>}
         </Suspense>
 

@@ -83,6 +83,7 @@ export const TABS = [
   { id:"olo-arch",     layer:"procesos",  label:"◇ Procesos",             sub:"Silos · Macroprocesos · Procesos · Subprocesos · fichas de los procedimientos CEDI" },
   { id:"workflows",    layer:"procesos",  label:"⧉ Workflows",            sub:"Plano maestro · cada proceso como flujo de pasos con su sistema, pantalla y rol · qué depende de cada sistema" },
   { id:"ops",          layer:"operacion", label:"◒ Operación",           sub:"eflow WMS (manual de 122 pantallas) · RF · WMH Torre de Control · SORTER CLIRO (Mecalux)" },
+  { id:"asesor",       layer:"operacion", label:"✦ Asesor de cambios",     sub:"¿Se puede hacer este cambio en el WMS? · veredicto, implicaciones y precedentes con todo lo que sabe el BPA · solicitudes de cambio a ePRAC" },
   { id:"ecosystem",    layer:"sistemas",  label:"◉ Ecosistema",          sub:"Mapa de capas: externos · ERP · operación · satélites" },
   { id:"infra",        layer:"sistemas",  label:"▭ Infraestructura",      sub:"Diagrama operativo · eFlow (CR/VE) · Lago de Datos · Suite OLO · Middleware · Sistemas del Estado" },
   { id:"softland",     layer:"sistemas",  label:"⬡ Módulos ERP",         sub:"Catálogo de módulos Softland · click para detalle y entidades inferidas" },

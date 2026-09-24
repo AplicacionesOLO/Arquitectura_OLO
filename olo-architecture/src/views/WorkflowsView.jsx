@@ -16,6 +16,7 @@ import { WorkflowCanvas, Icono } from "../components/WorkflowCanvas.jsx";
 import { Presentacion } from "../components/Presentacion.jsx";
 import { slidesProceso } from "../lib/presentacion.js";
 import { useNovedadesDoc } from "../components/NovedadesModal.jsx";
+import { ValidacionPaso, ValidacionProceso } from "../components/Validacion.jsx";
 
 const PESTANAS = [["workflows","Workflows"],["sistemas","Sistemas"],["roles","Roles"],["cambios","Cambios"]];
 const corto = l => (l || "").replace(/^P\d+\.\d+\s*·\s*/, "");
@@ -90,7 +91,7 @@ export function WorkflowsView({ focus }) {
             {lienzo === "maestro" && " En el mapa maestro, toca el título de un silo para abrir su lienzo."}
           </div>
         </div>
-        {sel && <Panel sel={sel} onClose={() => setSel(null)} onIr={irA} onPresentar={(codigo, start) => setShow({ codigo, start })} navigate={navigate} lienzo={lienzo}/>}
+        {sel && <Panel sel={sel} canEdit={canEdit} onClose={() => setSel(null)} onIr={irA} onPresentar={(codigo, start) => setShow({ codigo, start })} navigate={navigate} lienzo={lienzo}/>}
       </div>
     </>}
     {pestana === "sistemas" && <VistaSistemas onIr={irA} navigate={navigate}/>}
@@ -116,7 +117,7 @@ function SelectorLienzo({ lienzo, onChange }) {
 }
 
 // ── Panel lateral: paso o proceso ────────────────────────────────────────────
-function Panel({ sel, onClose, onIr, onPresentar, navigate, lienzo }) {
+function Panel({ sel, canEdit, onClose, onIr, onPresentar, navigate, lienzo }) {
   const slides = useMemo(() => PROCESOS[sel.codigo] ? slidesProceso(sel.codigo) : [], [sel.codigo]);
   const p = PROCESOS[sel.codigo]; if (!p) return null;
   const tipo = TIPO_FICHA[tipoFicha(p)];
@@ -142,6 +143,7 @@ function Panel({ sel, onClose, onIr, onPresentar, navigate, lienzo }) {
         <button onClick={() => onPresentar(p.codigo, sel.i)} style={{ ...ir, color:"#fff", background:"#0891b2" }}>▶ Presentar desde aquí</button>
         {abrirPantalla && <button onClick={abrirPantalla} style={{ ...ir, color:DESIGN.ink, background:DESIGN.sunken2 }}>Abrir en el manual ›</button>}
       </div>
+      <ValidacionPaso key={`${p.codigo}#${sel.i}`} codigo={p.codigo} i={sel.i} canEdit={canEdit}/>
       <Titulo>Proceso</Titulo>
       <button onClick={() => onIr({ codigo:p.codigo })} style={{ ...ir, fontWeight:600, width:"100%", textAlign:"left", color:DESIGN.ink, background:DESIGN.sunken, border:`1px solid ${DESIGN.border}` }}>{p.codigo} · {p.nombre}</button>
       {(p.responsables || []).length > 0 && <><Titulo>Roles del proceso</Titulo><Roles lista={p.responsables}/></>}
@@ -162,6 +164,7 @@ function Panel({ sel, onClose, onIr, onPresentar, navigate, lienzo }) {
         <button onClick={() => onPresentar(p.codigo, 0)} style={{ ...ir, color:"#fff", background:"#0891b2" }}>▶ Presentar</button>
         <button onClick={() => navigate({ tab:"olo-arch", codigo:p.codigo })} style={{ ...ir, color:DESIGN.ink, background:DESIGN.sunken2 }}>Ficha completa ›</button>
       </div>
+      <ValidacionProceso key={p.codigo} codigo={p.codigo} canEdit={canEdit}/>
       <Titulo>Sistemas que usa</Titulo>
       {Object.entries(sis).sort((a,b) => b[1] - a[1]).map(([k, v]) => <div key={k} style={{ display:"flex", alignItems:"center", gap:8, fontSize:12.5, marginBottom:4 }}>
         <Icono s={k} size={18}/><span style={{ flex:1, color:DESIGN.ink }}>{SISTEMAS_WF[k]?.label || k}</span><span style={{ color:DESIGN.muted }}>{v} paso{v > 1 ? "s" : ""}</span></div>)}

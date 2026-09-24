@@ -12,6 +12,7 @@ import { BPA_PROCESSES as BPA_PROCS } from "../data/softland.js";
 import { PROCESOS } from "../data/procesos_fichas.js";
 import { BPA_AREA_COLORS as BPA_COLORS, MATURITY_TINTS, DESIGN } from "../data/constants.js";
 import { KPICard, DetailPanel, ModuleChip } from "../components/ui.jsx";
+import { useValidaciones } from "../lib/useValidaciones.js";
 
 // Sistema de un paso de ficha → módulo de Operación
 const SIS_A_MODULO = { eflow:"WMS-D", handheld:"WMS-RF", torre:"WMH", sorter:"SORTER" };
@@ -21,6 +22,7 @@ const SIS_A_MODULO = { eflow:"WMS-D", handheld:"WMS-RF", torre:"WMH", sorter:"SO
 const OPERACION_LOGISTICA = ["log_planificacion","log_almacenaje","log_preparacion","log_transporte","log_inventario","log_servicio_cliente","log_mantenimiento","log_desempeno","cross_docking"];
 
 const ESTADOS = {
+  validado: { label:"Validado",          color:"#047857", desc:"todos sus procesos fueron validados en Workflows" },
   cedi:     { label:"Procedimiento OLO", color:"#15803d", desc:"tiene fichas de procedimientos aprobados del CEDI" },
   manual:   { label:"Manual del sistema", color:"#0891b2", desc:"mapeado del manual del proveedor, sin procedimiento OLO" },
   borrador: { label:"Borrador",          color:"#b45309", desc:"procesos armados sobre pantallas de eFlow, a validar" },
@@ -47,17 +49,23 @@ const codigoSilo = (label = "") => label.match(/^(P\d+\.\d+)/)?.[1] ?? null;
 const nombreSilo = (label = "") => label.replace(/^P\d+\.\d+\s*·\s*/, "");
 
 // Estado y datos del levantamiento de un silo
-function levantamiento(siloId, cats, procsPorSilo) {
+function levantamiento(siloId, cats, procsPorSilo, val) {
   if (!siloId) return { estado:"sinSilo" };
   const cat = cats?.find(c => c.id === siloId);
   const f = FICHAS_POR_SILO[siloId] || { cedi:0, manual:0, borrador:0, modulos:new Set() };
   const procesos = procsPorSilo?.[siloId] ?? 0;
-  const estado = f.cedi ? "cedi" : f.manual ? "manual" : f.borrador ? "borrador" : procesos ? "arbol" : "vacio";
-  return { estado, cat, codigo:codigoSilo(cat?.label), procesos, cedi:f.cedi, manual:f.manual, borrador:f.borrador, modulos:[...f.modulos] };
+  // validación hecha en Workflows (proceso completo y paso a paso)
+  const fichas = Object.values(PROCESOS).filter(p => p.silo === siloId);
+  const res = val?.cargado ? fichas.map(p => val.resumen(p.codigo)) : [];
+  const pasosVal = res.reduce((a, r) => a + r.validados, 0), pasosTot = fichas.reduce((a, p) => a + p.pasos.length, 0);
+  const procVal = res.filter(r => r.proceso === "validado").length;
+  const estado = fichas.length && procVal === fichas.length ? "validado" : f.cedi ? "cedi" : f.manual ? "manual" : f.borrador ? "borrador" : procesos ? "arbol" : "vacio";
+  return { estado, cat, codigo:codigoSilo(cat?.label), procesos, cedi:f.cedi, manual:f.manual, borrador:f.borrador, modulos:[...f.modulos], pasosVal, pasosTot, procVal, fichas:fichas.length };
 }
 
 export function BPAView({ selected, setSelected, onNavigate = () => {} }) {
   const [cats, setCats] = useState(null);
+  const val = useValidaciones();
   const detalleRef = useRef(null);
   useEffect(() => { if (selected) detalleRef.current?.scrollIntoView({ behavior:"smooth", block:"nearest" }); }, [selected]);
   const [procsPorSilo, setProcsPorSilo] = useState(null);
@@ -76,7 +84,7 @@ export function BPAView({ selected, setSelected, onNavigate = () => {} }) {
   }, []);
 
   const conLev = (p, area) => {
-    const lev = levantamiento(p.silo, cats, procsPorSilo);
+    const lev = levantamiento(p.silo, cats, procsPorSilo, val);
     // cobertura = lo documentado en el diagnóstico + lo que usan los pasos levantados
     const cobertura = [...new Set([...(p.coverage || []), ...(lev.modulos || [])])];
     return { ...p, area, lev, cobertura };
@@ -95,6 +103,9 @@ export function BPAView({ selected, setSelected, onNavigate = () => {} }) {
   const silosConProcesos = cats ? cats.filter(c => procsPorSilo?.[c.id]).length : null;
   const fichas = Object.values(PROCESOS);
   const nTipo = t => fichas.filter(p => tipoFicha(p) === t).length;
+  const totPasos = fichas.reduce((a, p) => a + p.pasos.length, 0);
+  const pasosValidados = val.cargado ? fichas.reduce((a, p) => a + val.resumen(p.codigo).validados, 0) : null;
+  const procesosValidados = val.cargado ? fichas.filter(p => val.resumen(p.codigo).proceso === "validado").length : null;
 
   const selProc = [...diagnostico, ...operacion].find(p => p.name === selected);
   const detalle = selProc && (() => {
@@ -108,7 +119,8 @@ export function BPAView({ selected, setSelected, onNavigate = () => {} }) {
     else partes.push(`Levantamiento: ${lev.procesos} proceso${lev.procesos === 1 ? "" : "s"} en el árbol de ${lev.codigo ?? nombreSilo(lev.cat?.label)}`
       + (lev.cedi ? ` · ${lev.cedi} ficha${lev.cedi > 1 ? "s" : ""} de procedimiento OLO` : "")
       + (lev.manual ? ` · ${lev.manual} ficha${lev.manual > 1 ? "s" : ""} del manual del sistema` : "")
-      + (lev.borrador ? ` · ${lev.borrador} ficha${lev.borrador > 1 ? "s" : ""} borrador (a validar)` : "") + ".");
+      + (lev.borrador ? ` · ${lev.borrador} ficha${lev.borrador > 1 ? "s" : ""} borrador (a validar)` : "") + "."
+      + (lev.fichas ? ` Validación: ${lev.pasosVal} de ${lev.pasosTot} pasos y ${lev.procVal} de ${lev.fichas} procesos validados en Workflows.` : ""));
     const soloPasos = lev.modulos?.filter(m => !(selProc.coverage || []).includes(m)) || [];
     if (soloPasos.length) partes.push(`Sistemas que aparecen en los pasos levantados y no en el diagnóstico: ${soloPasos.join(", ")}.`);
     return {
@@ -126,6 +138,7 @@ export function BPAView({ selected, setSelected, onNavigate = () => {} }) {
       <KPICard label="Madurez promedio" value={`${avgMat}/5`} color="#f39c12" sub={`${lider.name} (M${lider.maturity}) lidera`}/>
       <KPICard label="Con cobertura de sistema" value={`${withCov}/${total}`} color="#27ae60" sub="diagnóstico + pasos levantados"/>
       <KPICard label="Silos con procesos" value={cats ? `${silosConProcesos}/${cats.length}` : "…"} color="#2563eb" sub="módulo Procesos"/>
+      <KPICard label="Pasos validados" value={pasosValidados == null ? "…" : `${pasosValidados}/${totPasos}`} color="#047857" sub={procesosValidados == null ? "" : `${procesosValidados} de ${fichas.length} procesos validados · en Workflows`}/>
       <KPICard label="Fichas de proceso" value={fichas.length} color="#b45309" sub={`${nTipo("cedi")} procedimiento OLO · ${nTipo("manual")} de manual · ${nTipo("borrador")} borrador`}/>
     </div>
     <div style={{ background:"rgba(243,156,18,0.07)", border:"1px solid rgba(243,156,18,0.22)", borderLeft:"3px solid #f39c12", borderRadius:8, padding:"10px 14px", marginBottom:22, fontSize:12, color:"#666", lineHeight:1.6 }}>
@@ -173,7 +186,7 @@ function ProcCard({ p, meta, isSel, onSelect }) {
   const { lev, cobertura } = p, hasCov = cobertura.length > 0;
   const tint = p.maturity != null ? MATURITY_TINTS[p.maturity] : "#cbd5e1";
   const resumen = lev.estado === "sinSilo" || lev.estado === "vacio" ? null
-    : [lev.procesos && `${lev.procesos} proc.`, lev.cedi && `${lev.cedi} OLO`, lev.manual && `${lev.manual} manual`, lev.borrador && `${lev.borrador} borr.`].filter(Boolean).join(" · ");
+    : [lev.procesos && `${lev.procesos} proc.`, lev.cedi && `${lev.cedi} OLO`, lev.manual && `${lev.manual} manual`, lev.borrador && `${lev.borrador} borr.`, lev.pasosVal && `✓ ${lev.pasosVal}/${lev.pasosTot} pasos`].filter(Boolean).join(" · ");
   return <div onClick={()=>onSelect(isSel?null:p.name)} style={{ background:isSel?meta.color+"1a":"#ffffff", border:`1px solid ${hasCov?meta.color+"55":"#e0e0e0"}`, borderLeft:`3px solid ${tint}`, borderRadius:8, padding:"8px 10px", cursor:"pointer", transition:"all 0.15s", boxShadow:isSel?`0 0 0 2px ${meta.color}33`:"none" }}>
     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", gap:6, marginBottom:5 }}>
       <span style={{ fontSize:11, color:"#1D1D1B", fontWeight:isSel?700:500, lineHeight:1.3, flex:1 }}>{p.name}</span>

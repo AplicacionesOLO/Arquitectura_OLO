@@ -9,6 +9,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { DESIGN } from "../data/constants.js";
 import { PROCESOS, SILO_LABELS } from "../data/procesos_fichas.js";
 import { SISTEMAS_WF, ORIGEN_WF, TIPO_FICHA, tipoFicha, CARD, CARD_M, IMPACTO_SISTEMA } from "../data/workflows.js";
+import { useValidaciones, ESTADO_VAL } from "../lib/useValidaciones.js";
 
 const HEAD = 64, PAD = 22;
 const clave = a => `${a.from}>${a.to}`;
@@ -21,6 +22,8 @@ export function WorkflowCanvas({ modelo, maestro, layout, canEdit, onSave, resal
   const [desde, setDesde] = useState(null);           // conectar: tarjeta de origen
   const [estado, setEstado] = useState(null);         // "guardando" | "guardado" | "error"
   const [vista, setVista] = useState({ x:0, y:0, z:1 });
+  const [pendientes, setPendientes] = useState(false);  // apaga lo ya validado
+  const val = useValidaciones();
   const vistaRef = useRef(vista);
   const boxRef = useRef(null);
   const dragRef = useRef(null), panRef = useRef(null);
@@ -146,6 +149,10 @@ export function WorkflowCanvas({ modelo, maestro, layout, canEdit, onSave, resal
 
   // ── Resaltado por sistema ──
   const apagado = n => {
+    if (pendientes) {
+      if (n.tipo === "paso" && val.estadoPaso(n.codigo, n.i) === "validado") return true;
+      if (n.tipo === "proceso" && val.resumen(n.codigo)?.proceso === "validado") return true;
+    }
     if (!resaltar) return false;
     if (n.tipo === "paso") return n.paso.sistema !== resaltar;
     if (n.tipo === "proceso") return !IMPACTO_SISTEMA[resaltar]?.procesos[n.codigo];
@@ -162,6 +169,8 @@ export function WorkflowCanvas({ modelo, maestro, layout, canEdit, onSave, resal
       {sistemasAqui.map(s => { const m = SISTEMAS_WF[s]; if (!m) return null; const on = resaltar === s;
         return <button key={s} onClick={() => onSelect({ tipo:"resaltar", sistema: on ? null : s })} title={`Resaltar los pasos en ${m.label}`}
           style={{ ...btn, fontSize:11, padding:"3px 9px", color: on ? "#fff" : m.color, background: on ? m.color : m.color + "12", borderColor: m.color + "55" }}>{m.label}</button>; })}
+      <button onClick={() => setPendientes(p => !p)} title="Apagar lo que ya está validado para ver qué falta revisar"
+        style={{ ...btn, fontSize:11, padding:"3px 9px", color: pendientes ? "#fff" : "#15803d", background: pendientes ? "#15803d" : "#f0fdf4", borderColor:"#86efac" }}>✓ Solo pendientes de validar</button>
       <div style={{ marginLeft:"auto", display:"flex", gap:6, alignItems:"center" }}>
         {estado && editar && <span style={{ fontSize:11, color: estado === "error" ? "#b91c1c" : DESIGN.muted }}>{estado === "guardando" ? "Guardando…" : estado === "guardado" ? "Guardado ✓" : "No se pudo guardar"}</span>}
         <button onClick={() => zoomBoton(1 / 1.2)} style={btn} title="Alejar">−</button>
@@ -184,7 +193,7 @@ export function WorkflowCanvas({ modelo, maestro, layout, canEdit, onSave, resal
       style={{ position:"relative", height:"min(74vh, 800px)", overflow:"hidden", cursor:"grab", userSelect:"none",
         backgroundColor:"#fbfcfe", backgroundImage:"radial-gradient(#dbe2ea 1px, transparent 1px)", backgroundSize:`${22 * vista.z}px ${22 * vista.z}px`, backgroundPosition:`${vista.x}px ${vista.y}px` }}>
       <div style={{ position:"absolute", left:0, top:0, transformOrigin:"0 0", transform:`translate(${vista.x}px, ${vista.y}px) scale(${vista.z})` }}>
-        {grupos.map(g => <Grupo key={g.id} g={g} maestro={maestro} editar={editar}
+        {grupos.map(g => <Grupo key={g.id} g={g} maestro={maestro} editar={editar} res={!maestro ? val.resumen(g.codigo) : null}
           onDown={e => empezarArrastre(e, g.hijos, () => maestro ? onAbrirSilo(g.silo) : onSelect({ tipo:"proceso", codigo:g.codigo }))}/>)}
         <svg style={{ position:"absolute", left:0, top:0, width:1, height:1, overflow:"visible", pointerEvents:"none" }}>
           <defs>
@@ -201,7 +210,7 @@ export function WorkflowCanvas({ modelo, maestro, layout, canEdit, onSave, resal
             </g>;
           })}
         </svg>
-        {nodos.map(n => <Nodo key={n.id} n={n} card={card} sel={selId === n.id} origen={desde === n.id} apagado={apagado(n)} editar={editar}
+        {nodos.map(n => <Nodo key={n.id} n={n} card={card} val={n.tipo === "paso" ? val.estadoPaso(n.codigo, n.i) : n.tipo === "proceso" ? val.resumen(n.codigo) : null} sel={selId === n.id} origen={desde === n.id} apagado={apagado(n)} editar={editar}
           onDown={e => { if (editar && desde === "elige") { e.stopPropagation(); setDesde(n.id); return; } empezarArrastre(e, [n.id], () => clickNodo(n)); }}/>)}
       </div>
     </div>
@@ -220,7 +229,7 @@ function ruta(A, B, card) {
   return `M${ax},${y1} C${ax},${y1 + s * c} ${bx},${y2 - s * c} ${bx},${y2}`;
 }
 
-function Grupo({ g, maestro, editar, onDown }) {
+function Grupo({ g, maestro, editar, onDown, res }) {
   const p = !maestro && PROCESOS[g.codigo];
   const tipo = p && TIPO_FICHA[tipoFicha(p)];
   const color = maestro ? "#64748b" : tipo.color;
@@ -237,6 +246,8 @@ function Grupo({ g, maestro, editar, onDown }) {
               <span style={{ fontSize:12, fontWeight:700, color }}>{p.codigo}</span>
               <span style={{ fontSize:10.5, fontWeight:700, color, background:color + "18", border:`1px solid ${color}44`, borderRadius:4, padding:"0 6px" }}>{tipo.label}</span>
               <span style={{ fontSize:11, color:DESIGN.muted }}>{p.pasos.length} pasos</span>
+              {res && (res.validados > 0 || res.corregir > 0 || res.proceso !== "pendiente") && <span style={{ fontSize:11, fontWeight:700, color: res.proceso === "validado" ? "#15803d" : res.corregir ? "#b45309" : "#15803d" }}>
+                {res.proceso === "validado" ? "✓ proceso validado" : `✓ ${res.validados}/${res.total}${res.corregir ? ` · ! ${res.corregir}` : ""}`}</span>}
             </div>
             <div style={{ fontSize:16, fontWeight:700, color:DESIGN.ink, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.nombre}</div>
           </div>}
@@ -248,7 +259,7 @@ function Grupo({ g, maestro, editar, onDown }) {
   </div>;
 }
 
-function Nodo({ n, card, sel, origen, apagado, editar, onDown }) {
+function Nodo({ n, card, sel, origen, apagado, editar, onDown, val }) {
   const base = { position:"absolute", left:n.x, top:n.y, width:card.w, height:card.h, opacity: apagado ? 0.22 : 1, transition:"opacity .15s", cursor: editar ? "move" : "pointer" };
   if (n.tipo === "entrada" || n.tipo === "salida") {
     const refs = n.refs.map(c => PROCESOS[c]);
@@ -267,7 +278,7 @@ function Nodo({ n, card, sel, origen, apagado, editar, onDown }) {
     return <div onMouseDown={onDown} style={{ ...base, boxSizing:"border-box", background:"#fff", borderRadius:10, border:`1.5px solid ${sel || origen ? "#0f172a" : DESIGN.border}`, borderLeft:`4px solid ${tipo.color}`, boxShadow: sel ? "0 0 0 3px rgba(15,23,42,.12)" : DESIGN.shadowCard, padding:"8px 10px" }}>
       <div style={{ display:"flex", justifyContent:"space-between", gap:6 }}>
         <span style={{ fontSize:11, fontWeight:700, color:tipo.color }}>{p.codigo}</span>
-        <span style={{ fontSize:10, color:DESIGN.muted }}>{p.pasos.length} pasos</span>
+        <span style={{ fontSize:10, color: val?.proceso === "validado" ? "#15803d" : DESIGN.muted, fontWeight: val?.proceso === "validado" ? 700 : 400 }}>{val?.proceso === "validado" ? "✓ validado" : val?.validados ? `✓ ${val.validados}/${p.pasos.length}` : `${p.pasos.length} pasos`}</span>
       </div>
       <div style={{ fontSize:12.5, fontWeight:600, color:DESIGN.ink, lineHeight:1.25, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.nombre}</div>
       <div style={{ display:"flex", gap:3, marginTop:5 }}>{sis.map(s => <Icono key={s} s={s} size={18}/>)}</div>
@@ -279,6 +290,7 @@ function Nodo({ n, card, sel, origen, apagado, editar, onDown }) {
     <div style={{ display:"flex", alignItems:"center", gap:6 }}>
       <Icono s={s.sistema} size={20}/>
       <span style={{ fontSize:10.5, fontWeight:700, color:m.color, flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{m.label}</span>
+      {val && val !== "pendiente" && <span title={ESTADO_VAL[val].label} style={{ width:16, height:16, borderRadius:"50%", background:ESTADO_VAL[val].color, color:"#fff", fontSize:10, fontWeight:800, display:"inline-flex", alignItems:"center", justifyContent:"center" }}>{ESTADO_VAL[val].icono}</span>}
       <span style={{ fontSize:10, color:DESIGN.mutedSoft, fontWeight:600 }}>{n.i + 1}/{total}</span>
     </div>
     <div style={{ fontSize:11.5, color:DESIGN.ink, lineHeight:1.3, overflow:"hidden", display:"-webkit-box", WebkitLineClamp:3, WebkitBoxOrient:"vertical", flex:1 }}>{s.texto}</div>

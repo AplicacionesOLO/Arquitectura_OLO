@@ -11,6 +11,8 @@ import { PROCESOS, SILO_LABELS } from "../data/procesos_fichas.js";
 import { DrawioFlowchart } from "../schemas/DrawioFlowchart.jsx";
 import { WMS_INDEX, PASO_PANTALLA, PANTALLA_PROCESOS } from "../data/wms_links.js";
 import { Presentacion } from "./Presentacion.jsx";
+import { useValidaciones } from "../lib/useValidaciones.js";
+import { BadgeVal } from "./Validacion.jsx";
 import { slidesProceso } from "../lib/presentacion.js";
 import { WMH_BY_ID, pantallaWmhDePaso } from "../data/wmh_manual.js";
 import { SORTER_BY_ID } from "../data/sorter_manual.js";
@@ -195,6 +197,8 @@ function SorterLink({ id, onNavigate }) {
 
 function Pasos({ p, onNavigate }) {
   const links = PASO_PANTALLA[p.codigo] || {};
+  const val = useValidaciones();
+  const res = val.cargado ? val.resumen(p.codigo) : null;
   const [show, setShow] = useState(null);
   const wmhDe = (s) => s.sistema === "torre" ? pantallaWmhDePaso(s.texto) : null;
   const srtDe = (s) => s.sistema === "sorter" && SORTER_BY_ID[s.screen] ? s.screen : null;
@@ -208,6 +212,10 @@ function Pasos({ p, onNavigate }) {
     onOpenScreen={(id) => { setShow(null); onNavigate({ tab:"ops", view:"wms", screen:id }); }}
     onOpenWmh={(id) => { setShow(null); onNavigate({ tab:"ops", view:"wmh", wmhScreen:id }); }}
     onOpenSorter={(id) => { setShow(null); onNavigate({ tab:"ops", view:"sorter", sorterScreen:id }); }}/>}
+  {res && <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap", fontSize:12, color:DESIGN.inkSoft, marginBottom:12 }}>
+    <BadgeVal estado={res.proceso}/><span><b>{res.validados}</b> de {res.total} pasos validados{res.corregir ? ` · ${res.corregir} con corrección` : ""}</span>
+    <button onClick={()=>onNavigate({ tab:"workflows", codigo:p.codigo })} style={{ fontSize:12, fontWeight:700, color:"#2563eb", background:"none", border:"none", padding:0, cursor:"pointer", fontFamily:DESIGN.font }}>Validar en Workflows ›</button>
+  </div>}
   <ol style={{ margin:0, padding:0, listStyle:"none", display:"grid", gap:10 }}>
     {p.pasos.map((s,i) => <li key={i} style={{ display:"flex", gap:10 }}>
       <span style={{ width:20, height:20, borderRadius:"50%", background:DESIGN.sunken2, color:DESIGN.inkSoft, fontSize:10.5, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{i+1}</span>
@@ -216,6 +224,7 @@ function Pasos({ p, onNavigate }) {
         <div style={{ display:"flex", gap:6, alignItems:"center", flexWrap:"wrap", marginTop:3 }}>
           {s.origen && <span title={ORIGEN[s.origen].title} style={{ fontSize:9.5, fontWeight:700, color:ORIGEN[s.origen].color, border:`1px ${s.origen==="inferido"?"dashed":"solid"} ${ORIGEN[s.origen].color}80`, borderRadius:4, padding:"0 5px" }}>{ORIGEN[s.origen].label}</span>}
           {s.sistema && <SistemaChip sys={s.sistema}/>}
+          {val.cargado && val.estadoPaso(p.codigo, i) !== "pendiente" && <BadgeVal estado={val.estadoPaso(p.codigo, i)}/>}
           {links[i]
             ? links[i].map(id => <PantallaLink key={id} id={id} onNavigate={onNavigate}/>)
             : srtDe(s) ? <SorterLink id={srtDe(s)} onNavigate={onNavigate}/>

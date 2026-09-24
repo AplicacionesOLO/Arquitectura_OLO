@@ -4,6 +4,7 @@ import { SearchIcon, ShieldIcon } from "./components/icons.jsx";
 import { OLOArchView } from "./views/OLOArchView.jsx";
 import { EcosystemView } from "./views/EcosystemView.jsx";
 import { BPAView } from "./views/BPAView.jsx";
+import { WorkflowsView } from "./views/WorkflowsView.jsx";
 import { SoftlandView } from "./views/SoftlandView.jsx";
 import { OpsView } from "./views/OpsView.jsx";
 import { IntegrationsView } from "./views/IntegrationsView.jsx";
@@ -204,6 +205,7 @@ export default function SoftlandArchitectureMap() {
         {tab==="bpa"          && <BPAView selected={bpaSel} setSelected={setBpaSel} onNavigate={navigate}/>}
         {tab==="infra"        && <OLOArchView     searchQuery={globalSearch}/>}
         {tab==="olo-arch"     && <ProcesosOperativosView onNavigate={navigate} focusCodigo={focusFor("olo-arch")?.codigo} focusSilo={focusFor("olo-arch")?.silo} focusSeq={focusFor("olo-arch")?.n}/>}
+        {tab==="workflows"    && <WorkflowsView focus={focusFor("workflows")}/>}
         {tab==="relaciones"   && <RelacionesSistemasView/>}
         {tab==="ecosystem"    && <EcosystemView   searchQuery={globalSearch}/>}
         {tab==="softland"     && <SoftlandView selected={slSel} setSelected={setSlSel}/>}

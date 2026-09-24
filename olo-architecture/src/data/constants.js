@@ -81,6 +81,7 @@ export const NAV_LAYERS = [
 export const TABS = [
   { id:"bpa",          layer:"procesos",  label:"◈ BPA · OLO",           sub:"Modelo de procesos · 30 procesos del diagnóstico + operación logística · madurez, cobertura y avance del levantamiento" },
   { id:"olo-arch",     layer:"procesos",  label:"◇ Procesos",             sub:"Silos · Macroprocesos · Procesos · Subprocesos · fichas de los procedimientos CEDI" },
+  { id:"workflows",    layer:"procesos",  label:"⧉ Workflows",            sub:"Plano maestro · cada proceso como flujo de pasos con su sistema, pantalla y rol · qué depende de cada sistema" },
   { id:"ops",          layer:"operacion", label:"◒ Operación",           sub:"eflow WMS (manual de 122 pantallas) · RF · WMH Torre de Control · SORTER CLIRO (Mecalux)" },
   { id:"ecosystem",    layer:"sistemas",  label:"◉ Ecosistema",          sub:"Mapa de capas: externos · ERP · operación · satélites" },
   { id:"infra",        layer:"sistemas",  label:"▭ Infraestructura",      sub:"Diagrama operativo · eFlow (CR/VE) · Lago de Datos · Suite OLO · Middleware · Sistemas del Estado" },

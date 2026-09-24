@@ -8,10 +8,38 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const NOVEDADES_FALLBACK = {
-  "version": "2026-09",
+  "version": "2026-09-2",
   "titulo": "Novedades",
-  "fecha": "Septiembre 2026",
+  "fecha": "Septiembre 2026 · segunda entrega",
   "items": [
+    {
+      "id": "workflows-2026-09",
+      "estado": "publicada",
+      "titulo": "Nuevo módulo Workflows: el plano maestro de la operación",
+      "detalle": "Cada proceso como un flujo de tarjetas: paso, sistema, pantalla y roles. Un mapa maestro con los 12 silos y sus 53 procesos conectados, y un lienzo por silo. Toca un paso para ver su captura o presentarlo; los círculos morados llevan al proceso anterior o siguiente. Admin y editores pueden reacomodar y conectar tarjetas.",
+      "seccion": "workflows"
+    },
+    {
+      "id": "workflows-sistemas-2026-09",
+      "estado": "publicada",
+      "titulo": "Qué depende de cada sistema",
+      "detalle": "Workflows › Sistemas muestra, para eFlow WMS, handheld, Torre de Control, SORTER, Softland y los demás, cuántos pasos, procesos, silos y tablas dependen de él — y los resalta en el mapa. Workflows › Roles muestra los procesos de cada rol.",
+      "seccion": "workflows"
+    },
+    {
+      "id": "bpa-levantamiento-2026-09",
+      "estado": "publicada",
+      "titulo": "BPA · OLO conectado al levantamiento",
+      "detalle": "Cada proceso del diagnóstico muestra su silo P1.x, si ya tiene procedimiento OLO, borrador o está sin levantar, y los sistemas que usan sus pasos. Nuevo bloque Operación logística del CEDI y botón para ir directo al silo en Procesos.",
+      "seccion": "bpa"
+    },
+    {
+      "id": "diagramas-2026-09",
+      "estado": "publicada",
+      "titulo": "Diagramas más cómodos",
+      "detalle": "El mapa TO-BE de Infraestructura ahora es compacto y encuadrado; en Integraciones, las tablas del diagrama relacional FK ya no se salen de su módulo y el lienzo no se corta al desplazarlo.",
+      "seccion": null
+    },
     {
       "id": "fichas-cedi-2026-09",
       "estado": "publicada",

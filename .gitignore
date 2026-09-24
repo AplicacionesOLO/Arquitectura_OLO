@@ -17,3 +17,5 @@ ve_schema_*.json
 # Instantáneas de metadatos de las bases (schema_watch) — no se versionan
 schema_watch/snapshots/
 schema_watch/reports/
+jobs/.lock
+jobs/despachador.log

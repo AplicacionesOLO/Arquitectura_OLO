@@ -89,4 +89,5 @@ export const TABS = [
   { id:"context",      layer:"sistemas",  label:"◐ Contexto",            sub:"Estado del conocimiento · localizaciones · aplicaciones · clientes y reglas · bases de datos · fuentes · glosario · brechas" },
   { id:"integrations", layer:"datos",     label:"⟳ Integraciones",      sub:"Esquemas de BD reales · qué fluye entre módulos · backbone SQL" },
   { id:"relaciones",   layer:"datos",     label:"▨ Relaciones de sistemas", sub:"Cómo se relacionan sistemas, entidades y campos · ER por silo · linaje de dato" },
+  { id:"monitor",      layer:"datos",     label:"⏱ Monitor",              sub:"Jobs automáticos · frecuencia, modelo de IA, gasto y tiempos de cada uno · cambios detectados en las bases de datos" },
 ];

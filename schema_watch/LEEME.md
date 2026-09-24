@@ -26,7 +26,7 @@ Softland (las 6 instancias de `db_config.js`) y le dice al BPA qué cambió.
    (`Read`, `Grep`, `Glob`) y no modifica nada. El prompt está en
    `analizar_prompt.md`.
 4. **Publicación** (`publicar.js`): se sube a Supabase (`bpa_schema_cambios`) y el
-   BPA lo muestra en **Contexto › Cambios en bases**.
+   BPA lo muestra en **Monitor › Cambios en bases**.
 
 Opciones de `run.js`:
 
@@ -34,16 +34,17 @@ Opciones de `run.js`:
 - `--analizar`: fuerza el análisis aunque no haya cambios.
 - `--sin-publicar`: no sube nada.
 
-## Tarea programada
+## Cuándo corre
 
-`instalar_tarea.cmd` la registra en el Programador de tareas de Windows con el
-nombre «BPA OLO - Monitoreo de bases». Corre de lunes a viernes a las 7:00 y solo
-con la sesión del usuario iniciada. Log en `reports/job.log`.
+Ya no tiene tarea propia: lo lanza el **despachador de jobs** (`../jobs/`), que se
+ejecuta cada 15 minutos y lee la configuración desde el BPA, en **Monitor › Jobs**.
+Ahí se ajustan la frecuencia, el modelo de IA, el tope de gasto mensual y el tiempo
+máximo, y se puede pedir «Ejecutar ahora». Cada corrida queda registrada con su
+duración, modelo y costo.
 
 - Debe correr en un equipo **dentro de la red de OLO o con VPN**: las bases usan IPs
   privadas. Por eso no sirve una rutina en la nube.
-- Para cambiar el horario, edita `instalar_tarea.cmd` y vuelve a ejecutarlo.
-- Para quitarla: `schtasks /Delete /TN "BPA OLO - Monitoreo de bases" /F`.
+- Para correrlo a mano, sin pasar por el despachador: `node schema_watch/run.js`.
 
 ## Seguridad
 

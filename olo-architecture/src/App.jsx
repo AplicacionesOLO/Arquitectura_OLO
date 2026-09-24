@@ -1,17 +1,6 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, lazy, Suspense } from "react";
 import { TABS, DESIGN, NAV_LAYERS } from "./data/constants.js";
 import { SearchIcon, ShieldIcon } from "./components/icons.jsx";
-import { OLOArchView } from "./views/OLOArchView.jsx";
-import { EcosystemView } from "./views/EcosystemView.jsx";
-import { BPAView } from "./views/BPAView.jsx";
-import { WorkflowsView } from "./views/WorkflowsView.jsx";
-import { SoftlandView } from "./views/SoftlandView.jsx";
-import { OpsView } from "./views/OpsView.jsx";
-import { IntegrationsView } from "./views/IntegrationsView.jsx";
-import { ContextView } from "./views/ContextView.jsx";
-import { AdminView } from "./views/AdminView.jsx";
-import { ProcesosOperativosView } from "./views/ProcesosOperativosView.jsx";
-import { RelacionesSistemasView } from "./views/RelacionesSistemasView.jsx";
 import { BpaBotWidget } from "./components/BpaBotWidget.jsx";
 import { NovedadesModal, useNovedades } from "./components/NovedadesModal.jsx";
 import { useAuth } from "./auth/AuthContext.jsx";
@@ -19,6 +8,20 @@ import { NavContext } from "./lib/nav.js";
 import { LoginScreen } from "./auth/LoginScreen.jsx";
 import { PendingScreen } from "./auth/PendingScreen.jsx";
 import oloLogo from "./assets/olo-logo.png";
+
+// Cada vista se carga al abrirla (el paquete inicial queda liviano)
+const vista = (nombre) => lazy(() => import(`./views/${nombre}.jsx`).then(m => ({ default: m[nombre] })));
+const OLOArchView = vista("OLOArchView");
+const EcosystemView = vista("EcosystemView");
+const BPAView = vista("BPAView");
+const WorkflowsView = vista("WorkflowsView");
+const SoftlandView = vista("SoftlandView");
+const OpsView = vista("OpsView");
+const IntegrationsView = vista("IntegrationsView");
+const ContextView = vista("ContextView");
+const AdminView = vista("AdminView");
+const ProcesosOperativosView = vista("ProcesosOperativosView");
+const RelacionesSistemasView = vista("RelacionesSistemasView");
 
 const ADMIN_TAB = { id:"admin", label:"◆ Administración", sub:"Usuarios · Roles · Permisos del sistema" };
 
@@ -202,17 +205,19 @@ export default function SoftlandArchitectureMap() {
             (id "olo-arch") muestra los grids lineales por categoría operativa.
             Los ids existentes se dejan igual a propósito para no invalidar
             los permisos por rol ya configurados (keyed por id). */}
-        {tab==="bpa"          && <BPAView selected={bpaSel} setSelected={setBpaSel} onNavigate={navigate}/>}
-        {tab==="infra"        && <OLOArchView     searchQuery={globalSearch}/>}
-        {tab==="olo-arch"     && <ProcesosOperativosView onNavigate={navigate} focusCodigo={focusFor("olo-arch")?.codigo} focusSilo={focusFor("olo-arch")?.silo} focusSeq={focusFor("olo-arch")?.n}/>}
-        {tab==="workflows"    && <WorkflowsView focus={focusFor("workflows")}/>}
-        {tab==="relaciones"   && <RelacionesSistemasView/>}
-        {tab==="ecosystem"    && <EcosystemView   searchQuery={globalSearch}/>}
-        {tab==="softland"     && <SoftlandView selected={slSel} setSelected={setSlSel}/>}
-        {tab==="ops"          && <OpsView selected={opsSel} setSelected={setOpsSel} focus={focusFor("ops")}/>}
-        {tab==="integrations" && <IntegrationsView searchQuery={globalSearch} focus={focusFor("integrations")}/>}
-        {tab==="context"      && <ContextView/>}
-        {tab==="admin" && isAdmin && <AdminView/>}
+        <Suspense fallback={<div style={{ padding:"48px 0", textAlign:"center", color:DESIGN.muted, fontSize:13 }}>Cargando…</div>}>
+          {tab==="bpa"          && <BPAView selected={bpaSel} setSelected={setBpaSel} onNavigate={navigate}/>}
+          {tab==="infra"        && <OLOArchView     searchQuery={globalSearch}/>}
+          {tab==="olo-arch"     && <ProcesosOperativosView onNavigate={navigate} focusCodigo={focusFor("olo-arch")?.codigo} focusSilo={focusFor("olo-arch")?.silo} focusSeq={focusFor("olo-arch")?.n}/>}
+          {tab==="workflows"    && <WorkflowsView focus={focusFor("workflows")}/>}
+          {tab==="relaciones"   && <RelacionesSistemasView/>}
+          {tab==="ecosystem"    && <EcosystemView   searchQuery={globalSearch}/>}
+          {tab==="softland"     && <SoftlandView selected={slSel} setSelected={setSlSel}/>}
+          {tab==="ops"          && <OpsView selected={opsSel} setSelected={setOpsSel} focus={focusFor("ops")}/>}
+          {tab==="integrations" && <IntegrationsView searchQuery={globalSearch} focus={focusFor("integrations")}/>}
+          {tab==="context"      && <ContextView/>}
+          {tab==="admin" && isAdmin && <AdminView/>}
+        </Suspense>
 
         {/* Footer */}
         <footer style={{ marginTop:56, paddingTop:24, borderTop:`1px solid ${DESIGN.border}`, display:"flex", justifyContent:"space-between", alignItems:"baseline", flexWrap:"wrap", gap:12, fontSize:12, color:DESIGN.muted }}>

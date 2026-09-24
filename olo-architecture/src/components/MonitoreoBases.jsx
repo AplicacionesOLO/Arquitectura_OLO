@@ -1,4 +1,4 @@
-// Contexto › Cambios en bases: lo que publica el job schema_watch (tabla
+// Monitor › Cambios en bases: lo que publica el job schema_watch (tabla
 // bpa_schema_cambios). Muestra la última corrida (resumen, análisis de Claude,
 // estado de cada esquema del BPA, bases sin mapear) y el historial.
 import { useState, useEffect } from "react";

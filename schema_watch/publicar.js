@@ -1,6 +1,6 @@
 // schema_watch/publicar.js — sube el informe de diff.js a Supabase
 // (tabla bpa_schema_cambios) con la clave de servicio de ../.env, para que el
-// BPA lo muestre en Contexto › Cambios en bases. La clave nunca sale del .env.
+// BPA lo muestre en Monitor › Cambios en bases. La clave nunca sale del .env.
 const fs = require('fs');
 const path = require('path');
 

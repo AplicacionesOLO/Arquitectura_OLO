@@ -55,6 +55,7 @@ export const SATELLITE_MODULES = [
   { name:"Portal de Personas / Capital Humano", purpose:"Mencionado en manual de GN como punto de integración para autoservicio de empleados (consulta de pagos). NO confirmado si está implementado.", status:"partial" },
 ];
 
+// `silo`: silo del módulo Procesos (procesos_categorias.id) que levanta ese proceso del BPA
 export const BPA_PROCESSES = {
   estrategicos: [
     { name:"Planificación Estratégica", maturity:1, priority:1, owner:"Ignacio Vieto", coverage:[], note:"Sin sistema documentado." },
@@ -63,20 +64,20 @@ export const BPA_PROCESSES = {
     { name:"Gestión del Conocimiento", maturity:1, priority:3, owner:"—", coverage:[] },
   ],
   negocio: [
-    { name:"Gestión de Comercialización", maturity:1, priority:1, owner:"—", coverage:["FA"] },
-    { name:"Toma de Requerimientos de Clientes", maturity:1, priority:1, owner:"—", coverage:[], note:"Perfiles de cliente en drive." },
-    { name:"Gestión de Transporte Local", maturity:1, priority:1, owner:"—", coverage:["WMH","WMS-D"], note:"Carga camión en eflow WMS y viajes en Torre de Control (Procesos › P1.18)." },
-    { name:"Gestión de Transporte Internacional", maturity:1, priority:1, owner:"—", coverage:[], note:"Sin TMS internacional documentado." },
-    { name:"Gestión de Internamiento Zona Franca SEL", maturity:1, priority:1, owner:"—", coverage:[], note:"Sin sistema dedicado documentado." },
-    { name:"Administración de Procesos Aduaneros", maturity:1, priority:1, owner:"—", coverage:[], note:"Sin integración aduanera documentada." },
-    { name:"Gestión de Almacenamiento (ZF + nacional)", maturity:1, priority:1, owner:"Gerente CEDI · vacante", coverage:["WMS-D","WMS-RF"] },
-    { name:"Servicios de Valor Agregado", maturity:1, priority:1, owner:"Gerente CEDI · vacante", coverage:["WMS-D"], note:"eflow WMS tiene pantallas de VAS (servicios especiales, kits, transformación, etiquetas); procesos borrador en Procesos › P1.21. Drive de valor agregado." },
-    { name:"Administración Financiera Contable a Clientes", maturity:1, priority:1, owner:"Jorge Castro", coverage:["CG","CC"] },
-    { name:"Servicio de Gestión de Talento al Cliente", maturity:1, priority:1, owner:"Mary Montanes", coverage:[] },
-    { name:"Facturación", maturity:1, priority:1, owner:"Isabella López", coverage:["FA","MF"], note:"Manual interno: 'creación de pedido en Softland'." },
-    { name:"Cobro", maturity:1, priority:1, owner:"Jorge Castro", coverage:["CC","CB"] },
-    { name:"Seguimiento y Control de la Operación", maturity:1, priority:1, owner:"Ignacio Vieto", coverage:["WMH","WMS-D"], note:"Monitores, acciones de trabajo y paneles de eflow WMS (Procesos › P1.19)." },
-    { name:"Gestión de Relación con Clientes", maturity:1, priority:1, owner:"—", coverage:[] },
+    { name:"Gestión de Comercialización", silo:"neg_comercializacion", maturity:1, priority:1, owner:"—", coverage:["FA"] },
+    { name:"Toma de Requerimientos de Clientes", silo:"neg_requerimientos", maturity:1, priority:1, owner:"—", coverage:[], note:"Perfiles de cliente en drive." },
+    { name:"Gestión de Transporte Local", silo:"neg_transporte_local", maturity:1, priority:1, owner:"—", coverage:["WMH","WMS-D"], note:"Carga camión en eflow WMS y viajes en Torre de Control (Procesos › P1.18)." },
+    { name:"Gestión de Transporte Internacional", silo:"neg_transporte_intl", maturity:1, priority:1, owner:"—", coverage:[], note:"Sin TMS internacional documentado." },
+    { name:"Gestión de Internamiento Zona Franca SEL", silo:"neg_internamiento_szf", maturity:1, priority:1, owner:"—", coverage:[], note:"Sin sistema dedicado documentado." },
+    { name:"Administración de Procesos Aduaneros", silo:"neg_aduaneros", maturity:1, priority:1, owner:"—", coverage:[], note:"Sin integración aduanera documentada." },
+    { name:"Gestión de Almacenamiento (ZF + nacional)", silo:"neg_almacenamiento", maturity:1, priority:1, owner:"Gerente CEDI · vacante", coverage:["WMS-D","WMS-RF"] },
+    { name:"Servicios de Valor Agregado", silo:"neg_valor_agregado", maturity:1, priority:1, owner:"Gerente CEDI · vacante", coverage:["WMS-D"], note:"eflow WMS tiene pantallas de VAS (servicios especiales, kits, transformación, etiquetas); procesos borrador en Procesos › P1.21. Drive de valor agregado." },
+    { name:"Administración Financiera Contable a Clientes", silo:"neg_fin_contable", maturity:1, priority:1, owner:"Jorge Castro", coverage:["CG","CC"] },
+    { name:"Servicio de Gestión de Talento al Cliente", silo:"neg_talento_cliente", maturity:1, priority:1, owner:"Mary Montanes", coverage:[] },
+    { name:"Facturación", silo:"neg_facturacion", maturity:1, priority:1, owner:"Isabella López", coverage:["FA","MF"], note:"Manual interno: 'creación de pedido en Softland'." },
+    { name:"Cobro", silo:"neg_cobro", maturity:1, priority:1, owner:"Jorge Castro", coverage:["CC","CB"] },
+    { name:"Seguimiento y Control de la Operación", silo:"neg_seguimiento_operacion", maturity:1, priority:1, owner:"Ignacio Vieto", coverage:["WMH","WMS-D"], note:"Monitores, acciones de trabajo y paneles de eflow WMS (Procesos › P1.19)." },
+    { name:"Gestión de Relación con Clientes", silo:"neg_relacion_clientes", maturity:1, priority:1, owner:"—", coverage:[] },
   ],
   apoyo: [
     { name:"Gestión Financiero Contable Interna", maturity:1, priority:2, owner:"Jorge Castro", coverage:["CG","CB","CC","CP","AF","MF"] },

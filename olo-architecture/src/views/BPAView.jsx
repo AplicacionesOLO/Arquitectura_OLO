@@ -1,54 +1,189 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // VISTA · BPA
+// Dos capas sobre el mismo modelo:
+//  · Diagnóstico (CICR · dic 2024): 30 procesos con madurez, prioridad, dueño.
+//  · Levantamiento actual: el silo de Procesos que corresponde a cada proceso,
+//    cuántos procesos tiene en el árbol, sus fichas (procedimiento OLO o
+//    borrador) y los sistemas que usan sus pasos.
 // ═══════════════════════════════════════════════════════════════════════════
+import { useState, useEffect, useRef } from "react";
+import { supabase } from "../lib/supabaseClient.js";
 import { BPA_PROCESSES as BPA_PROCS } from "../data/softland.js";
-import { BPA_AREA_COLORS as BPA_COLORS, MATURITY_TINTS } from "../data/constants.js";
+import { PROCESOS } from "../data/procesos_fichas.js";
+import { BPA_AREA_COLORS as BPA_COLORS, MATURITY_TINTS, DESIGN } from "../data/constants.js";
 import { KPICard, DetailPanel, ModuleChip } from "../components/ui.jsx";
 
-export function BPAView({ selected, setSelected }) {
-  const allProcs=[...BPA_PROCS.estrategicos.map(p=>({...p,area:"estrategicos"})),...BPA_PROCS.negocio.map(p=>({...p,area:"negocio"})),...BPA_PROCS.apoyo.map(p=>({...p,area:"apoyo"})),...BPA_PROCS.control.map(p=>({...p,area:"control"}))];
-  const selProc=allProcs.find(p=>p.name===selected);
-  const total=allProcs.length, withCov=allProcs.filter(p=>p.coverage&&p.coverage.length>0).length;
-  const avgMat=(allProcs.reduce((s,p)=>s+p.maturity,0)/total).toFixed(2);
+// Sistema de un paso de ficha → módulo de Operación
+const SIS_A_MODULO = { eflow:"WMS-D", handheld:"WMS-RF", torre:"WMH", sorter:"SORTER" };
+
+// Silos operativos del CEDI: no están en el diagnóstico 2024 como procesos
+// propios, pero son parte del negocio misional y concentran el levantamiento.
+const OPERACION_LOGISTICA = ["log_planificacion","log_almacenaje","log_preparacion","log_transporte","log_inventario","log_servicio_cliente","log_mantenimiento","log_desempeno","cross_docking"];
+
+const ESTADOS = {
+  cedi:     { label:"Procedimiento OLO", color:"#15803d", desc:"tiene fichas de procedimientos aprobados del CEDI" },
+  manual:   { label:"Manual del sistema", color:"#0891b2", desc:"mapeado del manual del proveedor, sin procedimiento OLO" },
+  borrador: { label:"Borrador",          color:"#b45309", desc:"procesos armados sobre pantallas de eFlow, a validar" },
+  arbol:    { label:"En el árbol",       color:"#2563eb", desc:"procesos en el árbol, sin ficha todavía" },
+  vacio:    { label:"Sin levantar",      color:"#94a3b8", desc:"el silo existe pero no tiene procesos" },
+  sinSilo:  { label:"Sin silo",          color:"#cbd5e1", desc:"todavía no tiene silo en Procesos" },
+};
+
+// Tipo de ficha: procedimiento aprobado del CEDI (P1…P14), mapeo del manual de un sistema, o borrador
+const tipoFicha = p => /^P\d+$/.test(p.codigo) ? "cedi" : p.borrador ? "borrador" : "manual";
+
+// Fichas por silo (registro estático de procesos): cuántas, de qué tipo y qué módulos usan sus pasos
+const FICHAS_POR_SILO = (() => {
+  const r = {};
+  for (const p of Object.values(PROCESOS)) {
+    const x = r[p.silo] ||= { cedi:0, manual:0, borrador:0, modulos:new Set() };
+    x[tipoFicha(p)]++;
+    for (const st of p.pasos || []) { const m = SIS_A_MODULO[st.sistema]; if (m) x.modulos.add(m); }
+  }
+  return r;
+})();
+
+const codigoSilo = (label = "") => label.match(/^(P\d+\.\d+)/)?.[1] ?? null;
+const nombreSilo = (label = "") => label.replace(/^P\d+\.\d+\s*·\s*/, "");
+
+// Estado y datos del levantamiento de un silo
+function levantamiento(siloId, cats, procsPorSilo) {
+  if (!siloId) return { estado:"sinSilo" };
+  const cat = cats?.find(c => c.id === siloId);
+  const f = FICHAS_POR_SILO[siloId] || { cedi:0, manual:0, borrador:0, modulos:new Set() };
+  const procesos = procsPorSilo?.[siloId] ?? 0;
+  const estado = f.cedi ? "cedi" : f.manual ? "manual" : f.borrador ? "borrador" : procesos ? "arbol" : "vacio";
+  return { estado, cat, codigo:codigoSilo(cat?.label), procesos, cedi:f.cedi, manual:f.manual, borrador:f.borrador, modulos:[...f.modulos] };
+}
+
+export function BPAView({ selected, setSelected, onNavigate = () => {} }) {
+  const [cats, setCats] = useState(null);
+  const detalleRef = useRef(null);
+  useEffect(() => { if (selected) detalleRef.current?.scrollIntoView({ behavior:"smooth", block:"nearest" }); }, [selected]);
+  const [procsPorSilo, setProcsPorSilo] = useState(null);
+  useEffect(() => {
+    let vivo = true;
+    Promise.all([
+      supabase.from("procesos_categorias").select("id,num,label,color").order("num"),
+      supabase.from("procesos_nodes").select("categoria_id,level").eq("level", 1),
+    ]).then(([{ data: c }, { data: n }]) => {
+      if (!vivo) return;
+      const cuenta = {};
+      (n || []).forEach(x => { cuenta[x.categoria_id] = (cuenta[x.categoria_id] || 0) + 1; });
+      setCats(c || []); setProcsPorSilo(cuenta);
+    });
+    return () => { vivo = false; };
+  }, []);
+
+  const conLev = (p, area) => {
+    const lev = levantamiento(p.silo, cats, procsPorSilo);
+    // cobertura = lo documentado en el diagnóstico + lo que usan los pasos levantados
+    const cobertura = [...new Set([...(p.coverage || []), ...(lev.modulos || [])])];
+    return { ...p, area, lev, cobertura };
+  };
+  const areas = ["estrategicos","negocio","apoyo","control"];
+  const porArea = Object.fromEntries(areas.map(a => [a, BPA_PROCS[a].map(p => conLev(p, a))]));
+  const diagnostico = areas.flatMap(a => porArea[a]);
+  const operacion = OPERACION_LOGISTICA.map(id => {
+    const cat = cats?.find(c => c.id === id);
+    return conLev({ name: cat ? nombreSilo(cat.label) : id, silo:id, maturity:null, priority:null, owner:"—", coverage:[] }, "operacion");
+  });
+
+  const total = diagnostico.length, withCov = diagnostico.filter(p => p.cobertura.length > 0).length;
+  const avgMat = (diagnostico.reduce((s,p) => s + p.maturity, 0) / total).toFixed(2);
+  const lider = diagnostico.reduce((a,b) => b.maturity > a.maturity ? b : a);
+  const silosConProcesos = cats ? cats.filter(c => procsPorSilo?.[c.id]).length : null;
+  const fichas = Object.values(PROCESOS);
+  const nTipo = t => fichas.filter(p => tipoFicha(p) === t).length;
+
+  const selProc = [...diagnostico, ...operacion].find(p => p.name === selected);
+  const detalle = selProc && (() => {
+    const { lev } = selProc, meta = selProc.area === "operacion" ? BPA_COLORS.negocio : BPA_COLORS[selProc.area];
+    const partes = [];
+    partes.push(selProc.area === "operacion"
+      ? "Silo operativo del CEDI. No aparece como proceso propio en el diagnóstico 2024 (sin madurez ni dueño asignados); forma parte del negocio misional."
+      : `Proceso del área ${meta.label.toLowerCase()} en el diagnóstico 2024.`);
+    if (lev.estado === "sinSilo") partes.push("Todavía no tiene silo en Procesos: pendiente de levantamiento.");
+    else if (lev.estado === "vacio") partes.push(`Su silo ${lev.codigo ?? ""} existe en Procesos pero aún no tiene procesos.`);
+    else partes.push(`Levantamiento: ${lev.procesos} proceso${lev.procesos === 1 ? "" : "s"} en el árbol de ${lev.codigo ?? nombreSilo(lev.cat?.label)}`
+      + (lev.cedi ? ` · ${lev.cedi} ficha${lev.cedi > 1 ? "s" : ""} de procedimiento OLO` : "")
+      + (lev.manual ? ` · ${lev.manual} ficha${lev.manual > 1 ? "s" : ""} del manual del sistema` : "")
+      + (lev.borrador ? ` · ${lev.borrador} ficha${lev.borrador > 1 ? "s" : ""} borrador (a validar)` : "") + ".");
+    const soloPasos = lev.modulos?.filter(m => !(selProc.coverage || []).includes(m)) || [];
+    if (soloPasos.length) partes.push(`Sistemas que aparecen en los pasos levantados y no en el diagnóstico: ${soloPasos.join(", ")}.`);
+    return {
+      name: selProc.name, code: lev.codigo, color: meta.color,
+      owner: selProc.owner && selProc.owner !== "—" ? selProc.owner : null,
+      maturity: selProc.maturity, priority: selProc.priority, coverage: selProc.cobertura, note: selProc.note,
+      purpose: partes.join(" "),
+      accion: lev.cat ? { label: `Ver ${lev.codigo ?? nombreSilo(lev.cat.label)} en Procesos`, onClick: () => onNavigate({ tab:"olo-arch", silo: lev.cat.id }) } : null,
+    };
+  })();
+
   return <div>
     <div style={{ display:"flex", gap:10, marginBottom:18, flexWrap:"wrap" }}>
-      <KPICard label="Procesos totales" value={total} color="#1D1D1B"/>
-      <KPICard label="Con cobertura sistema" value={`${withCov}/${total}`} color="#27ae60"/>
-      <KPICard label="Madurez promedio" value={`${avgMat}/5`} color="#f39c12" sub="Talento Humano (3) lidera"/>
-      <KPICard label="Estratégicos" value={BPA_PROCS.estrategicos.length} color="#27ae60"/>
-      <KPICard label="Negocio" value={BPA_PROCS.negocio.length} color="#f39c12"/>
-      <KPICard label="Apoyo · Control" value={BPA_PROCS.apoyo.length+BPA_PROCS.control.length} color="#9b59b6"/>
+      <KPICard label="Procesos del diagnóstico" value={total} color="#1D1D1B" sub="4 áreas · CICR dic 2024"/>
+      <KPICard label="Madurez promedio" value={`${avgMat}/5`} color="#f39c12" sub={`${lider.name} (M${lider.maturity}) lidera`}/>
+      <KPICard label="Con cobertura de sistema" value={`${withCov}/${total}`} color="#27ae60" sub="diagnóstico + pasos levantados"/>
+      <KPICard label="Silos con procesos" value={cats ? `${silosConProcesos}/${cats.length}` : "…"} color="#2563eb" sub="módulo Procesos"/>
+      <KPICard label="Fichas de proceso" value={fichas.length} color="#b45309" sub={`${nTipo("cedi")} procedimiento OLO · ${nTipo("manual")} de manual · ${nTipo("borrador")} borrador`}/>
     </div>
     <div style={{ background:"rgba(243,156,18,0.07)", border:"1px solid rgba(243,156,18,0.22)", borderLeft:"3px solid #f39c12", borderRadius:8, padding:"10px 14px", marginBottom:22, fontSize:12, color:"#666", lineHeight:1.6 }}>
-      <b style={{ color:"#d35400" }}>Fuente:</b> Informe Final Diagnóstico Procesos OLO · CICR · diciembre 2024. Topología: estratégicos arriba, apoyo a la izquierda, procesos de negocio (misionales) al centro, control a la derecha. Click en cualquier proceso para ver qué módulos del ecosistema lo soportan.
+      <b style={{ color:"#d35400" }}>Dos capas:</b> madurez, prioridad y dueño vienen del <i>Informe Final Diagnóstico Procesos OLO · CICR · diciembre 2024</i> (no se modifican). El estado de cada tarjeta, su código P1.x y los sistemas agregados vienen del <b>levantamiento actual</b> en Procesos. Estratégicos arriba, apoyo a la izquierda, negocio al centro, control a la derecha; abajo, la operación logística del CEDI. Click en un proceso para ver su detalle e ir a su silo.
     </div>
-    {selProc && <DetailPanel item={{ name:selProc.name, color:BPA_COLORS[selProc.area].color, owner:selProc.owner!=="—"?selProc.owner:null, maturity:selProc.maturity, priority:selProc.priority, coverage:selProc.coverage, note:selProc.note, purpose:`Proceso del área ${BPA_COLORS[selProc.area].label.toLowerCase()}. ${selProc.coverage.length===0?"Sin cobertura por sistema documentado — candidato a levantamiento.":`Soportado por ${selProc.coverage.length} sistema${selProc.coverage.length>1?"s":""} del ecosistema.`}` }} onClose={()=>setSelected(null)}/>}
-    <BPAArea area="estrategicos" processes={BPA_PROCS.estrategicos} selected={selected} onSelect={setSelected}/>
+    <div ref={detalleRef} style={{ scrollMarginTop:16 }}>{detalle && <DetailPanel item={detalle} onClose={()=>setSelected(null)}/>}</div>
+    <BPAArea area="estrategicos" processes={porArea.estrategicos} selected={selected} onSelect={setSelected}/>
     <div style={{ display:"grid", gridTemplateColumns:"1fr 1.6fr 1fr", gap:14, marginTop:14 }}>
-      <BPAArea area="apoyo" processes={BPA_PROCS.apoyo} selected={selected} onSelect={setSelected}/>
-      <BPAArea area="negocio" processes={BPA_PROCS.negocio} selected={selected} onSelect={setSelected}/>
-      <BPAArea area="control" processes={BPA_PROCS.control} selected={selected} onSelect={setSelected}/>
+      <BPAArea area="apoyo" processes={porArea.apoyo} selected={selected} onSelect={setSelected}/>
+      <BPAArea area="negocio" processes={porArea.negocio} selected={selected} onSelect={setSelected}/>
+      <BPAArea area="control" processes={porArea.control} selected={selected} onSelect={setSelected}/>
     </div>
+    <BPAArea area="negocio" titulo="Negocio › Operación logística del CEDI" desc="Silos P1.1–P1.8 y Cross Docking · no evaluados como procesos en el diagnóstico 2024 · aquí están los 14 procedimientos del CEDI"
+      processes={operacion} selected={selected} onSelect={setSelected} grid style={{ marginTop:14 }}/>
     <div style={{ marginTop:18, padding:"12px 16px", background:"#fafafa", border:"1px solid #e0e0e0", borderRadius:8 }}>
       <div style={{ fontSize:10, fontWeight:700, color:"#666", letterSpacing:"0.1em", marginBottom:8, textTransform:"uppercase" }}>Lectura</div>
-      <div style={{ display:"flex", flexWrap:"wrap", gap:16, alignItems:"center" }}>
-        <span style={{ fontSize:11, color:"#444" }}><b>M0–M5</b> madurez · <b>P1–P3</b> prioridad de levantamiento</span>
-        {[0,1,2,3].map(m=><div key={m} style={{ display:"flex", alignItems:"center", gap:5 }}><span style={{ fontSize:10, fontWeight:700, color:MATURITY_TINTS[m], background:MATURITY_TINTS[m]+"20", padding:"1px 7px", borderRadius:4 }}>M{m}</span></div>)}
-        <span style={{ fontSize:11, color:"#777", fontStyle:"italic" }}>Borde de color: el proceso tiene al menos un sistema documentado que lo soporta.</span>
+      <div style={{ display:"flex", flexWrap:"wrap", gap:16, alignItems:"center", marginBottom:8 }}>
+        <span style={{ fontSize:11, color:"#444" }}><b>M0–M5</b> madurez · <b>P1–P3</b> prioridad de levantamiento (diagnóstico)</span>
+        {[0,1,2,3].map(m=><span key={m} style={{ fontSize:10, fontWeight:700, color:MATURITY_TINTS[m], background:MATURITY_TINTS[m]+"20", padding:"1px 7px", borderRadius:4 }}>M{m}</span>)}
+      </div>
+      <div style={{ display:"flex", flexWrap:"wrap", gap:14, alignItems:"center" }}>
+        <span style={{ fontSize:11, color:"#444" }}><b>Levantamiento:</b></span>
+        {Object.entries(ESTADOS).map(([k,e])=><span key={k} style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:11, color:"#555" }}><EstadoTag estado={k}/>{e.desc}</span>)}
       </div>
     </div>
   </div>;
 }
 
-export function BPAArea({ area, processes, selected, onSelect }) {
+function EstadoTag({ estado }) {
+  const e = ESTADOS[estado];
+  return <span style={{ fontSize:9.5, fontWeight:700, color:estado==="sinSilo"?"#64748b":e.color, background:e.color+"1c", border:`1px solid ${e.color}55`, padding:"1px 6px", borderRadius:4, whiteSpace:"nowrap" }}>{e.label}</span>;
+}
+
+export function BPAArea({ area, processes, selected, onSelect, titulo, desc, grid, style }) {
   const meta = BPA_COLORS[area];
-  return <div style={{ background:meta.bg, border:`1px solid ${meta.border}`, borderRadius:12, padding:"14px 16px" }}>
-    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}><div style={{ width:4, height:24, background:meta.color, borderRadius:2 }}/><div><div style={{ fontSize:12, fontWeight:700, color:meta.color }}>{meta.label} · {processes.length}</div><div style={{ fontSize:10, color:"#777" }}>{meta.desc}</div></div></div>
-    <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
-      {processes.map(p=>{ const hasCov=p.coverage&&p.coverage.length>0; const isSel=selected===p.name; return <div key={p.name} onClick={()=>onSelect(isSel?null:p.name)} style={{ background:isSel?meta.color+"1a":"#ffffff", border:`1px solid ${hasCov?meta.color+"55":"#e0e0e0"}`, borderLeft:`3px solid ${MATURITY_TINTS[p.maturity]}`, borderRadius:8, padding:"8px 10px", cursor:"pointer", transition:"all 0.15s", boxShadow:isSel?`0 0 0 2px ${meta.color}33`:"none" }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", gap:6, marginBottom:hasCov?5:0 }}><span style={{ fontSize:11, color:"#1D1D1B", fontWeight:isSel?700:500, lineHeight:1.3, flex:1 }}>{p.name}</span><span style={{ fontSize:9, fontWeight:700, color:MATURITY_TINTS[p.maturity], whiteSpace:"nowrap" }}>M{p.maturity}·P{p.priority}</span></div>
-        {hasCov && <div style={{ display:"flex", flexWrap:"wrap", gap:3 }}>{p.coverage.map(c=><ModuleChip key={c} code={c}/>)}</div>}
-      </div>; })}
+  return <div style={{ background:meta.bg, border:`1px solid ${meta.border}`, borderRadius:12, padding:"14px 16px", ...style }}>
+    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}><div style={{ width:4, height:24, background:meta.color, borderRadius:2 }}/><div><div style={{ fontSize:12, fontWeight:700, color:meta.color }}>{titulo ?? meta.label} · {processes.length}</div><div style={{ fontSize:10, color:"#777" }}>{desc ?? meta.desc}</div></div></div>
+    <div style={grid ? { display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(230px,1fr))", gap:7 } : { display:"flex", flexDirection:"column", gap:7 }}>
+      {processes.map(p => <ProcCard key={p.name} p={p} meta={meta} isSel={selected===p.name} onSelect={onSelect}/>)}
     </div>
+  </div>;
+}
+
+function ProcCard({ p, meta, isSel, onSelect }) {
+  const { lev, cobertura } = p, hasCov = cobertura.length > 0;
+  const tint = p.maturity != null ? MATURITY_TINTS[p.maturity] : "#cbd5e1";
+  const resumen = lev.estado === "sinSilo" || lev.estado === "vacio" ? null
+    : [lev.procesos && `${lev.procesos} proc.`, lev.cedi && `${lev.cedi} OLO`, lev.manual && `${lev.manual} manual`, lev.borrador && `${lev.borrador} borr.`].filter(Boolean).join(" · ");
+  return <div onClick={()=>onSelect(isSel?null:p.name)} style={{ background:isSel?meta.color+"1a":"#ffffff", border:`1px solid ${hasCov?meta.color+"55":"#e0e0e0"}`, borderLeft:`3px solid ${tint}`, borderRadius:8, padding:"8px 10px", cursor:"pointer", transition:"all 0.15s", boxShadow:isSel?`0 0 0 2px ${meta.color}33`:"none" }}>
+    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", gap:6, marginBottom:5 }}>
+      <span style={{ fontSize:11, color:"#1D1D1B", fontWeight:isSel?700:500, lineHeight:1.3, flex:1 }}>{p.name}</span>
+      {p.maturity != null && <span style={{ fontSize:9, fontWeight:700, color:tint, whiteSpace:"nowrap" }}>M{p.maturity}·P{p.priority}</span>}
+    </div>
+    <div style={{ display:"flex", flexWrap:"wrap", gap:4, alignItems:"center" }}>
+      {lev.codigo && <span style={{ fontSize:9.5, fontWeight:700, color:DESIGN.inkSoft, fontFamily:DESIGN.font }}>{lev.codigo}</span>}
+      <EstadoTag estado={lev.estado}/>
+      {resumen && <span style={{ fontSize:9.5, color:"#777" }}>{resumen}</span>}
+    </div>
+    {hasCov && <div style={{ display:"flex", flexWrap:"wrap", gap:3, marginTop:5 }}>{cobertura.map(c=><ModuleChip key={c} code={c}/>)}</div>}
   </div>;
 }

@@ -216,7 +216,7 @@ export function FileViewerModal({ file, url, onClose }) {
   </div>;
 }
 
-export function ProcesosOperativosView({ onNavigate = () => {}, focusCodigo = null }) {
+export function ProcesosOperativosView({ onNavigate = () => {}, focusCodigo = null, focusSilo = null, focusSeq = 0 }) {
   const { role } = useAuth();
   const [ficha, setFicha] = useState(focusCodigo);
   const [viewingFile, setViewingFile] = useState(null); // { file, url }
@@ -258,6 +258,15 @@ export function ProcesosOperativosView({ onNavigate = () => {}, focusCodigo = nu
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  // Llegada desde otra vista con un silo en foco (p. ej. BPA · OLO): se abre y se lleva a la vista
+  const siloListo = !!categorias?.some(c => c.id === focusSilo);
+  useEffect(() => {
+    if (!focusSilo || !siloListo) return;
+    const abrir = setTimeout(() => setCollapsed(prev => { const next = new Set(prev); next.delete(focusSilo); return next; }), 0);
+    const ir = setTimeout(() => document.getElementById(`silo-${focusSilo}`)?.scrollIntoView({ behavior: "smooth", block: "start" }), 350);
+    return () => { clearTimeout(abrir); clearTimeout(ir); };
+  }, [focusSilo, focusSeq, siloListo]);
 
   const addProceso = async () => {
     const nextNum = (categorias?.length ? Math.max(...categorias.map(c => c.num)) : 0) + 1;
@@ -410,7 +419,7 @@ function SiloSection({ cat, canEdit, collapsed, onToggle, onReload, setErr, forc
   const labelInputRef = useRef(null);
   useEffect(() => { if (editing) labelInputRef.current?.focus(); }, [editing]);
 
-  return <div style={{ background:DESIGN.surface, border:`1px solid ${DESIGN.border}`, borderRadius:10, overflow:"hidden" }}>
+  return <div id={`silo-${cat.id}`} style={{ background:DESIGN.surface, border:`1px solid ${DESIGN.border}`, borderRadius:10, overflow:"hidden", scrollMarginTop:16 }}>
     <div onClick={()=>onToggle(cat.id)} onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)} title={isCollapsed?"Expandir":"Contraer"}
       style={{ display:"flex", alignItems:"center", gap:12, cursor:"pointer", padding:"14px 18px", background: hover?DESIGN.sunken:"transparent", transition:"background 0.15s" }}>
       <span style={{ color:DESIGN.mutedSoft, fontSize:14, flexShrink:0 }}><Chevron collapsed={isCollapsed}/></span>

@@ -79,7 +79,7 @@ export const NAV_LAYERS = [
   { id:"datos",     label:"Datos",     sub:"dónde queda el dato" },
 ];
 export const TABS = [
-  { id:"bpa",          layer:"procesos",  label:"◈ BPA · OLO",           sub:"Modelo de procesos · 4 áreas · 30 procesos · cobertura por sistema" },
+  { id:"bpa",          layer:"procesos",  label:"◈ BPA · OLO",           sub:"Modelo de procesos · 30 procesos del diagnóstico + operación logística · madurez, cobertura y avance del levantamiento" },
   { id:"olo-arch",     layer:"procesos",  label:"◇ Procesos",             sub:"Silos · Macroprocesos · Procesos · Subprocesos · fichas de los procedimientos CEDI" },
   { id:"ops",          layer:"operacion", label:"◒ Operación",           sub:"eflow WMS (manual de 122 pantallas) · RF · WMH Torre de Control · SORTER CLIRO (Mecalux)" },
   { id:"ecosystem",    layer:"sistemas",  label:"◉ Ecosistema",          sub:"Mapa de capas: externos · ERP · operación · satélites" },

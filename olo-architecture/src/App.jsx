@@ -201,9 +201,9 @@ export default function SoftlandArchitectureMap() {
             (id "olo-arch") muestra los grids lineales por categoría operativa.
             Los ids existentes se dejan igual a propósito para no invalidar
             los permisos por rol ya configurados (keyed por id). */}
-        {tab==="bpa"          && <BPAView selected={bpaSel} setSelected={setBpaSel}/>}
+        {tab==="bpa"          && <BPAView selected={bpaSel} setSelected={setBpaSel} onNavigate={navigate}/>}
         {tab==="infra"        && <OLOArchView     searchQuery={globalSearch}/>}
-        {tab==="olo-arch"     && <ProcesosOperativosView onNavigate={navigate} focusCodigo={focusFor("olo-arch")?.codigo}/>}
+        {tab==="olo-arch"     && <ProcesosOperativosView onNavigate={navigate} focusCodigo={focusFor("olo-arch")?.codigo} focusSilo={focusFor("olo-arch")?.silo} focusSeq={focusFor("olo-arch")?.n}/>}
         {tab==="relaciones"   && <RelacionesSistemasView/>}
         {tab==="ecosystem"    && <EcosystemView   searchQuery={globalSearch}/>}
         {tab==="softland"     && <SoftlandView selected={slSel} setSelected={setSlSel}/>}

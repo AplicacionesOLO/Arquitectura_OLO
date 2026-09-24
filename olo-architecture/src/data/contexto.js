@@ -86,6 +86,7 @@ export const EXTENSION_EFLOW = [
 export const FUENTES = [
   { fuente: "Informe Final Diagnóstico de Procesos OLO", origen: "Cámara de Industrias (CICR) · dic. 2024", aporta: "30 procesos del modelo BPA con madurez, prioridad y dueño", vista: { tab: "bpa" } },
   { fuente: "Manuales de Softland", origen: "17 manuales del proveedor", aporta: "Módulos del ERP, integraciones intra-suite, puntos de extensión", vista: { tab: "softland" } },
+  { fuente: "Plan de trabajo: Integración WMS – OLO – 3PL Softland", origen: "Presentación del proyecto · febrero 2026", aporta: "Fases y cronograma de la integración con Softland (24 feb – jul 2026, sobre SQL Server): sus entregables de análisis funcional y diseño técnico deberían cerrar la brecha Softland ↔ eflow", vista: { tab: "context" } },
   { fuente: "Guías de configuración eflow (ePRAC)", origen: "Guía de configuración por capítulos", aporta: "Tablas de configuración (almacenes, zonas, rutas y secuencias de picking)", vista: { tab: "integrations", cat: "efw_config" } },
   { fuente: "Crawl de eflow WMS", origen: "App en vivo · 23/09/2026", aporta: "122 pantallas, campos, botones, columnas y navegación con captura", vista: { tab: "ops", view: "wms" } },
   { fuente: "Levantamiento de Control Tower", origen: "App en vivo · 22/09/2026", aporta: "Mapeo funcional, datos reales por columna, modelo de datos y recomendaciones OMS/TMS", vista: { tab: "ops", view: "wmh" } },

@@ -15,6 +15,7 @@ import { WMS_INDEX } from "../data/wms_links.js";
 import { WMH_PANTALLAS } from "../data/wmh_manual.js";
 import { SORTER_PANTALLAS, SORTER_CONCEPTOS } from "../data/sorter_manual.js";
 import { COFERSA_PENDIENTES } from "../data/control_tower.js";
+import { CUESTIONARIO, textoParaEnviar } from "../data/cuestionario.js";
 import { CAT_META, INTEGRATIONS, SRO_MOD, SCO_MOD, EFW_MOD, WMH_CR_MOD, EFWBEVAL_MOD, EFWFEBECA_MOD, EFWSILLACA_MOD, EFWWMH_MOD,
          EINTEGRA_VE_MOD, SFLBEVAL_MOD, SFLFEBECA_MOD, SFLSILLACA_MOD, SFLTREXA_MOD, SFLPRISMA_MOD } from "../data/integrations.js";
 import { EFW_CONFIG_MOD } from "../data/efw_config.js";
@@ -53,6 +54,7 @@ const SECCIONES = [
   ["extension", "Puntos de extensión", `${EXTENSION_POINTS.length + EXTENSION_EFLOW.length} mecanismos`],
   ["glosario", "Glosario", `${GLOSARIO.length} términos`],
   ["brechas", "Brechas declaradas", `${GAPS.length + COFERSA_PENDIENTES.length} pendientes`],
+  ["cuestionario", "Cuestionario", `${CUESTIONARIO.reduce((a, b) => a + b.preguntas.length, 0)} preguntas · ${CUESTIONARIO.length} destinatarios`],
 ];
 
 export function ContextView() {
@@ -83,6 +85,7 @@ export function ContextView() {
       {sec === "extension" && <Extension ir={ir}/>}
       {sec === "glosario" && <Glosario ir={ir}/>}
       {sec === "brechas" && <Brechas ir={ir}/>}
+      {sec === "cuestionario" && <Cuestionario ir={ir}/>}
     </div>
   </div>;
 }
@@ -337,5 +340,39 @@ function Brechas({ ir }) {
       </p>
       <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>{silos.map(s => <span key={s} style={{ fontSize:12.5, color:"#b45309", background:"#fffbeb", border:"1px dashed #f59e0b", borderRadius:6, padding:"3px 9px" }}>{s}</span>)}</div>
     </Card>
+  </>;
+}
+
+// Preguntas para cerrar las brechas, por destinatario, listas para enviar
+function Cuestionario({ ir }) {
+  const [copiado, setCopiado] = useState(null);
+  const copiar = async b => {
+    try { await navigator.clipboard.writeText(textoParaEnviar(b)); setCopiado(b.id); setTimeout(() => setCopiado(null), 2000); } catch { setCopiado("error"); }
+  };
+  return <>
+    <H sub="Lo que hay que preguntar para cerrar las brechas, agrupado por quién puede responder. Cada pregunta indica qué brecha cierra y dónde se registra la respuesta en el BPA.">Cuestionario de levantamiento</H>
+    <div style={{ display:"grid", gap:14 }}>
+      {CUESTIONARIO.map(b => <Card key={b.id}>
+        <div style={{ display:"flex", alignItems:"flex-start", gap:10, flexWrap:"wrap", marginBottom:8 }}>
+          <div style={{ flex:1, minWidth:240 }}>
+            <div style={{ fontSize:15, fontWeight:700, color:DESIGN.ink }}>{b.destinatario}</div>
+            {b.nota && <div style={{ fontSize:12.5, color:DESIGN.muted, marginTop:3, lineHeight:1.5 }}>{b.nota}</div>}
+          </div>
+          <button onClick={() => copiar(b)} style={{ fontSize:12.5, fontWeight:700, color: copiado === b.id ? "#15803d" : "#fff", background: copiado === b.id ? "#f0fdf4" : ACCENT, border: copiado === b.id ? "1px solid #86efac" : "none", borderRadius:7, padding:"7px 12px", cursor:"pointer", fontFamily:"inherit" }}>
+            {copiado === b.id ? "✓ Copiado" : "Copiar para enviar"}</button>
+          {b.id === "operaciones" && <button onClick={() => ir({ tab:"workflows" })} style={{ fontSize:12.5, fontWeight:700, color:DESIGN.ink, background:DESIGN.sunken2, border:"none", borderRadius:7, padding:"7px 12px", cursor:"pointer", fontFamily:"inherit" }}>Abrir Workflows ›</button>}
+        </div>
+        <ol style={{ margin:0, paddingLeft:20, display:"grid", gap:8 }}>
+          {b.preguntas.map((q, i) => <li key={i} style={{ fontSize:13.5, color:DESIGN.ink, lineHeight:1.5 }}>
+            {q.p}
+            <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginTop:3 }}>
+              <span style={{ fontSize:11, fontWeight:700, color:"#c0392b", background:"#fbe9e7", borderRadius:4, padding:"1px 6px" }}>{q.gap}</span>
+              <span style={{ fontSize:11.5, color:DESIGN.muted }}>La respuesta va en: {q.va}</span>
+            </div>
+          </li>)}
+        </ol>
+      </Card>)}
+      {copiado === "error" && <div style={{ fontSize:12.5, color:"#b91c1c" }}>El navegador no permitió copiar al portapapeles; selecciona el texto y cópialo a mano.</div>}
+    </div>
   </>;
 }

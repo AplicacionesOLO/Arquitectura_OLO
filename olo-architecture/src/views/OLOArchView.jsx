@@ -103,14 +103,14 @@ export function OLOArchView({ searchQuery="" }) {
     try {
       const s = JSON.parse(localStorage.getItem('olo-node-ov'));
       if (s && Object.keys(s).length > 0) return s;
-    } catch {}
+    } catch { /* sin localStorage */ }
     return DEFAULT_NODE_OVERRIDES;
   });
   const [editConns,      setEditConns]      = useState(() => {
     try {
       const s = localStorage.getItem('olo-conns');
       if (s) return JSON.parse(s);
-    } catch {}
+    } catch { /* sin localStorage */ }
     return DEFAULT_CONNS;
   });
   const [connectFrom,    setConnectFrom]    = useState(null);
@@ -451,7 +451,7 @@ export function OLOArchView({ searchQuery="" }) {
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
-    try { localStorage.setItem('olo-arch-theme', next); } catch {}
+    try { localStorage.setItem('olo-arch-theme', next); } catch { /* sin localStorage */ }
   };
   const dark = theme === 'dark';
   const T = {

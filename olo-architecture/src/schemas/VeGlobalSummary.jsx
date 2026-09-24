@@ -14,7 +14,7 @@ import { SFLFEBECA_TABLE_DEFS, SFLFEBECA_MOD } from "../data/softland_febeca_ve.
 import { SFLSILLACA_TABLE_DEFS, SFLSILLACA_MOD } from "../data/softland_sillaca_ve.js";
 import { SFLTREXA_TABLE_DEFS, SFLTREXA_MOD } from "../data/softland_trexa_ve.js";
 import { SFLPRISMA_TABLE_DEFS, SFLPRISMA_MOD } from "../data/softland_prisma_ve.js";
-import { EINTEGRA_VE_TABLE_DEFS, EINTEGRA_VE_MOD, EINTEGRA_VE_INTEGRATIONS } from "../data/eintegra_ve.js";
+import { EINTEGRA_VE_MOD, EINTEGRA_VE_INTEGRATIONS } from "../data/eintegra_ve.js";
 import veCross from "../data/ve_cross.json";
 import { deriveRowsFromTableDefs } from "./fkUtils.js";
 import { ERDiagram } from "./ERDiagram.jsx";

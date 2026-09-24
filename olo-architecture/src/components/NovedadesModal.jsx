@@ -56,14 +56,14 @@ export function useNovedades({ isAdmin, canSeeTab }) {
   useEffect(() => {
     if (loading || !doc || dismissed) return;
     let seen = null;
-    try { seen = localStorage.getItem(SEEN_KEY); } catch (_) {}
+    try { seen = localStorage.getItem(SEEN_KEY); } catch { /* sin localStorage: se muestra igual */ }
     if (seen !== doc.version && items.length > 0) setOpen(true);
   }, [loading, doc, items, dismissed]);
 
   const close = useCallback(() => {
     setOpen(false);
     setDismissed(true);
-    if (doc) { try { localStorage.setItem(SEEN_KEY, doc.version); } catch (_) {} }
+    if (doc) { try { localStorage.setItem(SEEN_KEY, doc.version); } catch { /* sin localStorage: no se recuerda */ } }
   }, [doc]);
 
   return { open, doc, items, close };

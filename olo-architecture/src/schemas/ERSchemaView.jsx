@@ -3,7 +3,7 @@
 // (previously SROERView)
 // ═══════════════════════════════════════════════════════════════════════════
 import { useState, useEffect } from "react";
-import { SRO_GROUPS, SRO_TABLE_DEFS, SRO_COLORS, SRO_MOD, RELATION_META } from "../data/sro.js";
+import { SRO_GROUPS, SRO_TABLE_DEFS, SRO_COLORS, SRO_MOD } from "../data/sro.js";
 import { SCO_GROUPS, SCO_TABLE_DEFS, SCO_COLORS, SCO_MOD } from "../data/sco.js";
 import { EFW_GROUPS, EFW_TABLE_DEFS, EFW_COLORS, EFW_MOD } from "../data/efw.js";
 import { EFWBEVAL_GROUPS,   EFWBEVAL_TABLE_DEFS,   EFWBEVAL_COLORS,   EFWBEVAL_MOD   } from "../data/beval_ve.js";

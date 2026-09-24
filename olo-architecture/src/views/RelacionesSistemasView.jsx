@@ -33,7 +33,6 @@ import { EFW_CONFIG_TABLE_DEFS } from "../data/efw_config.js";
 const CR_CATS = ["efw_config", "sro", "sco", "efw", "wmh_cr"];
 const WMS_VE_CATS = ["efwbeval", "efwfebeca", "efwsillaca", "efwwmh"];
 const ERP_VE_CATS = ["softland_beval", "softland_febeca", "softland_sillaca", "softland_trexa", "softland_prisma"];
-const VE_DIRECT_CATS = ["eintegra_ve", "ve_cross"];
 const SCHEMA_ER_CATS = [...CR_CATS, ...WMS_VE_CATS, ...ERP_VE_CATS, "eintegra_ve"]; // ve_cross/ve_global no son TABLE_DEFS de un solo schema
 
 const TD_BY_CAT = {
@@ -125,7 +124,6 @@ export function RelacionesSistemasView() {
   }, [query]);
 
   const catBreadcrumb = routeFor(cat);
-  const meta = CAT_META[cat];
 
   const navBtn = (active, color) => ({
     display:"flex", alignItems:"center", gap:7, width:"100%", padding:"8px 14px", border:"none",

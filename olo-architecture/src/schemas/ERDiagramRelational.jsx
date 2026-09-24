@@ -6,8 +6,7 @@ import { SRO_GROUPS, SRO_TABLE_DEFS, RELATION_META } from "../data/sro.js";
 import { DESIGN } from "../data/constants.js";
 import { LinkIcon } from "../components/icons.jsx";
 
-export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTable, getRelation, sroRows, GR, TD, storageKey="olo-er" }) {
-  if(!GR) GR=SRO_GROUPS; if(!TD) TD=SRO_TABLE_DEFS;
+export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTable, getRelation, sroRows, GR=SRO_GROUPS, TD=SRO_TABLE_DEFS, storageKey="olo-er" }) {
 
   const [posOv,    setPosOv]    = useState(()=>{ try{return JSON.parse(localStorage.getItem(storageKey+'-pos'))||{};}catch{return {};} });
   const [erZoom,   setErZoom]   = useState(1);
@@ -260,7 +259,7 @@ export function ERDiagramRelational({ activeGroups, selectedTable, setSelectedTa
           let y0=pos.y+TH_HD+TH_PK;
           return (
             <g key={table} style={{ cursor:"grab", opacity:dim?0.15:1, pointerEvents:"all" }}
-              onClick={e=>{ if(!erDragRef.current?.moved) setSelectedTable(prev=>prev===table?null:table); }}
+              onClick={()=>{ if(!erDragRef.current?.moved) setSelectedTable(prev=>prev===table?null:table); }}
               onMouseDown={e=>{
                 e.stopPropagation();
                 const r=erSvgRef.current?.getBoundingClientRect(); if(!r) return;

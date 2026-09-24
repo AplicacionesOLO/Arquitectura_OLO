@@ -2,10 +2,10 @@
 // SCHEMA · CrossSchemaView — Relaciones semánticas cross-schema Venezuela
 // ═══════════════════════════════════════════════════════════════════════════
 import { useState } from "react";
-import { EFWBEVAL_TABLE_DEFS,   EFWBEVAL_COLORS   } from "../data/beval_ve.js";
+import { EFWBEVAL_TABLE_DEFS } from "../data/beval_ve.js";
 import { EFWFEBECA_TABLE_DEFS                      } from "../data/febeca_ve.js";
 import { EFWSILLACA_TABLE_DEFS                     } from "../data/sillaca_ve.js";
-import { EFWWMH_TABLE_DEFS,     EFWWMH_COLORS      } from "../data/wmh_ve.js";
+import { EFWWMH_TABLE_DEFS } from "../data/wmh_ve.js";
 import veCross from "../data/ve_cross.json";
 import { DESIGN } from "../data/constants.js";
 import { KeyIcon, LinkIcon } from "../components/icons.jsx";
@@ -244,7 +244,6 @@ function DetailPanel({ name, onClose }) {
                   const isFK = col.includes("→");
                   const presentIn = schemas.filter(s => (tableDef(s, name)?.cols || []).includes(col));
                   const allHave = presentIn.length === schemas.length;
-                  const noneHave = presentIn.length === 0;
                   return (
                     <tr key={col} style={{ background: i%2===0 ? "#fff" : "#fafafa", borderBottom:"1px solid #f0f0f0" }}>
                       <td style={{ padding:"4px 10px", fontFamily:DESIGN.font, color: isFK ? "#6d28d9" : "#334155", fontWeight: isFK ? 600 : 400, display:"flex", alignItems:"center", gap:4 }}>

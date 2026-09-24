@@ -23,7 +23,7 @@ function stripHtml(raw) {
   if (!raw) return "";
   const div = document.createElement("div");
   div.innerHTML = raw.replace(/<br\s*\/?>/gi, "\n").replace(/<\/p>/gi, "\n");
-  return (div.textContent || "").replace(/ /g, " ").trim();
+  return (div.textContent || "").replace(/\u00a0/g, " ").trim();
 }
 
 function shapeKind(style) {
@@ -99,7 +99,7 @@ function Shape({ v }) {
   const fontColor = v.style.fontColor && v.style.fontColor !== "default" ? v.style.fontColor : "#1e293b";
   const fontWeight = /font-weight:\s*(bold|700)/i.test(v.value) || /^(Inicio|Fin)$/i.test(v.value) ? 700 : 400;
 
-  let shape = null;
+  let shape;
   if (v.kind === "text") {
     shape = null; // sin fondo, solo texto
   } else if (v.kind === "ellipse") {

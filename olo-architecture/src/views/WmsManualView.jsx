@@ -99,7 +99,9 @@ export function WmsManualView({ focus }) {
     {sel && <ScreenPanel key={sel.id} s={sel} byId={byId} onOpen={setScreenId} onClose={()=>setScreenId(null)} onPlay={setShow}/>}
     {show && <Presentacion slides={show.slides} start={show.start} onClose={()=>setShow(null)}
       onOpenScreen={(id) => { setShow(null); setModName(byId[id].module); setScreenId(id); setQ(""); }}
-      onOpenWmh={(id) => { setShow(null); navigate({ tab:"ops", view:"wmh", wmhScreen:id }); }}/>}
+      onOpenWmh={(id) => { setShow(null); navigate({ tab:"ops", view:"wmh", wmhScreen:id }); }}
+      onOpenSorter={(id) => { setShow(null); navigate({ tab:"ops", view:"sorter", sorterScreen:id }); }}
+      onOpenHh={(id) => { setShow(null); navigate({ tab:"ops", view:"hh", hhScreen:id }); }}/>}
   </div>;
 }
 

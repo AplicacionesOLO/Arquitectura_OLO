@@ -32,7 +32,7 @@ Reglas:
 const HERRAMIENTAS = [
   { type: "function", name: "buscar_conocimiento", description: "Búsqueda de texto completo en la base de conocimiento del BPA (tablas, pantallas, procesos, solicitudes, reglas).",
     parameters: { type: "object", additionalProperties: false, required: ["consulta", "tipos"], properties: {
-      consulta: { type: "string" }, tipos: { type: ["array", "null"], items: { type: "string", enum: ["solicitud", "tabla", "pantalla_wms", "pantalla_wmh", "pantalla_sorter", "pantalla_softland", "proceso", "regla", "contexto", "estandar", "abstracto"] } } } }, strict: true },
+      consulta: { type: "string" }, tipos: { type: ["array", "null"], items: { type: "string", enum: ["solicitud", "tabla", "pantalla_wms", "pantalla_hh", "pantalla_wmh", "pantalla_sorter", "pantalla_softland", "proceso", "regla", "contexto", "estandar", "abstracto"] } } } }, strict: true },
   { type: "function", name: "listar_solicitudes", description: "Catálogo de solicitudes de cambio a ePRAC (id, título, módulo, fecha, estado).",
     parameters: { type: "object", additionalProperties: false, required: ["filtro"], properties: { filtro: { type: ["string", "null"] } } }, strict: true },
   { type: "function", name: "ver_tabla", description: "Estructura de una tabla por nombre.",

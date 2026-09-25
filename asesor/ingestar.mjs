@@ -44,6 +44,7 @@ const WMS = JSON.parse(fs.readFileSync(path.join(DATA, "wms_manual.json"), "utf8
 const { WMS_INDEX, PANTALLA_TABLAS, TABLA_PANTALLAS, PANTALLA_PROCESOS } = await imp("wms_links.js");
 const { WMH_PANTALLAS } = await imp("wmh_manual.js");
 const { SORTER_PANTALLAS } = await imp("sorter_manual.js");
+const { HH_PANTALLAS, HH_META, HH_HALLAZGOS, pantallaHhDePaso } = await imp("hh_manual.js");
 const CTX = await imp("contexto.js");
 const { GAPS } = await imp("softland.js");
 const DD = JSON.parse(fs.readFileSync(path.join(DATA, "softland_dd.json"), "utf8"));
@@ -256,6 +257,16 @@ for (const m of Object.values(WMS.modules)) for (const s of m.screens) {
   ].filter(Boolean).join("\n"), { modulo: m.name });
 }
 for (const s of WMH_PANTALLAS) add("pantalla_wmh", s.id, `Torre de Control (WMH) › ${s.modulo} › ${s.nombre}`, [s.descripcion, s.campos && `Campos: ${[].concat(s.campos).join(" · ")}`, s.acciones && `Acciones: ${[].concat(s.acciones).join(" · ")}`, s.detalle && JSON.stringify(s.detalle)].filter(Boolean).join("\n"));
+// Handheld (app RF del piso): pantallas con los procesos que las citan
+const usosHh = {};
+for (const p of Object.values(PROCESOS)) p.pasos.forEach((s, i) => { const id = pantallaHhDePaso(s, p.codigo); if (id) ((usosHh[id] ||= {})[p.codigo] ||= []).push(i + 1); });
+for (const s of HH_PANTALLAS) add("pantalla_hh", s.id, `eFlow WMS Handheld › ${s.url}`, [
+  `Pantalla de la app handheld de eFlow WMS (v${HH_META.version}, Android). ${s.descripcion}`,
+  s.campos.length && `Campos de escaneo / entrada: ${s.campos.join(" · ")}`, s.columnas.length && `Muestra / opciones: ${s.columnas.join(" · ")}`,
+  s.acciones.length && `Menú y acciones: ${s.acciones.map(([a, d]) => `${a} (${d})`).join(" · ")}`,
+  usosHh[s.id] && `Procesos que la usan: ${Object.entries(usosHh[s.id]).map(([c, n]) => `${c} (pasos ${n.join(", ")})`).join(" · ")}`,
+].filter(Boolean).join("\n"), { modulo: s.modulo });
+add("contexto", "hh_hallazgos", "Handheld eFlow WMS · hallazgos del mapeo (25/09/2026)", HH_HALLAZGOS.join("\n"));
 for (const s of SORTER_PANTALLAS) add("pantalla_sorter", s.id, `SORTER CLIRO (Mecalux) › ${s.modulo} › ${s.nombre}`, [s.descripcion, s.detalle && JSON.stringify(s.detalle)].filter(Boolean).join("\n"));
 for (const [k, m] of Object.entries(DD.modulos)) if (m.instaladoEnCofersa) add("pantalla_softland", k, `Softland › ${k} ${m.nombre} (menú)`,
   `Menú real de Softland, módulo ${k} (${m.nombre}), compañía Cofersa. Opciones:\n` + m.pantallas.map(p => `${p.nombre}${p.tabla ? ` [${p.tabla}]` : ""}${p.acciones.length ? `: ${p.acciones.join(", ")}` : ""}`).join("\n")

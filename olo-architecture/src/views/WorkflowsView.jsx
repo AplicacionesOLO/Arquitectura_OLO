@@ -111,7 +111,8 @@ export function WorkflowsView({ focus }) {
     {show && <Presentacion slides={slidesProceso(show.codigo)} start={show.start} onClose={() => setShow(null)}
       onOpenScreen={id => { setShow(null); navigate({ tab:"ops", view:"wms", screen:id }); }}
       onOpenWmh={id => { setShow(null); navigate({ tab:"ops", view:"wmh", wmhScreen:id }); }}
-      onOpenSorter={id => { setShow(null); navigate({ tab:"ops", view:"sorter", sorterScreen:id }); }}/>}
+      onOpenSorter={id => { setShow(null); navigate({ tab:"ops", view:"sorter", sorterScreen:id }); }}
+      onOpenHh={id => { setShow(null); navigate({ tab:"ops", view:"hh", hhScreen:id }); }}/>}
   </div>;
 }
 
@@ -151,7 +152,8 @@ function Panel({ sel, canEdit, rolesMano, onGuardarRol, onClose, onIr, onPresent
     const s = p.pasos[sel.i], m = SISTEMAS_WF[s.sistema] || SISTEMAS_WF.fisico, o = s.origen && ORIGEN_WF[s.origen], sl = slides[sel.i];
     const abrirPantalla = sl?.screenId ? () => navigate({ tab:"ops", view:"wms", screen:sl.screenId })
       : sl?.wmhId ? () => navigate({ tab:"ops", view:"wmh", wmhScreen:sl.wmhId })
-      : sl?.sorterId ? () => navigate({ tab:"ops", view:"sorter", sorterScreen:sl.sorterId }) : null;
+      : sl?.sorterId ? () => navigate({ tab:"ops", view:"sorter", sorterScreen:sl.sorterId })
+      : sl?.hhId ? () => navigate({ tab:"ops", view:"hh", hhScreen:sl.hhId }) : null;
     cuerpo = <>
       <div style={{ fontSize:11.5, color:DESIGN.muted, marginBottom:4 }}>Paso {sel.i + 1} de {p.pasos.length}</div>
       <div style={{ fontSize:15, color:DESIGN.ink, lineHeight:1.5, fontWeight:500 }}>{s.texto}</div>

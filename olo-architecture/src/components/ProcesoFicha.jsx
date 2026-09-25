@@ -16,6 +16,7 @@ import { BadgeVal } from "./Validacion.jsx";
 import { slidesProceso } from "../lib/presentacion.js";
 import { WMH_BY_ID, pantallaWmhDePaso } from "../data/wmh_manual.js";
 import { SORTER_BY_ID } from "../data/sorter_manual.js";
+import { HH_BY_ID, pantallaHhDePaso } from "../data/hh_manual.js";
 
 const BUCKET = "Detalles_Porcesos";
 const DRAWIO = import.meta.glob("../assets/procesos_cedi/*.drawio", { query: "?raw", import: "default" });
@@ -40,6 +41,7 @@ const CIA_COLOR = { COFERSA: "#1d4ed8", EPA: "#b45309", CEDI: "#475569", Borrado
 // Origen de cada paso de un borrador: hecho verificable en el WMS vs. supuesto a revisar
 const ORIGEN = { eflow_wms: { label: "eFlow WMS", color: "#0891b2", title: "La pantalla, campo o botón citado existe en eFlow WMS" },
   mecalux_sorter: { label: "SORTER Mecalux", color: "#ea580c", title: "Del manual del SORTER CLIRO (Mecalux): mapeo funcional real" },
+  eflow_hh: { label: "Handheld", color: "#0d9488", title: "La opción citada existe en la app handheld de eFlow WMS (mapa del 25/09/2026)" },
   control_tower: { label: "Torre de Control", color: "#16a34a", title: "Documentado en el levantamiento de Torre de Control (Operación › Torre de Control · WMH)" },
   softland_menu: { label: "Menú Softland", color: "#c0392b", title: "La opción citada existe en el menú real de Softland (diccionario de la compañía COFER)" },
   inferido: { label: "Inferido", color: "#b45309", title: "Paso o regla sin documento de OLO: revisar y validar" } };
@@ -196,6 +198,15 @@ function SorterLink({ id, onNavigate }) {
   </button>;
 }
 
+// Pantalla del manual del handheld ligada a un paso en "handheld"
+function HhLink({ id, onNavigate }) {
+  const w = HH_BY_ID[id];
+  return <button onClick={()=>onNavigate({ tab:"ops", view:"hh", hhScreen:id })} title="Ver la pantalla en el manual del handheld"
+    style={{ fontSize:10.5, fontWeight:700, color:"#0d9488", background:"#0d948814", border:"1px solid #0d948840", borderRadius:5, padding:"1px 6px", cursor:"pointer", fontFamily:DESIGN.font }}>
+    Handheld › {w.url} ↗
+  </button>;
+}
+
 function Pasos({ p, onNavigate }) {
   const links = PASO_PANTALLA[p.codigo] || {};
   const val = useValidaciones();
@@ -203,7 +214,8 @@ function Pasos({ p, onNavigate }) {
   const [show, setShow] = useState(null);
   const wmhDe = (s) => s.sistema === "torre" ? pantallaWmhDePaso(s.texto) : null;
   const srtDe = (s) => s.sistema === "sorter" && SORTER_BY_ID[s.screen] ? s.screen : null;
-  const conPantalla = p.pasos.filter((s, i) => links[i] || wmhDe(s) || srtDe(s)).length;
+  const hhDe = (s) => pantallaHhDePaso(s, p.codigo);
+  const conPantalla = p.pasos.filter((s, i) => links[i] || wmhDe(s) || srtDe(s) || hhDe(s)).length;
   return <>
   {conPantalla > 0 && <button onClick={()=>setShow(0)} title="Presentar el proceso pantalla por pantalla"
     style={{ width:"100%", marginBottom:12, fontSize:12, fontWeight:700, color:"#fff", background:"#0891b2", border:"none", borderRadius:7, padding:"8px 12px", cursor:"pointer", fontFamily:DESIGN.font }}>
@@ -212,7 +224,8 @@ function Pasos({ p, onNavigate }) {
   {show != null && <Presentacion slides={slidesProceso(p.codigo)} start={show} onClose={()=>setShow(null)}
     onOpenScreen={(id) => { setShow(null); onNavigate({ tab:"ops", view:"wms", screen:id }); }}
     onOpenWmh={(id) => { setShow(null); onNavigate({ tab:"ops", view:"wmh", wmhScreen:id }); }}
-    onOpenSorter={(id) => { setShow(null); onNavigate({ tab:"ops", view:"sorter", sorterScreen:id }); }}/>}
+    onOpenSorter={(id) => { setShow(null); onNavigate({ tab:"ops", view:"sorter", sorterScreen:id }); }}
+    onOpenHh={(id) => { setShow(null); onNavigate({ tab:"ops", view:"hh", hhScreen:id }); }}/>}
   {res && <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap", fontSize:12, color:DESIGN.inkSoft, marginBottom:12 }}>
     <BadgeVal estado={res.proceso}/><span><b>{res.validados}</b> de {res.total} pasos validados{res.corregir ? ` · ${res.corregir} con corrección` : ""}</span>
     <button onClick={()=>onNavigate({ tab:"workflows", codigo:p.codigo })} style={{ fontSize:12, fontWeight:700, color:"#2563eb", background:"none", border:"none", padding:0, cursor:"pointer", fontFamily:DESIGN.font }}>Validar en Workflows ›</button>
@@ -230,6 +243,7 @@ function Pasos({ p, onNavigate }) {
             ? links[i].map(id => <PantallaLink key={id} id={id} onNavigate={onNavigate}/>)
             : srtDe(s) ? <SorterLink id={srtDe(s)} onNavigate={onNavigate}/>
             : wmhDe(s) ? <WmhLink id={wmhDe(s)} onNavigate={onNavigate}/>
+            : hhDe(s) ? <><HhLink id={hhDe(s)} onNavigate={onNavigate}/>{s.pantalla && s.pantalla !== HH_BY_ID[hhDe(s)].url && <span style={{ fontSize:10.5, color:DESIGN.muted }}>{s.pantalla}</span>}</>
             : s.pantalla && <span style={{ fontSize:10.5, color:DESIGN.muted }}>{s.pantalla}</span>}
         </div>
       </div>
@@ -258,7 +272,8 @@ function Datos({ p, onNavigate }) {
       <L n={p.pantallas.length}>Pantallas</L>
       <div style={{ display:"grid", gap:6 }}>
         {p.pantallas.map((s,i) => <div key={i} style={{ fontSize:12, lineHeight:1.45 }}>
-          <div style={{ display:"flex", gap:6, alignItems:"center", flexWrap:"wrap" }}><SistemaChip sys={s.sistema}/><b style={{ color:DESIGN.ink }}>{s.ruta}</b></div>
+          <div style={{ display:"flex", gap:6, alignItems:"center", flexWrap:"wrap" }}><SistemaChip sys={s.sistema}/><b style={{ color:DESIGN.ink }}>{s.ruta}</b>
+            {(() => { const id = pantallaHhDePaso({ sistema:s.sistema, pantalla:s.ruta }, p.codigo); return id && <HhLink id={id} onNavigate={onNavigate}/>; })()}</div>
           <div style={{ color:DESIGN.muted, marginTop:2 }}>{s.uso}</div>
         </div>)}
       </div>

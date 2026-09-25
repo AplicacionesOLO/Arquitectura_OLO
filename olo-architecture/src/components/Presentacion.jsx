@@ -16,11 +16,12 @@ const ORIGEN = {
   eflow_wms: { label: "eFlow WMS", color: "#22d3ee" },
   control_tower: { label: "Torre de Control", color: "#4ade80" },
   mecalux_sorter: { label: "SORTER Mecalux", color: "#fb923c" },
+  eflow_hh: { label: "Handheld eFlow", color: "#2dd4bf" },
   inferido: { label: "Inferido · sin documento de OLO", color: "#fbbf24" },
 };
 const MAX_ZOOM = 8;
 
-export function Presentacion({ slides, start = 0, onClose, onOpenScreen, onOpenWmh, onOpenSorter }) {
+export function Presentacion({ slides, start = 0, onClose, onOpenScreen, onOpenWmh, onOpenSorter, onOpenHh }) {
   const [i, setI] = useState(Math.min(start, slides.length - 1));
   const [panel, setPanel] = useState(true);
   const go = useCallback((d) => setI(x => Math.max(0, Math.min(slides.length - 1, x + d))), [slides.length]);
@@ -71,7 +72,7 @@ export function Presentacion({ slides, start = 0, onClose, onOpenScreen, onOpenW
                 <div style={{ fontSize:14, fontWeight:700, color:"#5eead4", textTransform:"uppercase", letterSpacing:"0.06em" }}>{s.sistema || "Paso"}</div>
                 <div style={{ fontSize:22, color:"#fff", lineHeight:1.5, marginTop:12 }}>{s.texto}</div>
                 {s.donde && <div style={{ fontSize:15, color:"#94a3b8", marginTop:12 }}>{s.donde}</div>}
-                <div style={{ fontSize:13, color:"#64748b", marginTop:16 }}>Este paso no tiene captura: no ocurre en una pantalla de eFlow WMS, Torre de Control ni el SORTER.</div>
+                <div style={{ fontSize:13, color:"#64748b", marginTop:16 }}>Este paso no tiene captura: no ocurre en una pantalla de eFlow WMS, el handheld, Torre de Control ni el SORTER.</div>
               </div>
             </div>}
       </div>
@@ -90,6 +91,7 @@ export function Presentacion({ slides, start = 0, onClose, onOpenScreen, onOpenW
             {s.screenId && onOpenScreen && link(()=>onOpenScreen(s.screenId), "Ver ficha de la pantalla")}
             {s.wmhId && onOpenWmh && link(()=>onOpenWmh(s.wmhId), "Ver pantalla en el manual de Torre de Control")}
             {s.sorterId && onOpenSorter && link(()=>onOpenSorter(s.sorterId), "Ver pantalla en el manual del SORTER")}
+            {s.hhId && onOpenHh && link(()=>onOpenHh(s.hhId), "Ver pantalla en el manual del handheld")}
           </div>
           {slides.length > 1 && <>
             <div style={{ fontSize:12, fontWeight:700, color:"#64748b", letterSpacing:"0.07em", textTransform:"uppercase", margin:"22px 0 8px" }}>Recorrido completo</div>

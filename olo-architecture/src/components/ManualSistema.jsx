@@ -6,7 +6,8 @@
 //
 // cfg: { titulo, subtitulo, intro, accent, sistema (etiqueta de ruta), modulos,
 //        pantallas, byId, imgUrl, flujo, flujoLabel, usos, idKey, aviso?, conceptos? }
-// idKey: campo con que las diapositivas llevan el id de pantalla ("wmhId" | "sorterId")
+// idKey: campo con que las diapositivas llevan el id de pantalla ("wmhId" | "sorterId" | "hhId")
+// retrato: capturas verticales (handheld) · hallazgos: lista de puntos a validar
 // ═══════════════════════════════════════════════════════════════════════════
 import { useState, useEffect } from "react";
 import { useNav } from "../lib/nav.js";
@@ -44,6 +45,10 @@ export function ManualSistema({ cfg, focusScreen }) {
         <div style={{ fontSize:14, color:DESIGN.muted, marginTop:3 }}>{cfg.subtitulo}</div>
         <p style={{ fontSize:14, color:DESIGN.inkSoft, lineHeight:1.6, margin:"8px 0 0", maxWidth:860 }}>{cfg.intro}</p>
         {cfg.aviso && <div style={{ marginTop:8, maxWidth:860, fontSize:13.5, lineHeight:1.5, color:DESIGN_STATUS.warning.color, background:DESIGN_STATUS.warning.bg, border:`1px solid ${DESIGN_STATUS.warning.border}`, borderRadius:6, padding:"6px 10px" }}>{cfg.aviso}</div>}
+        {cfg.hallazgos?.length > 0 && <details style={{ marginTop:8, maxWidth:860, background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:6, padding:"6px 10px" }}>
+          <summary style={{ fontSize:13.5, fontWeight:700, color:DESIGN.ink, cursor:"pointer" }}>Hallazgos del mapeo a validar · {cfg.hallazgos.length}</summary>
+          <ul style={{ margin:"6px 0 2px", paddingLeft:18, display:"grid", gap:4 }}>{cfg.hallazgos.map((h, i) => <li key={i} style={{ fontSize:13.5, color:DESIGN.inkSoft, lineHeight:1.5 }}>{h}</li>)}</ul>
+        </details>}
       </div>
 
       <SelectorRecorrido codigos={procesos} accent={accent} onPlay={(c) => setShow({ slides: slidesProceso(c), start: 0 })}
@@ -61,12 +66,12 @@ export function ManualSistema({ cfg, focusScreen }) {
       </div>
       <p style={{ fontSize:14, color:DESIGN.muted, margin:"0 0 10px" }}>{mod.info}</p>
 
-      <div style={{ display:"grid", gridTemplateColumns:`repeat(auto-fill,minmax(${actual?190:220}px,1fr))`, gap:10 }}>
+      <div style={{ display:"grid", gridTemplateColumns:`repeat(auto-fill,minmax(${cfg.retrato ? (actual?140:160) : (actual?190:220)}px,1fr))`, gap:10 }}>
         {lista.map(p => {
           const isA = p.id === sel;
           const u = usos[p.id] || [];
           return <button key={p.id} onClick={()=>setSel(isA ? null : p.id)} style={{ textAlign:"left", background:"#fff", border:`1px solid ${isA?DESIGN.ink:DESIGN.border}`, boxShadow:isA?`0 0 0 1px ${DESIGN.ink}`:"none", borderRadius:9, padding:0, cursor:"pointer", fontFamily:DESIGN.font, overflow:"hidden" }}>
-            <img src={imgUrl(p.img)} alt="" loading="lazy" style={{ width:"100%", aspectRatio:"16/9", objectFit:"cover", objectPosition:"top left", display:"block", borderBottom:`1px solid ${DESIGN.border}`, background:DESIGN.sunken }}/>
+            <img src={imgUrl(p.img)} alt="" loading="lazy" style={{ width:"100%", aspectRatio:cfg.retrato ? "3/4" : "16/9", objectFit:"cover", objectPosition:cfg.retrato ? "top center" : "top left", display:"block", borderBottom:`1px solid ${DESIGN.border}`, background:DESIGN.sunken }}/>
             <div style={{ padding:"8px 10px 10px" }}>
               <div style={{ fontSize:14, fontWeight:700, color:DESIGN.ink }}>{p.nombre}</div>
               <div style={{ fontSize:12.5, color:DESIGN.muted, fontFamily:"'Courier New', monospace" }}>{p.url}</div>
@@ -86,7 +91,7 @@ export function ManualSistema({ cfg, focusScreen }) {
       onZoom={()=>setShow({ slides: slidesLista(lista), start: lista.findIndex(x => x.id === actual.id) })}
       onPlayProceso={(codigo, desde) => setShow({ slides: slidesProceso(codigo), start: desde - 1 })}/>}
     {show && <Presentacion slides={show.slides} start={show.start} onClose={()=>setShow(null)}
-      onOpenWmh={idKey === "wmhId" ? abrir : undefined} onOpenSorter={idKey === "sorterId" ? abrir : undefined}/>}
+      onOpenWmh={idKey === "wmhId" ? abrir : undefined} onOpenSorter={idKey === "sorterId" ? abrir : undefined} onOpenHh={idKey === "hhId" ? abrir : undefined}/>}
   </div>;
 }
 
@@ -103,7 +108,7 @@ function Panel({ p, cfg, usos, onClose, onZoom, onPlayProceso }) {
       <button onClick={onClose} title="Cerrar" style={{ background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:17 }}>✕</button>
     </div>
     <div style={{ position:"relative", marginTop:10, cursor:"zoom-in" }} onClick={onZoom} title="Ver en grande y recorrer el módulo">
-      <img src={cfg.imgUrl(p.img)} alt={p.figura} style={{ width:"100%", display:"block", borderRadius:6, border:`1px solid ${DESIGN.border}` }}/>
+      <img src={cfg.imgUrl(p.img)} alt={p.figura} style={cfg.retrato ? { maxWidth:"100%", maxHeight:"62vh", display:"block", margin:"0 auto", borderRadius:6, border:`1px solid ${DESIGN.border}` } : { width:"100%", display:"block", borderRadius:6, border:`1px solid ${DESIGN.border}` }}/>
       <span style={{ position:"absolute", right:8, bottom:8, fontSize:13, fontWeight:700, color:"#fff", background:"rgba(15,23,42,0.8)", borderRadius:6, padding:"3px 8px" }}>⤢ Ver en grande</span>
     </div>
     <div style={{ fontSize:12.5, color:DESIGN.muted, marginTop:4, fontStyle:"italic" }}>Figura — {p.figura}</div>

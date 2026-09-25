@@ -11,7 +11,7 @@ import { PROCESOS, SILO_LABELS } from "./procesos_fichas.js";
 
 export const SISTEMAS_WF = {
   eflow:       { label:"eFlow WMS",        icono:"W",  color:"#0891b2", schema:"efw",    ir:{ tab:"ops", view:"wms" } },
-  handheld:    { label:"Handheld RF",      icono:"RF", color:"#0d9488", schema:"efw",    ir:{ tab:"ops" } },
+  handheld:    { label:"Handheld RF",      icono:"RF", color:"#0d9488", schema:"efw",    ir:{ tab:"ops", view:"hh" } },
   torre:       { label:"Torre de Control", icono:"T",  color:"#16a34a", schema:"wmh_cr", ir:{ tab:"ops", view:"wmh" } },
   sorter:      { label:"SORTER CLIRO",     icono:"S",  color:"#ea580c", schema:null,     ir:{ tab:"ops", view:"sorter" } },
   softland:    { label:"Softland ERP",     icono:"SL", color:"#c0392b", schema:"softland", ir:{ tab:"softland" } },
@@ -24,6 +24,7 @@ export const SISTEMAS_WF = {
 export const ORIGEN_WF = {
   eflow_wms:      { label:"Pantalla eFlow WMS", color:"#0891b2" },
   mecalux_sorter: { label:"Manual SORTER",      color:"#ea580c" },
+  eflow_hh:       { label:"Opción handheld",    color:"#0d9488" },
   control_tower:  { label:"Torre de Control",   color:"#16a34a" },
   softland_menu:  { label:"Menú Softland",      color:"#c0392b" },
   inferido:       { label:"Inferido · validar", color:"#b45309" },

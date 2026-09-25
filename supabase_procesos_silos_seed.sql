@@ -41,7 +41,9 @@ begin
     insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
       values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_inventario__generacion_de_tomas_fisicas.jpg', 'eFlow WMS · Inventario › Generación de Tomas Físicas.jpg', 'image/jpeg', 134057);
     insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
-      values ('log_inventario', v_proc, 2, '4. Ejecutar el conteo físico ubicación por ubicación con el handheld', 3, 'INV-01.04') returning id into v_sub;
+      values ('log_inventario', v_proc, 2, '4. Ejecutar el conteo físico ubicación por ubicación en el handheld (Inventario › TOMA FISICA)', 3, 'INV-01.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'hh-manual/hh__04_inventario_menu.jpg', 'Handheld · Inventario - TOMA FISICA.jpg', 'image/jpeg', null);
     insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
       values ('log_inventario', v_proc, 2, '5. Revisar el avance en la pestaña «Conteo de la Toma» y los indicadores REF CONTADAS / REF CORRECTAS / UBICACION CONTADAS del grid', 4, 'INV-01.05') returning id into v_sub;
     insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
@@ -86,7 +88,9 @@ begin
     insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
       values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_inventario__generacion_de_tomas_fisicas.jpg', 'eFlow WMS · Inventario › Generación de Tomas Físicas.jpg', 'image/jpeg', 134057);
     insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
-      values ('log_inventario', v_proc, 2, '4. Contar por zonas con el handheld; cada ubicación se cuenta y se cierra', 3, 'INV-02.04') returning id into v_sub;
+      values ('log_inventario', v_proc, 2, '4. Contar por zonas en el handheld (Inventario › TOMA FISICA); cada ubicación se cuenta y se cierra', 3, 'INV-02.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'hh-manual/hh__04_inventario_menu.jpg', 'Handheld · Inventario - TOMA FISICA.jpg', 'image/jpeg', null);
     insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
       values ('log_inventario', v_proc, 2, '5. Unir conteos parciales de la misma toma con «Combinar» cuando se contó por equipos o por fases', 4, 'INV-02.05') returning id into v_sub;
     insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
@@ -387,7 +391,9 @@ begin
     insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
       values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__ordenes_de_recepcion.jpg', 'eFlow WMS · Documentos › Ordenes de Recepción.jpg', 'image/jpeg', 101415);
     insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
-      values ('neg_almacenamiento', v_proc, 2, '4. Descargar y contar la mercancía por palet en el muelle asignado', 3, 'ALM-01.04') returning id into v_sub;
+      values ('neg_almacenamiento', v_proc, 2, '4. Descargar en el muelle asignado y validar cada palet en el handheld (Recibo › VALIDACION GENERAL): código de barras, cantidad en cajas, lote y vencimiento', 3, 'ALM-01.04') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'hh-manual/hh__01d_recibo_validacion_general.jpg', 'Handheld · Recibo - VALIDACION GENERAL.jpg', 'image/jpeg', null);
     insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
       values ('neg_almacenamiento', v_proc, 2, '5. Registrar lo recibido con «Crear Confirmación»; cada confirmación queda con su palet y cantidad', 4, 'ALM-01.05') returning id into v_sub;
     insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
@@ -430,7 +436,9 @@ begin
     insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
       values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__consolidacion_de_recepciones.jpg', 'eFlow WMS · Documentos › Consolidación de Recepciones.jpg', 'image/jpeg', 73302);
     insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
-      values ('neg_almacenamiento', v_proc, 2, '3. Recibir el embarque consolidado como una sola descarga', 2, 'ALM-02.03') returning id into v_sub;
+      values ('neg_almacenamiento', v_proc, 2, '3. Recibir el embarque consolidado como una sola descarga en el handheld (Recibo › RECEPCION con el N. de confirmación)', 2, 'ALM-02.03') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'hh-manual/hh__01b_recibo_recepcion.jpg', 'Handheld · Recibo - RECEPCION.jpg', 'image/jpeg', null);
     insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
       values ('neg_almacenamiento', v_proc, 2, '4. Si hay que separar una orden consolidada, usar Documentos › Desconsolidación Recepciones con «Des Consolidar»', 3, 'ALM-02.04') returning id into v_sub;
     insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)

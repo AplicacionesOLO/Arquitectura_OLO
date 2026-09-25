@@ -14,6 +14,7 @@ import { PROCESOS, SILO_LABELS } from "../data/procesos_fichas.js";
 import { WMS_INDEX } from "../data/wms_links.js";
 import { WMH_PANTALLAS } from "../data/wmh_manual.js";
 import { SORTER_PANTALLAS, SORTER_CONCEPTOS } from "../data/sorter_manual.js";
+import { HH_CONCEPTOS, HH_PANTALLAS } from "../data/hh_manual.js";
 import { COFERSA_PENDIENTES } from "../data/control_tower.js";
 import { CUESTIONARIO, textoParaEnviar } from "../data/cuestionario.js";
 import { CAT_META, INTEGRATIONS, SRO_MOD, SCO_MOD, EFW_MOD, WMH_CR_MOD, EFWBEVAL_MOD, EFWFEBECA_MOD, EFWSILLACA_MOD, EFWWMH_MOD,
@@ -39,9 +40,10 @@ const GLOSARIO = (() => {
   const m = new Map();
   for (const p of PROC) for (const c of p.conceptos || []) if (!m.has(c.termino.toLowerCase())) m.set(c.termino.toLowerCase(), { ...c, codigo: p.codigo });
   for (const c of SORTER_CONCEPTOS) if (!m.has(c.termino.toLowerCase())) m.set(c.termino.toLowerCase(), { ...c, codigo: "XDK-01" });
+  for (const c of HH_CONCEPTOS) if (!m.has(c.termino.toLowerCase())) m.set(c.termino.toLowerCase(), { ...c, codigo: "Handheld" });
   return [...m.values()].sort((a, b) => a.termino.localeCompare(b.termino, "es"));
 })();
-const ORIGEN_LABEL = { procedimiento: ["Procedimiento de OLO", "#0f766e"], eflow_wms: ["Pantalla de eflow WMS", "#0891b2"], mecalux_sorter: ["Manual del SORTER", "#ea580c"], control_tower: ["Levantamiento de Torre", "#16a34a"], softland_menu: ["Menú de Softland", "#c0392b"], inferido: ["Inferido", "#b45309"] };
+const ORIGEN_LABEL = { procedimiento: ["Procedimiento de OLO", "#0f766e"], eflow_wms: ["Pantalla de eflow WMS", "#0891b2"], mecalux_sorter: ["Manual del SORTER", "#ea580c"], eflow_hh: ["Opción del handheld", "#0d9488"], control_tower: ["Levantamiento de Torre", "#16a34a"], softland_menu: ["Menú de Softland", "#c0392b"], inferido: ["Inferido", "#b45309"] };
 
 const SECCIONES = [
   ["resumen", "Estado del conocimiento", "qué está mapeado"],
@@ -123,7 +125,7 @@ function Resumen({ ir, setSec }) {
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(210px,1fr))", gap:12, marginBottom:18 }}>
       <Kpi n={PROC.length} label="Procesos con ficha" sub={`${cedi} CEDI · ${borr} borradores · ${xdk} sorter`} onClick={()=>ir({ tab:"olo-arch" })}/>
       <Kpi n={totalPasos} label="Pasos documentados" sub="con sistema, pantalla y origen" onClick={()=>ir({ tab:"olo-arch" })}/>
-      <Kpi n={Object.keys(WMS_INDEX).length + WMH_PANTALLAS.length + SORTER_PANTALLAS.length} label="Pantallas con captura" sub={`${Object.keys(WMS_INDEX).length} eflow · ${WMH_PANTALLAS.length} Torre · ${SORTER_PANTALLAS.length} SORTER`} onClick={()=>ir({ tab:"ops", view:"wms" })}/>
+      <Kpi n={Object.keys(WMS_INDEX).length + HH_PANTALLAS.length + WMH_PANTALLAS.length + SORTER_PANTALLAS.length} label="Pantallas con captura" sub={`${Object.keys(WMS_INDEX).length} eflow · ${HH_PANTALLAS.length} handheld · ${WMH_PANTALLAS.length} Torre · ${SORTER_PANTALLAS.length} SORTER`} onClick={()=>ir({ tab:"ops", view:"wms" })}/>
       <Kpi n={tablas.toLocaleString("es")} label="Tablas de BD mapeadas" sub={`${ESQUEMAS.length} esquemas reales`} onClick={()=>setSec("datos")}/>
       <Kpi n={INTEGRATIONS.length} label="Integraciones inter-módulo" sub="qué fluye entre sistemas" onClick={()=>ir({ tab:"integrations" })}/>
       <Kpi n={APLICACIONES.length} label="Aplicaciones" sub="con versión y dónde se usan" onClick={()=>setSec("aplicaciones")}/>

@@ -25,17 +25,17 @@ export const SOFTLAND_MODULES = [
 
 // Módulos de la suite eflow (ePRAC) en OLO — datos verificados:
 //  · WMS-D: crawl de la app en vivo (23/09/2026, wms_manual.json)
-//  · WMS-RF: capturas del handheld en los manuales de los procesos CEDI
+//  · WMS-RF: mapa de la app handheld en el teléfono (25/09/2026, hh_manual.js)
 //  · WMH: levantamiento de Torre de Control + Manual de Usuario Control Tower (09/2026)
 export const OPS_MODULES = [
   { code:"WMS-D", name:"eflow WMS · Desktop", status:"confirmed", vendor:"ePRAC · eflow Cloud Suite",
     role:"Aplicación de escritorio Windows (eFlow-WMS.exe) · v3.2.8.5 · almacén 0001 - CEDI OLO · BD EFLOW_OLO",
     purpose:"Núcleo del CEDI. 9 módulos y 122 opciones mapeadas del sistema en vivo: Control (12: acciones de trabajo, alerta picking, chequeo, citas de proveedores, monitores de actividades y errores, movimientos), Catálogos (14: artículos, EAN, kits, transformación, clientes, proveedores, servicios, unidades de transporte), Documentos (15: órdenes de recepción y expedición, confirmaciones, consolidación, carga camión, comparación alisto vs packing, transformación, verificación de kits, servicios especiales), Inventario (11: consulta, ajustes individuales y masivos, tomas físicas, palets, slotting, traslado de sucursal), Configuración (20: almacenes, compañías, sucursales, zonas, almacenamientos y ubicaciones, rutas y secuencias de picking), Reportes (29: productividad, kardex, control de órdenes, palets pendientes), Seguridad (16) y Paneles (4).",
     note:"Manual completo con capturas: Operación › eFlow WMS · Manual." },
-  { code:"WMS-RF", name:"eflow WMS · RF (handheld)", status:"partial", vendor:"ePRAC · eflow Cloud Suite",
-    role:"Terminal handheld · menú «eWMS - CEDI OLO» con usuario, recurso y almacén",
-    purpose:"Ejecución física en piso. Opciones vistas en las capturas de los manuales: Recibo (Recibo de mercadería: Cross Banda, Recepción, Validación Crossdocking General, Validación General; Artículos recepción), Almacenaje (Almacenamiento de mercadería › Ubicación Libre, ubicación de palet) y Picking, despacho y reposiciones (Trabajo automático, Picking, Contenedor Máster › Finalizar Máster, Despacho › Despachar máster completo, Carga Camión).",
-    note:"El crawl automático cubre solo el WMS de escritorio: las opciones del handheld salen de las capturas de los manuales de los procesos CEDI y pueden no estar completas." },
+  { code:"WMS-RF", name:"eflow WMS · RF (handheld)", status:"confirmed", vendor:"ePRAC · eflow Cloud Suite",
+    role:"App Android eFlow WMS HH v3.1.73.1 (Xamarin) · menú «eWMS - CEDI OLO» con usuario, recurso y almacén · escáner/impresora por Bluetooth",
+    purpose:"Ejecución física en piso. 5 módulos y 18 opciones mapeadas en el teléfono: Recibo (Cross Banda, Recepción, Validación Crossdocking General, Validación General), Almacenaje (Multipalet Libre, Semidirigido, Picking Inverso, Transferencia Stock, Traslado Libre, Traslado Sucursal, Ubicación Libre), Picking, despacho y reposiciones (Carga Camión, Contenedor Máster, Despacho, Trabajo automático), Inventario (Inventario, Toma física) y Control (Creación Art. Zona Picking). Cada operación empieza con un escaneo.",
+    note:"Manual con capturas: Operación › eFlow WMS · Handheld. Faltan Trabajo automático, Toma física y las pantallas que aparecen después de escanear (requieren una tarea real)." },
   { code:"WMH", name:"WMH · Torre de Control (Control Tower)", status:"confirmed", vendor:"ePRAC (eprac.com) · eflow Cloud Suite",
     role:"Aplicación web (Angular + Material + AG Grid) · v4.18.4.4 · http://10.17.225.22:8080",
     purpose:"Planifica y controla los viajes de distribución. Dashboard «Operación en tiempo real (Viajes)» con KPIs (viajes, rutas, órdenes, líneas, montos, peso, volumen, unidades, clientes) y acciones Nuevo Viaje, Anular Viaje y Fusionar; Catálogos (Almacenes, Bajadas, Choferes, Compañías de Transporte, Rutas y Zonas de Distribución, Unidades de Transporte); Documentos (Órdenes, Órdenes Inactivas, Visor de viajes con Despachar y Guía de Carga PDF/Excel, Nuevo Viaje); Reportes (Reporte de viaje); Seguridad (8 reglas FLOW, usuarios). Devuelve a eFlow el número de viaje, la prioridad y la banda asignada.",

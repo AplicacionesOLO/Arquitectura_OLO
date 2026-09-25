@@ -449,7 +449,7 @@ function DetalleAbstracto({ f, onReprocesar, onEliminar }) {
 }
 
 // ── Base de conocimiento ─────────────────────────────────────────────────────
-const TIPOS = { solicitud:"Solicitudes de cambio a ePRAC", tabla:"Tablas (estructura real de las bases)", pantalla_wms:"Pantallas de eFlow WMS", pantalla_wmh:"Pantallas de Torre de Control", pantalla_sorter:"Pantallas del SORTER CLIRO",
+const TIPOS = { solicitud:"Solicitudes de cambio a ePRAC", tabla:"Tablas (estructura real de las bases)", pantalla_wms:"Pantallas de eFlow WMS", pantalla_hh:"Pantallas del handheld", pantalla_wmh:"Pantallas de Torre de Control", pantalla_sorter:"Pantallas del SORTER CLIRO",
   pantalla_softland:"Menús de Softland por módulo", proceso:"Procesos del BPA (con pasos)", regla:"Reglas operativas", contexto:"Contexto (aplicaciones, clientes, brechas)", estandar:"Estándares y plantillas de ePRAC", abstracto:"Conocimiento abstracto (correos, chats, capturas, notas)" };
 function Conocimiento() {
   const [cuenta, setCuenta] = useState(null);

@@ -10,6 +10,7 @@
 //   pasos[].origen: "eflow_wms"     → la pantalla/campo/botón citado existe en el WMS
 //                   "control_tower" → documentado en el levantamiento de Torre de Control (WMH)
 //                   "mecalux_sorter"→ manual del SORTER CLIRO de Mecalux (mapeo funcional real)
+//                   "eflow_hh"      → la opción existe en el handheld (mapa de la app, 25/09/2026)
 //                   "inferido"      → paso o regla sin documento de OLO (revisar)
 //   pasos[].screen: id de la pantalla del manual (abre captura y recorrido)
 //   tablas[].confianza: "media" = relacionada por nombre/semántica con eFlow
@@ -25,6 +26,7 @@ const e = (texto, screen, sistema = "eflow") => ({ texto, sistema, screen, orige
 const i = (texto, sistema = "fisico", screen = null) => ({ texto, sistema, screen, origen: "inferido" });
 const ct = (texto) => ({ texto, sistema: "torre", screen: null, origen: "control_tower" });
 const mx = (texto, screen) => ({ texto, sistema: "sorter", screen, origen: "mecalux_sorter" });
+const hh = (texto, screen) => ({ texto, sistema: "handheld", screen, origen: "eflow_hh" });
 
 // Silos que no existían en la base y se crean con el seed (id, num, label, color)
 export const SILOS_NUEVOS = [
@@ -149,7 +151,7 @@ export const PROCESOS_SILOS = {
       i("Definir qué ubicaciones o artículos se cuentan en el ciclo (por rotación, valor o zona) según el calendario de conteos", "fisico"),
       e("Crear la toma en Inventario › Generación de Tomas Físicas con «Agregar», indicando compañía, sucursal, tipo de toma y modo", S.toma),
       e("Excluir del conteo ubicaciones o artículos que no aplican desde la pestaña «Exclusiones» (botón «Excluir»)", S.toma),
-      i("Ejecutar el conteo físico ubicación por ubicación con el handheld", "handheld"),
+      hh("Ejecutar el conteo físico ubicación por ubicación en el handheld (Inventario › TOMA FISICA)", "04b_inv_toma_fisica"),
       e("Revisar el avance en la pestaña «Conteo de la Toma» y los indicadores REF CONTADAS / REF CORRECTAS / UBICACION CONTADAS del grid", S.toma),
       e("Analizar las diferencias en las pestañas «Diferencia por Ubicación» y «Diferencia por Artículo»", S.toma),
       e("Generar un reconteo de lo que quedó con diferencia con «Genera T.F. Diferencias»", S.toma),
@@ -172,7 +174,7 @@ export const PROCESOS_SILOS = {
       i("Programar el inventario con el cliente y congelar movimientos (recepciones, despachos, reposiciones) durante el conteo", "fisico"),
       e("Verificar en Control › Acciones de Trabajo que no queden tareas abiertas sobre las ubicaciones a contar", "screen_control__acciones_de_trabajo"),
       e("Crear la toma general en Inventario › Generación de Tomas Físicas con «Agregar» por compañía y sucursal", S.toma),
-      i("Contar por zonas con el handheld; cada ubicación se cuenta y se cierra", "handheld"),
+      hh("Contar por zonas en el handheld (Inventario › TOMA FISICA); cada ubicación se cuenta y se cierra", "04b_inv_toma_fisica"),
       e("Unir conteos parciales de la misma toma con «Combinar» cuando se contó por equipos o por fases", S.toma),
       e("Revisar las pestañas «Diferencia por Artículo», «Diferencia por Ubicación» y «Diferencias por Lote»", S.toma),
       e("Comparar dos tomas (conteo y reconteo) en Inventario › Comparador de Tomas Físicas", S.comparador),
@@ -358,7 +360,7 @@ export const PROCESOS_SILOS = {
       e("Ubicar la orden en Documentos › Ordenes de Recepción (ventana «Entradas»); las órdenes del ERP se revisan con «Consultar Interfaz»", S.entradas),
       i("Verificar la documentación de la mercancía y el régimen (zona franca o nacional) antes de descargar", "fisico"),
       e("Revisar las líneas esperadas con «Ver Detalle» (artículos, cantidades, cliente propietario, muelle de recepción)", S.entradas),
-      i("Descargar y contar la mercancía por palet en el muelle asignado", "handheld"),
+      hh("Descargar en el muelle asignado y validar cada palet en el handheld (Recibo › VALIDACION GENERAL): código de barras, cantidad en cajas, lote y vencimiento", "01d_recibo_validacion_general"),
       e("Registrar lo recibido con «Crear Confirmación»; cada confirmación queda con su palet y cantidad", S.entradas),
       e("Revisar las confirmaciones en Documentos › Recepciones Confirmaciones y reimprimir etiquetas de palet si hace falta", S.recConf),
       e("Registrar factura y motivos de diferencia con «Factura / Motivos»", S.entradas),
@@ -380,7 +382,7 @@ export const PROCESOS_SILOS = {
     pasos: [
       e("Abrir Documentos › Consolidación de Recepciones y filtrar las órdenes del mismo embarque (proveedor, factura, fecha)", S.consolida),
       e("Seleccionar las órdenes y unirlas con «Consolidar»", S.consolida),
-      i("Recibir el embarque consolidado como una sola descarga", "handheld"),
+      hh("Recibir el embarque consolidado como una sola descarga en el handheld (Recibo › RECEPCION con el N. de confirmación)", "01b_recibo_recepcion"),
       e("Si hay que separar una orden consolidada, usar Documentos › Desconsolidación Recepciones con «Des Consolidar»", S.desconsolida),
       e("Confirmar en Documentos › Ordenes de Recepción que cada orden quedó con su avance correcto", S.entradas),
     ],

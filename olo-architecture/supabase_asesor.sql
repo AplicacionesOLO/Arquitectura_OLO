@@ -35,7 +35,7 @@ create table if not exists public.solicitudes_cambio (
 
 create table if not exists public.asesor_docs (
   id        text primary key,                    -- tipo:ref
-  tipo      text not null,                       -- solicitud | tabla | pantalla_wms | pantalla_wmh | pantalla_sorter | pantalla_softland | proceso | regla | contexto | estandar
+  tipo      text not null,                       -- solicitud | tabla | pantalla_wms | pantalla_hh | pantalla_wmh | pantalla_sorter | pantalla_softland | proceso | regla | contexto | estandar
   ref       text not null,
   titulo    text not null,
   texto     text not null,

@@ -7,10 +7,12 @@ import { PROCESOS } from "../data/procesos_fichas.js";
 import { WMS_INDEX, PASO_PANTALLA } from "../data/wms_links.js";
 import { WMH_BY_ID, pantallaWmhDePaso } from "../data/wmh_manual.js";
 import { SORTER_BY_ID } from "../data/sorter_manual.js";
+import { HH_BY_ID, pantallaHhDePaso } from "../data/hh_manual.js";
 
 export const wmsImgUrl = (name) => supabase.storage.from("Detalles_Porcesos").getPublicUrl(`wms-manual/${name}`).data.publicUrl;
 export const wmhImgUrl = (name) => supabase.storage.from("Detalles_Porcesos").getPublicUrl(`wmh-manual/${name}`).data.publicUrl;
 export const sorterImgUrl = (name) => supabase.storage.from("Detalles_Porcesos").getPublicUrl(`sorter-manual/${name}`).data.publicUrl;
+export const hhImgUrl = (name) => supabase.storage.from("Detalles_Porcesos").getPublicUrl(`hh-manual/${name}`).data.publicUrl;
 
 const SIS = { eflow:"eFlow WMS", handheld:"Handheld RF", torre:"Torre de Control", sorter:"SORTER CLIRO", softland:"Softland ERP", apolo:"Apolo",
   correo:"Correo", excel_drive:"Excel / Drive", fisico:"Acción física" };
@@ -27,10 +29,16 @@ export function slidesProceso(codigo) {
     const w = id && WMS_INDEX[id];
     const wmh = !w && s.sistema === "torre" ? WMH_BY_ID[pantallaWmhDePaso(s.texto)] : null;
     const srt = !w && s.sistema === "sorter" ? SORTER_BY_ID[s.screen] : null;
+    const hh = !w && s.sistema === "handheld" ? HH_BY_ID[pantallaHhDePaso(s, codigo)] : null;
     if (srt) return {
       img: sorterImgUrl(srt.img), titulo: `Paso ${i + 1} de ${p.pasos.length}`, texto: s.texto,
       donde: `SORTER CLIRO › ${srt.modulo} › ${srt.nombre}`, sistema: SIS.sorter,
       contexto: `${codigo} · ${p.nombre}${p.borrador ? " · borrador" : ""}`, origen: s.origen || null, sorterId: srt.id,
+    };
+    if (hh) return {
+      img: hhImgUrl(hh.img), titulo: `Paso ${i + 1} de ${p.pasos.length}`, texto: s.texto,
+      donde: `Handheld › ${hh.url}${s.pantalla && s.pantalla !== hh.url ? ` · ${s.pantalla}` : ""}`, sistema: SIS.handheld,
+      contexto: `${codigo} · ${p.nombre}${p.borrador ? " · borrador" : ""}`, origen: s.origen || null, hhId: hh.id,
     };
     if (wmh) return {
       img: wmhImgUrl(wmh.img), titulo: `Paso ${i + 1} de ${p.pasos.length}`, texto: s.texto,

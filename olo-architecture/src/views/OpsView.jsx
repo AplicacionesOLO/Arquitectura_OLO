@@ -8,24 +8,25 @@ import { useState, useEffect } from "react";
 import { ControlTowerView } from "./ControlTowerView.jsx";
 import { WmsManualView } from "./WmsManualView.jsx";
 import { SorterManualView } from "./SorterManualView.jsx";
+import { HhManualView } from "./HhManualView.jsx";
 import { OPS_RELACIONES } from "../data/ops_relaciones.js";
 
 export function OpsView({ selected, setSelected, focus }) {
-  const [mainView, setMainView] = useState(focus?.view || "modulos"); // "modulos" | "wms" | "wmh" | "sorter"
+  const [mainView, setMainView] = useState(focus?.view || "modulos"); // "modulos" | "wms" | "hh" | "wmh" | "sorter"
   useEffect(() => { if (focus?.view) setMainView(focus.view); }, [focus]);
   return <div>
-    <div style={{ display:"flex", gap:6, marginBottom:16 }}>
-      {[["modulos","Módulos de operación"],["wms","eFlow WMS · Manual"],["wmh","Torre de Control · WMH"],["sorter","SORTER CLIRO · Manual"]].map(([id,label]) => {
+    <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:16 }}>
+      {[["modulos","Módulos de operación"],["wms","eFlow WMS · Manual"],["hh","eFlow WMS · Handheld"],["wmh","Torre de Control · WMH"],["sorter","SORTER CLIRO · Manual"]].map(([id,label]) => {
         const active = mainView===id;
         return <button key={id} onClick={()=>setMainView(id)} style={{ padding:"7px 16px", borderRadius:8, border:`1px solid ${active?DESIGN.ink:DESIGN.border}`, background:active?DESIGN.ink:"#fff", color:active?"#fff":DESIGN.inkSoft, fontWeight:active?700:400, fontSize:14.5, cursor:"pointer", fontFamily:DESIGN.font }}>{label}</button>;
       })}
     </div>
-    {mainView==="wmh" ? <ControlTowerView focus={focus}/> : mainView==="sorter" ? <SorterManualView focus={focus}/> : mainView==="wms" ? <WmsManualView focus={focus}/> : <OpsModules selected={selected} setSelected={setSelected} abrirVista={setMainView}/>}
+    {mainView==="wmh" ? <ControlTowerView focus={focus}/> : mainView==="sorter" ? <SorterManualView focus={focus}/> : mainView==="hh" ? <HhManualView focus={focus}/> : mainView==="wms" ? <WmsManualView focus={focus}/> : <OpsModules selected={selected} setSelected={setSelected} abrirVista={setMainView}/>}
   </div>;
 }
 
 // Cada módulo abre su manual / detalle dentro de Operación
-const VISTA_DE = { "WMS-D": ["wms", "Abrir el manual de eFlow WMS"], "WMS-RF": ["wms", "Abrir el manual de eFlow WMS"], "WMH": ["wmh", "Abrir Torre de Control · WMH"], "SORTER": ["sorter", "Abrir el manual del SORTER CLIRO"] };
+const VISTA_DE = { "WMS-D": ["wms", "Abrir el manual de eFlow WMS"], "WMS-RF": ["hh", "Abrir el manual del handheld"], "WMH": ["wmh", "Abrir Torre de Control · WMH"], "SORTER": ["sorter", "Abrir el manual del SORTER CLIRO"] };
 
 function OpsModules({ selected, setSelected, abrirVista }) {
   const sel = OPS_MODULES.find(m => m.code === selected);

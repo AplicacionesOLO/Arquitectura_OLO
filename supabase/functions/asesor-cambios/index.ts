@@ -43,7 +43,7 @@ const HERRAMIENTAS = [
   { type: "function", name: "buscar_conocimiento", description: "Búsqueda de texto completo en la base de conocimiento del BPA. Devuelve los documentos más relevantes con un fragmento.",
     parameters: { type: "object", additionalProperties: false, required: ["consulta", "tipos"], properties: {
       consulta: { type: "string", description: "Palabras clave en español (sin frases largas)" },
-      tipos: { type: ["array", "null"], items: { type: "string", enum: ["solicitud", "tabla", "pantalla_wms", "pantalla_wmh", "pantalla_sorter", "pantalla_softland", "proceso", "regla", "contexto", "estandar", "abstracto"] }, description: "Filtrar por tipo o null para todos" } } }, strict: true },
+      tipos: { type: ["array", "null"], items: { type: "string", enum: ["solicitud", "tabla", "pantalla_wms", "pantalla_hh", "pantalla_wmh", "pantalla_sorter", "pantalla_softland", "proceso", "regla", "contexto", "estandar", "abstracto"] }, description: "Filtrar por tipo o null para todos" } } }, strict: true },
   { type: "function", name: "leer_documento", description: "Lee el texto completo de un documento por su id (el que devuelve buscar_conocimiento).",
     parameters: { type: "object", additionalProperties: false, required: ["id"], properties: { id: { type: "string" } } }, strict: true },
   { type: "function", name: "ver_tabla", description: "Estructura de una tabla por nombre (columnas con tipo, llave, relaciones, procesos y pantallas que la usan).",

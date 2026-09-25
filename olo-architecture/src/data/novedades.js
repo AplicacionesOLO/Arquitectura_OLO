@@ -8,10 +8,17 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const NOVEDADES_FALLBACK = {
-  "version": "2026-09-3",
+  "version": "2026-09-4",
   "titulo": "Novedades",
-  "fecha": "Septiembre 2026 · tercera entrega",
+  "fecha": "Septiembre 2026 · cuarta entrega",
   "items": [
+    {
+      "id": "handheld-2026-09",
+      "estado": "publicada",
+      "titulo": "Nuevo manual del handheld (eFlow WMS HH)",
+      "detalle": "Operación › eFlow WMS · Handheld: las 23 pantallas reales de la app RF del piso (v3.1.73.1), con su captura, campos de escaneo, datos que muestra y opciones de menú. 58 pasos de los procesos que se hacen en el handheld ahora muestran su pantalla en la ficha, en Workflows y en el recorrido, y quedaron adjuntos en Procesos. Incluye los hallazgos a validar con ePRAC.",
+      "seccion": "ops"
+    },
     {
       "id": "numeracion-2026-09",
       "estado": "publicada",

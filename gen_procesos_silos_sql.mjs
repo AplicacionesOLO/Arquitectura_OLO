@@ -2,7 +2,7 @@
 // olo-architecture/src/data/procesos_silos.js (borradores de los silos P1.x).
 // · Proceso = nodo nivel 1 bajo el macroproceso existente (por nombre), con codigo.
 // · Subprocesos = pasos numerados (codigo X.NN). Los pasos que citan una pantalla
-//   llevan adjunta su captura: eFlow WMS (wms-manual/) o SORTER CLIRO (sorter-manual/).
+//   llevan adjunta su captura: eFlow WMS (wms-manual/), handheld (hh-manual/) o SORTER CLIRO (sorter-manual/).
 // · Crea los silos de SILOS_NUEVOS y los macroprocesos marcados con crearMacro.
 // · Idempotente: todo se inserta solo si su codigo no existe. No borra ni modifica.
 // Uso: node gen_procesos_silos_sql.mjs
@@ -13,6 +13,7 @@ const APP = "C:/GitHub/Arquitectura_OLO/olo-architecture/src";
 const IMG_DIR = "C:/Users/arojast/WMS_eflow_map/manual/img";
 const { PROCESOS_SILOS, SILOS_NUEVOS } = await import(pathToFileURL(`${APP}/data/procesos_silos.js`).href);
 const { SORTER_BY_ID } = await import(pathToFileURL(`${APP}/data/sorter_manual.js`).href);
+const { HH_BY_ID } = await import(pathToFileURL(`${APP}/data/hh_manual.js`).href);
 // El tamaño del archivo es solo informativo: si la copia local no está, queda null.
 const tam = (f) => { try { return fs.statSync(f).size; } catch { return "null"; } };
 const { WMS_INDEX } = await import(pathToFileURL(`${APP}/data/wms_links.js`).href);
@@ -69,7 +70,10 @@ for (const [codigo, p] of Object.entries(PROCESOS_SILOS)) {
       out.push(`    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
       values (v_sub, 'Detalles_Porcesos', ${q(`sorter-manual/${srt.img}`)}, ${q(`SORTER CLIRO · ${srt.modulo} › ${srt.nombre}.jpg`)}, 'image/jpeg', ${size});`);
     }
-    const w = !srt && st.screen && WMS_INDEX[st.screen];
+    const hh = st.sistema === "handheld" && HH_BY_ID[st.screen];
+    if (hh) out.push(`    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', ${q(`hh-manual/${hh.img}`)}, ${q(`Handheld · ${hh.url.replace(/›/g, "-")}.jpg`)}, 'image/jpeg', null);`);
+    const w = !srt && !hh && st.screen && WMS_INDEX[st.screen];
     if (w?.img) {
       const size = tam(`${IMG_DIR}/${w.img}`);
       out.push(`    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
@@ -84,5 +88,5 @@ fs.writeFileSync("C:/GitHub/Arquitectura_OLO/supabase_procesos_silos_seed.sql", 
 
 const n = Object.values(PROCESOS_SILOS);
 const pasos = n.reduce((s, p) => s + p.pasos.length, 0);
-const imgs = n.reduce((s, p) => s + p.pasos.filter(x => (x.sistema === "sorter" && SORTER_BY_ID[x.screen]) || (x.screen && WMS_INDEX[x.screen]?.img)).length, 0);
+const imgs = n.reduce((s, p) => s + p.pasos.filter(x => (x.sistema === "sorter" && SORTER_BY_ID[x.screen]) || (x.sistema === "handheld" && HH_BY_ID[x.screen]) || (x.screen && WMS_INDEX[x.screen]?.img)).length, 0);
 console.log(`${n.length} procesos · ${pasos} subprocesos · ${imgs} con captura adjunta`);

@@ -222,7 +222,9 @@ function docTabla(tabla, cols, pk, fks, fuente, extra = "") {
 }
 const tablasHechas = new Set();
 if (snap) {
-  const bases = [["eflow-prod-ve", "EFLOW_BEVAL", "eflow", "eFlow WMS (estructura del producto, tomada de la base Beval VE — misma estructura que EFLOW_OLO CR, que hoy no se puede leer)"],
+  // eFlow: la base real de OLO Costa Rica (EFLOW_OLO); si no se puede leer, se usa Beval VE (mismo producto)
+  const eflowCR = !snap.instancias["eflow-prod-cr"]?.bases?.EFLOW_OLO?.error && Object.keys(snap.instancias["eflow-prod-cr"]?.bases?.EFLOW_OLO?.esquemas || {}).length;
+  const bases = [eflowCR ? ["eflow-prod-cr", "EFLOW_OLO", "eflow", "eFlow WMS · EFLOW_OLO (producción Costa Rica)"] : ["eflow-prod-ve", "EFLOW_BEVAL", "eflow", "eFlow WMS (estructura del producto, tomada de Beval VE porque EFLOW_OLO no se pudo leer)"],
     ["eflow-prod-cr", "EFLOW_WMH", "wmh", "Torre de Control WMH (Costa Rica)"], ["softland-qa-ve", "EINTEGRA_CONFIG", "eintegra", "eIntegra (middleware ERP↔WMS)"]];
   for (const [inst, db, clave, nombre] of bases) {
     const b = snap.instancias[inst]?.bases?.[db]; if (!b || b.error) continue;

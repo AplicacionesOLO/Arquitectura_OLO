@@ -9,8 +9,8 @@
 
 export const LOCALIZACIONES = [
   { pais: "Costa Rica", estado: "confirmed", etiqueta: "Operación activa",
-    detalle: "CEDI OLO (almacén 0001 en eflow WMS) con los clientes COFERSA (compañía 0109) y Ferretería EPA. Stack completo: Softland v7.00 calibrado para Costa Rica (BNCR, Ministerio de Hacienda, D104, Ley 9635, Monitor Fiscal), eflow WMS de escritorio y handheld, Torre de Control WMH y el SORTER CLIRO de Mecalux para el cross-docking de EPA.",
-    sistemas: ["Softland v7.00", "eflow WMS 3.2.8.5", "WMH 4.18.4.4", "SORTER CLIRO", "Apolo", "eIntegra (EPA / COFERSA)"] },
+    detalle: "CEDI OLO (almacén 0001 en eflow WMS) con los clientes COFERSA (compañía 0109) y Ferretería EPA. Stack completo: el Softland propio de OLO (compañía OVERSEAS: factura los servicios logísticos —almacenaje, manejo ZF, flete— en colones y dólares, cobra, paga y lleva la contabilidad; factura electrónica a Hacienda por Documentos Electrónicos), el Softland de cada cliente que llega a eFlow por eIntegra, eflow WMS de escritorio y handheld, Torre de Control WMH y el SORTER CLIRO de Mecalux para el cross-docking de EPA.",
+    sistemas: ["Softland v7.00 · OVERSEAS (OLO)", "Softland del cliente (Cofersa)", "Documentos Electrónicos 4.4", "eflow WMS 3.2.8.5", "handheld 3.1.73.1", "WMH 4.18.4.4", "SORTER CLIRO", "Apolo", "eIntegra (EPA / COFERSA / MAYOREO)"] },
   { pais: "Venezuela", estado: "partial", etiqueta: "Próxima expansión",
     detalle: "Instancias propias de eflow por compañía (Beval, Febeca, Sillaca) y una Torre de Control WMH; Softland por compañía (Beval, Febeca, Sillaca, Trexa, Prisma) y middleware eIntegra. Pendiente: requerimientos SENIAT, IVA venezolano y formato de libros fiscales en Monitor Fiscal.",
     sistemas: ["eflow Beval · Febeca · Sillaca", "WMH VE", "Softland ×5 compañías", "eIntegra VE"] },
@@ -24,7 +24,8 @@ export const APLICACIONES = [
   { nombre: "WMH · Torre de Control", version: "v4.18.4.4 · web (Angular)", tipo: "TMS de distribución (ePRAC)", uso: "Viajes, rutas, muelles, bajadas, choferes y unidades", fuente: "Levantamiento (22/09/2026) + manual (09/2026)", vista: { tab: "ops", view: "wmh" } },
   { nombre: "SORTER CLIRO (CliroSorter)", version: "web · http://10.17.225.85:2030/", tipo: "Sorter de cross-docking (Mecalux)", uso: "Clasificación por bajada / tienda de EPA (Nivel 1 y Planta Baja)", fuente: "Manual SORTER CLIRO (09/2026)", vista: { tab: "ops", view: "sorter" } },
   { nombre: "Apolo", version: "app móvil", tipo: "Control de despacho EPA", uso: "Registro de tarimas con dos fotografías y control de lo que sale a tienda", fuente: "Procedimiento CEDI-04 · Despacho EPA", vista: { tab: "olo-arch", codigo: "CEDI-04" } },
-  { nombre: "eIntegra", version: "middleware", tipo: "Integración ERP ↔ WMS", uso: "Bases EINTEGRA_COFERSA / EINTEGRA_MAYOREO (CR) y eIntegra VE", fuente: "Backbone SQL · esquema eIntegra VE", vista: { tab: "integrations" } },
+  { nombre: "Softland · Documentos Electrónicos", version: "v4.4 · aplicación aparte", tipo: "Factura electrónica (Hacienda CR)", uso: "Genera, firma y envía a Hacienda el XML v4.4 de las facturas de OLO y recibe los comprobantes de proveedores", fuente: "Manual del Softland de OLO (OVERSEAS, 25/09/2026)", vista: { tab: "softland", view: "manual" } },
+  { nombre: "eIntegra", version: "middleware", tipo: "Integración ERP ↔ WMS", uso: "Bases EINTEGRA_COFERSA / EINTEGRA_EPA / EINTEGRA_MAYOREO (PROD CR, lectura desde el 25/09/2026) y eIntegra VE; el mecanismo no está documentado", fuente: "Backbone SQL · esquema eIntegra VE", vista: { tab: "integrations" } },
   { nombre: "Excel / Drive", version: "—", tipo: "Controles manuales", uso: "Control diario de viajes, devoluciones, garantías, taller, cargas de contenedor", fuente: "Procedimientos CEDI-01, CEDI-04, CEDI-14", vista: { tab: "olo-arch", codigo: "CEDI-14" } },
 ];
 
@@ -79,7 +80,7 @@ export const EXTENSION_EFLOW = [
   { tipo: "Carga por archivo", detalle: "Ajustes Masivos («Cargar Archivo») e Impresión de Etiquetas EAN («Impresión Archivo») aceptan archivos externos.", vista: { tab: "ops", view: "wms", screen: "screen_inventario__ajustes_masivos" } },
   { tipo: "Exportación de reportes", detalle: "Los 29 reportes del WMS y los grids de WMH y del SORTER exportan a Excel / PDF: base de los controles manuales.", vista: { tab: "ops", view: "wms" } },
   { tipo: "Procedimientos y funciones SQL", detalle: "Stored procedures y funciones reales en WMH (CR) y Softland (VE), más triggers de negocio; ver Backbone SQL.", vista: { tab: "integrations", view: "backbone" } },
-  { tipo: "Middleware eIntegra", detalle: "Capa de integración con bases propias por cliente (EINTEGRA_COFERSA, EINTEGRA_MAYOREO en CR; eIntegra VE).", vista: { tab: "integrations" } },
+  { tipo: "Middleware eIntegra", detalle: "Capa de integración con bases propias por cliente (EINTEGRA_COFERSA, EINTEGRA_EPA y EINTEGRA_MAYOREO en CR; eIntegra VE).", vista: { tab: "integrations" } },
 ];
 
 // Fuentes del levantamiento: qué aporta cada una y dónde se ve
@@ -101,3 +102,27 @@ export const FUENTES = [
   { fuente: "Esquemas de base de datos", origen: "Extracción directa de las bases", aporta: "Tablas, claves y relaciones FK de eflow, WMH, SRO, SCO y Venezuela", vista: { tab: "integrations" } },
   { fuente: "Backbone SQL", origen: "Metadata SQL Server · 28/08/2026", aporta: "Procedimientos, funciones y triggers reales por instancia", vista: { tab: "integrations", view: "backbone" } },
 ];
+
+// Acceso del usuario de integración (usr_crw_integration_olo) a cada base, tras el
+// refresco de permisos del 25/09/2026 (validado con schema_watch). estado:
+// lectura | sin_permiso | sin_estructura | offline | no_entregado | no_solicitado
+export const ACCESOS_BD = [
+  { base:"EFLOW_OLO", instancia:"eFlow PROD CR", pais:"Costa Rica", estado:"lectura", nota:"La estructura real del WMS de OLO; tiene 10 tablas nuevas desde el último mapeo (REPI y EXCO, 24–25/09/2026)" },
+  { base:"EFLOW_HISTORY", instancia:"eFlow PROD CR", pais:"Costa Rica", estado:"lectura", nota:"40 tablas" },
+  { base:"EINTEGRA_COFERSA · EINTEGRA_EPA · EINTEGRA_MAYOREO", instancia:"eFlow PROD CR", pais:"Costa Rica", estado:"lectura", nota:"10 · 31 · 24 tablas (middleware eIntegra)" },
+  { base:"EFLOW_WMH · QA_MAYOREO_EFLOW", instancia:"eFlow QA CR", pais:"Costa Rica", estado:"lectura", nota:"34 · 24 tablas" },
+  { base:"MAR (Softland de Cofersa)", instancia:"Softland QA CR", pais:"Costa Rica", estado:"lectura", nota:"Diccionario erpadmin del cliente Cofersa: menú, tablas y entidades" },
+  { base:"EFLOW_BEVAL · EFLOW_FEBECA · EFLOW_SILLACA", instancia:"eFlow PROD VE", pais:"Venezuela", estado:"lectura", nota:"Esquemas de Venezuela" },
+  { base:"SOFTLAND (compañía OVERSEAS)", instancia:"Softland de OLO · 10.17.224.40", pais:"Costa Rica", estado:"no_solicitado", nota:"El ERP propio de OLO: documentado con capturas, pero la base no está en la solicitud de usuario" },
+  { base:"OLO_INTERFACE y demás bases de Softland QA CR (salvo MAR)", instancia:"Softland QA CR", pais:"Costa Rica", estado:"sin_permiso", nota:"" },
+  { base:"WMS_WAREHOUSE", instancia:"eFlow PROD CR", pais:"Costa Rica", estado:"sin_permiso", nota:"" },
+  { base:"QA_EFLOW_OLO · QA_EINTEGRA_CONFIG · OLO_CLIRO_EFLOW · HSAPRUEBA", instancia:"eFlow QA CR", pais:"Costa Rica", estado:"offline", nota:"Las bases están fuera de línea (no es un tema de permisos)" },
+  { base:"SOFTLANDQA (Beval, Febeca, Sillaca, Trexa, Prisma)", instancia:"Softland QA VE", pais:"Venezuela", estado:"sin_permiso", nota:"Sin menú ni diccionario del Softland de Venezuela" },
+  { base:"EFLOW_BEVAL · EFLOW_FEBECA · EINTEGRA_CONFIG_MAYOREO", instancia:"eFlow QA VE", pais:"Venezuela", estado:"sin_permiso", nota:"" },
+  { base:"EFLOW_HISTORY", instancia:"eFlow QA VE", pais:"Venezuela", estado:"sin_estructura", nota:"Conecta, pero sin permiso para leer la estructura" },
+  { base:"Softland PRD CR / VE y Softland SCH CR", instancia:"—", pais:"Costa Rica · Venezuela", estado:"no_entregado", nota:"Estaban en la solicitud original" },
+];
+export const ESTADO_ACCESO = {
+  lectura:{ label:"Lectura", color:"#15803d" }, sin_permiso:{ label:"Sin permiso", color:"#b91c1c" }, sin_estructura:{ label:"Sin estructura", color:"#c2410c" },
+  offline:{ label:"Fuera de línea", color:"#64748b" }, no_entregado:{ label:"No entregado", color:"#7c3aed" }, no_solicitado:{ label:"No solicitado", color:"#b45309" },
+};

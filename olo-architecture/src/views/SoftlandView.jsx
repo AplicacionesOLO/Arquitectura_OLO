@@ -10,7 +10,9 @@
 import { useState } from "react";
 import { SoftlandManualView } from "./SoftlandManualView.jsx";
 import { SFL_MANUAL_CAPITULOS } from "../data/softland_manual_links.js";
-import { SOFTLAND_MODULES } from "../data/softland.js";
+import { SOFTLAND_MODULES, EN_OLO } from "../data/softland.js";
+import { SoftlandPendientesView } from "./SoftlandPendientesView.jsx";
+import { SFL_PENDIENTES } from "../data/softland_pendientes.js";
 import { MODULE_COLORS, DESIGN } from "../data/constants.js";
 import { StatusBadge, DetailPanel } from "../components/ui.jsx";
 import DD from "../data/softland_dd.json";
@@ -27,12 +29,12 @@ export function SoftlandView({ selected, setSelected, focus }) {
   const pantallasManual = SFL_MANUAL_CAPITULOS.reduce((n, c) => n + c.pantallas, 0);
   return <div>
     <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:16 }}>
-      {[["manual", `Manual Softland · OLO (OVERSEAS) · ${pantallasManual} pantallas`], ["modulos", "Módulos y diccionario (Cofersa)"]].map(([id, label]) => {
+      {[["manual", `Manual Softland · OLO (OVERSEAS) · ${pantallasManual} pantallas`], ["pendientes", `Pendientes por mapear · ${SFL_PENDIENTES.length}`], ["modulos", "Módulos y diccionario (Cofersa)"]].map(([id, label]) => {
         const on = vista === id;
         return <button key={id} onClick={() => setVista(id)} style={{ padding:"7px 16px", borderRadius:8, border:`1px solid ${on ? DESIGN.ink : DESIGN.border}`, background:on ? DESIGN.ink : "#fff", color:on ? "#fff" : DESIGN.inkSoft, fontWeight:on ? 700 : 400, fontSize:14.5, cursor:"pointer", fontFamily:DESIGN.font }}>{label}</button>;
       })}
     </div>
-    {vista === "manual" ? <SoftlandManualView focus={focus}/> : <Modulos selected={selected} setSelected={setSelected} onManual={() => setVista("manual")}/>}
+    {vista === "manual" ? <SoftlandManualView focus={focus}/> : vista === "pendientes" ? <SoftlandPendientesView/> : <Modulos selected={selected} setSelected={setSelected} onManual={() => setVista("manual")}/>}
   </div>;
 }
 
@@ -49,6 +51,7 @@ function Modulos({ selected, setSelected, onManual }) {
       </div>
       <div style={{ fontSize:13, fontWeight:700, color:"#1D1D1B", marginBottom:2 }}>{mod.name}</div>
       <div style={{ fontSize:11, color:"#888", fontStyle:"italic" }}>{mod.role}</div>
+      {mod.enOlo && <div style={{ fontSize:11, fontWeight:700, color:EN_OLO[mod.enOlo].color, marginTop:5 }}>● {EN_OLO[mod.enOlo].label}</div>}
       {dd && <div style={{ fontSize:11, color: dd.instaladoEnCofersa ? "#15803d" : DESIGN.muted, marginTop:6, fontWeight:600 }}>
         {dd.instaladoEnCofersa ? "✓ En Cofersa" : "No instalado en Cofersa"} · {dd.pantallas.length} opciones de menú · {dd.tablas.length} tablas</div>}
     </div>;

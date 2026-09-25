@@ -9,7 +9,7 @@ import { EXTENSION_POINTS, GAPS } from "../data/softland.js";
 import { DESIGN, DESIGN_STATUS } from "../data/constants.js";
 import { StatusBadge } from "../components/ui.jsx";
 import { useNav } from "../lib/nav.js";
-import { LOCALIZACIONES, APLICACIONES, CLIENTES, REGLAS_OPERATIVAS, REGLAS_WMH, EXTENSION_EFLOW, FUENTES } from "../data/contexto.js";
+import { LOCALIZACIONES, APLICACIONES, CLIENTES, REGLAS_OPERATIVAS, REGLAS_WMH, EXTENSION_EFLOW, FUENTES, ACCESOS_BD, ESTADO_ACCESO } from "../data/contexto.js";
 import { PROCESOS, SILO_LABELS } from "../data/procesos_fichas.js";
 import { WMS_INDEX } from "../data/wms_links.js";
 import { WMH_PANTALLAS } from "../data/wmh_manual.js";
@@ -245,6 +245,20 @@ function Datos({ ir }) {
           <td style={{ ...td, whiteSpace:"nowrap" }}>{e.pais}</td>
           <td style={{ ...td, textAlign:"right", fontWeight:700, color:DESIGN.ink }}>{e.tablas}</td>
           <td style={{ ...td, textAlign:"right" }}><Ir onClick={()=>ir({ tab:"integrations", cat:e.cat })}>Ver esquema</Ir></td>
+        </tr>)}</tbody>
+      </table>
+    </Card>
+    <div style={{ fontSize:15, fontWeight:700, color:DESIGN.ink, marginBottom:4 }}>Accesos del usuario de integración · 25/09/2026</div>
+    <div style={{ fontSize:13, color:DESIGN.muted, marginBottom:8 }}>Qué bases puede leer el BPA hoy (usr_crw_integration_olo, tras el refresco de permisos). Lo que no se lee está en Módulos ERP › Pendientes por mapear.</div>
+    <Card style={{ padding:0, overflow:"hidden", marginBottom:18 }}>
+      <table style={{ width:"100%", borderCollapse:"collapse" }}>
+        <thead><tr><th style={th}>Base</th><th style={th}>Instancia</th><th style={th}>País</th><th style={th}>Acceso</th><th style={th}>Nota</th></tr></thead>
+        <tbody>{ACCESOS_BD.map((e, i) => <tr key={i}>
+          <td style={{ ...td, fontWeight:600, color:DESIGN.ink }}>{e.base}</td>
+          <td style={{ ...td, whiteSpace:"nowrap" }}>{e.instancia}</td>
+          <td style={{ ...td, whiteSpace:"nowrap" }}>{e.pais}</td>
+          <td style={{ ...td, whiteSpace:"nowrap" }}><span style={{ fontSize:12, fontWeight:700, color:ESTADO_ACCESO[e.estado].color }}>● {ESTADO_ACCESO[e.estado].label}</span></td>
+          <td style={{ ...td, color:DESIGN.muted }}>{e.nota}</td>
         </tr>)}</tbody>
       </table>
     </Card>

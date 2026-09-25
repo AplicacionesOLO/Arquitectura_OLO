@@ -8,10 +8,17 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const NOVEDADES_FALLBACK = {
-  "version": "2026-09-5",
+  "version": "2026-09-6",
   "titulo": "Novedades",
-  "fecha": "Septiembre 2026 · quinta entrega",
+  "fecha": "Septiembre 2026 · sexta entrega",
   "items": [
+    {
+      "id": "ecosistema-sfl-2026-09",
+      "estado": "publicada",
+      "titulo": "Ecosistema y Contexto al día con el Softland de OLO",
+      "detalle": "El Ecosistema distingue el Softland propio de OLO (OVERSEAS) del Softland de cada cliente, marca qué módulos están en OLO y suma Documentos Electrónicos, Hacienda, eIntegra y Apolo. Contexto muestra qué bases puede leer hoy el BPA. En Módulos ERP › Pendientes por mapear están los 14 pendientes con su causa, su implicación y quién debe resolverlos.",
+      "seccion": "ecosystem"
+    },
     {
       "id": "softland-olo-2026-09",
       "estado": "publicada",

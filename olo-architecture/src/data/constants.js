@@ -34,6 +34,7 @@ export const DESIGN_STATUS = {
 export const MODULE_COLORS = {
   AS:"#475569", CG:"#c0392b", CB:"#2980b9", CC:"#27ae60", CP:"#8e44ad",
   FA:"#16a085", CO:"#d35400", CI:"#f39c12", AF:"#7f8c8d", GN:"#e74c3c", MF:"#0284c7",
+  DE:"#0e7490", CR:"#a16207", RP:"#6d28d9", CCH:"#9a3412",
 };
 
 export const OPS_COLORS = { "WMS-D":"#2980b9", "WMS-RF":"#5dade2", "WMH":"#1abc9c", "SORTER":"#ea580c" };

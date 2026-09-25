@@ -85,7 +85,7 @@ export const INTEGRATIONS = [
   { from:"WMS-D", to:"ERP", what:"Cierre de Orden de Recepción (situación CERR)", status:"confirmed" },
   { from:"WMS-D", to:"ERP", what:"Cierre de Orden de Expedición post-despacho", status:"inferred" },
   { from:"WMS-D", to:"WMS-RF", what:"Sincronización en tiempo real de tareas y stock", status:"confirmed" },
-  { from:"WMS-D", to:"WMH", what:"Datos de viajes, unidades de transporte y órdenes", status:"inferred" },
+  { from:"WMS-D", to:"WMH", what:"Expediciones disponibles hacia Torre de Control; WMH devuelve el número de viaje (staging ext_tms_* sobre EFLOW_OLO)", status:"confirmed" },
   { from:"ERP", to:"Mecalux", what:"Regla FLOW MECALUX habilita comportamiento por cliente", status:"partial" },
   { from:"EDI", to:"ERP", what:"Recepción de órdenes/forecasts de clientes 3PL", status:"inferred" },
   { from:"ERP", to:"Aduanas", what:"Integración con sistema aduanero (TICA)", status:"inferred" },

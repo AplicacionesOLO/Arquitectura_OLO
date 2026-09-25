@@ -62,8 +62,6 @@ export function EcosystemView() {
     <h3 style={{ fontSize:14, fontWeight:700, color:"#1D1D1B", margin:"0 0 4px 0" }}>Diagrama de conexiones</h3>
     <p style={{ fontSize:12, color:"#777", margin:"0 0 14px 0" }}>Líneas continuas: integración declarada en un manual, procedimiento o base leída. Líneas punteadas: inferidas por contexto. Círculos punteados: sistemas inferidos o módulos de Softland que no están en el ERP de OLO.</p>
     <div style={{ display:"flex", flexDirection:angosto ? "column" : "row", gap:14, alignItems:angosto ? "stretch" : "flex-start" }}>
-    <PanelConexion code={selectedNode} links={links} getDetail={getDetail} enOlo={enOlo} angosto={angosto}
-      onSelect={setSelectedNode} onHover={setHoveredNode}/>
     <div style={{ flex:1, minWidth:0, background:"#ffffff", border:"1px solid #e0e0e0", borderRadius:12, overflow:"hidden" }}>
       <div style={{ padding:"10px 16px", borderBottom:"1px solid #f0f0f0", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:8, background:"#fafafa" }}>
         <span style={{ fontSize:11, color:"#666", fontWeight:600 }}>ECOSISTEMA · 3 CAPAS · {erpNodes.length+opsNodes.length+extNodes.length} SISTEMAS</span>
@@ -82,6 +80,8 @@ export function EcosystemView() {
         {all.map(n=>{ const r=n.kind==="erp"?24:36; const stroke=n.kind==="erp"?(MODULE_COLORS[n.code]??"#c0392b"):n.kind==="ops"?"#1abc9c":"#7f8c8d"; const fill=n.kind==="erp"?"#ffffff":n.kind==="ops"?"#f0fdfa":"#fafafa"; const hl=isNodeHl(n.code); const dim=active&&!hl; const isSel=selectedNode===n.code; return <g key={n.code} onClick={()=>setSelectedNode(selectedNode===n.code?null:n.code)} onMouseEnter={()=>setHoveredNode(n.code)} onMouseLeave={()=>setHoveredNode(null)} style={{ cursor:"pointer", opacity:dim?0.2:1, transition:"opacity 0.15s" }}><circle cx={n.x} cy={n.y} r={r} fill={fill} stroke={isSel?stroke:hl?stroke:stroke} strokeWidth={isSel?3.5:hl?2.5:(n.kind==="erp"?2:1.5)} strokeDasharray={(n.kind==="ext"&&!n.c)||enOlo[n.code]==="no"?"3 3":"0"} strokeOpacity={enOlo[n.code]==="no"?0.55:1}/><text x={n.x} y={n.y+(n.label?-2:4)} textAnchor="middle" fill={stroke} style={{ fontSize:n.kind==="erp"?11:10, fontWeight:700, letterSpacing:"0.04em" }}>{n.code}</text>{n.label&&n.label.split("\n").map((line,j)=><text key={j} x={n.x} y={n.y+14+j*11} textAnchor="middle" fill="#666" style={{ fontSize:9 }}>{line}</text>)}</g>; })}
       </svg>
     </div>
+    <PanelConexion code={selectedNode} links={links} getDetail={getDetail} enOlo={enOlo} angosto={angosto}
+      onSelect={setSelectedNode} onHover={setHoveredNode}/>
     </div>
     <div style={{ marginTop:24, padding:"14px 18px", background:"rgba(243,156,18,0.06)", border:"1px solid rgba(243,156,18,0.25)", borderLeft:"3px solid #f39c12", borderRadius:8 }}>
       <div style={{ fontSize:11, fontWeight:700, color:"#d35400", letterSpacing:"0.1em", marginBottom:6 }}>◆ NOTA METODOLÓGICA</div>
@@ -90,7 +90,7 @@ export function EcosystemView() {
   </div>;
 }
 
-// Panel lateral del diagrama: qué es el sistema y con quién se conecta, en
+// Panel lateral (a la derecha) del diagrama: qué es el sistema y con quién se conecta, en
 // palabras simples. Tocar una conexión lleva al otro sistema.
 function PanelConexion({ code, links, getDetail, enOlo, angosto, onSelect, onHover }) {
   const caja = { width:angosto ? "auto" : 340, flexShrink:0, background:"#fff", border:"1px solid #e0e0e0", borderRadius:12, padding:"14px 16px",

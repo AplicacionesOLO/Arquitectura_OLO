@@ -22,7 +22,8 @@ export function PdfViewer({ url }) {
   useEffect(() => {
     let cancelled = false;
     setErr(null); setDoc(null);
-    pdfjsLib.getDocument(url).promise
+    // pdf.js 6 ya no acepta la URL como texto suelto: va dentro de { url }
+    pdfjsLib.getDocument({ url }).promise
       .then(d => { if (cancelled) return; setDoc(d); setNumPages(d.numPages); setPage(1); setPageInput("1"); })
       .catch(e => { if (!cancelled) setErr(e.message); });
     return () => { cancelled = true; };

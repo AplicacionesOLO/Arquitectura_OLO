@@ -86,7 +86,7 @@ export const TABS = [
   { id:"asesor",       layer:"operacion", label:"✦ Asesor de cambios",     sub:"¿Se puede hacer este cambio en el WMS? · veredicto, implicaciones y precedentes con todo lo que sabe el BPA · solicitudes de cambio a ePRAC" },
   { id:"ecosystem",    layer:"sistemas",  label:"◉ Ecosistema",          sub:"Hoy (AS-IS): qué aplicaciones existen y en qué capa · externos · ERP · operación · satélites" },
   { id:"infra",        layer:"sistemas",  label:"▭ Infraestructura TO-BE", sub:"Arquitectura OBJETIVO (a futuro, no la vigente) · eventos en AWS · middleware · Azure · Lago de Datos — la actual está en Ecosistema" },
-  { id:"softland",     layer:"sistemas",  label:"⬡ Módulos ERP",         sub:"Módulos de Softland (resumen de sus manuales) + diccionario real de Softland QA de Cofersa: menú, tablas y entidades" },
+  { id:"softland",     layer:"sistemas",  label:"⬡ Módulos ERP",         sub:"Manual del Softland propio de OLO (compañía OVERSEAS) con sus pantallas · módulos de Softland y diccionario real de Softland QA de Cofersa: menú, tablas y entidades" },
   { id:"context",      layer:"sistemas",  label:"◐ Contexto",            sub:"Estado del conocimiento · localizaciones · aplicaciones · clientes y reglas · bases de datos · fuentes · glosario · brechas" },
   { id:"integrations", layer:"datos",     label:"⟳ Integraciones",      sub:"Qué dato fluye entre módulos, flujo por flujo · esquemas reales de cada base · backbone SQL" },
   { id:"relaciones",   layer:"datos",     label:"▨ Relaciones de sistemas", sub:"Cómo se relacionan las entidades entre bases distintas · ER por silo · linaje del dato" },

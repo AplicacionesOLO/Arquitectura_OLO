@@ -21,13 +21,13 @@ const mono = { fontFamily:"'Courier New', monospace", fontSize:12 };
 const TIPO_PANT = { pantalla:"Pantalla", consulta:"Consulta", reporte:"Reporte", proceso:"Proceso" };
 
 export function SoftlandView({ selected, setSelected, focus }) {
-  const [vista, setVista] = useState(focus?.view || "modulos");
+  const [vista, setVista] = useState(focus?.view || "manual");
   const [focoVisto, setFocoVisto] = useState(focus);
   if (focus !== focoVisto) { setFocoVisto(focus); if (focus?.view) setVista(focus.view); }
   const pantallasManual = SFL_MANUAL_CAPITULOS.reduce((n, c) => n + c.pantallas, 0);
   return <div>
     <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:16 }}>
-      {[["modulos", "Módulos y diccionario (Cofersa)"], ["manual", `Manual Softland · OLO (OVERSEAS) · ${pantallasManual} pantallas`]].map(([id, label]) => {
+      {[["manual", `Manual Softland · OLO (OVERSEAS) · ${pantallasManual} pantallas`], ["modulos", "Módulos y diccionario (Cofersa)"]].map(([id, label]) => {
         const on = vista === id;
         return <button key={id} onClick={() => setVista(id)} style={{ padding:"7px 16px", borderRadius:8, border:`1px solid ${on ? DESIGN.ink : DESIGN.border}`, background:on ? DESIGN.ink : "#fff", color:on ? "#fff" : DESIGN.inkSoft, fontWeight:on ? 700 : 400, fontSize:14.5, cursor:"pointer", fontFamily:DESIGN.font }}>{label}</button>;
       })}

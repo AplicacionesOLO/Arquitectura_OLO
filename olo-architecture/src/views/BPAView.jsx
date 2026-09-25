@@ -6,12 +6,12 @@
 //    cuántos procesos tiene en el árbol, sus fichas (procedimiento OLO o
 //    borrador) y los sistemas que usan sus pasos.
 // ═══════════════════════════════════════════════════════════════════════════
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 import { BPA_PROCESSES as BPA_PROCS } from "../data/softland.js";
 import { PROCESOS } from "../data/procesos_fichas.js";
 import { BPA_AREA_COLORS as BPA_COLORS, MATURITY_TINTS, DESIGN } from "../data/constants.js";
-import { KPICard, DetailPanel, ModuleChip } from "../components/ui.jsx";
+import { ModuleChip } from "../components/ui.jsx";
 import { useValidaciones } from "../lib/useValidaciones.js";
 import { tipoFicha } from "../data/workflows.js";
 
@@ -77,8 +77,8 @@ function levantamiento(siloId, cats, procsPorSilo, val) {
 export function BPAView({ selected, setSelected, onNavigate = () => {} }) {
   const [cats, setCats] = useState(null);
   const val = useValidaciones();
-  const detalleRef = useRef(null);
-  useEffect(() => { if (selected) detalleRef.current?.scrollIntoView({ behavior:"smooth", block:"nearest" }); }, [selected]);
+  const [vista, setVista] = useState("mapa");       // mapa (por área) | estado (color por estado del levantamiento)
+  const [resaltar, setResaltar] = useState("");     // sistema a resaltar
   const [procsPorSilo, setProcsPorSilo] = useState(null);
   useEffect(() => {
     let vivo = true;
@@ -148,71 +148,159 @@ export function BPAView({ selected, setSelected, onNavigate = () => {} }) {
     };
   })();
 
+  // ── mapa relacional: bandas por área, columnas de cadena de valor, tarjetas-entidad ──
+  const todos = [...diagnostico, ...operacion];
+  const sistemas = [...new Set(todos.flatMap(p => p.cobertura))].sort();
+  const porNombre = n => todos.find(p => p.name === n);
+  const col = (titulo, color, nombres, lista = porArea.negocio) => ({ titulo, color, procesos: nombres.map(n => lista.find(p => p.name === n)).filter(Boolean) });
+  const negocioCols = [
+    col("Comercial", "#2563eb", ["Gestión de Comercialización", "Toma de Requerimientos de Clientes", "Gestión de Relación con Clientes"]),
+    col("Operación", "#15803d", ["Gestión de Internamiento Zona Franca SEL", "Administración de Procesos Aduaneros", "Gestión de Almacenamiento (ZF + nacional)", "Servicios de Valor Agregado", "Gestión de Transporte Local", "Gestión de Transporte Internacional", "Seguimiento y Control de la Operación"]),
+    col("Financiero", "#c2410c", ["Administración Financiera Contable a Clientes", "Facturación", "Cobro", "Servicio de Gestión de Talento al Cliente"]),
+  ];
+  const opNombre = id => operacion.find(p => p.silo === id)?.name;
+  const opCols = [
+    col("Planificar y almacenar", "#2563eb", ["log_planificacion", "log_almacenaje", "log_inventario"].map(opNombre), operacion),
+    col("Preparar y despachar", "#15803d", ["log_preparacion", "log_transporte", "cross_docking"].map(opNombre), operacion),
+    col("Servicio y control", "#c2410c", ["log_servicio_cliente", "log_mantenimiento", "log_desempeno"].map(opNombre), operacion),
+  ];
+  const tarjeta = p => <EntidadCard key={p.name} p={p} sel={selected === p.name} onSelect={setSelected} vista={vista} resaltar={resaltar}/>;
+  const sel = selected ? porNombre(selected) : null;
+
   return <div>
-    <div style={{ display:"flex", gap:10, marginBottom:18, flexWrap:"wrap" }}>
-      <KPICard label="Procesos del diagnóstico" value={total} color="#1D1D1B" sub="4 áreas · CICR dic 2024"/>
-      <KPICard label="Madurez promedio" value={`${avgMat}/5`} color="#f39c12" sub={`${lider.name} (M${lider.maturity}) lidera`}/>
-      <KPICard label="Con cobertura de sistema" value={`${withCov}/${total}`} color="#27ae60" sub={`${covDiag} según el diagnóstico · ${covLev} por pasos levantados`}/>
-      <KPICard label="Silos con procesos" value={catsProc ? `${silosConProcesos}/${catsProc.length}` : "…"} color="#2563eb" sub="módulo Procesos"/>
-      <KPICard label="Pasos validados" value={pasosValidados == null ? "…" : `${pasosValidados}/${totPasos}`} color="#047857" sub={procesosValidados == null ? "" : `${procesosValidados} de ${fichas.length} procesos validados · en Workflows`}/>
-      <KPICard label="Fichas de proceso" value={fichas.length} color="#b45309" sub={`${nTipo("cedi")} procedimiento OLO · ${nTipo("manual")} de manual · ${nTipo("borrador")} borrador`}/>
+    <div style={{ display:"flex", gap:4, borderBottom:`1px solid ${DESIGN.border}`, marginBottom:12 }}>
+      <span style={{ fontSize:13, fontWeight:700, color:DESIGN.ink, borderBottom:`2px solid ${DESIGN.ink}`, padding:"6px 12px", marginBottom:-1 }}>BPA · mapa relacional</span>
     </div>
-    <div style={{ background:"rgba(243,156,18,0.07)", border:"1px solid rgba(243,156,18,0.22)", borderLeft:"3px solid #f39c12", borderRadius:8, padding:"10px 14px", marginBottom:22, fontSize:12, color:"#666", lineHeight:1.6 }}>
-      <b style={{ color:"#d35400" }}>Dos capas:</b> madurez, prioridad y dueño vienen del <i>Informe Final Diagnóstico Procesos OLO · CICR · diciembre 2024</i> (no se modifican). El estado de cada tarjeta, su código (P1.x negocio · OL.x operación logística) y los sistemas agregados vienen del <b>levantamiento actual</b> en Procesos. Estratégicos arriba, apoyo a la izquierda, negocio al centro, control a la derecha; abajo, la operación logística del CEDI. Click en un proceso para ver su detalle e ir a su silo.
-    </div>
-    <div ref={detalleRef} style={{ scrollMarginTop:16 }}>{detalle && <DetailPanel item={detalle} onClose={()=>setSelected(null)}/>}</div>
-    <BPAArea area="estrategicos" processes={porArea.estrategicos} selected={selected} onSelect={setSelected}/>
-    <div style={{ display:"grid", gridTemplateColumns:"1fr 1.6fr 1fr", gap:14, marginTop:14 }}>
-      <BPAArea area="apoyo" processes={porArea.apoyo} selected={selected} onSelect={setSelected}/>
-      <BPAArea area="negocio" processes={porArea.negocio} selected={selected} onSelect={setSelected}/>
-      <BPAArea area="control" processes={porArea.control} selected={selected} onSelect={setSelected}/>
-    </div>
-    <BPAArea area="negocio" titulo="Negocio › Operación logística del CEDI" desc="Silos OL.1–OL.9 · no evaluados como procesos en el diagnóstico 2024 · aquí están los 14 procedimientos del CEDI"
-      processes={operacion} selected={selected} onSelect={setSelected} grid style={{ marginTop:14 }}/>
-    <div style={{ marginTop:18, padding:"12px 16px", background:"#fafafa", border:"1px solid #e0e0e0", borderRadius:8 }}>
-      <div style={{ fontSize:10, fontWeight:700, color:"#666", letterSpacing:"0.1em", marginBottom:8, textTransform:"uppercase" }}>Lectura</div>
-      <div style={{ display:"flex", flexWrap:"wrap", gap:16, alignItems:"center", marginBottom:8 }}>
-        <span style={{ fontSize:11, color:"#444" }}><b>M0–M5</b> madurez · <b>Prio 1–3</b> prioridad de levantamiento (diagnóstico)</span>
-        {[0,1,2,3].map(m=><span key={m} style={{ fontSize:10, fontWeight:700, color:MATURITY_TINTS[m], background:MATURITY_TINTS[m]+"20", padding:"1px 7px", borderRadius:4 }}>M{m}</span>)}
+    <div style={{ display:"flex", gap:14, alignItems:"center", flexWrap:"wrap", marginBottom:12 }}>
+      <label style={{ fontSize:12.5, color:DESIGN.inkSoft, display:"flex", gap:6, alignItems:"center" }}>Vista:
+        <select value={vista} onChange={e => setVista(e.target.value)} style={SEL}><option value="mapa">Mapa BPA</option><option value="estado">Estado del levantamiento</option></select></label>
+      <label style={{ fontSize:12.5, color:DESIGN.inkSoft, display:"flex", gap:6, alignItems:"center" }}>Resaltar:
+        <select value={resaltar} onChange={e => setResaltar(e.target.value)} style={SEL}><option value="">— Sistema —</option>{sistemas.map(s => <option key={s} value={s}>{s}</option>)}</select></label>
+      <div style={{ marginLeft:"auto", display:"flex", gap:14, flexWrap:"wrap", fontSize:12, color:DESIGN.muted }}>
+        <span><b style={{ color:DESIGN.ink }}>{total}</b> procesos del diagnóstico</span>
+        <span>madurez <b style={{ color:"#b45309" }}>{avgMat}/5</b> ({lider.name.split(" ").slice(0, 4).join(" ")} lidera)</span>
+        <span><b style={{ color:"#15803d" }}>{withCov}/{total}</b> con sistema ({covDiag} diagnóstico · {covLev} pasos)</span>
+        <span><b style={{ color:"#2563eb" }}>{catsProc ? `${silosConProcesos}/${catsProc.length}` : "…"}</b> silos con procesos</span>
+        <span><b style={{ color:"#047857" }}>{pasosValidados == null ? "…" : `${pasosValidados}/${totPasos}`}</b> pasos validados{procesosValidados ? ` (${procesosValidados} procesos)` : ""}</span>
+        <span><b style={{ color:"#b45309" }}>{fichas.length}</b> fichas ({nTipo("cedi")} OLO · {nTipo("manual")} manual · {nTipo("borrador")} borrador)</span>
       </div>
-      <div style={{ display:"flex", flexWrap:"wrap", gap:14, alignItems:"center" }}>
-        <span style={{ fontSize:11, color:"#444" }}><b>Levantamiento:</b></span>
-        {Object.entries(ESTADOS).map(([k,e])=><span key={k} style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:11, color:"#555" }}><EstadoTag estado={k}/>{e.desc}</span>)}
+    </div>
+
+    <div style={{ display:"flex", gap:14, alignItems:"flex-start" }}>
+      <div style={{ flex:1, minWidth:0, display:"grid", gap:12 }}>
+        <Banda area="estrategicos" sigla="EST">
+          <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+            {porArea.estrategicos.map((p, i) => <Fragment key={p.name}>{i > 0 && <span style={{ color:DESIGN.mutedSoft, fontSize:14 }}>→</span>}{tarjeta(p)}</Fragment>)}
+          </div>
+        </Banda>
+        <Banda area="negocio" sigla="NEG" titulo="Negocio · Misionales" desc="Cadena de valor del servicio: Comercial → Operación → Financiero" etiquetas={negocioCols}>
+          <Columnas cols={negocioCols} tarjeta={tarjeta}/>
+        </Banda>
+        <Banda area="negocio" sigla="OL" titulo="Operación logística del CEDI" desc="Silos OL.1–OL.9: el detalle en piso que sostiene los procesos de negocio · aquí están los 14 procedimientos del CEDI" etiquetas={opCols}>
+          <Columnas cols={opCols} tarjeta={tarjeta}/>
+        </Banda>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+          <Banda area="apoyo" sigla="APO"><div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>{porArea.apoyo.map(tarjeta)}</div></Banda>
+          <Banda area="control" sigla="CTL"><div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>{porArea.control.map(tarjeta)}</div></Banda>
+        </div>
+        <div style={{ padding:"10px 14px", background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:8, display:"flex", flexWrap:"wrap", gap:"6px 18px", fontSize:11.5, color:DESIGN.inkSoft, alignItems:"center" }}>
+          <span><ModuleChip code="CC"/> módulo o sistema que soporta el proceso</span>
+          <span><b>M0–M5</b> madurez · <b>Prio 1–3</b> prioridad de levantamiento (diagnóstico 2024)</span>
+          <span style={{ color:"#dc2626", fontWeight:700 }}>▲</span><span style={{ marginLeft:-12 }}>Prio 1 sin levantar</span>
+          <span>→ secuencia</span>
+          <span><b>Ver procesos</b> abre el silo en Procesos</span>
+          <span style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>Estado: {Object.keys(ESTADOS).map(k => <EstadoTag key={k} estado={k}/>)}</span>
+        </div>
       </div>
+      {sel && <PanelEntidad p={sel} detalle={detalle} onClose={() => setSelected(null)} onNavigate={onNavigate}/>}
     </div>
   </div>;
 }
+
+const SEL = { fontSize:12.5, padding:"4px 8px", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:6, fontFamily:DESIGN.font, background:"#fff", minWidth:170 };
 
 function EstadoTag({ estado }) {
   const e = ESTADOS[estado];
-  return <span style={{ fontSize:9.5, fontWeight:700, color:estado==="sinSilo"?"#64748b":e.color, background:e.color+"1c", border:`1px solid ${e.color}55`, padding:"1px 6px", borderRadius:4, whiteSpace:"nowrap" }}>{e.label}</span>;
+  return <span title={e.desc} style={{ fontSize:9.5, fontWeight:700, color:estado==="sinSilo"?"#64748b":e.color, background:e.color+"1c", border:`1px solid ${e.color}55`, padding:"1px 6px", borderRadius:4, whiteSpace:"nowrap" }}>{e.label}</span>;
 }
 
-export function BPAArea({ area, processes, selected, onSelect, titulo, desc, grid, style }) {
-  const meta = BPA_COLORS[area];
-  return <div style={{ background:meta.bg, border:`1px solid ${meta.border}`, borderRadius:12, padding:"14px 16px", ...style }}>
-    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}><div style={{ width:4, height:24, background:meta.color, borderRadius:2 }}/><div><div style={{ fontSize:12, fontWeight:700, color:meta.color }}>{titulo ?? meta.label} · {processes.length}</div><div style={{ fontSize:10, color:"#777" }}>{desc ?? meta.desc}</div></div></div>
-    <div style={grid ? { display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(230px,1fr))", gap:7 } : { display:"flex", flexDirection:"column", gap:7 }}>
-      {processes.map(p => <ProcCard key={p.name} p={p} meta={meta} isSel={selected===p.name} onSelect={onSelect}/>)}
+// Banda de un área (como un macroproceso del mapa relacional)
+function Banda({ area, sigla, titulo, desc, etiquetas, children }) {
+  const m = BPA_COLORS[area];
+  return <section style={{ background:m.bg, border:`1.5px solid ${m.border}`, borderRadius:8, padding:"10px 12px 12px" }}>
+    <div style={{ display:"flex", alignItems:"flex-start", gap:8, marginBottom:10 }}>
+      <div style={{ width:3, alignSelf:"stretch", background:m.color, borderRadius:2 }}/>
+      <div style={{ flex:1 }}>
+        <div style={{ fontSize:14, fontWeight:700, color:m.color }}>{sigla} — {titulo ?? m.label}</div>
+        <div style={{ fontSize:11.5, color:DESIGN.muted }}>{desc ?? m.desc}</div>
+      </div>
+      {etiquetas && <div style={{ display:"flex", gap:4 }}>{etiquetas.map(c => <span key={c.titulo} style={{ fontSize:11, fontWeight:700, color:c.color, background:c.color + "14", border:`1px solid ${c.color}44`, borderRadius:4, padding:"2px 8px" }}>{c.titulo}</span>)}</div>}
     </div>
+    {children}
+  </section>;
+}
+
+function Columnas({ cols, tarjeta }) {
+  return <div style={{ display:"grid", gridTemplateColumns:`repeat(${cols.length}, minmax(0, 1fr))`, gap:10 }}>
+    {cols.map(c => <div key={c.titulo} style={{ background:c.color + "0d", border:`1px solid ${c.color}26`, borderRadius:6, padding:"8px 8px 10px" }}>
+      <div style={{ textAlign:"center", fontSize:12, fontWeight:700, color:c.color, marginBottom:8 }}>{c.titulo}</div>
+      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:7 }}>{c.procesos.map(tarjeta)}</div>
+    </div>)}
   </div>;
 }
 
-function ProcCard({ p, meta, isSel, onSelect }) {
-  const { lev, cobertura } = p, hasCov = cobertura.length > 0;
-  const tint = p.maturity != null ? MATURITY_TINTS[p.maturity] : "#cbd5e1";
-  const resumen = lev.estado === "sinSilo" || lev.estado === "vacio" ? null
-    : [lev.procesos && `${lev.procesos} proc.`, lev.cedi && `${lev.cedi} OLO`, lev.manual && `${lev.manual} manual`, lev.borrador && `${lev.borrador} borr.`, lev.pasosVal && `✓ ${lev.pasosVal}/${lev.pasosTot} pasos`].filter(Boolean).join(" · ");
-  return <div onClick={()=>onSelect(isSel?null:p.name)} style={{ background:isSel?meta.color+"1a":"#ffffff", border:`1px solid ${hasCov?meta.color+"55":"#e0e0e0"}`, borderLeft:`3px solid ${tint}`, borderRadius:8, padding:"8px 10px", cursor:"pointer", transition:"all 0.15s", boxShadow:isSel?`0 0 0 2px ${meta.color}33`:"none" }}>
-    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", gap:6, marginBottom:5 }}>
-      <span style={{ fontSize:11, color:"#1D1D1B", fontWeight:isSel?700:500, lineHeight:1.3, flex:1 }}>{p.name}</span>
-      {p.maturity != null && <span style={{ fontSize:9, fontWeight:700, color:tint, whiteSpace:"nowrap" }}>M{p.maturity} · Prio {p.priority}</span>}
-    </div>
-    <div style={{ display:"flex", flexWrap:"wrap", gap:4, alignItems:"center" }}>
-      {lev.codigo && <span style={{ fontSize:9.5, fontWeight:700, color:DESIGN.inkSoft, fontFamily:DESIGN.font }}>{lev.codigo}</span>}
-      <EstadoTag estado={lev.estado}/>
-      {resumen && <span style={{ fontSize:9.5, color:"#777" }}>{resumen}</span>}
-    </div>
-    {hasCov && <div style={{ display:"flex", flexWrap:"wrap", gap:3, marginTop:5 }}>{cobertura.map(c=><ModuleChip key={c} code={c}/>)}</div>}
+// Tarjeta-entidad: código del silo, nombre, pie con «Ver procesos» o su estado
+function EntidadCard({ p, sel, onSelect, vista, resaltar }) {
+  const m = BPA_COLORS[p.area === "operacion" ? "negocio" : p.area], { lev } = p;
+  const e = ESTADOS[lev.estado];
+  const critico = p.priority === 1 && (lev.estado === "sinSilo" || lev.estado === "vacio");
+  const apagado = resaltar && !p.cobertura.includes(resaltar);
+  const borde = vista === "estado" ? e.color : sel ? m.color : "#cbd5e1";
+  return <div onClick={() => onSelect(sel ? null : p.name)} title={`${p.name} · ${e.label}${p.cobertura.length ? ` · ${p.cobertura.join(", ")}` : ""}`}
+    style={{ position:"relative", width:150, minHeight:64, boxSizing:"border-box", background: sel ? m.color + "14" : "#fff", borderTop:`${sel ? 2 : 1}px solid ${borde}`, borderRight:`${sel ? 2 : 1}px solid ${borde}`, borderBottom:`${sel ? 2 : 1}px solid ${borde}`,
+      borderLeft: vista === "estado" ? `4px solid ${e.color}` : `${sel ? 2 : 1}px solid ${borde}`,
+      borderRadius:6, padding:"6px 8px 5px", cursor:"pointer", display:"flex", flexDirection:"column", opacity: apagado ? 0.28 : 1, transition:"opacity .15s", boxShadow: sel ? `0 0 0 2px ${m.color}33` : "0 1px 2px rgba(0,0,0,.05)" }}>
+    {critico && <span title="Prioridad 1 del diagnóstico y todavía sin levantar" style={{ position:"absolute", top:4, right:6, color:"#dc2626", fontSize:10 }}>▲</span>}
+    <div style={{ fontSize:9.5, fontWeight:800, color: lev.codigo ? m.color : DESIGN.mutedSoft, letterSpacing:"0.03em" }}>{lev.codigo || "SIN SILO"}{p.maturity != null && <span style={{ color:MATURITY_TINTS[p.maturity], fontWeight:700, marginLeft:6 }}>M{p.maturity}·Prio {p.priority}</span>}</div>
+    <div style={{ fontSize:11.5, color:DESIGN.ink, fontWeight: sel ? 700 : 500, lineHeight:1.25, flex:1, overflow:"hidden", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", marginTop:1 }}>{p.name}</div>
+    <div style={{ fontSize:9.5, color: lev.cat ? DESIGN.muted : DESIGN.mutedSoft, marginTop:3 }}>{lev.cat ? "Ver procesos" : e.label}{lev.procesos ? ` · ${lev.procesos}` : ""}</div>
   </div>;
 }
+
+function Seccion({ titulo, n, children }) {
+  return <div style={{ borderTop:`1px solid ${DESIGN.border}`, paddingTop:8, marginTop:10 }}>
+    <div style={{ display:"flex", justifyContent:"space-between", fontSize:11.5, fontWeight:700, color:DESIGN.ink, marginBottom:5 }}><span>– {titulo}</span>{n != null && <span>{n}</span>}</div>{children}</div>;
+}
+
+// Panel lateral fijo con el detalle de la entidad seleccionada
+function PanelEntidad({ p, detalle, onClose, onNavigate }) {
+  const m = BPA_COLORS[p.area === "operacion" ? "negocio" : p.area], { lev } = p;
+  const areaNombre = p.area === "operacion" ? "Operación logística del CEDI" : m.label;
+  return <aside style={{ width:"clamp(280px, 24vw, 340px)", flexShrink:0, position:"sticky", top:16, maxHeight:"calc(100vh - 32px)", overflowY:"auto", background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:8, padding:"12px 14px", boxShadow:DESIGN.shadowCard }}>
+    <div style={{ display:"flex", justifyContent:"space-between", gap:8 }}>
+      <div style={{ fontSize:11, color:DESIGN.muted }}>{lev.codigo || "Sin silo"} · {areaNombre}</div>
+      <button onClick={onClose} title="Cerrar" style={{ background:"none", border:"none", fontSize:16, color:DESIGN.muted, cursor:"pointer", lineHeight:1 }}>✕</button>
+    </div>
+    <div style={{ fontSize:15, fontWeight:700, color:DESIGN.ink, margin:"2px 0 6px" }}>{p.name}</div>
+    <div style={{ fontSize:12, color:DESIGN.inkSoft, lineHeight:1.55 }}>{detalle?.purpose}</div>
+    {p.note && <div style={{ fontSize:11.5, color:DESIGN.muted, fontStyle:"italic", marginTop:6, lineHeight:1.5 }}>{p.note}</div>}
+    <Seccion titulo="Módulos y sistemas que lo soportan" n={p.cobertura.length}>
+      {p.cobertura.length ? <div style={{ display:"flex", gap:4, flexWrap:"wrap" }}>{p.cobertura.map(c => <ModuleChip key={c} code={c}/>)}</div> : <div style={{ fontSize:12, color:DESIGN.muted }}>Sin sistema documentado.</div>}
+    </Seccion>
+    <Seccion titulo="Levantamiento">
+      <div style={{ display:"flex", gap:6, alignItems:"center", flexWrap:"wrap", fontSize:12, color:DESIGN.inkSoft }}>
+        <EstadoTag estado={lev.estado}/>{lev.procesos ? `${lev.procesos} procesos` : ""}{lev.cedi ? ` · ${lev.cedi} OLO` : ""}{lev.manual ? ` · ${lev.manual} manual` : ""}{lev.borrador ? ` · ${lev.borrador} borrador` : ""}
+      </div>
+      {lev.fichas > 0 && <div style={{ fontSize:11.5, color:DESIGN.muted, marginTop:4 }}>{lev.pasosVal} de {lev.pasosTot} pasos validados</div>}
+    </Seccion>
+    {p.maturity != null && <Seccion titulo="Diagnóstico 2024">
+      <div style={{ fontSize:12, color:DESIGN.inkSoft, lineHeight:1.7 }}>Madurez <b style={{ color:MATURITY_TINTS[p.maturity] }}>M{p.maturity}/5</b> · prioridad {PRIORIDAD[p.priority]}{p.owner && p.owner !== "—" ? <><br/>Dueño: {p.owner}</> : null}</div>
+    </Seccion>}
+    <div style={{ display:"grid", gap:6, marginTop:14 }}>
+      {lev.cat && <button onClick={() => onNavigate({ tab:"olo-arch", silo:lev.cat.id })} style={BTN}>Ver procesos asociados →</button>}
+      {lev.fichas > 0 && <button onClick={() => onNavigate({ tab:"workflows", silo:lev.cat.id })} style={BTN}>Ver el flujo en Workflows →</button>}
+    </div>
+  </aside>;
+}
+const PRIORIDAD = { 1:"alta", 2:"media", 3:"baja" };
+const BTN = { fontSize:12, fontWeight:700, color:DESIGN.ink, background:"#fff", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:6, padding:"6px 10px", cursor:"pointer", fontFamily:DESIGN.font, textAlign:"left" };

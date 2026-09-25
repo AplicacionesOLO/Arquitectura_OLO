@@ -30,12 +30,13 @@ export function AsesorView() {
   const [verSol, setVerSol] = useState(null);
   return <div>
     <div style={{ display:"flex", gap:4, borderBottom:`1px solid ${DESIGN.border}`, marginBottom:16 }}>
-      {[["consultar", "Consultar"], ["solicitudes", "Solicitudes de cambio"], ["conocimiento", "Base de conocimiento"]].map(([id, l]) => <button key={id} onClick={() => setPest(id)}
+      {[["consultar", "Consultar"], ["solicitudes", "Solicitudes de cambio"], ["conocimiento", "Base de conocimiento"], ["abstracto", "Conocimiento abstracto"]].map(([id, l]) => <button key={id} onClick={() => setPest(id)}
         style={{ fontSize:14, fontWeight: pest === id ? 700 : 500, color: pest === id ? DESIGN.ink : DESIGN.muted, background:"none", border:"none", borderBottom:`2px solid ${pest === id ? DESIGN.ink : "transparent"}`, padding:"8px 14px", cursor:"pointer", fontFamily:DESIGN.font, marginBottom:-1 }}>{l}</button>)}
     </div>
     {pest === "consultar" && <Consultar onVerSolicitud={id => { setVerSol(id); setPest("solicitudes"); }}/>}
     {pest === "solicitudes" && <Solicitudes abrir={verSol}/>}
     {pest === "conocimiento" && <Conocimiento/>}
+    {pest === "abstracto" && <Abstracto/>}
   </div>;
 }
 
@@ -285,9 +286,171 @@ function DetalleSolicitud({ f, onGuardar }) {
   </div>;
 }
 
+// ── Conocimiento abstracto: correos, chats, imágenes, PDFs y notas ─────────
+const CATEGORIA = { incidencia:["Incidencia","#b91c1c"], decision:["Decisión","#7c3aed"], acuerdo:["Acuerdo","#0f766e"], requerimiento:["Requerimiento","#2563eb"],
+  solicitud_de_cambio:["Solicitud de cambio","#c2410c"], evidencia:["Evidencia","#0891b2"], procedimiento:["Procedimiento","#15803d"], contexto:["Contexto","#475569"] };
+const FUENTES = { nota:"Nota", correo:"Correo", chat:"Chat / mensajes", imagen:"Imagen / captura", documento:"Documento" };
+const ESTADO_ABS = { pendiente:["Pendiente","#64748b"], procesando:["Procesando…","#2563eb"], listo:["Listo","#15803d"], error:["Error","#b91c1c"] };
+const seguro = n => n.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\w.-]+/g, "_").slice(-80);
+
+// Texto de un .docx en el navegador (el .docx es un zip; word/document.xml trae el texto)
+async function textoDocx(file) {
+  const buf = await file.arrayBuffer(), dv = new DataView(buf);
+  let eocd = buf.byteLength - 22; while (eocd > 0 && dv.getUint32(eocd, true) !== 0x06054b50) eocd--;
+  let off = dv.getUint32(eocd + 16, true); const n = dv.getUint16(eocd + 10, true);
+  for (let i = 0; i < n; i++) {
+    const metodo = dv.getUint16(off + 10, true), comp = dv.getUint32(off + 20, true), ln = dv.getUint16(off + 28, true), le = dv.getUint16(off + 30, true), lc = dv.getUint16(off + 32, true), loc = dv.getUint32(off + 42, true);
+    const nombre = new TextDecoder().decode(new Uint8Array(buf, off + 46, ln));
+    if (nombre === "word/document.xml") {
+      const ini = loc + 30 + dv.getUint16(loc + 26, true) + dv.getUint16(loc + 28, true);
+      let datos = new Uint8Array(buf, ini, comp);
+      if (metodo === 8) datos = new Uint8Array(await new Response(new Blob([datos]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer());
+      const xml = new TextDecoder().decode(datos);
+      return xml.replace(/<\/w:p>/g, "\n").replace(/<w:tab\/>/g, "\t").replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/\n{3,}/g, "\n\n").trim();
+    }
+    off += 46 + ln + le + lc;
+  }
+  throw new Error("No se encontró el texto del documento Word");
+}
+
+function Abstracto() {
+  const [filas, setFilas] = useState(null);
+  const [texto, setTexto] = useState("");
+  const [titulo, setTitulo] = useState("");
+  const [fuente, setFuente] = useState("nota");
+  const [archivos, setArchivos] = useState([]);       // File[]
+  const [enviando, setEnviando] = useState(false);
+  const [aviso, setAviso] = useState(null);
+  const [abierta, setAbierta] = useState(null);
+  const [arrastre, setArrastre] = useState(false);
+  const cargar = useCallback(async () => {
+    const { data } = await supabase.from("asesor_abstracto").select("*").order("created_at", { ascending:false }).limit(200);
+    setFilas(data || []);
+  }, []);
+  useEffect(() => { const t = setTimeout(cargar, 0); return () => clearTimeout(t); }, [cargar]);
+  const procesando = (filas || []).some(f => f.estado === "procesando" || f.estado === "pendiente");
+  useEffect(() => { if (!procesando) return; const i = setInterval(cargar, 5000); return () => clearInterval(i); }, [procesando, cargar]);
+
+  // se copia la lista ya: el selector de archivos se vacía justo después (y con él, su FileList)
+  const agregar = list => { const nuevos = [...list].filter(f => f.size <= 15 * 1024 * 1024); setArchivos(a => [...a, ...nuevos]); };
+  const onPaste = e => { const imgs = [...(e.clipboardData?.files || [])].filter(f => f.type.startsWith("image/")); if (imgs.length) { e.preventDefault(); agregar(imgs.map((f, i) => new File([f], `captura-${Date.now()}-${i}.png`, { type:f.type }))); } };
+
+  const procesar = async () => {
+    if (!texto.trim() && !archivos.length) return;
+    setEnviando(true); setAviso(null);
+    try {
+      const piezas = [];
+      if (texto.trim()) piezas.push({ titulo: titulo.trim() || null, fuente, contenido: texto.trim() });
+      for (const f of archivos) {
+        const ext = f.name.split(".").pop().toLowerCase();
+        if (ext === "docx") piezas.push({ titulo: titulo.trim() || f.name, fuente:"documento", contenido: await textoDocx(f), archivo_nombre: f.name });
+        else if (["txt", "eml", "md", "csv", "json", "log"].includes(ext) || f.type.startsWith("text/")) piezas.push({ titulo: titulo.trim() || f.name, fuente: ext === "eml" ? "correo" : "documento", contenido: (await f.text()).slice(0, 200000), archivo_nombre: f.name });
+        else if (f.type.startsWith("image/") || f.type === "application/pdf") {
+          const path = `${crypto.randomUUID ? crypto.randomUUID() : Date.now()}/${seguro(f.name)}`;
+          const { error } = await supabase.storage.from("asesor-abstracto").upload(path, f, { contentType:f.type, upsert:false });
+          if (error) throw new Error(`No se pudo subir ${f.name}: ${error.message}`);
+          piezas.push({ titulo: titulo.trim() || f.name, fuente: f.type.startsWith("image/") ? "imagen" : "documento", archivo_path:path, archivo_nombre:f.name, mime:f.type });
+        } else throw new Error(`Formato no soportado: ${f.name} (usa imagen, PDF, Word, .txt o .eml)`);
+      }
+      const { data, error } = await supabase.from("asesor_abstracto").insert(piezas).select("id");
+      if (error) throw new Error(error.message);
+      setTexto(""); setTitulo(""); setArchivos([]); cargar();
+      setAviso(`${data.length} pieza${data.length > 1 ? "s" : ""} en proceso: el modelo las clasifica y las suma a la base de conocimiento (≈ 30–90 s cada una).`);
+      for (const r of data) { await supabase.functions.invoke("asesor-abstracto", { body:{ id:r.id } }); cargar(); }
+    } catch (e) { setAviso(`⚠ ${e.message}`); }
+    setEnviando(false);
+  };
+  const reprocesar = async id => { await supabase.from("asesor_abstracto").update({ estado:"pendiente" }).eq("id", id); cargar(); await supabase.functions.invoke("asesor-abstracto", { body:{ id } }); cargar(); };
+  const eliminar = async f => {
+    if (!confirm(`¿Eliminar «${f.titulo || f.archivo_nombre || "esta pieza"}» y quitarla de la base de conocimiento del asesor?`)) return;
+    if (f.archivo_path) await supabase.storage.from("asesor-abstracto").remove([f.archivo_path]);
+    await supabase.from("asesor_docs").delete().eq("id", `abstracto:${f.id}`);
+    await supabase.from("asesor_abstracto").delete().eq("id", f.id);
+    setAbierta(null); cargar();
+  };
+
+  const campo = { fontSize:13, fontFamily:DESIGN.font, padding:"7px 10px", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:8, boxSizing:"border-box" };
+  return <div>
+    <div onDragOver={e => { e.preventDefault(); setArrastre(true); }} onDragLeave={() => setArrastre(false)} onDrop={e => { e.preventDefault(); setArrastre(false); agregar(e.dataTransfer.files); }}
+      style={{ background: arrastre ? "#faf5ff" : "#fff", border:`1.5px ${arrastre ? "dashed #7c3aed" : `solid ${DESIGN.border}`}`, borderRadius:12, padding:"14px 16px", marginBottom:14 }}>
+      <div style={{ fontSize:13, color:DESIGN.inkSoft, marginBottom:8, lineHeight:1.5 }}>Pega aquí correos, conversaciones de WhatsApp, notas de reuniones o arrastra capturas, fotos, PDFs y documentos Word. El modelo los <b>clasifica</b>, los <b>resume</b> (hechos, decisiones, pendientes), los <b>interpreta</b> para el WMS y el BPA y los <b>enlaza</b> con tablas, pantallas, procesos y solicitudes reales; luego el asesor los usa como evidencia. Se ocultan correos y teléfonos.</div>
+      <div style={{ display:"flex", gap:8, marginBottom:8, flexWrap:"wrap" }}>
+        <input value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Título (opcional)" style={{ ...campo, flex:"1 1 260px" }}/>
+        <select value={fuente} onChange={e => setFuente(e.target.value)} style={campo}>{Object.entries(FUENTES).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select>
+      </div>
+      <textarea value={texto} onChange={e => setTexto(e.target.value)} onPaste={onPaste} rows={6} placeholder="Pega el texto del correo o del chat… (también puedes pegar una captura con Ctrl+V)"
+        style={{ ...campo, width:"100%", resize:"vertical", lineHeight:1.5 }}/>
+      <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap", marginTop:8 }}>
+        <label style={{ ...btn, color:DESIGN.ink, background:DESIGN.sunken2, display:"inline-block" }}>📎 Adjuntar archivos
+          <input type="file" multiple accept="image/*,.pdf,.docx,.txt,.eml,.md,.csv" onChange={e => { agregar(e.target.files); e.target.value = ""; }} style={{ display:"none" }}/></label>
+        {archivos.map((f, i) => <span key={i} style={{ fontSize:12, color:DESIGN.inkSoft, background:"#f1f5f9", border:`1px solid ${DESIGN.border}`, borderRadius:999, padding:"3px 10px" }}>
+          {f.type.startsWith("image/") ? "🖼" : "📄"} {f.name} <button onClick={() => setArchivos(a => a.filter((_, k) => k !== i))} style={{ background:"none", border:"none", cursor:"pointer", color:DESIGN.muted }}>✕</button></span>)}
+        <button onClick={procesar} disabled={enviando || (!texto.trim() && !archivos.length)} style={{ ...btn, marginLeft:"auto", color:"#fff", background: enviando || (!texto.trim() && !archivos.length) ? "#c4b5fd" : "#7c3aed" }}>{enviando ? "Procesando…" : "Cargar y procesar"}</button>
+      </div>
+      {aviso && <div style={{ fontSize:12.5, color: aviso.startsWith("⚠") ? "#991b1b" : "#1e40af", marginTop:8 }}>{aviso}</div>}
+    </div>
+
+    {filas === null ? <div style={{ color:DESIGN.muted, fontSize:13 }}>Cargando…</div> :
+    <div style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:10, overflowX:"auto" }}>
+      <table style={{ width:"100%", borderCollapse:"collapse", minWidth:900 }}>
+        <thead><tr>{["Cargado", "Título", "Fuente", "Categoría", "Estado", "Relacionado con"].map(h => <th key={h} style={th}>{h}</th>)}</tr></thead>
+        <tbody>
+          {!filas.length && <tr><td colSpan={6} style={{ ...td, color:DESIGN.muted, textAlign:"center", padding:20 }}>Todavía no hay conocimiento abstracto cargado.</td></tr>}
+          {filas.map(f => { const r = f.resultado || {}, c = CATEGORIA[f.categoria], es = ESTADO_ABS[f.estado], open = abierta === f.id;
+            const rel = r.entidades ? [...r.entidades.procesos, ...r.entidades.solicitudes, ...r.entidades.tablas, ...r.entidades.pantallas].slice(0, 4) : [];
+            return <Fragment key={f.id}>
+              <tr onClick={() => setAbierta(open ? null : f.id)} style={{ cursor:"pointer", background: open ? "#f8fafc" : "#fff" }}>
+                <td style={{ ...td, whiteSpace:"nowrap" }}>{fecha(f.created_at)}</td>
+                <td style={{ ...td, fontWeight:600, minWidth:220 }}>{open ? "▾" : "▸"} {f.titulo || r.titulo || f.archivo_nombre || "Sin título"}{f.titulo && r.titulo && r.titulo !== f.titulo && <div style={{ fontSize:11.5, fontWeight:400, color:DESIGN.muted }}>{r.titulo}</div>}</td>
+                <td style={td}>{FUENTES[r.fuente || f.fuente]}</td>
+                <td style={td}>{c ? <span style={{ fontSize:11.5, fontWeight:700, color:c[1], background:c[1] + "14", border:`1px solid ${c[1]}44`, borderRadius:5, padding:"1px 8px" }}>{c[0]}</span> : "—"}</td>
+                <td style={td}><span style={{ fontSize:11.5, fontWeight:700, color:es[1] }}>{es[0]}</span>{f.estado === "error" && <div style={{ fontSize:11, color:"#991b1b" }}>{f.error?.slice(0, 80)}</div>}</td>
+                <td style={{ ...td, fontSize:11.5, color:DESIGN.inkSoft }}>{rel.join(" · ")}</td>
+              </tr>
+              {open && <tr><td colSpan={6} style={{ padding:"4px 14px 16px", background:"#f8fafc", borderBottom:`1px solid ${DESIGN.border}` }}><DetalleAbstracto f={f} onReprocesar={() => reprocesar(f.id)} onEliminar={() => eliminar(f)}/></td></tr>}
+            </Fragment>; })}
+        </tbody>
+      </table>
+    </div>}
+  </div>;
+}
+
+function DetalleAbstracto({ f, onReprocesar, onEliminar }) {
+  const r = f.resultado || {}, e = r.entidades || {};
+  const [url, setUrl] = useState(null);
+  useEffect(() => {
+    if (!f.archivo_path) return;
+    supabase.storage.from("asesor-abstracto").createSignedUrl(f.archivo_path, 600).then(({ data }) => setUrl(data?.signedUrl || null));
+  }, [f.archivo_path]);
+  const [verOriginal, setVerOriginal] = useState(false);
+  const filas = [["Resumen", r.resumen], ["Interpretación para el WMS / BPA", r.interpretacion],
+    ["Hechos", r.hechos?.length ? <ul style={{ margin:0, paddingLeft:18 }}>{r.hechos.map((h, i) => <li key={i}>{h}</li>)}</ul> : null],
+    ["Decisiones", r.decisiones?.length ? <ul style={{ margin:0, paddingLeft:18 }}>{r.decisiones.map((h, i) => <li key={i}>{h}</li>)}</ul> : null],
+    ["Pendientes", r.pendientes?.length ? <ul style={{ margin:0, paddingLeft:18 }}>{r.pendientes.map((p, i) => <li key={i}>{p.que}{p.responsable ? <b> · {p.responsable}</b> : null}</li>)}</ul> : null],
+    ["Sistemas", e.sistemas?.join(", ")], ["Procesos", e.procesos?.join(" · ")], ["Solicitudes de cambio", e.solicitudes?.join(" · ")], ["Tablas", e.tablas?.join(", ")], ["Pantallas", e.pantallas?.join(" · ")], ["Clientes", e.clientes?.join(", ")],
+    ["Mencionado pero no existe en el BPA", r.no_encontrado?.join(", ")], ["Fecha del hecho", r.fecha_evento], ["Confianza", r.confianza],
+    ["Procesado", f.procesado_at ? `${fecha(f.procesado_at)} · ${f.modelo} · ${Math.round((f.tokens_entrada || 0) / 1000)}k tokens` : null]].filter(([, v]) => v);
+  return <div style={{ display:"grid", gridTemplateColumns: url ? "minmax(380px, 1.3fr) minmax(280px, 1fr)" : "1fr", gap:14, marginTop:8 }}>
+    <div>
+      {f.estado !== "listo" ? <div style={{ fontSize:12.5, color:DESIGN.muted }}>{f.estado === "error" ? `Error: ${f.error}` : "Todavía en proceso…"}</div> :
+      <table style={{ width:"100%", borderCollapse:"collapse", background:"#fff", border:`1px solid ${DESIGN.border}` }}><tbody>
+        {filas.map(([k, v]) => <tr key={k}><td style={{ ...td, width:200, color:DESIGN.muted, fontWeight:600, background:DESIGN.sunken }}>{k}</td><td style={{ ...td, lineHeight:1.55 }}>{v}</td></tr>)}
+      </tbody></table>}
+      {(r.texto_extraido || f.contenido) && <button onClick={() => setVerOriginal(v => !v)} style={{ background:"none", border:"none", padding:0, marginTop:8, color:"#2563eb", cursor:"pointer", fontFamily:DESIGN.font, fontSize:12 }}>{verOriginal ? "▾" : "▸"} {r.texto_extraido ? "Texto extraído" : "Contenido original"}</button>}
+      {verOriginal && <pre style={{ whiteSpace:"pre-wrap", fontSize:12, fontFamily:DESIGN.font, background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:8, padding:"8px 12px", maxHeight:300, overflowY:"auto" }}>{r.texto_extraido || f.contenido}</pre>}
+      <div style={{ display:"flex", gap:8, marginTop:10 }}>
+        <button onClick={onReprocesar} style={{ ...btn, color:DESIGN.ink, background:DESIGN.sunken2 }}>↻ Reprocesar</button>
+        <button onClick={onEliminar} style={{ ...btn, color:"#b91c1c", background:"#fff", border:"1px solid #fecaca" }}>Eliminar</button>
+      </div>
+    </div>
+    {url && (f.mime?.startsWith("image/") ? <a href={url} target="_blank" rel="noreferrer"><img src={url} alt={f.archivo_nombre} style={{ width:"100%", borderRadius:8, border:`1px solid ${DESIGN.border}` }}/></a>
+      : <a href={url} target="_blank" rel="noreferrer" style={{ fontSize:13, color:"#2563eb" }}>📄 Abrir {f.archivo_nombre}</a>)}
+  </div>;
+}
+
 // ── Base de conocimiento ─────────────────────────────────────────────────────
 const TIPOS = { solicitud:"Solicitudes de cambio a ePRAC", tabla:"Tablas (estructura real de las bases)", pantalla_wms:"Pantallas de eFlow WMS", pantalla_wmh:"Pantallas de Torre de Control", pantalla_sorter:"Pantallas del SORTER CLIRO",
-  pantalla_softland:"Menús de Softland por módulo", proceso:"Procesos del BPA (con pasos)", regla:"Reglas operativas", contexto:"Contexto (aplicaciones, clientes, brechas)", estandar:"Estándares y plantillas de ePRAC" };
+  pantalla_softland:"Menús de Softland por módulo", proceso:"Procesos del BPA (con pasos)", regla:"Reglas operativas", contexto:"Contexto (aplicaciones, clientes, brechas)", estandar:"Estándares y plantillas de ePRAC", abstracto:"Conocimiento abstracto (correos, chats, capturas, notas)" };
 function Conocimiento() {
   const [cuenta, setCuenta] = useState(null);
   useEffect(() => {

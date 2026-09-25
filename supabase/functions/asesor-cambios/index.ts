@@ -32,6 +32,7 @@ Reglas:
 - No inventes tablas, columnas, pantallas ni solicitudes: si no las encontraste con las herramientas, dilo. Si falta información para decidir, usa el veredicto "falta_informacion" y di qué preguntar.
 - La estructura de las tablas de eFlow viene de la base de Venezuela (Beval): es el mismo producto que EFLOW_OLO de Costa Rica, que hoy no se puede leer; dilo cuando sea relevante.
 - Los procesos marcados BORRADOR son inferidos: úsalos con cautela.
+- El tipo «abstracto» es conocimiento informal cargado por el equipo (correos, chats, capturas, notas): úsalo como evidencia de lo que pasó o se acordó, citándolo; contrástalo con las fuentes formales y, si las contradice, dilo explícitamente.
 - Una solicitud con relacion.tipo "duplicado" o "version_anterior" es el MISMO cambio que la que indica relacion.de: no la cuentes como precedente independiente; usa la vigente (la que indica relacion.de).
 - Los procedimientos del CEDI se llaman CEDI-01…CEDI-14; los silos de operación logística OL.1…OL.9 y los de negocio P1.9…P1.22.
 - Cita en "fuentes" TODOS los documentos que usaste para concluir (solicitudes, tablas, pantallas, procesos), con su id tal como lo devuelven las herramientas.
@@ -42,7 +43,7 @@ const HERRAMIENTAS = [
   { type: "function", name: "buscar_conocimiento", description: "Búsqueda de texto completo en la base de conocimiento del BPA. Devuelve los documentos más relevantes con un fragmento.",
     parameters: { type: "object", additionalProperties: false, required: ["consulta", "tipos"], properties: {
       consulta: { type: "string", description: "Palabras clave en español (sin frases largas)" },
-      tipos: { type: ["array", "null"], items: { type: "string", enum: ["solicitud", "tabla", "pantalla_wms", "pantalla_wmh", "pantalla_sorter", "pantalla_softland", "proceso", "regla", "contexto", "estandar"] }, description: "Filtrar por tipo o null para todos" } } }, strict: true },
+      tipos: { type: ["array", "null"], items: { type: "string", enum: ["solicitud", "tabla", "pantalla_wms", "pantalla_wmh", "pantalla_sorter", "pantalla_softland", "proceso", "regla", "contexto", "estandar", "abstracto"] }, description: "Filtrar por tipo o null para todos" } } }, strict: true },
   { type: "function", name: "leer_documento", description: "Lee el texto completo de un documento por su id (el que devuelve buscar_conocimiento).",
     parameters: { type: "object", additionalProperties: false, required: ["id"], properties: { id: { type: "string" } } }, strict: true },
   { type: "function", name: "ver_tabla", description: "Estructura de una tabla por nombre (columnas con tipo, llave, relaciones, procesos y pantallas que la usan).",

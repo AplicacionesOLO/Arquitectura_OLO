@@ -278,7 +278,8 @@ add("contexto", "brechas", "Brechas conocidas del BPA", GAPS.join("\n"));
 
 // se reemplaza la base de conocimiento generada (las solicitudes se re-generan arriba)
 const unicos = [...new Map(docs.map(d => [d.id, d])).values()];
-await api("DELETE", "asesor_docs?id=not.is.null");
+// el conocimiento abstracto lo alimenta el BPA (asesor-abstracto): no se borra aquí
+await api("DELETE", "asesor_docs?tipo=neq.abstracto");
 await upsert("asesor_docs", unicos);
 const porTipo = docs.reduce((o, d) => (o[d.tipo] = (o[d.tipo] || 0) + 1, o), {});
 console.log(`Base de conocimiento: ${unicos.length} documentos`, porTipo);

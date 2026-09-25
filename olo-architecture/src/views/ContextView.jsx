@@ -15,6 +15,8 @@ import { WMS_INDEX } from "../data/wms_links.js";
 import { WMH_PANTALLAS } from "../data/wmh_manual.js";
 import { SORTER_PANTALLAS, SORTER_CONCEPTOS } from "../data/sorter_manual.js";
 import { HH_CONCEPTOS, HH_PANTALLAS } from "../data/hh_manual.js";
+import { SFL_MANUAL_CAPITULOS } from "../data/softland_manual_links.js";
+const SFL_PANT = SFL_MANUAL_CAPITULOS.reduce((n, c) => n + c.pantallas, 0);
 import { COFERSA_PENDIENTES } from "../data/control_tower.js";
 import { CUESTIONARIO, textoParaEnviar } from "../data/cuestionario.js";
 import { CAT_META, INTEGRATIONS, SRO_MOD, SCO_MOD, EFW_MOD, WMH_CR_MOD, EFWBEVAL_MOD, EFWFEBECA_MOD, EFWSILLACA_MOD, EFWWMH_MOD,
@@ -125,7 +127,7 @@ function Resumen({ ir, setSec }) {
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(210px,1fr))", gap:12, marginBottom:18 }}>
       <Kpi n={PROC.length} label="Procesos con ficha" sub={`${cedi} CEDI · ${borr} borradores · ${xdk} sorter`} onClick={()=>ir({ tab:"olo-arch" })}/>
       <Kpi n={totalPasos} label="Pasos documentados" sub="con sistema, pantalla y origen" onClick={()=>ir({ tab:"olo-arch" })}/>
-      <Kpi n={Object.keys(WMS_INDEX).length + HH_PANTALLAS.length + WMH_PANTALLAS.length + SORTER_PANTALLAS.length} label="Pantallas con captura" sub={`${Object.keys(WMS_INDEX).length} eflow · ${HH_PANTALLAS.length} handheld · ${WMH_PANTALLAS.length} Torre · ${SORTER_PANTALLAS.length} SORTER`} onClick={()=>ir({ tab:"ops", view:"wms" })}/>
+      <Kpi n={Object.keys(WMS_INDEX).length + HH_PANTALLAS.length + WMH_PANTALLAS.length + SORTER_PANTALLAS.length + SFL_PANT} label="Pantallas con captura" sub={`${Object.keys(WMS_INDEX).length} eflow · ${HH_PANTALLAS.length} handheld · ${WMH_PANTALLAS.length} Torre · ${SORTER_PANTALLAS.length} SORTER · ${SFL_PANT} Softland`} onClick={()=>ir({ tab:"ops", view:"wms" })}/>
       <Kpi n={tablas.toLocaleString("es")} label="Tablas de BD mapeadas" sub={`${ESQUEMAS.length} esquemas reales`} onClick={()=>setSec("datos")}/>
       <Kpi n={INTEGRATIONS.length} label="Integraciones inter-módulo" sub="qué fluye entre sistemas" onClick={()=>ir({ tab:"integrations" })}/>
       <Kpi n={APLICACIONES.length} label="Aplicaciones" sub="con versión y dónde se usan" onClick={()=>setSec("aplicaciones")}/>

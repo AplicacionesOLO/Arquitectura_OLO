@@ -62,8 +62,9 @@ export const CUESTIONARIO = [
   {
     id: "finanzas", destinatario: "Finanzas y administración de Softland",
     preguntas: [
-      { gap: "GAP·03", p: "¿Nos pueden compartir los manuales de Softland (CC, CB, FA, CG y los pendientes AS, POS, FR, AC, Capital Humano, Caja Chica, Control de Proyectos, Flujo de Caja)? Con ellos se arman los procesos de Cobro, Facturación y Financiero a clientes.", va: "Silos CEDI-01.10, CEDI-01.11, CEDI-01.12 y CEDI-01.14" },
-      { gap: "Borradores Softland", p: "Ya hay 14 procesos borrador de Cobro, Facturación, Financiero a clientes y Comercialización armados sobre el menú real del Softland de Cofersa: ¿la secuencia y los responsables son los reales? ¿OLO los ejecuta en el Softland del cliente o en uno propio?", va: "Workflows › silos CEDI-01.10, CEDI-01.11, CEDI-01.12 y CEDI-01.14 (validación)" },
+      { gap: "GAP·03", p: "El manual del Softland de OLO (OVERSEAS) ya cubre con pantallas CI, CO, FA, CC, CP y DE. ¿Quién puede abrir en modo consulta las pantallas de CG, CB, AF y CH (hoy solo hay menú) para completar Financiero y Cobro?", va: "Módulos ERP › Manual Softland · OLO · silos CEDI-01.10 y CEDI-01.11" },
+      { gap: "Accesos", p: "El usuario AROJAS no entra a Admin. del Sistema (AS): «Login failed for user 'AROJAS'». ¿Se habilita en consulta para documentar usuarios, privilegios y compañías, o lo documenta TI?", va: "Módulos ERP › Manual Softland · OLO › Generalidades" },
+      { gap: "Borradores Softland", p: "Ya hay 14 procesos borrador de Cobro, Facturación, Financiero a clientes y Comercialización armados sobre el menú real del Softland de Cofersa: ¿la secuencia y los responsables son los reales? Ya se sabe que OLO tiene su propia compañía (OVERSEAS): ¿estos procesos se hacen ahí, o también en el Softland de algún cliente?", va: "Workflows › silos CEDI-01.10, CEDI-01.11, CEDI-01.12 y CEDI-01.14 (validación)" },
       { gap: "GAP·09", p: "Para Venezuela: requisitos del SENIAT, formato de los libros fiscales y configuración de IVA en el Monitor Fiscal.", va: "Contexto › Localizaciones" },
     ],
   },

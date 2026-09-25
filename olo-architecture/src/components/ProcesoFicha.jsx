@@ -17,6 +17,7 @@ import { slidesProceso } from "../lib/presentacion.js";
 import { WMH_BY_ID, pantallaWmhDePaso } from "../data/wmh_manual.js";
 import { SORTER_BY_ID } from "../data/sorter_manual.js";
 import { HH_BY_ID, pantallaHhDePaso } from "../data/hh_manual.js";
+import { SFL_MANUAL_INDEX, SFL_PASO_PANTALLA } from "../data/softland_manual_links.js";
 
 const BUCKET = "Detalles_Porcesos";
 const DRAWIO = import.meta.glob("../assets/procesos_cedi/*.drawio", { query: "?raw", import: "default" });
@@ -207,6 +208,15 @@ function HhLink({ id, onNavigate }) {
   </button>;
 }
 
+// Pantalla del manual Softland de OLO ligada a un paso en "softland"
+function SflLink({ id, onNavigate }) {
+  const w = SFL_MANUAL_INDEX[id];
+  return <button onClick={()=>onNavigate({ tab:"softland", view:"manual", sflScreen:id })} title="Ver la pantalla en el manual de Softland de OLO (OVERSEAS)"
+    style={{ fontSize:10.5, fontWeight:700, color:"#c0392b", background:"#c0392b14", border:"1px solid #c0392b40", borderRadius:5, padding:"1px 6px", cursor:"pointer", fontFamily:DESIGN.font }}>
+    Softland › {w.cap} › {w.titulo} ↗
+  </button>;
+}
+
 function Pasos({ p, onNavigate }) {
   const links = PASO_PANTALLA[p.codigo] || {};
   const val = useValidaciones();
@@ -215,7 +225,8 @@ function Pasos({ p, onNavigate }) {
   const wmhDe = (s) => s.sistema === "torre" ? pantallaWmhDePaso(s.texto) : null;
   const srtDe = (s) => s.sistema === "sorter" && SORTER_BY_ID[s.screen] ? s.screen : null;
   const hhDe = (s) => pantallaHhDePaso(s, p.codigo);
-  const conPantalla = p.pasos.filter((s, i) => links[i] || wmhDe(s) || srtDe(s) || hhDe(s)).length;
+  const sflDe = (s, i) => s.sistema === "softland" ? SFL_PASO_PANTALLA[p.codigo]?.[i] : null;
+  const conPantalla = p.pasos.filter((s, i) => links[i] || wmhDe(s) || srtDe(s) || hhDe(s) || sflDe(s, i)).length;
   return <>
   {conPantalla > 0 && <button onClick={()=>setShow(0)} title="Presentar el proceso pantalla por pantalla"
     style={{ width:"100%", marginBottom:12, fontSize:12, fontWeight:700, color:"#fff", background:"#0891b2", border:"none", borderRadius:7, padding:"8px 12px", cursor:"pointer", fontFamily:DESIGN.font }}>
@@ -225,7 +236,8 @@ function Pasos({ p, onNavigate }) {
     onOpenScreen={(id) => { setShow(null); onNavigate({ tab:"ops", view:"wms", screen:id }); }}
     onOpenWmh={(id) => { setShow(null); onNavigate({ tab:"ops", view:"wmh", wmhScreen:id }); }}
     onOpenSorter={(id) => { setShow(null); onNavigate({ tab:"ops", view:"sorter", sorterScreen:id }); }}
-    onOpenHh={(id) => { setShow(null); onNavigate({ tab:"ops", view:"hh", hhScreen:id }); }}/>}
+    onOpenHh={(id) => { setShow(null); onNavigate({ tab:"ops", view:"hh", hhScreen:id }); }}
+    onOpenSfl={(id) => { setShow(null); onNavigate({ tab:"softland", view:"manual", sflScreen:id }); }}/>}
   {res && <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap", fontSize:12, color:DESIGN.inkSoft, marginBottom:12 }}>
     <BadgeVal estado={res.proceso}/><span><b>{res.validados}</b> de {res.total} pasos validados{res.corregir ? ` · ${res.corregir} con corrección` : ""}</span>
     <button onClick={()=>onNavigate({ tab:"workflows", codigo:p.codigo })} style={{ fontSize:12, fontWeight:700, color:"#2563eb", background:"none", border:"none", padding:0, cursor:"pointer", fontFamily:DESIGN.font }}>Validar en Workflows ›</button>
@@ -243,6 +255,7 @@ function Pasos({ p, onNavigate }) {
             ? links[i].map(id => <PantallaLink key={id} id={id} onNavigate={onNavigate}/>)
             : srtDe(s) ? <SorterLink id={srtDe(s)} onNavigate={onNavigate}/>
             : wmhDe(s) ? <WmhLink id={wmhDe(s)} onNavigate={onNavigate}/>
+            : sflDe(s, i) ? <><SflLink id={sflDe(s, i)} onNavigate={onNavigate}/>{s.pantalla && <span style={{ fontSize:10.5, color:DESIGN.muted }}>{s.pantalla}</span>}</>
             : hhDe(s) ? <><HhLink id={hhDe(s)} onNavigate={onNavigate}/>{s.pantalla && s.pantalla !== HH_BY_ID[hhDe(s)].url && <span style={{ fontSize:10.5, color:DESIGN.muted }}>{s.pantalla}</span>}</>
             : s.pantalla && <span style={{ fontSize:10.5, color:DESIGN.muted }}>{s.pantalla}</span>}
         </div>

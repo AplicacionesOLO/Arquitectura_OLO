@@ -4,8 +4,12 @@
 // Softland Costa Rica (compañía COFER, esquema erpadmin): menú con pantallas y
 // acciones, tablas de cada módulo y entidades de negocio (softland_dd.json,
 // generado por softland_dd/extraer.js).
+// Pestaña «Manual Softland · OLO»: el Softland propio de OLO (compañía OVERSEAS)
+// con capturas privadas (SoftlandManualView).
 // ═══════════════════════════════════════════════════════════════════════════
 import { useState } from "react";
+import { SoftlandManualView } from "./SoftlandManualView.jsx";
+import { SFL_MANUAL_CAPITULOS } from "../data/softland_manual_links.js";
 import { SOFTLAND_MODULES } from "../data/softland.js";
 import { MODULE_COLORS, DESIGN } from "../data/constants.js";
 import { StatusBadge, DetailPanel } from "../components/ui.jsx";
@@ -16,7 +20,23 @@ const td = { fontSize:12.5, color:DESIGN.ink, padding:"7px 10px", borderBottom:`
 const mono = { fontFamily:"'Courier New', monospace", fontSize:12 };
 const TIPO_PANT = { pantalla:"Pantalla", consulta:"Consulta", reporte:"Reporte", proceso:"Proceso" };
 
-export function SoftlandView({ selected, setSelected }) {
+export function SoftlandView({ selected, setSelected, focus }) {
+  const [vista, setVista] = useState(focus?.view || "modulos");
+  const [focoVisto, setFocoVisto] = useState(focus);
+  if (focus !== focoVisto) { setFocoVisto(focus); if (focus?.view) setVista(focus.view); }
+  const pantallasManual = SFL_MANUAL_CAPITULOS.reduce((n, c) => n + c.pantallas, 0);
+  return <div>
+    <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:16 }}>
+      {[["modulos", "Módulos y diccionario (Cofersa)"], ["manual", `Manual Softland · OLO (OVERSEAS) · ${pantallasManual} pantallas`]].map(([id, label]) => {
+        const on = vista === id;
+        return <button key={id} onClick={() => setVista(id)} style={{ padding:"7px 16px", borderRadius:8, border:`1px solid ${on ? DESIGN.ink : DESIGN.border}`, background:on ? DESIGN.ink : "#fff", color:on ? "#fff" : DESIGN.inkSoft, fontWeight:on ? 700 : 400, fontSize:14.5, cursor:"pointer", fontFamily:DESIGN.font }}>{label}</button>;
+      })}
+    </div>
+    {vista === "manual" ? <SoftlandManualView focus={focus}/> : <Modulos selected={selected} setSelected={setSelected} onManual={() => setVista("manual")}/>}
+  </div>;
+}
+
+function Modulos({ selected, setSelected, onManual }) {
   const sel = SOFTLAND_MODULES.find(m => m.code === selected) || (DD.modulos[selected] && { code:selected, name:DD.modulos[selected].nombre, status:"confirmed", role:"Instalado en Cofersa según el diccionario de Softland" });
   const documentados = new Set(SOFTLAND_MODULES.map(m => m.code));
   const otros = Object.entries(DD.modulos).filter(([k, m]) => m.instaladoEnCofersa && !documentados.has(k));
@@ -35,7 +55,7 @@ export function SoftlandView({ selected, setSelected }) {
   };
   return <div>
     <div style={{ background:"#f0f9ff", border:"1px solid #bae6fd", borderLeft:"3px solid #0284c7", borderRadius:8, padding:"9px 14px", marginBottom:14, fontSize:12.5, color:DESIGN.inkSoft, lineHeight:1.55 }}>
-      <b style={{ color:"#0369a1" }}>Diccionario real:</b> además de los manuales, cada módulo trae su menú, sus tablas y entidades tal como están en {DD.fuente} (extraído el {DD.generado}). Ojo: es el Softland del <b>cliente Cofersa</b> en QA; el Softland propio de OLO no está disponible para lectura. Los manuales de los que sale el resumen de cada módulo no están cargados en el BPA.
+      <b style={{ color:"#0369a1" }}>Diccionario real:</b> además de los manuales, cada módulo trae su menú, sus tablas y entidades tal como están en {DD.fuente} (extraído el {DD.generado}). Ojo: es el Softland del <b>cliente Cofersa</b> en QA. El Softland <b>propio de OLO</b> (compañía OVERSEAS) está documentado con capturas en <button onClick={onManual} style={{ background:"none", border:"none", padding:0, color:"#0369a1", fontWeight:700, cursor:"pointer", fontFamily:DESIGN.font, fontSize:12.5 }}>Manual Softland · OLO ↗</button>; su base aún no es legible para el BPA.
     </div>
     {sel && <DetailPanel item={{ ...sel, color:MODULE_COLORS[sel.code] }} onClose={() => setSelected(null)}/>}
     {sel && DD.modulos[sel.code] && <Diccionario key={sel.code} codigo={sel.code} m={DD.modulos[sel.code]}/>}

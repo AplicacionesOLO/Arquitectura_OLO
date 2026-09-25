@@ -18,7 +18,7 @@ export const LOCALIZACIONES = [
 
 // vista: a dónde lleva el botón dentro del BPA
 export const APLICACIONES = [
-  { nombre: "Softland ERP", version: "v7.00 · motor Exactus", tipo: "ERP (contabilidad, facturación, compras, inventario contable)", uso: "Maestros, facturación electrónica (Hacienda), cuentas por cobrar y pagar", fuente: "17 manuales Softland", vista: { tab: "softland" } },
+  { nombre: "Softland ERP", version: "v7.00 · motor Exactus", tipo: "ERP (contabilidad, facturación, compras, inventario contable)", uso: "Maestros, facturación electrónica (Hacienda), cuentas por cobrar y pagar. OLO usa su propia compañía OVERSEAS (Overseas Logistics Operations S A)", fuente: "17 manuales Softland + manual del Softland de OLO (OVERSEAS, 25/09/2026)", vista: { tab: "softland", view: "manual" } },
   { nombre: "eflow WMS · Desktop", version: "v3.2.8.5 · Windows", tipo: "WMS de escritorio (ePRAC)", uso: "Órdenes de recepción y expedición, acciones de trabajo, inventario, configuración, reportes", fuente: "Crawl de la app (23/09/2026)", vista: { tab: "ops", view: "wms" } },
   { nombre: "eflow WMS · RF (handheld)", version: "3.1.73.1 · Android (Xamarin)", tipo: "Terminal de piso", uso: "Recibo, almacenaje, picking, despacho, carga camión, inventario y control: 5 módulos, 18 opciones", fuente: "Mapa de la app en el teléfono (25/09/2026) + capturas de los manuales CEDI", vista: { tab: "ops", view: "hh" } },
   { nombre: "WMH · Torre de Control", version: "v4.18.4.4 · web (Angular)", tipo: "TMS de distribución (ePRAC)", uso: "Viajes, rutas, muelles, bajadas, choferes y unidades", fuente: "Levantamiento (22/09/2026) + manual (09/2026)", vista: { tab: "ops", view: "wmh" } },
@@ -86,6 +86,7 @@ export const EXTENSION_EFLOW = [
 export const FUENTES = [
   { fuente: "Informe Final Diagnóstico de Procesos OLO", origen: "Cámara de Industrias (CICR) · dic. 2024", aporta: "30 procesos del modelo BPA con madurez, prioridad y dueño", vista: { tab: "bpa" } },
   { fuente: "Manuales de Softland", origen: "17 manuales del proveedor", aporta: "Módulos del ERP, integraciones intra-suite, puntos de extensión", vista: { tab: "softland" } },
+  { fuente: "Manual Softland ERP de OLO", origen: "Compañía OVERSEAS · levantado en modo consulta el 25/09/2026", aporta: "Menús de los 14 módulos y 149 pantallas con captura (CI, CO, FA, CC, CP, DE); capturas privadas porque muestran datos reales", vista: { tab: "softland", view: "manual" } },
   { fuente: "Plan de trabajo: Integración WMS – OLO – 3PL Softland", origen: "Presentación del proyecto · febrero 2026", aporta: "Fases y cronograma de la integración con Softland (24 feb – jul 2026, sobre SQL Server): sus entregables de análisis funcional y diseño técnico deberían cerrar la brecha Softland ↔ eflow", vista: { tab: "context" } },
   { fuente: "Guías de configuración eflow (ePRAC)", origen: "Guía de configuración por capítulos", aporta: "Tablas de configuración (almacenes, zonas, rutas y secuencias de picking)", vista: { tab: "integrations", cat: "efw_config" } },
   { fuente: "Crawl de eflow WMS", origen: "App en vivo · 23/09/2026", aporta: "122 pantallas, campos, botones, columnas y navegación con captura", vista: { tab: "ops", view: "wms" } },

@@ -101,7 +101,8 @@ export function WmsManualView({ focus }) {
       onOpenScreen={(id) => { setShow(null); setModName(byId[id].module); setScreenId(id); setQ(""); }}
       onOpenWmh={(id) => { setShow(null); navigate({ tab:"ops", view:"wmh", wmhScreen:id }); }}
       onOpenSorter={(id) => { setShow(null); navigate({ tab:"ops", view:"sorter", sorterScreen:id }); }}
-      onOpenHh={(id) => { setShow(null); navigate({ tab:"ops", view:"hh", hhScreen:id }); }}/>}
+      onOpenHh={(id) => { setShow(null); navigate({ tab:"ops", view:"hh", hhScreen:id }); }}
+      onOpenSfl={(id) => { setShow(null); navigate({ tab:"softland", view:"manual", sflScreen:id }); }}/>}
   </div>;
 }
 

@@ -11,17 +11,19 @@
 //   · Teclado: ← → pasos · + / − zoom · 0 ajustar · I mostrar/ocultar panel · Esc cerrar
 // ═══════════════════════════════════════════════════════════════════════════
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useSrc } from "../lib/imgPrivada.js";
 
 const ORIGEN = {
   eflow_wms: { label: "eFlow WMS", color: "#22d3ee" },
   control_tower: { label: "Torre de Control", color: "#4ade80" },
   mecalux_sorter: { label: "SORTER Mecalux", color: "#fb923c" },
   eflow_hh: { label: "Handheld eFlow", color: "#2dd4bf" },
+  softland_menu: { label: "Menú Softland", color: "#f87171" },
   inferido: { label: "Inferido · sin documento de OLO", color: "#fbbf24" },
 };
 const MAX_ZOOM = 8;
 
-export function Presentacion({ slides, start = 0, onClose, onOpenScreen, onOpenWmh, onOpenSorter, onOpenHh }) {
+export function Presentacion({ slides, start = 0, onClose, onOpenScreen, onOpenWmh, onOpenSorter, onOpenHh, onOpenSfl }) {
   const [i, setI] = useState(Math.min(start, slides.length - 1));
   const [panel, setPanel] = useState(true);
   const go = useCallback((d) => setI(x => Math.max(0, Math.min(slides.length - 1, x + d))), [slides.length]);
@@ -44,6 +46,7 @@ export function Presentacion({ slides, start = 0, onClose, onOpenScreen, onOpenW
   }, [go, onClose]);
 
   const s = slides[i];
+  const imgSrc = useSrc(s.img); // capturas privadas (priv:…) → URL firmada
   const next = slides[i + 1];
   const prev = slides[i - 1];
   if (!s) return null;
@@ -65,14 +68,15 @@ export function Presentacion({ slides, start = 0, onClose, onOpenScreen, onOpenW
     <div style={{ flex:1, minHeight:0, display:"flex" }}>
       {/* Imagen o tarjeta del paso */}
       <div style={{ flex:1, minWidth:0, position:"relative" }}>
-        {s.img
-          ? <Visor key={s.img} src={s.img} alt={s.titulo} apiRef={viewer}/>
+        {s.img && !imgSrc ? <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center", color:"#94a3b8", fontSize:14 }}>Cargando captura…</div>
+          : s.img
+          ? <Visor key={imgSrc} src={imgSrc} alt={s.titulo} apiRef={viewer}/>
           : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
               <div style={{ maxWidth:620, textAlign:"center", padding:"36px 32px", border:"1px solid rgba(255,255,255,0.15)", borderRadius:14, background:"rgba(255,255,255,0.04)" }}>
                 <div style={{ fontSize:14, fontWeight:700, color:"#5eead4", textTransform:"uppercase", letterSpacing:"0.06em" }}>{s.sistema || "Paso"}</div>
                 <div style={{ fontSize:22, color:"#fff", lineHeight:1.5, marginTop:12 }}>{s.texto}</div>
                 {s.donde && <div style={{ fontSize:15, color:"#94a3b8", marginTop:12 }}>{s.donde}</div>}
-                <div style={{ fontSize:13, color:"#64748b", marginTop:16 }}>Este paso no tiene captura: no ocurre en una pantalla de eFlow WMS, el handheld, Torre de Control ni el SORTER.</div>
+                <div style={{ fontSize:13, color:"#64748b", marginTop:16 }}>Este paso no tiene captura: no ocurre en una pantalla de eFlow WMS, el handheld, Torre de Control, el SORTER ni Softland.</div>
               </div>
             </div>}
       </div>
@@ -92,6 +96,7 @@ export function Presentacion({ slides, start = 0, onClose, onOpenScreen, onOpenW
             {s.wmhId && onOpenWmh && link(()=>onOpenWmh(s.wmhId), "Ver pantalla en el manual de Torre de Control")}
             {s.sorterId && onOpenSorter && link(()=>onOpenSorter(s.sorterId), "Ver pantalla en el manual del SORTER")}
             {s.hhId && onOpenHh && link(()=>onOpenHh(s.hhId), "Ver pantalla en el manual del handheld")}
+            {s.sflId && onOpenSfl && link(()=>onOpenSfl(s.sflId), "Ver pantalla en el manual de Softland")}
           </div>
           {slides.length > 1 && <>
             <div style={{ fontSize:12, fontWeight:700, color:"#64748b", letterSpacing:"0.07em", textTransform:"uppercase", margin:"22px 0 8px" }}>Recorrido completo</div>

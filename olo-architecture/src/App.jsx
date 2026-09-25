@@ -214,7 +214,7 @@ export default function SoftlandArchitectureMap() {
           {tab==="workflows"    && <WorkflowsView focus={focusFor("workflows")}/>}
           {tab==="relaciones"   && <RelacionesSistemasView/>}
           {tab==="ecosystem"    && <EcosystemView   searchQuery={globalSearch}/>}
-          {tab==="softland"     && <SoftlandView selected={slSel} setSelected={setSlSel}/>}
+          {tab==="softland"     && <SoftlandView selected={slSel} setSelected={setSlSel} focus={focusFor("softland")}/>}
           {tab==="ops"          && <OpsView selected={opsSel} setSelected={setOpsSel} focus={focusFor("ops")}/>}
           {tab==="integrations" && <IntegrationsView searchQuery={globalSearch} focus={focusFor("integrations")}/>}
           {tab==="context"      && <ContextView/>}

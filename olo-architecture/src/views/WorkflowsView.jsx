@@ -15,6 +15,7 @@ import { SILOS_WF, SISTEMAS_WF, ORIGEN_WF, TIPO_FICHA, tipoFicha, IMPACTO_SISTEM
 import { WorkflowCanvas, Icono } from "../components/WorkflowCanvas.jsx";
 import { Presentacion } from "../components/Presentacion.jsx";
 import { slidesProceso } from "../lib/presentacion.js";
+import { useSrc } from "../lib/imgPrivada.js";
 import { useNovedadesDoc } from "../components/NovedadesModal.jsx";
 import { ValidacionPaso, ValidacionProceso } from "../components/Validacion.jsx";
 
@@ -112,7 +113,8 @@ export function WorkflowsView({ focus }) {
       onOpenScreen={id => { setShow(null); navigate({ tab:"ops", view:"wms", screen:id }); }}
       onOpenWmh={id => { setShow(null); navigate({ tab:"ops", view:"wmh", wmhScreen:id }); }}
       onOpenSorter={id => { setShow(null); navigate({ tab:"ops", view:"sorter", sorterScreen:id }); }}
-      onOpenHh={id => { setShow(null); navigate({ tab:"ops", view:"hh", hhScreen:id }); }}/>}
+      onOpenHh={id => { setShow(null); navigate({ tab:"ops", view:"hh", hhScreen:id }); }}
+      onOpenSfl={id => { setShow(null); navigate({ tab:"softland", view:"manual", sflScreen:id }); }}/>}
   </div>;
 }
 
@@ -153,7 +155,8 @@ function Panel({ sel, canEdit, rolesMano, onGuardarRol, onClose, onIr, onPresent
     const abrirPantalla = sl?.screenId ? () => navigate({ tab:"ops", view:"wms", screen:sl.screenId })
       : sl?.wmhId ? () => navigate({ tab:"ops", view:"wmh", wmhScreen:sl.wmhId })
       : sl?.sorterId ? () => navigate({ tab:"ops", view:"sorter", sorterScreen:sl.sorterId })
-      : sl?.hhId ? () => navigate({ tab:"ops", view:"hh", hhScreen:sl.hhId }) : null;
+      : sl?.hhId ? () => navigate({ tab:"ops", view:"hh", hhScreen:sl.hhId })
+      : sl?.sflId ? () => navigate({ tab:"softland", view:"manual", sflScreen:sl.sflId }) : null;
     cuerpo = <>
       <div style={{ fontSize:11.5, color:DESIGN.muted, marginBottom:4 }}>Paso {sel.i + 1} de {p.pasos.length}</div>
       <div style={{ fontSize:15, color:DESIGN.ink, lineHeight:1.5, fontWeight:500 }}>{s.texto}</div>
@@ -162,8 +165,7 @@ function Panel({ sel, canEdit, rolesMano, onGuardarRol, onClose, onIr, onPresent
         {o && <span style={{ fontSize:11, fontWeight:700, color:o.color, background:o.color + "15", border:`1px solid ${o.color}44`, borderRadius:4, padding:"1px 7px" }}>{o.label}</span>}
       </div>
       {(sl?.donde || s.pantalla) && <><Titulo>Pantalla</Titulo><div style={{ fontSize:12.5, color:DESIGN.inkSoft }}>{sl?.donde || s.pantalla}</div></>}
-      {sl?.img && <img src={sl.img} alt="" onClick={() => onPresentar(p.codigo, sel.i)} title="Ver en grande (presentación desde este paso)"
-        style={{ width:"100%", marginTop:8, borderRadius:8, border:`1px solid ${DESIGN.border}`, cursor:"zoom-in", display:"block" }}/>}
+      {sl?.img && <Captura src={sl.img} onClick={() => onPresentar(p.codigo, sel.i)}/>}
       <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:12 }}>
         <button onClick={() => onPresentar(p.codigo, sel.i)} style={{ ...ir, color:"#fff", background:"#0891b2" }}>▶ Presentar desde aquí</button>
         {abrirPantalla && <button onClick={abrirPantalla} style={{ ...ir, color:DESIGN.ink, background:DESIGN.sunken2 }}>Abrir en el manual ›</button>}
@@ -342,4 +344,11 @@ function VistaCambios({ layouts }) {
       </div>)}
     </div>
   </div>;
+}
+
+// Captura del paso (pública o privada: las de Softland se firman al mostrarse)
+function Captura({ src, onClick }) {
+  const url = useSrc(src);
+  return url ? <img src={url} alt="" onClick={onClick} title="Ver en grande (presentación desde este paso)"
+    style={{ width:"100%", marginTop:8, borderRadius:8, border:`1px solid ${DESIGN.border}`, cursor:"zoom-in", display:"block" }}/> : null;
 }

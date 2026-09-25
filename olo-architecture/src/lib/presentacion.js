@@ -8,10 +8,14 @@ import { WMS_INDEX, PASO_PANTALLA } from "../data/wms_links.js";
 import { WMH_BY_ID, pantallaWmhDePaso } from "../data/wmh_manual.js";
 import { SORTER_BY_ID } from "../data/sorter_manual.js";
 import { HH_BY_ID, pantallaHhDePaso } from "../data/hh_manual.js";
+import { SFL_MANUAL_INDEX, SFL_PASO_PANTALLA } from "../data/softland_manual_links.js";
+import { privImg } from "./imgPrivada.js";
 
 export const wmsImgUrl = (name) => supabase.storage.from("Detalles_Porcesos").getPublicUrl(`wms-manual/${name}`).data.publicUrl;
 export const wmhImgUrl = (name) => supabase.storage.from("Detalles_Porcesos").getPublicUrl(`wmh-manual/${name}`).data.publicUrl;
 export const sorterImgUrl = (name) => supabase.storage.from("Detalles_Porcesos").getPublicUrl(`sorter-manual/${name}`).data.publicUrl;
+// Manual Softland de OLO: bucket PRIVADO (datos reales) → se firma al mostrarse
+export const sflImg = (name) => privImg("softland-manual", name);
 export const hhImgUrl = (name) => supabase.storage.from("Detalles_Porcesos").getPublicUrl(`hh-manual/${name}`).data.publicUrl;
 
 const SIS = { eflow:"eFlow WMS", handheld:"Handheld RF", torre:"Torre de Control", sorter:"SORTER CLIRO", softland:"Softland ERP", apolo:"Apolo",
@@ -30,10 +34,16 @@ export function slidesProceso(codigo) {
     const wmh = !w && s.sistema === "torre" ? WMH_BY_ID[pantallaWmhDePaso(s.texto)] : null;
     const srt = !w && s.sistema === "sorter" ? SORTER_BY_ID[s.screen] : null;
     const hh = !w && s.sistema === "handheld" ? HH_BY_ID[pantallaHhDePaso(s, codigo)] : null;
+    const sflId = !w && s.sistema === "softland" ? SFL_PASO_PANTALLA[codigo]?.[i] : null, sfl = sflId && SFL_MANUAL_INDEX[sflId];
     if (srt) return {
       img: sorterImgUrl(srt.img), titulo: `Paso ${i + 1} de ${p.pasos.length}`, texto: s.texto,
       donde: `SORTER CLIRO › ${srt.modulo} › ${srt.nombre}`, sistema: SIS.sorter,
       contexto: `${codigo} · ${p.nombre}${p.borrador ? " · borrador" : ""}`, origen: s.origen || null, sorterId: srt.id,
+    };
+    if (sfl) return {
+      img: sflImg(sfl.img), titulo: `Paso ${i + 1} de ${p.pasos.length}`, texto: s.texto,
+      donde: `Softland (OVERSEAS) › ${sfl.ruta}`, sistema: SIS.softland,
+      contexto: `${codigo} · ${p.nombre}${p.borrador ? " · borrador" : ""}`, origen: s.origen || null, sflId,
     };
     if (hh) return {
       img: hhImgUrl(hh.img), titulo: `Paso ${i + 1} de ${p.pasos.length}`, texto: s.texto,

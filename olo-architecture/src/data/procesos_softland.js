@@ -4,14 +4,14 @@
 // ver softland_dd.json). Cada paso con origen "softland_menu" cita una opción
 // que existe en ese menú; la secuencia, las decisiones y los responsables son
 // inferidos y deben validarse (Workflows › validación).
-// Contexto a confirmar: la base MAR tiene el Softland de las compañías cliente
-// (Cofersa y otras), no el de OLO. Estos procesos describen la gestión que OLO
-// haría en el ERP del cliente (como CEDI-07 · Facturación Cofersa); si OLO los hace
-// en su propio Softland, las pantallas son las mismas pero cambia la compañía.
+// OLO tiene su propio Softland (compañía OVERSEAS, servidor 10.17.224.40): el
+// manual del 25/09/2026 (softland_manual.json) muestra esas mismas pantallas con
+// sus datos, y los pasos se ligan a ellas (softland_manual_links.js). La base MAR
+// que lee el BPA es la del cliente Cofersa: sirve para el menú y las tablas.
 // Se suman a PROCESOS_SILOS en procesos_silos.js (mismos valores por defecto).
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const FUENTE_SOFTLAND = "Borrador: opciones reales del menú de Softland (diccionario erpadmin · compañía COFER, QA Costa Rica · 24/09/2026). Secuencia, reglas y responsables inferidos — sin procedimiento aprobado de OLO. Confirmar si OLO lo ejecuta en el Softland del cliente o en el propio.";
+export const FUENTE_SOFTLAND = "Borrador: opciones reales del menú de Softland (diccionario erpadmin · compañía COFER, QA Costa Rica · 24/09/2026). Las pantallas de CC y FA se ven en el manual del Softland propio de OLO (compañía OVERSEAS, 25/09/2026). Secuencia, reglas y responsables inferidos — sin procedimiento aprobado de OLO.";
 
 // Opciones del menú que citan los pasos: código de Softland → módulo › opción
 const SL = {

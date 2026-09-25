@@ -1,0 +1,3987 @@
+{
+ "meta": {
+  "producto": "Softland ERP 7.00",
+  "compania": "OVERSEAS",
+  "razonSocial": "Overseas Logistics Operations S A",
+  "servidor": "10.17.224.40",
+  "base": "SOFTLAND",
+  "usuario": "AROJAS",
+  "fecha": "25/09/2026",
+  "pais": "Costa Rica",
+  "nota": "Levantado en modo consulta: se abrieron pantallas y registros de ejemplo sin crear, modificar, aprobar ni procesar datos. Las capturas muestran datos reales de la compañía.",
+  "pdf": "Manual_Softland_ERP.pdf"
+ },
+ "capitulos": [
+  {
+   "codigo": "00",
+   "nombre": "Generalidades",
+   "intro": null,
+   "arbol": null,
+   "secciones": [
+    {
+     "titulo": "1. Acerca de este manual",
+     "desc": "Este manual describe los módulos, menús y pantallas de **Softland ERP 7.00** tal como los ve el usuario **AROJAS** en la compañía **OVERSEAS** (servidor 10.17.224.40). Toda la información se levantó **en modo consulta**: se abrieron pantallas y registros de ejemplo, sin crear, modificar, aprobar ni procesar datos. Las cifras que aparecen en las capturas son datos reales de ejemplo a la fecha del levantamiento (25/09/2026).",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Cobertura del manual",
+     "desc": "Nivel de detalle alcanzado por módulo:",
+     "tabla": {
+      "encabezados": [
+       "Módulo",
+       "Nivel de detalle"
+      ],
+      "anchos": [
+       3,
+       5
+      ],
+      "filas": [
+       [
+        "CI – Inventarios",
+        "Completo: pantallas, pestañas, registro de ejemplo, reportes y administración"
+       ],
+       [
+        "CO – Compras",
+        "Completo: proveedor, orden de compra y embarque de ejemplo con todas sus pestañas"
+       ],
+       [
+        "FA – Facturación",
+        "Completo: cliente y pedido de ejemplo, documentos, consultas, reportes y administración"
+       ],
+       [
+        "CC – Cuentas por Cobrar",
+        "Pantallas, consultas, reportes y administración"
+       ],
+       [
+        "CP – Cuentas por Pagar",
+        "Pantallas, consultas, reportes y administración"
+       ],
+       [
+        "DE – Documentos Electrónicos",
+        "Comprobantes enviados/recibidos (XML y bitácora), consulta y gestor de reportes"
+       ],
+       [
+        "CG, CB, AF, CR, CH, RP, GN, MF",
+        "Mapa de menús completo (sin abrir pantallas)"
+       ],
+       [
+        "AS – Admin. del Sistema",
+        "Sin acceso para el usuario (error de login)"
+       ]
+      ]
+     },
+     "items": []
+    },
+    {
+     "titulo": "2. Pantalla principal",
+     "desc": "Al ingresar, Softland muestra la ventana principal con estos elementos:",
+     "tabla": {
+      "encabezados": [
+       "Elemento",
+       "Función"
+      ],
+      "anchos": [
+       2,
+       5
+      ],
+      "filas": [
+       [
+        "Barra superior",
+        "**Compañía** (selector, aquí OVERSEAS), **Opciones** y **Salir!**."
+       ],
+       [
+        "Panel del módulo",
+        "Nombre del módulo activo (p. ej. *Inventarios*), sección **Favoritos** y árbol **Todas las Opciones** con las carpetas del módulo."
+       ],
+       [
+        "Barra de módulos",
+        "Íconos en la parte inferior izquierda: As, Cg, Cc, Cp, Cb, Af, Cr, Ch, Ci, Fa, Co, Rp, Gn y la flecha » que muestra Documentos Electrónicos y Monitor Fiscal."
+       ],
+       [
+        "Recientes",
+        "Área central azul con accesos directos a las últimas pantallas abiertas (se abren con doble clic)."
+       ],
+       [
+        "Búsqueda",
+        "Cuadro superior derecho para buscar opciones por nombre."
+       ],
+       [
+        "Barra de estado",
+        "Usuario (AROJAS), base de datos (SOFTLAND) y tipo de cambio de venta (TVEN)."
+       ]
+      ]
+     },
+     "items": []
+    },
+    {
+     "titulo": "3. Estructura común de los módulos",
+     "desc": "Todos los módulos organizan su árbol en las mismas carpetas. Íconos: lápiz = mantenimiento, lupa = consulta, hoja = reporte, engranaje = proceso.",
+     "tabla": {
+      "encabezados": [
+       "Carpeta",
+       "Contenido",
+       "Riesgo"
+      ],
+      "anchos": [
+       2,
+       4,
+       2
+      ],
+      "filas": [
+       [
+        "Maestros (Artículos, Clientes, Proveedores…)",
+        "Catálogos principales del módulo.",
+        "Medio: permite crear/modificar"
+       ],
+       [
+        "Transacciones / Documentos / Operaciones",
+        "Registro de movimientos (documentos, pedidos, órdenes…).",
+        "Alto: genera movimientos"
+       ],
+       [
+        "Consulta(s)",
+        "Pantallas de solo lectura con filtros y detalle.",
+        "Ninguno"
+       ],
+       [
+        "Reportes",
+        "Ventana de parámetros; **Imprimir** genera el reporte.",
+        "Ninguno"
+       ],
+       [
+        "Procesos",
+        "Cierres, recálculos, purgas, cargas contables.",
+        "**Muy alto**: ejecutan cambios masivos"
+       ],
+       [
+        "Administración",
+        "Parámetros y catálogos de configuración del módulo.",
+        "Alto: afecta todo el módulo"
+       ]
+      ]
+     },
+     "items": []
+    },
+    {
+     "titulo": "4. Ventanas de lista (mantenimientos)",
+     "desc": "Las opciones de mantenimiento abren una **lista en cuadrícula**. Menús habituales:",
+     "tabla": null,
+     "items": [
+      {
+       "id": "00.4_ventanas_de_lista_mantenimientos.menus_registro_y_despliegue",
+       "titulo": "Menús Registro y Despliegue",
+       "ruta": null,
+       "imgs": [
+        "CI_01_articulos_menu_registro.jpg",
+        "CI_01_articulos_menu_reporte.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": [
+        "**Registro**: Nuevo (Ctrl+N), Modificar (Ctrl+M), Eliminar (Ctrl+E), Regresar (Ctrl+R).",
+        "**Despliegue**: Filtrar Registros (QBE), Buscar Registros (Alt+F3), Seleccionar/Ajustar Columnas, **Refrescamiento Manual**, **Refrescar Datos (Ctrl+W)**, Seleccionar Todos (Ctrl+T), Copiar al Portapapeles (Ctrl+Ins).",
+        "Con **Refrescamiento Manual** activado la lista aparece vacía hasta pulsar **Refrescar Datos (Ctrl+W)**.",
+        "**Doble clic** sobre una línea abre el registro en su ventana de detalle (con pestañas).",
+        "**Excel!** exporta la cuadrícula; **Reporte!** imprime la lista.",
+        "El triángulo en la esquina de un campo indica que tiene **lista de ayuda** (F1 o doble clic)."
+       ],
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "5. Ventanas de reporte",
+     "desc": "Los reportes abren una ventana de parámetros con pestañas (Generales, Artículos, Otros, Clasificación…). Los rangos **del / al** vacíos significan *todos*. **Imprimir** genera el reporte; **Cancelar** cierra sin hacer nada.",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "6. Buenas prácticas y precauciones",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "00.6_buenas_practicas_y_precauciones.recomendaciones",
+       "titulo": "Recomendaciones",
+       "ruta": null,
+       "imgs": [],
+       "desc": null,
+       "aviso": "**Admin. del Sistema (AS)**: al desplegar *Administración* aparece el error *Login failed for user 'AROJAS'*. El usuario no tiene acceso a la administración de seguridad; este módulo no se documenta.",
+       "puntos": [
+        "Para solo consultar, preferir las opciones de la carpeta **Consulta** y los **Reportes**.",
+        "Cerrar ventanas con **Regresar** o la X; si pregunta si desea guardar, responder **No**.",
+        "No usar botones **Aprobar / Aprobación!, Aplicar, Procesar, Finalizar, Grabar** salvo que sea la tarea asignada.",
+        "Las opciones en **gris** no están habilitadas para el usuario; las marcadas con ícono de prohibido están bloqueadas por licencia o permiso."
+       ],
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "codigo": "CI",
+   "nombre": "Inventarios",
+   "intro": "El módulo de **Inventarios** administra el catálogo de artículos, sus existencias por bodega/localización/lote, las transacciones que las modifican (compras, consumos, ventas, traslados, ajustes, etc.), su costeo (fiscal y corporativo) y el inventario físico. Recibe movimientos automáticos de **Compras (CO)** y **Facturación (FA)**; en la consulta de transacciones se ve el *Origen* de cada documento (CO, FA, CI).",
+   "arbol": "CI_arbol_01.jpg",
+   "secciones": [
+    {
+     "titulo": "Artículos",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CI.articulos.articulos_lista",
+       "titulo": "Artículos – lista",
+       "ruta": "Inventarios › Artículos › Artículos",
+       "imgs": [
+        "CI_01_articulos_lista.jpg"
+       ],
+       "desc": "Catálogo maestro. La cuadrícula muestra código, descripción y costos promedio (local y dólar). Usar **Despliegue › Refrescar Datos** para cargar la lista. Doble clic sobre un artículo abre su ficha. Menús: Registro, Despliegue, Reporte!, Excel!, Ayuda.",
+       "aviso": null,
+       "puntos": null,
+       "campos": [
+        [
+         "Artículo",
+         "Código (p. ej. AN000001, ZF000818, SE000538). El prefijo identifica bodega/tipo: AN = almacén nacional, ZF = zona franca, SE/SV = servicios."
+        ],
+        [
+         "Descripción",
+         "Nombre del artículo."
+        ],
+        [
+         "Costo Promedio Local / Dólar",
+         "Costo promedio ponderado vigente."
+        ]
+       ],
+       "tabla": null
+      },
+      {
+       "id": "CI.articulos.ficha_del_articulo_general",
+       "titulo": "Ficha del artículo – General",
+       "ruta": null,
+       "imgs": [
+        "CI_01_articulo_tab01_general.jpg"
+       ],
+       "desc": "Datos base del artículo (ejemplo AN000001 – PISTOLA plasti 5 patron gatillo).",
+       "aviso": null,
+       "puntos": null,
+       "campos": [
+        [
+         "Tipo",
+         "Terminado, Materia prima, Servicio, etc."
+        ],
+        [
+         "Activo / Es Impuesto / Es Vehículo / Utilizado para Contratos",
+         "Indicadores del artículo."
+        ],
+        [
+         "Existencias Mínima / Reorden / Máxima",
+         "Niveles usados por los reportes de reorden y verificación."
+        ],
+        [
+         "Costos FISCAL / CORPORAT",
+         "Método de costeo (Promedio / Último)."
+        ],
+        [
+         "Código de Barras Unidad Detalle / Almacén",
+         "Tipo y código de barras."
+        ],
+        [
+         "Tipo de Costo",
+         "Por Artículo o por Bodega."
+        ],
+        [
+         "Control de Envases, Proyectos, Otro Cargo",
+         "Opciones especiales."
+        ],
+        [
+         "Tienda / Tipo Canasta Básica / Servicio Médico",
+         "Clasificaciones fiscales (Costa Rica)."
+        ]
+       ],
+       "tabla": null
+      },
+      {
+       "id": "CI.articulos.ficha_del_articulo_alias_y_clasificacion",
+       "titulo": "Ficha del artículo – Alias y Clasificación",
+       "ruta": null,
+       "imgs": [
+        "CI_01_articulo_tab02_alias.jpg",
+        "CI_01_articulo_tab03_clasificacion.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": [
+        [
+         "Alias",
+         "Códigos alternos del artículo con comentario."
+        ],
+        [
+         "FAMILIA",
+         "Clasificación 1 (p. ej. F001 MATERIALES/HERRAMIENTAS)."
+        ],
+        [
+         "REGIMEN",
+         "Clasificación 2 (N = no está en régimen ZF)."
+        ],
+        [
+         "PAGAIVA",
+         "Clasificación 3 (SI / NO paga IVA)."
+        ],
+        [
+         "TECAPRO",
+         "Clasificación 4: código del producto/cliente."
+        ],
+        [
+         "Conversión",
+         "Factor de conversión por clasificación."
+        ],
+        [
+         "Origen",
+         "Terceros o Corporación."
+        ],
+        [
+         "Clase",
+         "Clase ABC (A, B, C, D)."
+        ]
+       ],
+       "tabla": null
+      },
+      {
+       "id": "CI.articulos.ficha_del_articulo_otras_clasificaciones_y_datos_de_compra",
+       "titulo": "Ficha del artículo – Otras Clasificaciones y Datos de Compra",
+       "ruta": null,
+       "imgs": [
+        "CI_01_articulo_tab04_otras_clasif.jpg",
+        "CI_01_articulo_tab05_datos_compra.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": [
+        [
+         "Clasificaciones Adicionales",
+         "Clasificaciones extra (código/descripción)."
+        ],
+        [
+         "Impuesto",
+         "Código de impuesto (0108 IVA-Tarifa General 13%)."
+        ],
+        [
+         "Arancel / Bodega / Código Corporativo",
+         "Datos para compras."
+        ],
+        [
+         "Porcentaje Variación / Recibe de más",
+         "Tolerancia de recepción."
+        ],
+        [
+         "Última Cotización",
+         "Proveedor, moneda, precio y fecha de la última cotización."
+        ],
+        [
+         "Impuesto 1 Afecta Costos",
+         "Si el impuesto se suma al costo."
+        ],
+        [
+         "Última Orden de Compra",
+         "Descuento, condición de pago, departamento y número de la última OC (p. ej. OC00018479)."
+        ]
+       ],
+       "tabla": null
+      },
+      {
+       "id": "CI.articulos.ficha_del_articulo_especificaciones_y_proveedor",
+       "titulo": "Ficha del artículo – Especificaciones y Proveedor",
+       "ruta": null,
+       "imgs": [
+        "CI_01_articulo_tab06_especificaciones.jpg",
+        "CI_01_articulo_tab07_proveedor.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": [
+        [
+         "Especificaciones",
+         "Atributos del artículo (valores máx/normal/mín, unidad, cualitativo, notas, chequear al ingreso, heredar a lotes, clase)."
+        ],
+        [
+         "Proveedor",
+         "Proveedor principal (p. ej. P00303)."
+        ],
+        [
+         "País de Manufactura / Tipo País",
+         "Origen."
+        ],
+        [
+         "Código Artículo",
+         "Código del proveedor."
+        ],
+        [
+         "Orden Mínima / Reabastecimiento / Lote Múltiplo",
+         "Parámetros de compra."
+        ]
+       ],
+       "tabla": null
+      },
+      {
+       "id": "CI.articulos.ficha_del_articulo_otros_notas_lote_y_auditoria",
+       "titulo": "Ficha del artículo – Otros, Notas, Lote y Auditoría",
+       "ruta": null,
+       "imgs": [
+        "CI_01_articulo_tab08_otros.jpg",
+        "CI_01_articulo_tab10_lote.jpg",
+        "CI_01_articulo_tab11_auditoria.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": [
+        [
+         "Conteo Cíclico",
+         "Frecuencia en días para el conteo físico."
+        ],
+        [
+         "GTIN / Manufacturador / Número de Bultos",
+         "Identificación logística."
+        ],
+        [
+         "Peso Neto / Bruto / Volumen",
+         "En KG y M3."
+        ],
+        [
+         "Unidades",
+         "Almacenamiento, Detalle y Múltiplo de Venta con su conversión."
+        ],
+        [
+         "Impuesto / Cuentas",
+         "Impuesto y paquete de cuentas contables (AN01 = 191.01.4001 Inventario Almacén Nacional)."
+        ],
+        [
+         "Actividad D104",
+         "Actividad para la declaración de IVA."
+        ],
+        [
+         "Retención",
+         "Retenciones de venta/compra."
+        ],
+        [
+         "Estilo / Talla / Color",
+         "Para artículos talla-color."
+        ],
+        [
+         "Código CABYS / Partida arancelaria",
+         "Código del bien ante Hacienda."
+        ],
+        [
+         "Usa Lotes / Perecedero / Cuarentena",
+         "Control de lotes y días de vida útil."
+        ],
+        [
+         "Auditoría",
+         "Usuario y fecha de creación y última modificación."
+        ]
+       ],
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Lotes",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CI.lotes.lotes",
+       "titulo": "Lotes",
+       "ruta": "Inventarios › Lotes › Lotes",
+       "imgs": [
+        "CI_02_lotes_lista.jpg"
+       ],
+       "desc": "Mantenimiento de lotes: Lote, Artículo, Descripción, Perecedero, Vencimiento, Estado e Ingreso. En la compañía no hay lotes registrados a la fecha.",
+       "aviso": "El menú **Aprobación!** de esta ventana cambia el estado de lotes. No usar en consulta.",
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Transacciones",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CI.transacciones.paquetes_de_inventario",
+       "titulo": "Paquetes de inventario",
+       "ruta": "Inventarios › Transacciones › Paquetes",
+       "imgs": [
+        "CI_03_paquetes_busqueda.jpg",
+        "CI_03_paquetes_lista.jpg",
+        "CI_03_paquetes_menu_documento.jpg"
+       ],
+       "desc": "Un **paquete** agrupa documentos de inventario pendientes de aplicar. Se elige el paquete (lista de ayuda) y se ven sus documentos: Consecutivo, Documento, Fecha, Referencia, Usuario, Documento Origen, Estatus, Usuario y Fecha de aprobación.",
+       "aviso": "**Aplicar** afecta existencias y costos de todos los documentos del paquete.",
+       "puntos": [
+        "Menú **Paquete**: Abrir, Crear, Modificar, Eliminar, Aplicar, Regresar.",
+        "Menú **Documento**: Nuevo, Modificar, Eliminar, Seleccionar, Mensaje, Aprobar, Desaprobar."
+       ],
+       "campos": [
+        [
+         "1",
+         "Suministros"
+        ],
+        [
+         "AJUS",
+         "Ajuste"
+        ],
+        [
+         "COMP",
+         "Compra"
+        ],
+        [
+         "CONS",
+         "Consumo"
+        ],
+        [
+         "SI",
+         "Saldos iniciales"
+        ]
+       ],
+       "tabla": null
+      },
+      {
+       "id": "CI.transacciones.transaccion_en_linea",
+       "titulo": "Transacción en línea",
+       "ruta": "Inventarios › Transacciones › En línea",
+       "imgs": [
+        "CI_04_transaccion_en_linea.jpg",
+        "CI_04_transaccion_tab1_documento.jpg",
+        "CI_04_transaccion_tab4_lineas.jpg"
+       ],
+       "desc": "Registro directo de un documento de inventario que se aplica al guardar. Pestañas: **Documento** (fecha, referencia, presupuesto, usuario), **Transacción** (captura de cada línea), **Existencias** (disponibilidad del artículo) y **Líneas** (detalle del documento).",
+       "aviso": "El botón de guardar aplica el movimiento inmediatamente. Para consultar documentos usar **Consulta › Transacciones**.",
+       "puntos": null,
+       "campos": [
+        [
+         "Documento / NIT",
+         "Consecutivo del documento y NIT de la compañía."
+        ],
+        [
+         "Tipo",
+         "Tipo de transacción (Compra, Consumo, Traspaso, Físico, Costo, Misceláneo…, ver Transacciones Configurables)."
+        ],
+        [
+         "Ctro. Costo / Cta. Contable",
+         "Imputación contable (según tipo)."
+        ],
+        [
+         "Bodega / Localización",
+         "Origen; Bod. Dest. y Loc. Destino para traslados."
+        ],
+        [
+         "Artículo",
+         "Código y descripción."
+        ],
+        [
+         "Cantidad / Cant. Detalle",
+         "Cantidad en unidad de almacén y de detalle."
+        ],
+        [
+         "Subtipo / S.s. tipo / Lote",
+         "Clasificación adicional y lote."
+        ],
+        [
+         "Costo Unitario / Precio Unitario",
+         "Local y dólar."
+        ]
+       ],
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Consultas",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CI.consultas.consulta_de_articulos",
+       "titulo": "Consulta de Artículos",
+       "ruta": "Inventarios › Consulta › Artículos",
+       "imgs": [
+        "CI_05_consulta_articulos.jpg",
+        "CI_05_consulta_art_tab06_transacciones.jpg",
+        "CI_05_consulta_art_tab07_bodegas.jpg"
+       ],
+       "desc": "Consulta integral de un artículo (digitar el código o usar la lista de ayuda). Pestañas: **Generales** (existencias mín/reorden/máx, unidades, tipo, códigos de barras, impuestos, cuentas), **Otros**, **Notas**, **Costos**, **Costos por Bodega**, **Transacciones** (movimientos entre Fecha Inicial y Final con bodega, localización, cantidad, tipo, costos fiscal/corporativo y precios), **Bodegas** (existencia por estado: disponible, reservada, remitida, tránsito, producción, pedida, total, congelada), **Localizaciones**, **Precios** y **Especificaciones**.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.consultas.existencias_por_bodega",
+       "titulo": "Existencias por Bodega",
+       "ruta": "Inventarios › Consulta › Existencias › Bodegas",
+       "imgs": [
+        "CI_06_exist_bodegas.jpg"
+       ],
+       "desc": "Existencia de cada artículo por bodega (AN01, OF01, SE02…). Menú **Detalle!** abre el detalle de la línea seleccionada.",
+       "aviso": null,
+       "puntos": null,
+       "campos": [
+        [
+         "Bodega / Artículo",
+         "Llave de la existencia."
+        ],
+        [
+         "Exist. Mínima, Pto. Reorden, Máxima",
+         "Niveles configurados."
+        ],
+        [
+         "Unidad de Medida Almacén / Empaque / Venta",
+         "Unidades."
+        ],
+        [
+         "Disponible, Reservada, Cuarentena, Vencida, Remitida, Tránsito…",
+         "Cantidades por estado."
+        ]
+       ],
+       "tabla": null
+      },
+      {
+       "id": "CI.consultas.existencias_por_localizaciones_lotes",
+       "titulo": "Existencias por Localizaciones/Lotes",
+       "ruta": "Inventarios › Consulta › Existencias › Localizaciones/Lotes",
+       "imgs": [
+        "CI_07_exist_localiz_lotes.jpg"
+       ],
+       "desc": "Existencia por bodega, localización (p. ej. L0001) y lote (ND = no definido), con el estado del lote y las cantidades por estado.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.consultas.transacciones_encabezado_de_documentos",
+       "titulo": "Transacciones – Encabezado de Documentos",
+       "ruta": "Inventarios › Consulta › Transacciones › Encabezado Documentos",
+       "imgs": [
+        "CI_08_trans_encabezado.jpg"
+       ],
+       "desc": "Documentos de inventario entre dos fechas. Muestra Auditoría (número interno), Consecutivo, Documento (p. ej. *Embarque EM000…*, *FAC#…*, *DEV#…*, *DE0000…*), Fecha, Referencia, **Origen** (CO = Compras, FA = Facturación, CI = Inventarios), Transacción CG (asiento contable), Usuario y Fecha/Hora de aplicación.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.consultas.transacciones_detalle_de_documentos",
+       "titulo": "Transacciones – Detalle de Documentos",
+       "ruta": "Inventarios › Consulta › Transacciones › Detalle Documentos",
+       "imgs": [
+        "CI_09_trans_detalle.jpg"
+       ],
+       "desc": "Líneas de los documentos: Fecha, Auditoría-Consecutivo, Fecha/Hora de aplicación, Artículo, Bodega, **Tipo** (Compra, Consumo, Venta…), Cantidad almacén/detalle, Centro de costo, Usuario, Consecutivo, NIT y Cuenta contable.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.consultas.series_y_pedimentos",
+       "titulo": "Series y Pedimentos",
+       "ruta": null,
+       "imgs": [],
+       "desc": "Opciones en gris (no habilitadas para la compañía).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Reportes",
+     "desc": "Todos se abren con una ventana de parámetros. Se detallan los filtros principales de cada uno.",
+     "tabla": null,
+     "items": [
+      {
+       "id": "CI.reportes.existencias_en_inventario",
+       "titulo": "Existencias en Inventario",
+       "ruta": null,
+       "imgs": [
+        "CI_R01_existencias.jpg"
+       ],
+       "desc": "Existencias a una fecha. Filtros: rango de bodegas y localizaciones, solo artículos con existencias, detallar por bodega, incluir tránsito, fecha base (Auditoría/Documento), fecha y orden. Pestañas Artículos, Otros y Clasificación para acotar.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.reportes.valoracion_del_inventario",
+       "titulo": "Valoración del Inventario",
+       "ruta": null,
+       "imgs": [
+        "CI_R02_valoracion.jpg"
+       ],
+       "desc": "Valor del inventario a una fecha con el costo seleccionado. Opciones: valorar usando existencia mínima, solo totales, filtrar por localizaciones.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.reportes.rotacion_del_inventario",
+       "titulo": "Rotación del Inventario",
+       "ruta": null,
+       "imgs": [
+        "CI_R03_rotacion.jpg"
+       ],
+       "desc": "Rotación en un período: movimientos (consumo, venta), inventario de referencia (inicial, final, promedio), fecha base y año de 365/364/360 días.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.reportes.actividad_de_ventas",
+       "titulo": "Actividad de Ventas",
+       "ruta": null,
+       "imgs": [
+        "CI_R04_actividad_ventas.jpg"
+       ],
+       "desc": "Cantidad vendida, costo, valor de venta y margen por artículo y bodega; costo FISCAL/CORPORATIVA y moneda.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.reportes.reporte_de_costos_actividad_de_costos",
+       "titulo": "Reporte de Costos (Actividad de Costos)",
+       "ruta": null,
+       "imgs": [
+        "CI_R05_costos.jpg"
+       ],
+       "desc": "Detalle de costos de ingresos, consumos, ventas y otros por rango de fechas; opción de acumulados anuales.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.reportes.comparativo_de_costos",
+       "titulo": "Comparativo de Costos",
+       "ruta": null,
+       "imgs": [
+        "CI_R06_comparativo_costos.jpg"
+       ],
+       "desc": "Compara costo fiscal vs corporativo e indica % de diferencia; filtro de costos en cero y porcentaje límite.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.reportes.sugerencias_de_reorden",
+       "titulo": "Sugerencias de Reorden",
+       "ruta": null,
+       "imgs": [
+        "CI_R07_sugerencias_reorden.jpg"
+       ],
+       "desc": "Sugiere órdenes de compra usando puntos de reorden o los movimientos del artículo.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.reportes.analisis_abc_xyz",
+       "titulo": "Análisis ABC/XYZ",
+       "ruta": null,
+       "imgs": [
+        "CI_R08_abc_xyz.jpg"
+       ],
+       "desc": "Clasifica artículos por ventas y/o consumos en un período (ABC o ABC-XYZ) con porcentajes límite (pestaña Categoría).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.reportes.conteo_ciclico",
+       "titulo": "Conteo Cíclico",
+       "ruta": null,
+       "imgs": [
+        "CI_R09_conteo_ciclico.jpg"
+       ],
+       "desc": "Artículos con la frecuencia de conteo físico y el atraso respecto a una fecha de corte.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.reportes.mercaderia_sin_movimiento",
+       "titulo": "Mercadería sin Movimiento",
+       "ruta": null,
+       "imgs": [
+        "CI_R10_sin_movimiento.jpg"
+       ],
+       "desc": "Artículos sin movimiento en más de N días (por defecto 120), eligiendo qué movimientos considerar.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.reportes.verificacion_de_existencias",
+       "titulo": "Verificación de Existencias",
+       "ruta": null,
+       "imgs": [
+        "CI_R11_verif_existencias.jpg"
+       ],
+       "desc": "Artículos bajo el mínimo, bajo el punto de reorden o sobre el máximo, por estados de existencia.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.reportes.transacciones_por_articulo",
+       "titulo": "Transacciones por Artículo",
+       "ruta": null,
+       "imgs": [
+        "CI_R12_trans_por_articulo.jpg"
+       ],
+       "desc": "Transacciones de un período agrupadas por artículo con variación de existencia y costo; filtros de fecha, bodega, lote, localización y centro de costo; pestaña Tipos para elegir tipos de transacción.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.reportes.atributos_por_articulo",
+       "titulo": "Atributos por Artículo",
+       "ruta": null,
+       "imgs": [
+        "CI_R13_atributos.jpg"
+       ],
+       "desc": "Lista artículos por rango de atributos (cualitativos/cuantitativos).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.reportes.libro_de_inventario",
+       "titulo": "Libro de Inventario",
+       "ruta": null,
+       "imgs": [
+        "CI_R14_libro_inventario.jpg"
+       ],
+       "desc": "Movimientos valorizados por período: inventario inicial, entradas, devoluciones, traslados, ajustes y salidas; agrupa por bodega y por la clasificación elegida (p. ej. FAMILIA).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.reportes.numeros_de_serie_el_salvador_peru",
+       "titulo": "Números de Serie, El Salvador, Perú",
+       "ruta": null,
+       "imgs": [],
+       "desc": "Números de Serie está deshabilitado; las carpetas de país contienen reportes legales de esos países (no aplican a Costa Rica).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Procesos (solo descripción)",
+     "desc": "Estos procesos modifican datos de forma masiva; se describen sin abrirlos.",
+     "tabla": {
+      "encabezados": [
+       "Proceso",
+       "Qué hace"
+      ],
+      "anchos": [
+       2,
+       5
+      ],
+      "filas": [
+       [
+        "Inventario Físico › Introd. de Boletas",
+        "Captura de las boletas del conteo físico."
+       ],
+       [
+        "Inventario Físico › Verif. de Boletas",
+        "Compara conteo vs sistema y genera los ajustes."
+       ],
+       [
+        "Inventario Físico › Exportar / Importar boletas",
+        "Intercambio de boletas con archivos o terminales."
+       ],
+       [
+        "Inventario Físico › Descongelamiento Ext",
+        "Libera existencias congeladas por un conteo."
+       ],
+       [
+        "Movimiento Contable",
+        "Genera los asientos contables de las transacciones de inventario."
+       ],
+       [
+        "Purga de Datos Históricos",
+        "Elimina transacciones históricas antiguas."
+       ],
+       [
+        "Clasificación ABC de artículos",
+        "Recalcula y asigna la clase ABC."
+       ],
+       [
+        "Cálculo de Puntos de Reorden",
+        "Recalcula mínimos/reorden según consumo."
+       ],
+       [
+        "Generar Artículos Talla Color",
+        "Crea artículos combinando estilo, talla y color."
+       ],
+       [
+        "Cierres de Inventario",
+        "Cierra el período de inventario."
+       ],
+       [
+        "Colombia",
+        "Procesos legales de Colombia."
+       ]
+      ]
+     },
+     "items": []
+    },
+    {
+     "titulo": "Administración",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CI.administracion.unidades_de_medida",
+       "titulo": "Unidades de Medida",
+       "ruta": null,
+       "imgs": [
+        "CI_A01_unidades_medida.jpg"
+       ],
+       "desc": "Catálogo de unidades: BOL, CAJA, CUBE, GAL/GL, KG, LB, LT, M, M2, M3, PAQ, PAR, PZA, ROL, SER, UND, con su equivalente para factura electrónica (FEUNIDAD).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.administracion.consecutivos",
+       "titulo": "Consecutivos",
+       "ruta": null,
+       "imgs": [
+        "CI_A02_consecutivos.jpg"
+       ],
+       "desc": "Numeración de documentos de inventario: COMPRA (CO00045), CONS01 (C01891), COSTO (CT00006), MISL01 (M00002), SI (SI003), TRASPASOS (TR00001). Muestra máscara, siguiente consecutivo, si es editable, tipo, formato de impresión (R_DOCINV.QR…) y último usuario/fecha.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.administracion.clasificaciones",
+       "titulo": "Clasificaciones",
+       "ruta": null,
+       "imgs": [
+        "CI_A03_clasificaciones.jpg"
+       ],
+       "desc": "Valores de las clasificaciones (FAMILIA, REGIMEN, PAGAIVA, TECAPRO) con descripción, unidad de medida, tipo y datos de código de barras.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.administracion.clasificaciones_adicionales",
+       "titulo": "Clasificaciones Adicionales",
+       "ruta": null,
+       "imgs": [
+        "CI_A04_clasif_adicionales.jpg"
+       ],
+       "desc": "Definición de clasificaciones extra (vacío en la compañía).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.administracion.cuentas_contables",
+       "titulo": "Cuentas Contables",
+       "ruta": null,
+       "imgs": [
+        "CI_A05_cuentas_contables.jpg"
+       ],
+       "desc": "Paquetes de cuentas que se asignan a los artículos (AF01 Activos Fijos ZF, AN01 Inventario Almacén Nacional, SE01 Tránsito Órdenes de Compra, SE02 Ingresos Nacional Gravable, etc.). Definen las cuentas de inventario, costo, ventas y ajustes.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.administracion.transacciones_configurables",
+       "titulo": "Transacciones Configurables",
+       "ruta": null,
+       "imgs": [
+        "CI_A06_trans_configurables.jpg"
+       ],
+       "desc": "Tipos de transacción habilitados: ~AA~ Aprobación, ~CC~ Consumo, ~FF~ Físico, ~II~ Remisión, ~LL~ Traslado (2F), ~MM~ Misceláneo, ~NN~ Vencimiento, ~OO~ Compra, ~PP~ Producción, ~RR~ Reservación, ~SS~ Costo, ~TT~ Traspaso, ~VV~ Venta; todos activos.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.administracion.autorizacion_compra_exenta_venta_exenta",
+       "titulo": "Autorización compra exenta / venta exenta",
+       "ruta": null,
+       "imgs": [
+        "CI_A07_autoriz_compra_exenta.jpg",
+        "CI_A08_autoriz_venta_exenta.jpg"
+       ],
+       "desc": "Registro de autorizaciones de exoneración (código, descripción, clasificación/cliente, número de autorización, vigencia y porcentaje de exoneración). Sin registros.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.administracion.parametros_del_modulo",
+       "titulo": "Parámetros del Módulo",
+       "ruta": null,
+       "imgs": [
+        "CI_A09_parametros.jpg"
+       ],
+       "desc": "Configuración general de Inventarios. Pestaña General: decimales (costos 3, existencias 2, pesos 2), costo de ingresos especiales (Fiscal), unidad de peso KG y volumen M3, costos por omisión (FISCAL Promedio, CORPORAT Último), estados que suman en totales y los textos de las clasificaciones (FAMILIA, REGIMEN, PAGAIVA, TECAPRO). Otras pestañas: Indicadores, Contable, Ajustes, Código Barras, Presupuesto.",
+       "aviso": "Cerrar siempre con **Cancelar**; **Grabar** cambia la configuración de todo el módulo.",
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CI.administracion.plantillas_de_numeros_de_serie_costo_estandar",
+       "titulo": "Plantillas de números de serie / Costo Estándar",
+       "ruta": null,
+       "imgs": [],
+       "desc": "Plantillas de serie está deshabilitado. Costo Estándar (Actualización Individual y en Batch) modifica costos: no se abrió.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "codigo": "CO",
+   "nombre": "Compras",
+   "intro": "El módulo de **Compras** cubre el ciclo de abastecimiento: **Solicitud de compra → Orden de compra → Embarque (recepción) → Liquidación/costeo**, con la factura del proveedor enlazada a **Cuentas por Pagar (CP)** y la entrada de mercadería o servicio a **Inventarios (CI)**. Cada embarque genera un documento de inventario (Origen CO) y un asiento contable (Transacción CG, p. ej. CO00008855).",
+   "arbol": "CO_arbol_01.jpg",
+   "secciones": [
+    {
+     "titulo": "Flujo del proceso de compra",
+     "desc": null,
+     "tabla": {
+      "encabezados": [
+       "Paso",
+       "Pantalla",
+       "Resultado"
+      ],
+      "anchos": [
+       1,
+       3,
+       5
+      ],
+      "filas": [
+       [
+        "1",
+        "Operaciones › Solicitudes",
+        "Solicitud interna por departamento (Planeada → Aprobada → Asignada)."
+       ],
+       [
+        "2",
+        "Operaciones › Órdenes",
+        "Orden de compra al proveedor (OC000…). Se aprueba y se confirma."
+       ],
+       [
+        "3",
+        "Operaciones › Embarques",
+        "Recepción total o parcial de la OC (EM000…). Genera la entrada a inventario y el asiento."
+       ],
+       [
+        "4",
+        "Embarque › Factura",
+        "Se asocia la factura del proveedor (queda en CP)."
+       ],
+       [
+        "5",
+        "Operaciones › Liquidaciones",
+        "Prorratea gastos de importación (flete, seguro, aranceles) al costo."
+       ],
+       [
+        "6",
+        "Consultas / Reportes",
+        "Seguimiento de solicitudes, órdenes, embarques y compras."
+       ]
+      ]
+     },
+     "items": []
+    },
+    {
+     "titulo": "Proveedores",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CO.proveedores.proveedores_lista",
+       "titulo": "Proveedores – lista",
+       "ruta": "Compras › Proveedores › Proveedores",
+       "imgs": [
+        "CO_01_proveedores.jpg"
+       ],
+       "desc": "Catálogo de proveedores (compartido con Cuentas por Pagar): Código (P00001…), Nombre, Alias, Categoría (LOC_CRC = local colones, LOC_CRIB…), Saldo, E-mail y Saldo local/dólar.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.proveedores.ficha_del_proveedor_general_y_otros",
+       "titulo": "Ficha del proveedor – General y Otros",
+       "ruta": null,
+       "imgs": [
+        "CO_01_proveedor_tab01_general.jpg",
+        "CO_01_proveedor_tab02_otros.jpg"
+       ],
+       "desc": "Ejemplo P00001.",
+       "aviso": null,
+       "puntos": null,
+       "campos": [
+        [
+         "Fecha Ingreso / Alias / Contacto / Cargo",
+         "Datos de identificación."
+        ],
+        [
+         "Contribuyente (NIT) / Tipo NIT",
+         "Identificación tributaria (01 = cédula física)."
+        ],
+        [
+         "Teléfonos / Fax",
+         "Contacto."
+        ],
+        [
+         "Categoría",
+         "Categoría contable del proveedor (define cuentas de CP)."
+        ],
+        [
+         "Impuesto / Régimen Tributario / Actividad D104",
+         "Configuración de IVA."
+        ],
+        [
+         "Otros: Pagos Congelados, Proveedor inactivo, Multimoneda, Autoretenedor, Impuesto 1 incluido",
+         "Indicadores."
+        ],
+        [
+         "Origen",
+         "Local o Exterior (Internaciones)."
+        ],
+        [
+         "País, Provincia, Cantón, Distrito, Barrio, Moneda",
+         "Ubicación y moneda (pestaña Otros)."
+        ],
+        [
+         "Condiciones",
+         "Condición de pago (000 = contado), orden mínima, descuento, interés de mora."
+        ],
+        [
+         "Excepción IVA",
+         "Tipo de impuesto, tarifa y porcentaje."
+        ]
+       ],
+       "tabla": null
+      },
+      {
+       "id": "CO.proveedores.ficha_del_proveedor_direcciones_cuentas_documentos_electronicos_y_auditoria",
+       "titulo": "Ficha del proveedor – Direcciones, Cuentas, Documentos Electrónicos y Auditoría",
+       "ruta": null,
+       "imgs": [
+        "CO_01_proveedor_tab03_direcciones.jpg",
+        "CO_01_proveedor_tab04_cuentas.jpg",
+        "CO_01_proveedor_tab05_doc_electr.jpg",
+        "CO_01_proveedor_tab07_auditoria.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": [
+        [
+         "Direcciones",
+         "E-mail y dirección postal."
+        ],
+        [
+         "Cuentas",
+         "Cuentas bancarias del proveedor (entidad, número, moneda) para transferencias."
+        ],
+        [
+         "Documentos Electrónicos",
+         "XSLT, ubicación y correos para factura electrónica."
+        ],
+        [
+         "Auditoría",
+         "Usuario y fecha de ingreso y última modificación."
+        ],
+        [
+         "Textos / Notas / Valores Adicionales",
+         "Información libre."
+        ]
+       ],
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Artículos",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CO.articulos.datos_de_compra",
+       "titulo": "Datos de Compra",
+       "ruta": "Compras › Artículos › Datos de Compra",
+       "imgs": [
+        "CO_02_datos_compra.jpg"
+       ],
+       "desc": "Por artículo: último precio de cotización, último proveedor, moneda y fecha de la última cotización (misma información que la pestaña *Datos de Compra* del artículo).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.articulos.articulos_proveedores",
+       "titulo": "Artículos-Proveedores",
+       "ruta": "Compras › Artículos › Artículos-Proveedores",
+       "imgs": [
+        "CO_03_articulos_proveedores.jpg"
+       ],
+       "desc": "Relación de qué proveedores suministran cada artículo, con código de catálogo del proveedor y código de impuesto. Un artículo puede tener varios proveedores.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Operaciones",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CO.operaciones.solicitudes_de_compra",
+       "titulo": "Solicitudes de Compra",
+       "ruta": "Compras › Operaciones › Solicitudes",
+       "imgs": [
+        "CO_04_solicitudes.jpg"
+       ],
+       "desc": "Solicitudes entre Fecha Inicial y Final: Solicitud, Departamento, Fecha solicitud/requerida, Usuario aprobación, Prioridad, Líneas no asignadas, Estado, Usuario cancelación. Sin solicitudes en septiembre 2026 (la compañía trabaja mayormente con órdenes directas).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.operaciones.ordenes_de_compra_lista",
+       "titulo": "Órdenes de Compra – lista",
+       "ruta": "Compras › Operaciones › Órdenes",
+       "imgs": [
+        "CO_05_ordenes.jpg",
+        "CO_05_ordenes_menu_registro.jpg"
+       ],
+       "desc": "Órdenes del período: Orden, Proveedor, Nombre, Departamento, Comprador, Fecha orden/emisión/requerida, Total, Autorizado por, Pagar.",
+       "aviso": "Aprobar, Confirmar, Cerrar y Cancelar cambian el estado de la orden. Para consultar usar **Consultas › Órdenes**.",
+       "puntos": [
+        "Menú **Registro**: Nuevo, Modificar, Eliminar, **Aprobar (Ctrl+P), Confirmar (Ctrl+F), Desconfirmar, Reversar Aprobación, Cerrar, Cancelar**, Copiar, Regresar.",
+        "Doble clic abre la orden."
+       ],
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.operaciones.orden_de_compra_detalle",
+       "titulo": "Orden de Compra – detalle",
+       "ruta": null,
+       "imgs": [
+        "CO_05_orden_tab01_general.jpg",
+        "CO_05_orden_tab02_lineas.jpg",
+        "CO_05_orden_tab07_montos.jpg",
+        "CO_05_orden_tab08_auditoria.jpg"
+       ],
+       "desc": "Ejemplo OC00035024 (dólares). Pestañas: General, Líneas, Proveedor, Dirección, Rubros, Textos, Montos, Auditoría, Factura, Retenciones.",
+       "aviso": null,
+       "puntos": null,
+       "campos": [
+        [
+         "General",
+         "Fecha, **Estado** (Planeada, Aprobada, Transito, Recibida, Cancelada, Cerrada), Bodega (OF01 Oficinas), Comprador, Departamento, fechas de cotización/ofrecida/requerida/emisión, Prioridad, Requiere Confirmación, Confirmada, Facturar."
+        ],
+        [
+         "Líneas",
+         "Línea, Artículo (SE0003 Servicios…), Centro de costo, Cuenta contable, Bodega, Fecha requerida, cantidades y precios."
+        ],
+        [
+         "Proveedor",
+         "País, moneda (USD) y condición de pago."
+        ],
+        [
+         "Dirección",
+         "Dirección de embarque y fiscal del comprador."
+        ],
+        [
+         "Rubros",
+         "Campos adicionales: AUTORIZADO POR, PAGAR, Puerto embarque/destino, Departamento."
+        ],
+        [
+         "Montos",
+         "Total mercadería, descuento, IVA, flete, seguro, documentación, anticipo y saldo (moneda de la orden y local)."
+        ],
+        [
+         "Auditoría",
+         "Usuarios que aprobaron, crearon y confirmaron la orden con fecha y hora."
+        ],
+        [
+         "Factura",
+         "Documento fiscal del proveedor asociado (número, fecha, moneda, monto, condición de IVA)."
+        ]
+       ],
+       "tabla": null
+      },
+      {
+       "id": "CO.operaciones.embarques_lista",
+       "titulo": "Embarques – lista",
+       "ruta": "Compras › Operaciones › Embarques",
+       "imgs": [
+        "CO_06_embarques.jpg",
+        "CO_06_embarques_menu_registro.jpg"
+       ],
+       "desc": "Recepciones del período: Embarque (EM000…), Proveedor, Referencia, CRM, fechas requerida/ofrecida/embarque y Estado (Recibido, Liquidado…).",
+       "aviso": "Aprobar un embarque ingresa la mercadería al inventario y genera el asiento contable.",
+       "puntos": [
+        "Menú **Registro**: Nuevo, Modificar, Eliminar, **Aprobar, Reversar Aprobación**, Visualizar Asiento, Cancelar, Preliquidar, Regresar."
+       ],
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.operaciones.embarque_detalle",
+       "titulo": "Embarque – detalle",
+       "ruta": null,
+       "imgs": [
+        "CO_06_embarque_tab01_general.jpg",
+        "CO_06_embarque_tab02_lineas.jpg",
+        "CO_06_embarque_tab03_desglose.jpg",
+        "CO_06_embarque_tab04_factura.jpg",
+        "CO_06_embarque_tab06_otros.jpg",
+        "CO_06_embarque_tab08_costos.jpg"
+       ],
+       "desc": "Ejemplo EM00008706, estado Recibido/Liquidado.",
+       "aviso": null,
+       "puntos": null,
+       "campos": [
+        [
+         "General",
+         "Proveedor, Referencia, CRM, Fecha, Liquidación, Fecha embarque; opciones Recibe de más, Afecta backorder, Factura de compra."
+        ],
+        [
+         "Líneas",
+         "Artículo, descripción, **Orden de compra** de origen (OC00035039), proveedor, línea de la orden, centro de costo."
+        ],
+        [
+         "Desglose",
+         "Distribución por bodega/localización/lote con cantidad **Aceptada** y **Rechazada**."
+        ],
+        [
+         "Factura",
+         "Factura del proveedor (documento, tipo, fecha, moneda, monto)."
+        ],
+        [
+         "Otros",
+         "Fechas de aduana y las **transacciones contables** de recibo (CO00008855) y liquidación."
+        ],
+        [
+         "Costos",
+         "Costo Fiscal, Estimado Fiscal y Real Fiscal (local y dólar)."
+        ],
+        [
+         "Auditoría",
+         "Creado, aplicado y liquidado por (usuario, fecha, hora)."
+        ]
+       ],
+       "tabla": null
+      },
+      {
+       "id": "CO.operaciones.liquidaciones",
+       "titulo": "Liquidaciones",
+       "ruta": "Compras › Operaciones › Liquidaciones",
+       "imgs": [
+        "CO_07_liquidaciones.jpg"
+       ],
+       "desc": "Liquidaciones de importación (Número, Estado, Fecha, Documento referencia, Proveedor, Tipo de prorrateo). Sin movimientos en el período.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.operaciones.pedidos_sugeridos",
+       "titulo": "Pedidos Sugeridos",
+       "ruta": "Compras › Operaciones › Pedidos Sugeridos",
+       "imgs": [
+        "CO_08_pedidos_sugeridos.jpg"
+       ],
+       "desc": "Sugerencias de compra por artículo y proveedor generadas por el planificador; desde aquí pueden convertirse en órdenes (no usar en consulta).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.operaciones.documentos_de_compra",
+       "titulo": "Documentos de Compra",
+       "ruta": "Compras › Operaciones › Documentos de Compra",
+       "imgs": [
+        "CO_09_documentos_compra.jpg"
+       ],
+       "desc": "Facturas de proveedores registradas desde Compras: Documento, Tipo, Proveedor, Comentario CP (normalmente la OC relacionada), Factura en CP y si está **Aplicado en CP**.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.operaciones.evaluacion_de_proveedores_planificadores_de_compras",
+       "titulo": "Evaluación de Proveedores / Planificadores de Compras",
+       "ruta": null,
+       "imgs": [
+        "CO_11_planificadores.jpg"
+       ],
+       "desc": "Encuestas de evaluación por proveedor y criterios (sin criterios definidos) y planificadores de compra (sin registros).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Consultas",
+     "desc": "Pantallas de solo lectura; filtran por Fecha Inicial / Final y tienen menú **Detalle!** para abrir el documento.",
+     "tabla": null,
+     "items": [
+      {
+       "id": "CO.consultas.solicitudes_y_lineas_de_solicitudes",
+       "titulo": "Solicitudes y Líneas de Solicitudes",
+       "ruta": null,
+       "imgs": [
+        "CO_C01_solicitudes.jpg",
+        "CO_C02_lineas_solicitudes.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.consultas.ordenes_encabezados_y_lineas_de_ordenes",
+       "titulo": "Órdenes (Encabezados) y Líneas de Órdenes",
+       "ruta": null,
+       "imgs": [
+        "CO_C03_ordenes.jpg",
+        "CO_C04_lineas_ordenes.jpg"
+       ],
+       "desc": "Encabezados: fecha, orden, **estado** (Tránsito, Recibida, Cancelada, Planeada), prioridad, proveedor, departamento, moneda, país, bodega y condición de pago.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.consultas.documentos",
+       "titulo": "Documentos",
+       "ruta": null,
+       "imgs": [
+        "CO_C05_documentos.jpg"
+       ],
+       "desc": "Consulta integrada con pestañas Solicitudes, Órdenes, Embarques, Facturas, Parcialidades y Garantías.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.consultas.precios_de_articulos",
+       "titulo": "Precios de Artículos",
+       "ruta": null,
+       "imgs": [
+        "CO_C06_precios_articulos.jpg"
+       ],
+       "desc": "Comparativo de precios de un artículo entre proveedores por rangos de cantidad. Requiere indicar el artículo.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.consultas.evaluacion_de_proveedores",
+       "titulo": "Evaluación de Proveedores",
+       "ruta": null,
+       "imgs": [
+        "CO_C07_evaluacion_prov.jpg"
+       ],
+       "desc": "Resultados de evaluación por fecha de encuesta (requiere criterios definidos).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.consultas.compras_por_articulo_por_proveedor",
+       "titulo": "Compras por Artículo / por Proveedor",
+       "ruta": null,
+       "imgs": [
+        "CO_C08_compras_por_articulo.jpg",
+        "CO_C09_compras_por_proveedor.jpg"
+       ],
+       "desc": "Ficha de un artículo o proveedor con sus órdenes de compra en un rango de fechas y los artículos más comprados / proveedores más frecuentes.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.consultas.historico_de_planificacion_por_articulo",
+       "titulo": "Histórico de Planificación por Artículo",
+       "ruta": null,
+       "imgs": [
+        "CO_C10_hist_planificacion.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Reportes",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CO.reportes.proveedores_de_solicitudes",
+       "titulo": "Proveedores de Solicitudes",
+       "ruta": null,
+       "imgs": [
+        "CO_R01_prov_solicitudes.jpg"
+       ],
+       "desc": "Proveedores de artículos pedidos en solicitudes aún no ordenadas; ordena por artículo o proveedor.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.reportes.abastecimiento_de_solicitudes",
+       "titulo": "Abastecimiento de Solicitudes",
+       "ruta": null,
+       "imgs": [
+        "CO_R02_abastecimiento_sol.jpg"
+       ],
+       "desc": "Solicitudes satisfechas con la mercadería recibida, por embarque, fechas, proveedor, artículo y departamento.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.reportes.historico_de_compras",
+       "titulo": "Histórico de Compras",
+       "ruta": null,
+       "imgs": [
+        "CO_R03_historico_compras.jpg"
+       ],
+       "desc": "Histórico de órdenes y embarques ordenado por artículo, fecha de OC, fecha de ingreso, proveedor o país.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.reportes.variacion_de_costos",
+       "titulo": "Variación de Costos",
+       "ruta": null,
+       "imgs": [
+        "CO_R04_variacion_costos.jpg"
+       ],
+       "desc": "Variación entre costo fiscal, estimado y real, en montos o porcentajes, moneda local o dólar.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.reportes.plazos_de_reabastecimiento",
+       "titulo": "Plazos de Reabastecimiento",
+       "ruta": null,
+       "imgs": [
+        "CO_R05_plazos_reabast.jpg"
+       ],
+       "desc": "Tiempos que tardaron los proveedores en reabastecer las órdenes (por OC, proveedor, fecha, país, bodega).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.reportes.porcentaje_de_ajuste_de_costo",
+       "titulo": "Porcentaje de Ajuste de Costo",
+       "ruta": null,
+       "imgs": [
+        "CO_R06_porc_ajuste_costo.jpg"
+       ],
+       "desc": "Porcentaje de ajuste de costos de artículos importados.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.reportes.liquidacion_de_compras",
+       "titulo": "Liquidación de Compras",
+       "ruta": null,
+       "imgs": [
+        "CO_R07_liquidacion_compras.jpg"
+       ],
+       "desc": "Información de cada liquidación por rango y estado, con bloques opcionales de embarques, facturas y gastos.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.reportes.ordenes_embarques_con_recibido_de_mas",
+       "titulo": "Órdenes / Embarques con recibido de más",
+       "ruta": null,
+       "imgs": [
+        "CO_R08_ord_recibido_mas.jpg",
+        "CO_R09_emb_recibido_mas.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.reportes.analitico_de_devoluciones",
+       "titulo": "Analítico de Devoluciones",
+       "ruta": null,
+       "imgs": [
+        "CO_R10_analitico_devol.jpg"
+       ],
+       "desc": "Devoluciones o reversiones de compras por fecha, devolución, embarque, proveedor y artículo.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.reportes.evaluacion_de_proveedores",
+       "titulo": "Evaluación de Proveedores",
+       "ruta": null,
+       "imgs": [
+        "CO_R11_evaluacion_prov.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.reportes.reporte_retaceo",
+       "titulo": "Reporte Retaceo",
+       "ruta": null,
+       "imgs": [
+        "CO_R12_retaceo.jpg"
+       ],
+       "desc": "Detalle por factura de los montos de embarque asociados (costo FOB, impuestos, flete, seguro/documentación, otros gastos).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Procesos (solo descripción)",
+     "desc": null,
+     "tabla": {
+      "encabezados": [
+       "Proceso",
+       "Qué hace"
+      ],
+      "anchos": [
+       2,
+       5
+      ],
+      "filas": [
+       [
+        "Movimiento Contable",
+        "Genera los asientos de las operaciones de compra."
+       ],
+       [
+        "Liquidación por Lotes",
+        "Liquida varios embarques a la vez."
+       ],
+       [
+        "Carga de Solicitudes de Compra",
+        "Deshabilitado."
+       ],
+       [
+        "Recálculo Porcentajes de Ajuste",
+        "Recalcula el % de ajuste de costos de importación."
+       ],
+       [
+        "Cargador de Direcciones",
+        "Importa direcciones de embarque."
+       ],
+       [
+        "Costa Rica › Información de Aduana",
+        "Datos de DUA / aduana."
+       ]
+      ]
+     },
+     "items": []
+    },
+    {
+     "titulo": "Administración",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CO.administracion.parametros_del_modulo",
+       "titulo": "Parámetros del Módulo",
+       "ruta": null,
+       "imgs": [
+        "CO_A12_parametros.jpg"
+       ],
+       "desc": "Fórmula de cálculo del pedido sugerido (estándar o con clasificación ABCD) y los porcentajes/posiciones de la clasificación ABCD por consumo, frecuencia, rotación y margen.",
+       "aviso": "Cerrar con **Cancelar**; **Grabar** cambia la configuración del módulo.",
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CO.administracion.otros_catalogos",
+       "titulo": "Otros catálogos",
+       "ruta": null,
+       "imgs": [],
+       "desc": "Compradores, Gastos, Impuestos, Aranceles, Direcciones de Embarque, Centros de costo, Rangos de Autorización por Departamento, Montos de Autorización por Usuario, Mantenimiento Pronóstico Ventas, Planificadores de Compras y Configuración del Planificador. Al abrirlos con este usuario no se mostró la ventana (o no se documentaron para evitar ediciones); **Compradores** contiene un registro (C001) sin empleado asignado, lo que dispara una validación al cerrar.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "codigo": "FA",
+   "nombre": "Facturación",
+   "intro": "El módulo de **Facturación** registra las ventas: **Cotización → Pedido → Factura** (o Remisión), además de anulaciones y devoluciones. Cada factura rebaja el inventario (Origen FA en Inventarios), genera la cuenta por cobrar en **CC** y el asiento contable (proceso *Carga a Contabilidad*). En OVERSEAS se facturan principalmente **servicios logísticos** (artículos SV0000xx: Manejo ZF, Almacenaje, Flete terrestre…) en colones y dólares, como factura electrónica.",
+   "arbol": "FA_arbol_01.jpg",
+   "secciones": [
+    {
+     "titulo": "Flujo de venta",
+     "desc": null,
+     "tabla": {
+      "encabezados": [
+       "Paso",
+       "Pantalla",
+       "Resultado"
+      ],
+      "anchos": [
+       1,
+       3,
+       5
+      ],
+      "filas": [
+       [
+        "1",
+        "Documentos › Cotizaciones",
+        "Oferta al cliente (opcional)."
+       ],
+       [
+        "2",
+        "Documentos › Pedidos",
+        "Pedido PE000…; puede reservar existencias y requerir autorización por ventas o crédito."
+       ],
+       [
+        "3",
+        "Pedidos › Generar Documentos en Lote / Facturar",
+        "Genera la factura (0010000101…) y el pedido pasa a **Facturado**."
+       ],
+       [
+        "—",
+        "Documentos › Facturación sin Pedido",
+        "Factura directa sin pedido previo."
+       ],
+       [
+        "—",
+        "Documentos › Remisiones",
+        "Entrega de mercadería sin facturar (luego se factura)."
+       ],
+       [
+        "4",
+        "Anulaciones / Devoluciones",
+        "Revierte o acredita documentos (nota de crédito electrónica)."
+       ],
+       [
+        "5",
+        "Procesos › Carga a Contabilidad",
+        "Genera los asientos de ventas y costo."
+       ]
+      ]
+     },
+     "items": []
+    },
+    {
+     "titulo": "Clientes",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "FA.clientes.clientes_lista",
+       "titulo": "Clientes – lista",
+       "ruta": "Facturación › Clientes › Clientes",
+       "imgs": [
+        "FA_01_clientes.jpg"
+       ],
+       "desc": "Catálogo de clientes (compartido con Cuentas por Cobrar): Código (C00001…), Nombre, Saldo, Alias, Cliente corporación y GLN. El ícono de la izquierda indica clientes corporativos.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.clientes.ficha_del_cliente",
+       "titulo": "Ficha del cliente",
+       "ruta": null,
+       "imgs": [
+        "FA_01_cliente_tab01_general.jpg",
+        "FA_01_cliente_tab02_condiciones.jpg",
+        "FA_01_cliente_tab03_otros.jpg",
+        "FA_01_cliente_tab10_tipos.jpg"
+       ],
+       "desc": "Ejemplo C00002. Pestañas: General, Condiciones, Otros, Documentos Electrónicos, Direcciones, Tarjeta, Auditoría, Corporativo, Notas, Tipos de Clientes.",
+       "aviso": null,
+       "puntos": null,
+       "campos": [
+        [
+         "General",
+         "Fecha ingreso, alias, contacto, contribuyente (cédula jurídica) y tipo NIT, teléfonos, **Categoría** (LOC_USD = local dólares), Clase, Clase y Subtipo de documento, Impuesto (0108 IVA 13%), Actividad D104, Régimen; indicadores Corporación, Multimoneda, Origen local/exterior, Inactivo, Moroso; **Nivel de precios** (DOL-GENERAL) y documento a generar (Factura/Boleta/Remisión)."
+        ],
+        [
+         "Condiciones",
+         "Condición de pago (015 = quince días), intereses corriente y de mora, descuento, **límite de crédito** y si puede excederse, cobro judicial, aceptar backorder, facturación en múltiplos, excepción de IVA."
+        ],
+        [
+         "Otros",
+         "País, provincia, cantón, distrito y barrio (dirección de Hacienda), moneda, zona, ruta, cobrador, vendedor, convenio de suministros, requiere orden de compra, días de cobro."
+        ],
+        [
+         "Direcciones",
+         "E-mail para facturas y dirección de cobro; dirección de embarque."
+        ],
+        [
+         "Auditoría",
+         "Usuario y fecha de ingreso y última modificación."
+        ],
+        [
+         "Corporativo",
+         "Cliente corporación y características compartidas."
+        ],
+        [
+         "Tipos de Clientes",
+         "Tipo de cliente (Gobierno, Exterior, Leyes especiales, Otros) y afectación de IVA."
+        ]
+       ],
+       "tabla": null
+      },
+      {
+       "id": "FA.clientes.contactos",
+       "titulo": "Contactos",
+       "ruta": null,
+       "imgs": [],
+       "desc": "Contactos por cliente (nombre, apellidos, género…). Sin registros.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Documentos",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "FA.documentos.pedidos_lista",
+       "titulo": "Pedidos – lista",
+       "ruta": "Facturación › Documentos › Pedidos",
+       "imgs": [
+        "FA_03_pedidos.jpg",
+        "FA_03_pedidos_menu_registro.jpg"
+       ],
+       "desc": "Pedidos del período: Pedido, Cliente, Nombre, **Estado** (Normal, Aprobado, Backorder, Facturado, Cancelado), fechas de pedido/prometida/próximo embarque, Total mercadería, Subtotal, Total a facturar, Moneda, Clase y Autorización.",
+       "aviso": "*Generar Documentos en Lote* factura todos los pedidos marcados; *Cancelar*, *Reservar* y *Remitir* modifican el pedido.",
+       "puntos": [
+        "Menú **Registro**: Nuevo, Modificar, Eliminar, Imprimir, Invertir/Quitar marcas, **Generar Documentos en Lote**, Cancelar, Aprobar, Desreservar, Reservar, Copiar, **Remitir**, Regresar."
+       ],
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.documentos.pedido_detalle",
+       "titulo": "Pedido – detalle",
+       "ruta": null,
+       "imgs": [
+        "FA_03_pedido_tab01_lineas.jpg",
+        "FA_03_pedido_tab02_general.jpg",
+        "FA_03_pedido_tab03_otros.jpg",
+        "FA_03_pedido_tab07_montos.jpg"
+       ],
+       "desc": "Ejemplo PE000003676 (dólares), estado Facturado.",
+       "aviso": null,
+       "puntos": null,
+       "campos": [
+        [
+         "Líneas",
+         "Artículo (SV000027 Manejo ZF), fecha prometida, precio unitario, cantidad pedida y a facturar, total, localización, centro de costo. Totales: Total factura y Gran total."
+        ],
+        [
+         "General",
+         "Bodega default (SE02 Servicios ventas), condición de pago, actividad comercial emisor/receptor, forma de pago, moneda del cliente y del pedido, nivel de precio y versión, fechas del pedido, prometida y próximo embarque."
+        ],
+        [
+         "Otros",
+         "Documento a generar (Factura, Boleta, Remisión), clase, subtipo, tipo, **estado**, origen, manejo de backorder, orden de compra del cliente, cotización, información de desaprobación."
+        ],
+        [
+         "Cliente",
+         "Cliente corporación, vendedor y cobrador con comisión, país, ubicación geográfica, zona, ruta, tarjeta."
+        ],
+        [
+         "Montos",
+         "Total mercadería, descuentos, anticipos, subtotal, IVA, impuesto consumo, total a facturar, fletes, seguro, documentación, otros cargos, tipo de cambio (454.15) y documento de referencia (NC/ND)."
+        ],
+        [
+         "Pagos / Garantías / Anticipos / Cotizaciones / Contratos / Adquirientes",
+         "Información complementaria."
+        ]
+       ],
+       "tabla": null
+      },
+      {
+       "id": "FA.documentos.facturacion_sin_pedido",
+       "titulo": "Facturación sin Pedido",
+       "ruta": "Facturación › Documentos › Facturación sin Pedido",
+       "imgs": [
+        "FA_04_facturacion_sin_pedido.jpg"
+       ],
+       "desc": "Captura directa de una factura: cliente, moneda y líneas (artículo, descripción, precio, cantidad, total, localización, centro de costo), con las mismas pestañas del pedido. **No guardar** en consulta.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.documentos.remisiones",
+       "titulo": "Remisiones",
+       "ruta": null,
+       "imgs": [
+        "FA_05_remisiones.jpg"
+       ],
+       "desc": "Remisiones (entregas sin factura): número, estado, cliente, fecha, totales y documento a generar. Sin remisiones.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.documentos.anulaciones",
+       "titulo": "Anulaciones",
+       "ruta": null,
+       "imgs": [
+        "FA_06_anulaciones.jpg"
+       ],
+       "desc": "Lista de documentos anulados por fecha (tipo, factura, cliente, totales).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.documentos.devoluciones_con_documento",
+       "titulo": "Devoluciones con Documento",
+       "ruta": null,
+       "imgs": [
+        "FA_07_devol_con_doc.jpg"
+       ],
+       "desc": "Devoluciones ligadas a una factura original, por rango de fechas.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.documentos.devolucion_sin_documento_con_numero_de_documento",
+       "titulo": "Devolución sin Documento / con Número de Documento",
+       "ruta": null,
+       "imgs": [
+        "FA_08_devol_sin_doc.jpg",
+        "FA_09_devol_con_num.jpg"
+       ],
+       "desc": "Captura de notas de crédito: cliente, fecha, subtipo CxC (Nota de Crédito), notificación Hacienda (01 anula documento de referencia), clase, forma de pago y líneas a devolver (artículo, bodega, lote, localización, precio, descuento, cantidad a devolver).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.documentos.cotizaciones",
+       "titulo": "Cotizaciones",
+       "ruta": null,
+       "imgs": [
+        "FA_10_cotizaciones.jpg"
+       ],
+       "desc": "Cotizaciones por rango de fechas: cotización, cliente, estado, fechas, totales y moneda. Sin cotizaciones en el período.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.documentos.facturacion_de_anticipos",
+       "titulo": "Facturación de anticipos",
+       "ruta": null,
+       "imgs": [],
+       "desc": "Opción deshabilitada.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Consultas",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "FA.consultas.pedidos_y_lineas_de_pedido",
+       "titulo": "Pedidos y Líneas de Pedido",
+       "ruta": null,
+       "imgs": [
+        "FA_C01_pedidos.jpg",
+        "FA_C02_lineas_pedido.jpg"
+       ],
+       "desc": "Consulta de solo lectura de pedidos y sus líneas (artículo, descripción, estado, fecha prometida, precio y cantidad). Menú **Regresar!** para salir.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.consultas.documentos_y_lineas_de_documento",
+       "titulo": "Documentos y Líneas de Documento",
+       "ruta": null,
+       "imgs": [
+        "FA_C03_documentos.jpg",
+        "FA_C04_lineas_documento.jpg"
+       ],
+       "desc": "Facturas y devoluciones emitidas: tipo de documento, número electrónico (0010000101…), cliente, fechas, totales; a nivel de línea, artículo, cantidad facturada/bonificada, precio unitario y total.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.consultas.articulos",
+       "titulo": "Artículos",
+       "ruta": null,
+       "imgs": [
+        "FA_C05_articulos.jpg"
+       ],
+       "desc": "Consulta de artículo desde Facturación (existencias, unidades, códigos de barras, impuestos, cuentas, bodegas, localizaciones y precios).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.consultas.cotizaciones_y_lineas_de_cotizaciones",
+       "titulo": "Cotizaciones y Líneas de Cotizaciones",
+       "ruta": null,
+       "imgs": [
+        "FA_C06_cotizaciones.jpg",
+        "FA_C07_lineas_cotizaciones.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Reportes",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "FA.reportes.listas_de_empaque_pedidos_facturas_boletas_remisiones",
+       "titulo": "Listas de Empaque (Pedidos, Facturas, Boletas, Remisiones)",
+       "ruta": null,
+       "imgs": [
+        "FA_R01_empaque_pedidos.jpg",
+        "FA_R02_empaque_facturas.jpg"
+       ],
+       "desc": "Listas de empaque por rango de documentos, bodegas, fechas, artículos, clientes y subtipo.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.reportes.requerimientos",
+       "titulo": "Requerimientos",
+       "ruta": null,
+       "imgs": [
+        "FA_R05_requerimientos.jpg"
+       ],
+       "desc": "Artículos requeridos para satisfacer los pedidos de una bodega (faltantes por cantidad pedida o a facturar).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.reportes.pedidos_articulos_pedidos",
+       "titulo": "Pedidos / Artículos Pedidos",
+       "ruta": null,
+       "imgs": [
+        "FA_R06_pedidos.jpg",
+        "FA_R07_articulos_pedidos.jpg"
+       ],
+       "desc": "Artículos agrupados por pedido o por artículo, con rangos de pedidos, fechas, artículos, clientes, bodegas y procedencia; opción solo backorder.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.reportes.requerimientos_de_produccion_antiguedad_de_articulos_pedidos",
+       "titulo": "Requerimientos de Producción / Antigüedad de artículos pedidos",
+       "ruta": null,
+       "imgs": [
+        "FA_R08_req_produccion.jpg",
+        "FA_R09_antiguedad_pedidos.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.reportes.documentos",
+       "titulo": "Documentos",
+       "ruta": null,
+       "imgs": [
+        "FA_R10_documentos.jpg"
+       ],
+       "desc": "Detalle de facturas, remisiones, boletas o devoluciones en un rango.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.reportes.utilidad_bruta",
+       "titulo": "Utilidad Bruta",
+       "ruta": null,
+       "imgs": [
+        "FA_R11_utilidad_bruta.jpg"
+       ],
+       "desc": "Utilidad bruta por artículo y fechas, en moneda local o dólar, con opción de detalle e incluir devoluciones.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.reportes.listas_de_precios_ofertas_y_descuentos_ensambles",
+       "titulo": "Listas de Precios, Ofertas y Descuentos / Ensambles",
+       "ruta": null,
+       "imgs": [
+        "FA_R12_lista_precios.jpg",
+        "FA_R14_lista_descuentos.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.reportes.registro_de_ventas",
+       "titulo": "Registro de Ventas",
+       "ruta": null,
+       "imgs": [
+        "FA_R16_registro_ventas.jpg"
+       ],
+       "desc": "Resumen de ventas e impuesto, separando servicios y mercancías; incluye documentos de CC (otros créditos, recibos, retenciones, TEF).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.reportes.carpetas_de_pais",
+       "titulo": "Carpetas de país",
+       "ruta": null,
+       "imgs": [],
+       "desc": "El Salvador, Guatemala, Colombia, República Dominicana, Honduras: reportes legales de esos países.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Procesos (solo descripción)",
+     "desc": null,
+     "tabla": {
+      "encabezados": [
+       "Proceso",
+       "Qué hace"
+      ],
+      "anchos": [
+       2,
+       5
+      ],
+      "filas": [
+       [
+        "Carga a Contabilidad",
+        "Genera los asientos de ventas, costo de ventas e impuestos."
+       ],
+       [
+        "Recálculo de Precios",
+        "Recalcula precios de pedidos según listas vigentes."
+       ],
+       [
+        "Purga de datos (Pedidos, Facturas, Boletas, Devoluciones, Remisiones, Autorizaciones)",
+        "Elimina históricos."
+       ],
+       [
+        "Autorización Automática de Pedidos",
+        "Aprueba pedidos que cumplen las reglas."
+       ],
+       [
+        "Cargador de Direcciones",
+        "Importa direcciones de clientes."
+       ],
+       [
+        "Editor de Listas de Precios",
+        "Modifica precios masivamente."
+       ],
+       [
+        "Costa Rica › Información de Aduana",
+        "Datos aduaneros para exportación."
+       ]
+      ]
+     },
+     "items": []
+    },
+    {
+     "titulo": "Administración",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "FA.administracion.niveles_de_precio",
+       "titulo": "Niveles de Precio",
+       "ruta": null,
+       "imgs": [
+        "FA_A05_niveles_precio.jpg"
+       ],
+       "desc": "Listas de precios: COL-GENERAL (local), DOL-GENERAL (dólar), ND-DOLAR, ND-LOCAL, con esquema de trabajo y condición de pago.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.administracion.consecutivos",
+       "titulo": "Consecutivos",
+       "ruta": null,
+       "imgs": [
+        "FA_A12_consecutivos.jpg"
+       ],
+       "desc": "Numeración de documentos: COT01 Cotizaciones, DE_FAC Factura electrónica local, DE_FCOMP Factura de compra electrónica, DE_FEXP Factura exportación, DE_NC Nota de crédito, DE_ND Nota de débito, DEV01 Devolución, FAC01 Factura, PED01 Pedidos; con formato de impresión, máscara y último valor.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.administracion.parametros_de_facturacion",
+       "titulo": "Parámetros de Facturación",
+       "ruta": null,
+       "imgs": [
+        "FA_A14_parametros.jpg"
+       ],
+       "desc": "Condición de pago de contado, bodega default (SE02), tipo de cambio (TVEN), valores para clientes nuevos (categoría LOC_CRC, nivel de precio COL-GENERAL), backorder y opciones (integración contable, precio última venta, distribución contable por impuesto, cambiar descuento, tipo de cambio original en devoluciones…). Pestañas: Cálculos, Impresión, Indicadores, Seguridad, Carga, Contable, Otros, Textos.",
+       "aviso": "Cerrar con **Cancelar**.",
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.administracion.precios_base_versiones_de_precios_ensambles_kits",
+       "titulo": "Precios Base, Versiones de Precios, Ensambles (Kits)",
+       "ruta": null,
+       "imgs": [
+        "FA_A01_precios_base.jpg",
+        "FA_A02_versiones_precios.jpg",
+        "FA_A04_ensambles.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.administracion.autorizaciones_de_pedidos_por_ventas_credito",
+       "titulo": "Autorizaciones de Pedidos por Ventas / Crédito",
+       "ruta": null,
+       "imgs": [
+        "FA_A09_autoriz_ventas.jpg"
+       ],
+       "desc": "Pedidos pendientes de autorización por descuento/margen o por límite de crédito. Sin pendientes.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "FA.administracion.otros_catalogos",
+       "titulo": "Otros catálogos",
+       "ruta": null,
+       "imgs": [],
+       "desc": "Excepciones de Descuentos y Bonificaciones, Resoluciones (numeración autorizada), Paquetes y Reglas de Descuento y Bonificación, Configuración Clientes y Motivos de Cancelación de Cotizaciones: capturados, sin registros relevantes.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "codigo": "CC",
+   "nombre": "Cuentas por Cobrar",
+   "intro": "**Cuentas por Cobrar** administra los saldos de los clientes: cada factura de Facturación genera un documento **FAC** (concepto *Cargado de factura…*, asiento FA000…), y aquí se registran recibos, notas de crédito/débito, retenciones, intereses de mora y convenios de pago. Comparte el catálogo de clientes con Facturación.",
+   "arbol": "CC_arbol_01.jpg",
+   "secciones": [
+    {
+     "titulo": "Mantenimiento de Clientes",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CC.mantenimiento_de_clientes.clientes",
+       "titulo": "Clientes",
+       "ruta": "CC › Mantenimiento de Clientes › Clientes",
+       "imgs": [
+        "CC_001_clientes.jpg"
+       ],
+       "desc": "Mismo catálogo y ficha que en Facturación (ver capítulo FA): código, nombre, saldo, alias, cliente corporación.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.mantenimiento_de_clientes.contactos",
+       "titulo": "Contactos",
+       "ruta": null,
+       "imgs": [
+        "CC_002_contactos.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Transacciones",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CC.transacciones.documentos",
+       "titulo": "Documentos",
+       "ruta": "CC › Transacciones › Documentos",
+       "imgs": [
+        "CC_003_documentos.jpg"
+       ],
+       "desc": "Documentos del cliente entre dos fechas: Cliente, Fecha, Fecha rige, **Tipo** (FAC factura, N/C, N/D, REC recibo, O/C otro crédito…), Número, Concepto, Moneda, Monto, Saldo débitos/créditos, Condición, **Asiento** contable, Contrarecibo, Subtipo. Menú **Documento**: nuevo débito/crédito, aplicar, anular, consultar asiento.",
+       "aviso": "Crear o aplicar documentos afecta saldos del cliente y la contabilidad.",
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.transacciones.contrarecibos",
+       "titulo": "Contrarecibos",
+       "ruta": null,
+       "imgs": [
+        "CC_004_ccntrarecibos.jpg"
+       ],
+       "desc": "Contrarecibos (documento que agrupa facturas entregadas a revisión del cliente): cliente, número, condición de pago, rige, usuario, estado, fecha de emisión.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.transacciones.convenios_de_pago",
+       "titulo": "Convenios de Pago",
+       "ruta": null,
+       "imgs": [
+        "CC_005_convenios.jpg"
+       ],
+       "desc": "Convenios de pago por cliente (pestañas Convenio, Documentos, Otros, Refinanciamiento). Al abrir avisa que no hay consecutivo para *Interés de Mora*; es solo informativo.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.transacciones.carga_masiva_docs_peru",
+       "titulo": "Carga Masiva Docs / Perú",
+       "ruta": null,
+       "imgs": [],
+       "desc": "Carga masiva de documentos (proceso, no se abrió) y Recepción de detracciones SUNAT (bloqueado, aplica solo a Perú).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Consultas",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CC.consultas.consulta_general_de_documentos",
+       "titulo": "Consulta General de Documentos",
+       "ruta": null,
+       "imgs": [
+        "CC_008_consulta_general_de_documentos.jpg"
+       ],
+       "desc": "Resumen por cliente: país, moneda, **saldo** en moneda del cliente, local y dólar. Botones Consultar (detalle de documentos), Localizar y Regresar.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.consultas.consulta_corporativa_de_documentos",
+       "titulo": "Consulta Corporativa de Documentos",
+       "ruta": null,
+       "imgs": [
+        "CC_009_consulta_corporativa_de_documentos.jpg"
+       ],
+       "desc": "Documentos agrupados por cliente corporación.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.consultas.contrarecibos",
+       "titulo": "Contrarecibos",
+       "ruta": null,
+       "imgs": [
+        "CC_010_contrarecibos.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.consultas.mejores_clientes",
+       "titulo": "Mejores Clientes",
+       "ruta": null,
+       "imgs": [
+        "CC_011_mejores_clientes.jpg"
+       ],
+       "desc": "Ranking de clientes por ventas netas, descuentos e impuestos entre dos fechas. Muestra una advertencia sugiriendo correr Diferencias Cambiarias antes.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Reportes",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CC.reportes.cuentas_por_cobrar",
+       "titulo": "Cuentas por Cobrar",
+       "ruta": null,
+       "imgs": [
+        "CC_034_cuentas_por_cobrar.jpg"
+       ],
+       "desc": "Documentos vencidos a una fecha límite por moneda; pestañas Vendedor y Cobrador.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.reportes.estados_de_cuenta",
+       "titulo": "Estados de Cuenta",
+       "ruta": null,
+       "imgs": [
+        "CC_035_estados_de_cuenta.jpg"
+       ],
+       "desc": "Estado de cuenta por período: solo movimientos, solo pendientes o consolidado; con opción de enviarlo por correo en PDF.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.reportes.saldos_por_cuenta",
+       "titulo": "Saldos por Cuenta",
+       "ruta": null,
+       "imgs": [
+        "CC_036_saldos_por_cuenta.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.reportes.general_de_cuentas",
+       "titulo": "General de Cuentas",
+       "ruta": null,
+       "imgs": [
+        "CC_037_general_de_cuentas.jpg"
+       ],
+       "desc": "Clientes con documentos pendientes, saldo, límite de crédito e información general.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.reportes.proyeccion_por_vencimiento_analisis_de_antiguedad",
+       "titulo": "Proyección por Vencimiento / Análisis de Antigüedad",
+       "ruta": null,
+       "imgs": [
+        "CC_038_proyeccion_por_vencimiento.jpg",
+        "CC_040_analisis_de_antiguedad.jpg"
+       ],
+       "desc": "Pendientes por rangos de días (0–30, 31–60 … 151–180), por vencimiento futuro o por antigüedad; filtros de vendedor, cobrador, moneda y condición de pago; exporta a Excel.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.reportes.documentos_pendientes",
+       "titulo": "Documentos Pendientes",
+       "ruta": null,
+       "imgs": [
+        "CC_045_documentos_pendientes.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.reportes.movimiento_diario_tipo_de_documento_por_cliente_resumen_diario",
+       "titulo": "Movimiento Diario (Tipo de Documento, Por Cliente, Resumen Diario)",
+       "ruta": null,
+       "imgs": [
+        "CC_042_tipo_de_documento.jpg"
+       ],
+       "desc": "Movimientos del día o rango, agrupados por tipo, cliente o resumen. Existe también la versión *Reportes por Moneda*.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.reportes.aplicaciones_por_aplicacion",
+       "titulo": "Aplicaciones / Por Aplicación",
+       "ruta": null,
+       "imgs": [
+        "CC_048_aplicaciones.jpg"
+       ],
+       "desc": "Qué créditos se aplicaron a qué débitos.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.reportes.diferencias_cambiarias_intereses_de_mora",
+       "titulo": "Diferencias Cambiarias / Intereses de Mora",
+       "ruta": null,
+       "imgs": [
+        "CC_049_diferencias_cambiarias.jpg",
+        "CC_050_intereses_de_mora.jpg"
+       ],
+       "desc": "Cálculo **informativo** del diferencial cambiario (tipo de cambio 454.15) y de intereses de mora sobre documentos vencidos.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.reportes.clientes_corporativos_retenciones",
+       "titulo": "Clientes Corporativos / Retenciones",
+       "ruta": null,
+       "imgs": [
+        "CC_051_jerarquia_de_clientes.jpg",
+        "CC_053_listado_de_retenciones.jpg"
+       ],
+       "desc": "Jerarquía de clientes corporativos; listado de retenciones aplicadas o pendientes por tipo y por número de contribuyente.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.reportes.reportes_de_pais",
+       "titulo": "Reportes de país",
+       "ruta": null,
+       "imgs": [],
+       "desc": "El Salvador, Guatemala, Rep. Dominicana (DGII), Colombia, Honduras, Perú: carpetas sin reportes aplicables a Costa Rica.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Procesos (solo descripción)",
+     "desc": null,
+     "tabla": {
+      "encabezados": [
+       "Proceso",
+       "Qué hace"
+      ],
+      "anchos": [
+       2,
+       5
+      ],
+      "filas": [
+       [
+        "Aprobar movimiento diario",
+        "Aprueba los documentos del día."
+       ],
+       [
+        "Facturación - Cargar",
+        "Trae a CC las facturas emitidas en FA."
+       ],
+       [
+        "Procesos Contables › Diferencias Cambiarias / Intereses de Mora",
+        "Genera los documentos contables de diferencial e intereses."
+       ],
+       [
+        "Días Promedio de Atraso",
+        "Recalcula el atraso promedio de pago por cliente."
+       ],
+       [
+        "Manejo de días de Revisión",
+        "Ajusta días de revisión de facturas."
+       ],
+       [
+        "Saldos - Recalcular",
+        "Reconstruye saldos de clientes."
+       ],
+       [
+        "Purga de Datos",
+        "Elimina documentos históricos saldados."
+       ],
+       [
+        "Cargador de Direcciones / Generación de Asientos",
+        "Importa direcciones / genera asientos de CC."
+       ]
+      ]
+     },
+     "items": []
+    },
+    {
+     "titulo": "Administración",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CC.administracion.subtipos_de_documentos",
+       "titulo": "Subtipos de Documentos",
+       "ruta": null,
+       "imgs": [
+        "CC_075_subtipos_de_documentos.jpg"
+       ],
+       "desc": "Subtipos por tipo de documento (factura, recibo, notas, letras, intereses, retenciones…) con cuenta contable y centro de costo asociados.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.administracion.tipos_de_retenciones",
+       "titulo": "Tipos de Retenciones",
+       "ruta": null,
+       "imgs": [
+        "CC_076_tipos_de_retenciones.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CC.administracion.parametros_de_cuentas_por_cobrar",
+       "titulo": "Parámetros de Cuentas por Cobrar",
+       "ruta": null,
+       "imgs": [
+        "CC_077_parametros_del_modulo.jpg"
+       ],
+       "desc": "Opciones generales (limpiar concepto, integración contable, distribución contable por impuesto, sugerir consecutivos…), rubros, impuesto en débitos (0108 IVA 13%), fechas de aplicación y retenciones.",
+       "aviso": "Cerrar con **Cancelar**.",
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "codigo": "CP",
+   "nombre": "Cuentas por Pagar",
+   "intro": "**Cuentas por Pagar** controla lo que se debe a los proveedores: facturas (FAC) que llegan desde Compras o se registran directamente, notas de débito/crédito, transferencias electrónicas (TEF) y cheques. Comparte el catálogo de proveedores con Compras. Los pagos se generan aquí y se reflejan en **Control Bancario**.",
+   "arbol": "CP_arbol_01.jpg",
+   "secciones": [
+    {
+     "titulo": "Proveedores",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CP.proveedores.proveedores",
+       "titulo": "Proveedores",
+       "ruta": "CP › Proveedores › Proveedores",
+       "imgs": [
+        "CP_021_proveedores.jpg"
+       ],
+       "desc": "Mismo catálogo y ficha que en Compras (ver capítulo CO): código P000…, nombre, alias, **categoría** (LOC_CRC, LOC_CRIB…), saldo, e-mail, saldo local y dólar.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Transacciones",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CP.transacciones.documentos",
+       "titulo": "Documentos",
+       "ruta": "CP › Transacciones › Documentos",
+       "imgs": [
+        "CP_022_documentos.jpg"
+       ],
+       "desc": "Documentos por proveedor y rango de fechas: Proveedor, Nombre, Fecha, Fecha rige, Fecha vence, **Tipo** (FAC, N/D, N/C, TEF, O/C), Número, Aplicación (concepto, p. ej. *OC35087-FACT…*), Moneda, Monto y saldos. Menú **Documento** para crear, aplicar o anular.",
+       "aviso": "Crear, aplicar o anular documentos modifica saldos y contabilidad.",
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CP.transacciones.contrarecibos",
+       "titulo": "Contrarecibos",
+       "ruta": null,
+       "imgs": [
+        "CP_023_ccntrarecibos.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CP.transacciones.cheques_impresion_de_cheques",
+       "titulo": "Cheques (Impresión de Cheques)",
+       "ruta": null,
+       "imgs": [
+        "CP_024_cheques.jpg"
+       ],
+       "desc": "Selección de documentos pendientes para pagar por cheque: cuenta bancaria, número inicial, subtipo, fecha de débito y fecha límite; lista de proveedores con documento, moneda, monto, saldo y monto a pagar.",
+       "aviso": "Marcar documentos y ejecutar **Transacciones** genera cheques y pagos reales.",
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CP.transacciones.transferencias_generacion_de_transferencias_electronicas",
+       "titulo": "Transferencias (Generación de Transferencias Electrónicas)",
+       "ruta": null,
+       "imgs": [
+        "CP_025_transferencias.jpg"
+       ],
+       "desc": "Igual que cheques pero para pagos por transferencia bancaria (genera el archivo para el banco).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Consultas",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CP.consultas.documentos_consulta_de_movimiento_de_proveedores",
+       "titulo": "Documentos (Consulta de Movimiento de Proveedores)",
+       "ruta": null,
+       "imgs": [
+        "CP_026_docurnentos.jpg"
+       ],
+       "desc": "Saldo por proveedor en moneda del proveedor, local y dólar. Botones Consultar (detalle), Localizar y Regresar.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CP.consultas.contrarecibos",
+       "titulo": "Contrarecibos",
+       "ruta": null,
+       "imgs": [
+        "CP_027_contrarecibos.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CP.consultas.mejores_proveedores",
+       "titulo": "Mejores Proveedores",
+       "ruta": null,
+       "imgs": [
+        "CP_028_mejores_proveedores.jpg"
+       ],
+       "desc": "Ranking de proveedores por compras. Advierte que conviene correr antes el proceso de Diferencias Cambiarias.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Reportes",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CP.reportes.cuentas_por_pagar_estados_de_cuenta_saldos_por_cuenta_general_de_cuentas",
+       "titulo": "Cuentas por Pagar / Estados de Cuenta / Saldos por Cuenta / General de Cuentas",
+       "ruta": null,
+       "imgs": [
+        "CP_029_cuentas_por_pagar.jpg",
+        "CP_030_estados_de_cuenta.jpg",
+        "CP_031_saldos_por_cuenta.jpg",
+        "CP_032_general_de_cuentas.jpg"
+       ],
+       "desc": "Equivalentes a los de Cuentas por Cobrar, por proveedor.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CP.reportes.proyeccion_analisis_de_vencimiento_y_de_antiguedad",
+       "titulo": "Proyección, Análisis de Vencimiento y de Antigüedad",
+       "ruta": null,
+       "imgs": [
+        "CP_033_proyeccion_por_vencimiento.jpg",
+        "CP_034_analisis_de_vencimiento.jpg",
+        "CP_035_analisis_de_antiguedad.jpg"
+       ],
+       "desc": "Pendientes por rangos de días; también existen en la carpeta *Reportes por Moneda*.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CP.reportes.movimiento_diario_por_tipo_de_documento_por_proveedor_por_documento",
+       "titulo": "Movimiento Diario (Por Tipo de Documento, Por Proveedor, Por Documento)",
+       "ruta": null,
+       "imgs": [
+        "CP_036_por_tipo_de_documento.jpg",
+        "CP_037_por_proveedor.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CP.reportes.documentos_pendientes_y_aplicaciones",
+       "titulo": "Documentos Pendientes y Aplicaciones",
+       "ruta": null,
+       "imgs": [
+        "CP_039_documentos_pendientes.jpg",
+        "CP_040_listado_por_aplicacion.jpg",
+        "CP_042_aplicaciones_de_debitos.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CP.reportes.diferencias_cambiarias",
+       "titulo": "Diferencias Cambiarias",
+       "ruta": null,
+       "imgs": [
+        "CP_043_diferencias_cambiarias.jpg"
+       ],
+       "desc": "Cálculo informativo del diferencial cambiario de documentos en moneda extranjera.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CP.reportes.transferencias_listado_general",
+       "titulo": "Transferencias › Listado General",
+       "ruta": null,
+       "imgs": [
+        "CP_044_listado_general.jpg"
+       ],
+       "desc": "Listado de una transferencia electrónica: proveedores pagados, cuenta bancaria y monto (por cuenta bancaria, entidad y número de transferencia). *Crear Archivo ASCII* genera el archivo para el banco (no se abrió).",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CP.reportes.retenciones",
+       "titulo": "Retenciones",
+       "ruta": null,
+       "imgs": [
+        "CP_045_listado_de_retenciones.jpg",
+        "CP_046_listado_por_numero_de_contribuyente.jpg",
+        "CP_047_constancia_de_retenciones.jpg"
+       ],
+       "desc": "Retenciones pendientes o aplicadas por tipo, documento y fecha; listado por número de contribuyente; constancias de retención.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CP.reportes.impuestos_sobre_la_renta_reporte_diferencias_de_cambio",
+       "titulo": "Impuestos sobre la Renta / Reporte Diferencias de Cambio",
+       "ruta": null,
+       "imgs": [
+        "CP_048_irnpuestos_sobre_la_renta.jpg",
+        "CP_051_reporte_diferencias_de_cambio.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CP.reportes.reportes_de_pais",
+       "titulo": "Reportes de país",
+       "ruta": null,
+       "imgs": [],
+       "desc": "El Salvador, Guatemala, Rep. Dominicana (DGII), Nicaragua, Panamá, México, Honduras, Perú: sin reportes aplicables.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Procesos (solo descripción)",
+     "desc": null,
+     "tabla": {
+      "encabezados": [
+       "Proceso",
+       "Qué hace"
+      ],
+      "anchos": [
+       2,
+       5
+      ],
+      "filas": [
+       [
+        "Aprobar movimiento diario",
+        "Aprueba documentos del día."
+       ],
+       [
+        "Pago de Retenciones",
+        "Genera el pago de retenciones acumuladas."
+       ],
+       [
+        "Diferencias Cambiarias",
+        "Registra el diferencial cambiario contable."
+       ],
+       [
+        "Generación de Facturas de Compras",
+        "Crea facturas de compra (electrónicas) desde CP."
+       ],
+       [
+        "Saldos - Recalcular / Purga de Datos",
+        "Reconstruye saldos / elimina históricos."
+       ],
+       [
+        "Cargador de Direcciones / Generación de Asientos",
+        "Importa direcciones / genera asientos de CP."
+       ]
+      ]
+     },
+     "items": []
+    },
+    {
+     "titulo": "Administración",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CP.administracion.subtipos_de_documentos_tipos_de_retenciones",
+       "titulo": "Subtipos de Documentos / Tipos de Retenciones",
+       "ruta": null,
+       "imgs": [
+        "CP_066_subtipos_de_documentos.jpg",
+        "CP_067_tipos_de_retenciones.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CP.administracion.parametros_del_modulo",
+       "titulo": "Parámetros del Módulo",
+       "ruta": null,
+       "imgs": [
+        "CP_068_parametros_del_modulo.jpg"
+       ],
+       "desc": null,
+       "aviso": "Cerrar con **Cancelar**.",
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "CP.administracion.codigo_de_ingreso_tipos_de_cuenta",
+       "titulo": "Código de ingreso / Tipos de cuenta",
+       "ruta": null,
+       "imgs": [],
+       "desc": "Catálogo de códigos de ingreso para retenciones de renta (01 Servicios con dependencia laboral, 05/06 Rentas de personas jurídicas, 07 actividades agropecuarias, 08 juicios ejecutivos, 11 servicios sin dependencia laboral, 12–16 rentas y servicios de no domiciliados…) y tipos de cuenta bancaria.",
+       "aviso": "**Incidencia durante el levantamiento:** al documentar esta pantalla, la automatización editó por error la descripción del código **01**, que quedó como \"***o *\". Debe verificarse y restaurarse el texto original.",
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "codigo": "DE",
+   "nombre": "Documentos Electrónicos",
+   "intro": "**Documentos Electrónicos** es la aplicación (versión 4.4, conectada a OCR-SOFTLAND\\SOFTLAND, carpeta \\\\OCR-SOFTLAND\\Data_DE) que gestiona la **factura electrónica ante Hacienda de Costa Rica**: genera el XML v4.4, lo firma, lo envía, recibe la respuesta, genera el PDF y lo envía por correo al cliente. También recibe los comprobantes de los proveedores para aceptarlos o rechazarlos. Se abre como una ventana independiente de Softland.",
+   "arbol": "DE_arbol_01.jpg",
+   "secciones": [
+    {
+     "titulo": "Comprobantes",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "DE.comprobantes.comprobantes_enviados",
+       "titulo": "Comprobantes Enviados",
+       "ruta": "DE › Comprobantes › Comprobantes Enviados",
+       "imgs": [
+        "DE_01_comprobantes_enviados.jpg",
+        "DE_01b_xml.jpg",
+        "DE_01c_bitacora.jpg"
+       ],
+       "desc": "Documentos electrónicos emitidos por la compañía (Overseas Logistics Operations S A) entre *Fecha Inicio* y *Fecha Fin* (por defecto solo hoy; en la captura, del 01/09 al 25/09/2026: 40 facturas). Agrupados por **Tipo** (Factura, Nota de crédito…).",
+       "aviso": "Las acciones del panel izquierdo reenvían o reprocesan comprobantes ante Hacienda; usarlas solo cuando corresponda.",
+       "puntos": [
+        "Panel izquierdo (acciones): Reprocesar, Reenviar Documento, Generar PDF manual, Procesar Documento, Reenviar Web Service, Anular Recibo.",
+        "Salir con el botón **Salir** de la cinta."
+       ],
+       "campos": [
+        [
+         "Cliente / Nombre / NIT Receptor",
+         "Receptor del comprobante."
+        ],
+        [
+         "Documento",
+         "Consecutivo electrónico de 20 dígitos (0010000101…)."
+        ],
+        [
+         "Fecha / Módulo",
+         "Fecha de emisión y módulo origen (Facturación, CC, CP)."
+        ],
+        [
+         "Contiene Error / Error Receptor / Error Softland",
+         "Indicadores de rechazo o error."
+        ],
+        [
+         "Enviado / Estado / Clave",
+         "Si se envió a Hacienda, estado (aceptado/rechazado) y clave numérica de 50 dígitos."
+        ],
+        [
+         "Pestaña XML",
+         "XML FacturaElectronica v4.4 con emisor, receptor, líneas, impuestos y firma."
+        ],
+        [
+         "Pestaña Respuesta XML / Documento PDF",
+         "Mensaje de Hacienda y representación gráfica."
+        ],
+        [
+         "Pestaña Bitácora Seguimiento",
+         "Pasos del proceso: generación de la sábana, transformación XML, validación contra el esquema, envío a Hacienda, respuesta, almacenamiento en EDI DATA, generación del PDF (formato FA_FAC), envío de correo al cliente y fin del proceso."
+        ]
+       ],
+       "tabla": null
+      },
+      {
+       "id": "DE.comprobantes.comprobantes_recibidos",
+       "titulo": "Comprobantes Recibidos",
+       "ruta": "DE › Comprobantes › Comprobantes Recibidos",
+       "imgs": [
+        "DE_02_comprobantes_recibidos.jpg"
+       ],
+       "desc": "Bandeja de comprobantes electrónicos recibidos de proveedores: NIT y nombre del proveedor, consecutivo, tipo, subtipo, fecha de emisión, generado, módulo destino, actividad comercial, moneda, condición de pago. Pestañas: Documento XML, Respuesta XML, XML Aceptado Cliente, XML Respuesta Cliente, Bitácora. Sin documentos recibidos en septiembre 2026.",
+       "aviso": "Aceptar/Rechazar envía el mensaje receptor a Hacienda y no se puede deshacer.",
+       "puntos": [
+        "Cinta: Importar, **Aceptado, Aceptado Parcial, Rechazado** (mensaje receptor a Hacienda), Notificar a proveedor, Reenviar correo, **Generar Factura de Compra**, Consultar respuesta, Ver detalle, Bandeja de entrada, Refrescar, Salir."
+       ],
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Consulta",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "DE.consulta.consulta_documentos_electronicos",
+       "titulo": "Consulta Documentos Electrónicos",
+       "ruta": null,
+       "imgs": [
+        "DE_03_consulta.jpg"
+       ],
+       "desc": "Tabla dinámica (pivote) de comprobantes por estado (Aceptado…), mes, NIT y cliente con Total factura, descuentos e impuestos. Se pueden arrastrar campos (Moneda, Tipo documento, Años, Días, Clave) para reagrupar. Exporta a **Excel** o **PDF**; **Refrescar** recarga.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Procesos (solo descripción)",
+     "desc": null,
+     "tabla": {
+      "encabezados": [
+       "Proceso",
+       "Qué hace"
+      ],
+      "anchos": [
+       2,
+       5
+      ],
+      "filas": [
+       [
+        "Servicio",
+        "Servicio que procesa y envía a Hacienda los comprobantes emitidos."
+       ],
+       [
+        "Bitácora",
+        "Registro de ejecución del servicio."
+       ],
+       [
+        "Servicio Recibido",
+        "Servicio que descarga y procesa los comprobantes recibidos de proveedores."
+       ]
+      ]
+     },
+     "items": []
+    },
+    {
+     "titulo": "Administración",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "DE.administracion.gestor_de_reportes",
+       "titulo": "Gestor de Reportes",
+       "ruta": null,
+       "imgs": [
+        "DE_04_gestor_reportes.jpg"
+       ],
+       "desc": "Diseñador de los formatos (representación gráfica PDF) de los comprobantes, p. ej. FA_FAC. Menús Reporte, Editar, Vista, Formato, Ventana, Desarrollo; paneles Lista de campos, Propiedades y Errores de scripts.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      },
+      {
+       "id": "DE.administracion.configuracion",
+       "titulo": "Configuración",
+       "ruta": null,
+       "imgs": [],
+       "desc": "Parámetros de conexión con Hacienda (usuario y clave del API, certificado de firma, correo de salida). **No se abrió** por contener credenciales.",
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "codigo": "CG",
+   "nombre": "Contabilidad General",
+   "intro": "Registro contable (asientos de diario, recurrentes, distribuidos), consultas de cuentas, centros de costo y mayor, estados financieros y cierres. Recibe los asientos que generan CI, CO, FA, CC, CP y CB. **Módulo documentado a nivel de menú** (estructura completa de opciones); sus pantallas no se abrieron en este levantamiento.",
+   "arbol": null,
+   "secciones": [
+    {
+     "titulo": "Mapa de menús",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CG.mapa_de_menus.arbol_de_opciones",
+       "titulo": "Árbol de opciones",
+       "ruta": null,
+       "imgs": [
+        "CG_arbol_01.jpg",
+        "CG_arbol_02.jpg",
+        "CG_arbol_03.jpg",
+        "CG_arbol_04.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Cuentas",
+     "desc": "Cuentas",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Transacciones",
+     "desc": "Diario  ·  Recurrentes  ·  Distribuidas  ·  Anulación  ·  Reversión  ·  Diferidos",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Consulta",
+     "desc": "De Cuentas Contables  ·  De Centros de Costo  ·  Por Períodos Contables  ·  Por NITs  ·  De Saldos Promedios  ·  Libro Mayor",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Del Mayor",
+     "desc": "Asientos  ·  Transacciones",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Del Diario",
+     "desc": "Asientos  ·  Transacciones",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Reportes",
+     "desc": null,
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Balance de Comprobación",
+     "desc": "Por Cuentas Contables  ·  Por Centros de Costo",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Balance General · Estado de Resultados · Reporte de Asientos · Reporte Libro Mayor · Reporte Diferencias · Excel",
+     "desc": null,
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Colombia [carpeta vacía] · Reporte Diferencias de Cambio",
+     "desc": null,
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Costa Rica",
+     "desc": "Formulario D151  ·  Declaración D104  ·  Informes Electrónicos de ventas y compras",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Panamá [carpeta vacía] · México",
+     "desc": "Contabilidad Electrónica  ·  Ecuador [carpeta vacía]  ·  El Salvador [carpeta vacía]",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Rep. Rep. Dominicana",
+     "desc": "DGII",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Procesos",
+     "desc": "Diferencias Cambiarias  ·  Cierre Anual  ·  Ajuste del Cierre Anual  ·  Recálculo de Saldos  ·  Ajuste por Inflación  ·  Eliminación de Aplicaciones",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Consolidación (todo gris)",
+     "desc": "Cuentas  ·  Proceso de Consolidación  ·  Reversión  ·  Histórico  ·  Transacción para Consolidación  ·  Compañías Consolidadas  ·  Sincronización Reversión",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Cuadre de Auxiliares · Cierre de Cuentas Especiales",
+     "desc": null,
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "México",
+     "desc": "Traslado del IVA (gris)  ·  Carga Código Agrupador SAT  ·  Sincronización de UUIDS",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Cambio de Patrón Contable · Consolidación Masiva de Asientos",
+     "desc": null,
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Administración",
+     "desc": "Paquetes  ·  Tipos de Transacciones Contables  ·  Asignación Centro-Cuenta  ·  Cuenta Doble Asiento  ·  Reportes Contables  ·  Tipo de Diferido  ·  Parámetros del Módulo",
+     "tabla": null,
+     "items": []
+    }
+   ]
+  },
+  {
+   "codigo": "CB",
+   "nombre": "Control Bancario",
+   "intro": "Cuentas bancarias, movimientos en libros y en bancos, transferencias, cheques y conciliación bancaria. **Módulo documentado a nivel de menú** (estructura completa de opciones); sus pantallas no se abrieron en este levantamiento.",
+   "arbol": null,
+   "secciones": [
+    {
+     "titulo": "Mapa de menús",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CB.mapa_de_menus.arbol_de_opciones",
+       "titulo": "Árbol de opciones",
+       "ruta": null,
+       "imgs": [
+        "CB_arbol_01.jpg",
+        "CB_arbol_02.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Cuentas Bancarias",
+     "desc": "Cuentas",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Documentos",
+     "desc": "Movimientos en Libros  ·  Movimientos en Bancos  ·  Transferencias  ·  Cheques Recurrentes  ·  Solicitudes de Cheques  ·  Imprimir Depósitos  ·  Conciliar Cuentas",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Consultas",
+     "desc": "Consulta",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Reportes",
+     "desc": null,
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Movimiento en Libros",
+     "desc": "Movimiento por Fecha  ·  Movimiento por Tipo  ·  Resumen de Movimiento  ·  Saldos Promedio",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Movimiento en Bancos",
+     "desc": "Movimiento por Fecha  ·  Movimiento por Tipo",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Conciliación",
+     "desc": "Documentos no Conciliados  ·  Resumen de Conciliación  ·  Reporte de Conciliación",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Reporte Diferencias de Cambio · Reportes Nicaragua",
+     "desc": null,
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Procesos",
+     "desc": "Diferencias Cambiarias  ·  Recálculo de Saldos  ·  Purga de Movimientos  ·  Opciones Costa Rica: Autorización de Cheques BNCR  ·  Generación de Asientos  ·  Generación Transferencias Electrónicas",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Administración",
+     "desc": "Subtipos de Documentos  ·  Tipos de cuenta  ·  Parámetros del Módulo",
+     "tabla": null,
+     "items": []
+    }
+   ]
+  },
+  {
+   "codigo": "AF",
+   "nombre": "Activos Fijos",
+   "intro": "Registro de activos fijos, mejoras, depreciación, revaluación, retiros y reportes fiscales de activos. **Módulo documentado a nivel de menú** (estructura completa de opciones); sus pantallas no se abrieron en este levantamiento.",
+   "arbol": null,
+   "secciones": [
+    {
+     "titulo": "Mapa de menús",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "AF.mapa_de_menus.arbol_de_opciones",
+       "titulo": "Árbol de opciones",
+       "ruta": null,
+       "imgs": [
+        "AF_arbol_01.jpg",
+        "AF_arbol_02.jpg",
+        "AF_arbol_03.jpg",
+        "AF_arbol_04.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Activos",
+     "desc": "Activos Fijos  ·  Mejoras  ·  Registro de Acciones",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Consulta",
+     "desc": "Consultas",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Reportes",
+     "desc": "Depreciación de Activos (Por Código de Activo  ·  Por Tipo de Activo  ·  Centro de Costo)  ·  Revaluación de Activos  ·  Valoración de Activos  ·  Índices Faltantes para Revaluación  ·  Impuesto a los Activos  ·  Impuesto Sobre la Renta  ·  Desmantelamiento de Activos  ·  Deterioro de activos  ·  El Salvador",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Procesos",
+     "desc": "Depreciación Mensual  ·  Revaluación de Activos  ·  Retiro de Activos  ·  Recálculo de Acumulados  ·  Generación Depreciaciones Históricas  ·  Aplicación de Acciones  ·  Reversión de Depreciaciones  ·  Cambio Estado  ·  Generación de Asientos de Ingreso  ·  Cargador Desmantelamientos  ·  Cargador Deterioro  ·  Cargador de Impuestos",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Administración",
+     "desc": "Tipos de Activo  ·  Centros de Costo  ·  Índices de Precio  ·  Asignación de Centros  ·  Histórico de Revaluaciones  ·  Tipos de Observaciones  ·  Histórico de Depreciaciones  ·  Estado de Activo  ·  Tipo de Acción  ·  Parámetros del Módulo",
+     "tabla": null,
+     "items": []
+    }
+   ]
+  },
+  {
+   "codigo": "CR",
+   "nombre": "Control Presupuestal",
+   "intro": "Partidas y presupuestos, movimientos presupuestales, consultas por partida y concepto, cierres de presupuesto. **Módulo documentado a nivel de menú** (estructura completa de opciones); sus pantallas no se abrieron en este levantamiento.",
+   "arbol": null,
+   "secciones": [
+    {
+     "titulo": "Mapa de menús",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CR.mapa_de_menus.arbol_de_opciones",
+       "titulo": "Árbol de opciones",
+       "ruta": null,
+       "imgs": [
+        "CR_arbol_01.jpg",
+        "CR_arbol_02.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Partidas",
+     "desc": "Partidas",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Presupuestos",
+     "desc": "Mantenimiento  ·  Desglose  ·  Movimientos Presupuestales  ·  Anulación de Movimientos Presupuestales",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Consultas",
+     "desc": "Presupuesto por Partida  ·  Presupuesto por Concepto  ·  Movimientos Aplicados (Encabezado de Movimientos  ·  Detalle de Movimientos)",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Reportes",
+     "desc": "Movimientos Aplicados  ·  Presupuesto Detallado  ·  Homologación Contable",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Procesos",
+     "desc": "Cierre de Presupuestos (Cierre por Periodo  ·  Cierre por Presupuesto  ·  Cálculo de Cifra de Control)  ·  Procesos Varios (Recálculo de Flujo Efectivo  ·  Definición de Periodos  ·  Cancelación de Apartados  ·  Traspaso de Apartados)  ·  Exportar Movimientos  ·  Importar Movimientos  ·  Purga de Presupuestos  ·  Copia de Centros de Costo  ·  Copia de Cuentas Contables  ·  Procesar asientos mayorizados",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Administración",
+     "desc": "Indicadores  ·  Paquetes  ·  Centros de costos  ·  Unidades Operativas  ·  Conceptos de Flujo de Efectivo  ·  Parámetros del Módulo",
+     "tabla": null,
+     "items": []
+    }
+   ]
+  },
+  {
+   "codigo": "CH",
+   "nombre": "Caja Chica",
+   "intro": "Cajas chicas, vales definitivos y provisionales, arqueos, adelantos y reintegros. **Módulo documentado a nivel de menú** (estructura completa de opciones); sus pantallas no se abrieron en este levantamiento.",
+   "arbol": null,
+   "secciones": [
+    {
+     "titulo": "Mapa de menús",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "CH.mapa_de_menus.arbol_de_opciones",
+       "titulo": "Árbol de opciones",
+       "ruta": null,
+       "imgs": [
+        "CH_arbol_01.jpg",
+        "CH_arbol_02.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Cajas Chicas",
+     "desc": "Cajas Chicas",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Transacciones",
+     "desc": "Vales Definitivos  ·  Vales Provisionales  ·  Impresión de Vales  ·  Transacciones Perú",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Consultas",
+     "desc": "Arqueo de Caja Chica",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Reportes",
+     "desc": "Vales  ·  Reintegros y Adelantos  ·  Reportes Guatemala  ·  Reportes El Salvador  ·  Rep. Rep. Dominicana  ·  Reportes Honduras  ·  Reportes Perú",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Procesos",
+     "desc": "Adelanto Caja Chica  ·  Reintegro de Caja Chica  ·  Histórico de Reintegros y Adelantos  ·  Procesos Perú",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Administración",
+     "desc": "Conceptos  ·  Tipos de Retenciones  ·  Modelo Retenciones  ·  Parámetros del Módulo",
+     "tabla": null,
+     "items": []
+    }
+   ]
+  },
+  {
+   "codigo": "RP",
+   "nombre": "Reporteador",
+   "intro": "Reporteador: mantenimiento de reportes propios, privilegios, pivotes por área y cubos de información. **Módulo documentado a nivel de menú** (estructura completa de opciones); sus pantallas no se abrieron en este levantamiento.",
+   "arbol": null,
+   "secciones": [
+    {
+     "titulo": "Mapa de menús",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "RP.mapa_de_menus.arbol_de_opciones",
+       "titulo": "Árbol de opciones",
+       "ruta": null,
+       "imgs": [
+        "RP_arbol_01.jpg",
+        "RP_arbol_02.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Mantenimiento",
+     "desc": "Reportes  ·  Privilegios Reporte  ·  Pivotes (Área Financiero Contable: Contabilidad General  ·  Control Bancario  ·  Cuentas por Cobrar  ·  Cuentas por Pagar | Área Comercial: Compras  ·  Facturación  ·  Inventarios | Área Industrial | Área Recursos Humanos y Nómina: Control de Nómina | Otras Áreas)  ·  Vistas",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Procesos",
+     "desc": "Reparación Ubicaciones  ·  Cubos de Información: Procesar Cubo",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Administración",
+     "desc": "Licencias  ·  Parámetros del Módulo",
+     "tabla": null,
+     "items": []
+    }
+   ]
+  },
+  {
+   "codigo": "GN",
+   "nombre": "Gestión de Nómina",
+   "intro": "Gestión de Nómina: empleados, conceptos, nóminas, acciones de personal, vacaciones, liquidaciones y reportes legales (CCSS, INS, renta). **Módulo documentado a nivel de menú** (estructura completa de opciones); sus pantallas no se abrieron en este levantamiento.",
+   "arbol": null,
+   "secciones": [
+    {
+     "titulo": "Mapa de menús",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "GN.mapa_de_menus.arbol_de_opciones",
+       "titulo": "Árbol de opciones",
+       "ruta": null,
+       "imgs": [
+        "GN_arbol_01.jpg",
+        "GN_arbol_02.jpg",
+        "GN_arbol_03.jpg",
+        "GN_arbol_04.jpg",
+        "GN_arbol_05.jpg",
+        "GN_arbol_06.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Gestión de Nómina",
+     "desc": null,
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Empleados",
+     "desc": "Mantenimiento  ·  Conceptos  ·  Horarios",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Nóminas",
+     "desc": "Procesar  ·  Detalle por Empleados  ·  Detalle por Conceptos  ·  Notas de Nómina  ·  Horas Laboradas por Empleado (Marcas de Reloj  ·  Registro de Horas)",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Consultas",
+     "desc": "Nóminas  ·  Empleados  ·  Jerarquía de Conceptos  ·  Colombia: Histórico de Nóminas Electrónicas  ·  Ajustes y Anulación de Pagos de Nómina  ·  Consulta Histórico Créditos por Empleado",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Reportes",
+     "desc": "Inconsistencias de Nóminas  ·  Desglose por Entidad  ·  Comprobantes de Pago  ·  Desglose de Monedas y Billetes  ·  Resumen por Conceptos  ·  Listado de Nómina  ·  Libro de Salarios  ·  Tarjetas de Empleados  ·  Modificaciones de Nóminas  ·  Horas Laboradas por Empleado  ·  Comprobante para Liquidación de Aportes  ·  Liquidación de Aportes  ·  Columnar de Nómina  ·  Incidencia Ajustes y Anulación de Nómina  ·  Costa Rica (CCSS  ·  Riesgos del Trabajo I.N.S.  ·  Reporte Anual de Renta)  ·  Panamá  ·  El Salvador  ·  Guatemala  ·  México  ·  Colombia  ·  Rep. Dominicana  ·  Ecuador",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Procesos",
+     "desc": "Reorganizar Conceptos  ·  Generación Transferencias Electrónicas  ·  Cargador de Direcciones  ·  Carga de Nóminas Preconfiguradas  ·  Copia de Nóminas Intercompañía  ·  Inicializar Salario Promedio Diario  ·  Anul. Descuentos por Saldos y Cuotas  ·  Anul. Descuentos de Créditos de Empleado  ·  Ajuste de Nómina por Empleado  ·  Anulación Pagos de Nómina por Empleado  ·  Panamá  ·  Suspensión o Reactivación de Crédito  ·  Colombia  ·  Cargador de Adicionales de Empleado (bloq)  ·  Cargador de Adicionales de Nómina (bloq)",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Administración",
+     "desc": "Clases de Nómina  ·  Conceptos  ·  Departamentos  ·  Estados del Empleado  ·  Horarios  ·  Puestos  ·  Catálogo de Puestos Externos  ·  Clases de Seguro Social  ·  Liquidación de Aportes  ·  Grupos de Conceptos  ·  Transferencias Colombia (Bancolombia  ·  Banco Bogotá  ·  Banco DaVivienda)  ·  Cuentas Contables por Concepto  ·  Liquidación de Pago por Descuentos  ·  Información del cotizante  ·  Act. Económicas Sist. Gest. Riesgo Laboral  ·  Administradoras  ·  Histórico de Proyectos  ·  Centros de Trabajo  ·  Adicionales Empleado  ·  Adicionales Nómina  ·  Constantes para Cálculo  ·  Código de ingreso  ·  Nómina Electrónica  ·  Razones Ajuste y Anulación de Nómina  ·  Configuración de Datos para la Nómina",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Otros Procesos Nómina",
+     "desc": null,
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Empleados",
+     "desc": "Mantenimiento  ·  Información Vacacional  ·  Jerarquía  ·  Contratos",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Operación",
+     "desc": "Acciones de Personal  ·  Liquidaciones de Empleado  ·  Cálculos Vacacionales  ·  Goce Masivo de Vacaciones  ·  Documentos  ·  Cálculo de Incapacidades en Horas (gris)  ·  Movimiento a través de Escala  ·  Proceso de Aumentos Masivos",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Consultas",
+     "desc": "Descuento de Saldos de Acciones  ·  Saldo de Vacaciones por Año  ·  Acciones por Empleado",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Procesos",
+     "desc": "Aplicación de Acciones de Personal  ·  Aumento Masivo de Salarios  ·  Salarios Diarios Integrados  ·  Cambio Masivo De Nómina  ·  Cargador de Direcciones  ·  México: Certificación de Nómina CFDi México",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Reportes",
+     "desc": "Cálculos Vacacionales  ·  Costa Rica: SICERE - C.C.S.S.  ·  México  ·  Nicaragua  ·  República Dominicana  ·  Guatemala",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Administración",
+     "desc": "Plazas  ·  Tipos de Acción de Personal  ·  Clases de Seguro Social  ·  Auditoría de Modificaciones de Empleado  ·  Regímenes Vacacionales  ·  Contribuciones Vacacionales  ·  Vacaciones por Antigüedad  ·  Tipos de Solicitud de Empleados  ·  Tipos de Ausencia  ·  Tipos de Contrato  ·  Nómina Electrónica  ·  Configuración de Datos del Empleado  ·  Mantenimiento Niveles Organizacionales  ·  Mantenimiento de Pasos Salariales  ·  Mantenimiento de Elementos de Pago  ·  Mantenimiento de Tipos de Escala",
+     "tabla": null,
+     "items": []
+    }
+   ]
+  },
+  {
+   "codigo": "MF",
+   "nombre": "Monitor Fiscal",
+   "intro": "Monitor Fiscal: proporcionalidad de IVA, resumen del período, libros de ventas y compras y declaración D104. **Módulo documentado a nivel de menú** (estructura completa de opciones); sus pantallas no se abrieron en este levantamiento.",
+   "arbol": null,
+   "secciones": [
+    {
+     "titulo": "Mapa de menús",
+     "desc": null,
+     "tabla": null,
+     "items": [
+      {
+       "id": "MF.mapa_de_menus.arbol_de_opciones",
+       "titulo": "Árbol de opciones",
+       "ruta": null,
+       "imgs": [
+        "MF_arbol_01.jpg",
+        "MF_arbol_02.jpg"
+       ],
+       "desc": null,
+       "aviso": null,
+       "puntos": null,
+       "campos": null,
+       "tabla": null
+      }
+     ]
+    },
+    {
+     "titulo": "Consultas",
+     "desc": "Proporcionalidad General  ·  Proporcionalidad Desglose  ·  Resumen Período  ·  Liquidación de proyección anual",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Reportes",
+     "desc": "Libro Ventas  ·  Libro Compras  ·  Declaración D104",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Procesos",
+     "desc": "Cierre",
+     "tabla": null,
+     "items": []
+    },
+    {
+     "titulo": "Administración",
+     "desc": "Parámetros del módulo",
+     "tabla": null,
+     "items": []
+    }
+   ]
+  }
+ ]
+}

@@ -8,10 +8,17 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const NOVEDADES_FALLBACK = {
-  "version": "2026-09-4",
+  "version": "2026-09-5",
   "titulo": "Novedades",
-  "fecha": "Septiembre 2026 · cuarta entrega",
+  "fecha": "Septiembre 2026 · quinta entrega",
   "items": [
+    {
+      "id": "softland-olo-2026-09",
+      "estado": "publicada",
+      "titulo": "Manual del Softland propio de OLO (compañía OVERSEAS)",
+      "detalle": "Módulos ERP › Manual Softland · OLO: generalidades y los 14 módulos, con 149 pantallas con captura en Inventarios, Compras, Facturación, Cuentas por Cobrar, Cuentas por Pagar y Documentos Electrónicos, y el menú completo del resto. 29 pasos de Cobro, Facturación, Financiero y Comercialización muestran ahora la pantalla real. Las capturas tienen datos reales: se ven solo con sesión y acceso a Módulos ERP.",
+      "seccion": "softland"
+    },
     {
       "id": "handheld-2026-09",
       "estado": "publicada",

@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// DATOS · Procesos BORRADOR de los silos de referencia (P1.5, P1.13, …)
+// DATOS · Procesos BORRADOR de los silos de referencia (OL.5, CEDI-01.13, …)
 // Escrito a mano — NO son procedimientos aprobados de OLO.
 //
 // Fuente: pantallas reales de eFlow WMS 3.2.8.5 (crawl del 23/09/2026 →
@@ -30,7 +30,7 @@ const mx = (texto, screen) => ({ texto, sistema: "sorter", screen, origen: "meca
 export const SILOS_NUEVOS = [
   { id: "cross_docking", num: 29, label: "Cross Docking", color: "#ea580c" },
 ];
-const XDK = { silo: "cross_docking", siloLabel: "Cross Docking", macro: "S1 · Cross-docking en sorter (Mecalux SORTER CLIRO)", crearMacro: true,
+const XDK = { silo: "cross_docking", siloLabel: "OL.9 · Cross Docking", macro: "S1 · Cross-docking en sorter (Mecalux SORTER CLIRO)", crearMacro: true,
   borrador: false, compania: "EPA", fuente: "Manual de Usuario SORTER CLIRO (Mecalux), septiembre 2026 — mapeo funcional real." };
 const CONCEPTOS_SORTER = [
   { termino: "Bajada", definicion: "Salida del sorter que corresponde a un destino (tienda / viaje)." },
@@ -77,7 +77,7 @@ const S = {
   recPerfiles: "screen_seguridad__recursos_perfiles",
   trasladoSuc: "screen_inventario__traslado_sucursal",
 };
-const ALM = { silo: "neg_almacenamiento", siloLabel: "P1.13 · Gestión de Almacenamiento (zona franca-nacional)" };
+const ALM = { silo: "neg_almacenamiento", siloLabel: "CEDI-01.13 · Gestión de Almacenamiento (zona franca-nacional)" };
 Object.assign(S, {
   catServicios: "screen_catalogos__catalogo_de_servicios",
   regServicios: "screen_documentos__registro_servicios_especiales",
@@ -94,7 +94,7 @@ Object.assign(S, {
   prodEmpaqueRec: "screen_reportes__productividad_de_empaque_por_recurso",
   prodEmpaqueDia: "screen_reportes__productividad_de_empaque_por_dia",
 });
-const VAS = { silo: "neg_valor_agregado", siloLabel: "P1.21 · Servicios de Valor Agregado" };
+const VAS = { silo: "neg_valor_agregado", siloLabel: "CEDI-01.21 · Servicios de Valor Agregado" };
 Object.assign(S, {
   prodPickRec: "screen_reportes__productividad_picking_x_recurso",
   prodAlmHora: "screen_reportes__productividad_de_almacenamiento_x_hora",
@@ -104,7 +104,7 @@ Object.assign(S, {
 });
 // El módulo de cobro de almacenaje (eInv) tiene tablas reales en EFLOW_OLO
 // pero sus pantallas no están en el crawl del WMS de escritorio.
-const SLC = { silo: "log_servicio_cliente", siloLabel: "P1.6 · Servicio logístico a clientes" };
+const SLC = { silo: "log_servicio_cliente", siloLabel: "OL.6 · Servicio logístico a clientes" };
 
 Object.assign(S, {
   prodPickDia: "screen_reportes__productividad_picking_x_dia",
@@ -120,14 +120,14 @@ Object.assign(S, {
   expSinInv: "screen_reportes__expediciones_sin_inventario",
   alistoMinimos: "screen_reportes__rep_analisis_alisto_vs_minimos",
 });
-const DES = { silo: "log_desempeno", siloLabel: "P1.8 · Desempeño logístico" };
+const DES = { silo: "log_desempeno", siloLabel: "OL.8 · Desempeño logístico" };
 
 Object.assign(S, {
   usuariosActivos: "screen_control__usuarios_activos",
   almRecursos: "screen_seguridad__almacen_recursos",
   pedidosMuelle: "screen_reportes__control_de_pedidos_por_muelle",
 });
-const SEG = { silo: "neg_seguimiento_operacion", siloLabel: "P1.19 · Seguimiento y control de la Operación" };
+const SEG = { silo: "neg_seguimiento_operacion", siloLabel: "CEDI-01.19 · Seguimiento y control de la Operación" };
 
 Object.assign(S, {
   distRutas: "screen_reportes__distribucion_de_rutas",
@@ -136,12 +136,12 @@ Object.assign(S, {
   cargaCamion: "screen_documentos__carga_camion",
   cargaDirecta: "screen_documentos__carga_camion_directa",
 });
-const TRL = { silo: "neg_transporte_local", siloLabel: "P1.18 · Gestión de transporte Local" };
+const TRL = { silo: "neg_transporte_local", siloLabel: "CEDI-01.18 · Gestión de transporte Local" };
 
 export const PROCESOS_SILOS = {
-  // ── P1.5 · Gestión de inventario físico ──────────────────────────────────
+  // ── OL.5 · Gestión de inventario físico ──────────────────────────────────
   "INV-01": {
-    nombre: "Toma física cíclica por ubicación", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S1 · Conteos cíclicos",
+    nombre: "Toma física cíclica por ubicación", silo: "log_inventario", siloLabel: "OL.5 · Gestión de inventario físico", macro: "S1 · Conteos cíclicos",
     objetivo: "Contar periódicamente una parte de las ubicaciones del almacén para detectar diferencias sin detener la operación.",
     alcance: "Desde la definición de la toma física en eFlow hasta el ajuste o la investigación de las diferencias encontradas.",
     responsables: ["Encargado de inventario", "Contadores"],
@@ -164,7 +164,7 @@ export const PROCESOS_SILOS = {
     salidaA: ["INV-03", "INV-04", "INV-08"],
   },
   "INV-02": {
-    nombre: "Inventario general del almacén", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S2 · Inventario general",
+    nombre: "Inventario general del almacén", silo: "log_inventario", siloLabel: "OL.5 · Gestión de inventario físico", macro: "S2 · Inventario general",
     objetivo: "Contar la totalidad del inventario de una compañía o sucursal para validar las existencias del WMS.",
     alcance: "Desde la preparación del almacén y la creación de la toma hasta el cierre con ajustes y reportes.",
     responsables: ["Encargado de inventario", "Contadores", "Representante del cliente (si aplica)"],
@@ -187,7 +187,7 @@ export const PROCESOS_SILOS = {
     salidaA: ["INV-03", "INV-05", "INV-09"],
   },
   "INV-03": {
-    nombre: "Investigación de diferencias de inventario", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S3 · Investigación de diferencias",
+    nombre: "Investigación de diferencias de inventario", silo: "log_inventario", siloLabel: "OL.5 · Gestión de inventario físico", macro: "S3 · Investigación de diferencias",
     objetivo: "Encontrar la causa de una diferencia entre el conteo físico y el WMS antes de ajustarla.",
     alcance: "Diferencias detectadas en tomas físicas, chequeo o picking.",
     responsables: ["Encargado de inventario", "Analista de control"],
@@ -209,7 +209,7 @@ export const PROCESOS_SILOS = {
     entradaDe: ["INV-01", "INV-02"], salidaA: ["INV-04"],
   },
   "INV-04": {
-    nombre: "Ajuste individual de inventario", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S4 · Ajustes de inventario",
+    nombre: "Ajuste individual de inventario", silo: "log_inventario", siloLabel: "OL.5 · Gestión de inventario físico", macro: "S4 · Ajustes de inventario",
     objetivo: "Corregir en el WMS una diferencia de inventario ya investigada y aprobada.",
     alcance: "Ajustes puntuales de uno o pocos artículos.",
     responsables: ["Encargado de inventario", "Aprobador del cliente (según contrato)"],
@@ -230,7 +230,7 @@ export const PROCESOS_SILOS = {
     entradaDe: ["INV-01", "INV-03"], salidaA: ["INV-09"],
   },
   "INV-05": {
-    nombre: "Ajuste masivo desde toma física o archivo", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S4 · Ajustes de inventario",
+    nombre: "Ajuste masivo desde toma física o archivo", silo: "log_inventario", siloLabel: "OL.5 · Gestión de inventario físico", macro: "S4 · Ajustes de inventario",
     objetivo: "Aplicar en bloque los ajustes resultantes de un inventario general o de un archivo validado.",
     alcance: "Cierres de inventario general y cargas masivas acordadas con el cliente.",
     responsables: ["Encargado de inventario"],
@@ -249,7 +249,7 @@ export const PROCESOS_SILOS = {
     entradaDe: ["INV-02"], salidaA: ["INV-09"],
   },
   "INV-06": {
-    nombre: "Control de vencimientos y alertas de inventario", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S5 · Gestión de obsoletos",
+    nombre: "Control de vencimientos y alertas de inventario", silo: "log_inventario", siloLabel: "OL.5 · Gestión de inventario físico", macro: "S5 · Gestión de obsoletos",
     objetivo: "Detectar a tiempo inventario vencido, próximo a vencer o sin movimiento para gestionarlo con el cliente.",
     alcance: "Artículos con control de lote o fecha de caducidad y artículos de baja rotación.",
     responsables: ["Encargado de inventario", "Ejecutivo de servicio al cliente"],
@@ -269,7 +269,7 @@ export const PROCESOS_SILOS = {
     salidaA: ["INV-04"],
   },
   "INV-07": {
-    nombre: "Trazabilidad de un artículo, palet o serie", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S6 · Trazabilidad de movimientos",
+    nombre: "Trazabilidad de un artículo, palet o serie", silo: "log_inventario", siloLabel: "OL.5 · Gestión de inventario físico", macro: "S6 · Trazabilidad de movimientos",
     objetivo: "Reconstruir la historia de un artículo, palet o número de serie: de dónde vino, dónde estuvo y a dónde salió.",
     alcance: "Reclamos de clientes, auditorías y recuperación de productos.",
     responsables: ["Analista de control", "Ejecutivo de servicio al cliente"],
@@ -288,7 +288,7 @@ export const PROCESOS_SILOS = {
     conceptos: [],
   },
   "INV-08": {
-    nombre: "Medición de exactitud de inventario (IRA)", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S7 · Exactitud de inventario (IRA)",
+    nombre: "Medición de exactitud de inventario (IRA)", silo: "log_inventario", siloLabel: "OL.5 · Gestión de inventario físico", macro: "S7 · Exactitud de inventario (IRA)",
     objetivo: "Medir qué tan exacto es el inventario del WMS frente al físico y reportarlo al cliente.",
     alcance: "Resultado de cada toma cíclica o general.",
     responsables: ["Encargado de inventario", "Jefe de operaciones"],
@@ -307,7 +307,7 @@ export const PROCESOS_SILOS = {
     entradaDe: ["INV-01"],
   },
   "INV-09": {
-    nombre: "Conciliación de existencias WMS vs. ERP del cliente", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S8 · Conciliación WMS-ERP",
+    nombre: "Conciliación de existencias WMS vs. ERP del cliente", silo: "log_inventario", siloLabel: "OL.5 · Gestión de inventario físico", macro: "S8 · Conciliación WMS-ERP",
     objetivo: "Asegurar que las existencias del WMS coinciden con las que el cliente tiene en su ERP.",
     alcance: "Conciliación periódica por cliente y después de cada inventario o ajuste masivo.",
     responsables: ["Analista de control", "Contraparte del cliente"],
@@ -327,7 +327,7 @@ export const PROCESOS_SILOS = {
     entradaDe: ["INV-02", "INV-04", "INV-05"],
   },
   "INV-10": {
-    nombre: "Carga de inventario inicial de un cliente", silo: "log_inventario", siloLabel: "P1.5 · Gestión de inventario físico", macro: "S2 · Inventario general",
+    nombre: "Carga de inventario inicial de un cliente", silo: "log_inventario", siloLabel: "OL.5 · Gestión de inventario físico", macro: "S2 · Inventario general",
     objetivo: "Registrar en el WMS el inventario con el que arranca un cliente nuevo o un almacén nuevo.",
     alcance: "Arranque de operación de un cliente o migración de inventario.",
     responsables: ["Encargado de inventario", "Implementación"],
@@ -346,7 +346,7 @@ export const PROCESOS_SILOS = {
     salidaA: ["INV-09"],
   },
 
-  // ── P1.13 · Gestión de Almacenamiento (zona franca-nacional) ──────────────
+  // ── CEDI-01.13 · Gestión de Almacenamiento (zona franca-nacional) ──────────────
   // En eFlow no hay un campo de "régimen": se asume que zona franca y nacional
   // se separan por Sucursal y por la homologación de zonas con bodegas del ERP.
   "ALM-01": {
@@ -370,7 +370,7 @@ export const PROCESOS_SILOS = {
     tablas: [t("RECEPCIONESCABECERA", "Orden de recepción"), t("RECEPCIONESDETALLE", "Líneas esperadas"), t("RECEPCIONESCONFIRMACIONES", "Confirmaciones registradas"), t("CONFIRMACION_PARCIAL_CABECERA", "Confirmación por palet y muelle"), t("CONFIRMACION_PARCIAL_DETALLE", "Detalle confirmado por línea")],
     datosClave: ["Id Recepción", "Proveedor / cliente propietario", "Muelle de recepción", "Palet (contenedor)", "Factura", "Clasificaciones 1–4", "Avance %"],
     conceptos: [{ termino: "Confirmación", definicion: "Registro de lo recibido físicamente contra una orden de recepción; una orden puede tener varias." }],
-    salidaA: ["ALM-03", "P11"],
+    salidaA: ["ALM-03", "CEDI-11"],
   },
   "ALM-02": {
     ...ALM, nombre: "Consolidación y desconsolidación de recepciones", macro: "S1 · Recepción y clasificación de mercancía",
@@ -444,7 +444,7 @@ export const PROCESOS_SILOS = {
     ],
     registros: ["Configuración de almacenamientos y capacidades"],
     noConformidades: ["Ubicaciones sin capacidad definida", "Perfiles de equipo que permiten niveles o pesos no seguros"],
-    tablas: [t("ALMACENAMIENTOS", "Almacenamientos (racks/bloques)"), t("ALMACENAMIENTOSUBICACIONES", "Ubicaciones generadas"), t("CAPACIDADBLOQUE", "Capacidad por bloque"), t("DIMENSIONCAMPOS", "Dimensiones de palet"), t("COMPANIA_CAPACIDAD_OPERATIVA", "Capacidad operativa por compañía")],
+    tablas: [t("ALMACENAMIENTOS", "Almacenamientos (racks/bloques)"), t("ALMACENAMIENTOSUBICACIONES", "Ubicaciones generadas"), t("CAPACIDADBLOQUE", "Capacidad por bloque"), t("DIMENSIONCAMPOS", "Dimensiones de palet")],
     datosClave: ["Tipo de almacenamiento", "Niveles y posiciones", "Capacidad", "Dimensión", "Peso y cubicaje máximos"],
     conceptos: [],
     salidaA: ["ALM-07"],
@@ -489,7 +489,7 @@ export const PROCESOS_SILOS = {
     entradaDe: ["ALM-05"],
   },
 
-  // ── P1.21 · Servicios de Valor Agregado ──────────────────────────────────
+  // ── CEDI-01.21 · Servicios de Valor Agregado ──────────────────────────────────
   "VAS-01": {
     ...VAS, nombre: "Alta de un servicio de valor agregado en el catálogo", macro: "S1 · Levantamiento de requerimientos de VAS",
     objetivo: "Definir con el cliente un servicio especial (etiquetado, kitting, reempaque…) y registrarlo con su tarifa para poder ejecutarlo y cobrarlo.",
@@ -518,11 +518,11 @@ export const PROCESOS_SILOS = {
       e("Indicar artículo, presentación, lote, fecha de caducidad y cantidad (Qty) de etiquetas; imprimir con «Aceptar» o desde archivo con «Impresión Archivo»", S.etiquetasEan),
       e("Para etiquetas de palet, usar Control › Creación de Etiquetas y elegir el tipo (Master, Cross Docking, Multi Artículo, Merma, Packing, Despacho, Muestra, Devolución…)", S.creaEtiquetas),
       i("Colocar las etiquetas según el instructivo del cliente y verificar legibilidad con el lector", "handheld"),
-      i("Registrar el servicio realizado para su cobro", "eflow"),
+      e("Registrar el servicio realizado para su cobro en Documentos › Registro Servicios Especiales («Agregar»: servicio, cliente, cantidad)", S.regServicios),
     ],
     registros: ["Etiquetas impresas", "Servicio registrado"],
     noConformidades: ["Etiqueta con lote o caducidad incorrectos", "Etiquetas ilegibles para el lector"],
-    tablas: [t("ETIQUETADO", "Etiquetas generadas"), t("ETIQUETACONTADOR", "Consecutivo de etiquetas"), t("ARTICULOSEAN", "Códigos EAN del artículo")],
+    tablas: [t("ETIQUETACONTADOR", "Consecutivo de etiquetas"), t("ARTICULOSEAN", "Códigos EAN del artículo")],
     datosClave: ["Artículo", "Presentación", "Lote", "Fecha de caducidad", "Cantidad de etiquetas", "Tipo de etiqueta de palet"],
     conceptos: [],
     salidaA: ["VAS-06"],
@@ -538,7 +538,7 @@ export const PROCESOS_SILOS = {
       e("Revisar en Documentos › Verificación KITS (ventana «Exp. Kits») las expediciones con kits y su avance", S.verifKits),
       e("Comparar «Artículos Expedición Original» (UD pedidas vs. preparadas, ESKIT) con lo armado", S.verifKits),
       e("Registrar los componentes sobrantes en «Artículos a Devolver» y confirmar con «Aplicar»", S.verifKits),
-      i("Registrar el servicio de kitting para su cobro", "eflow"),
+      e("Registrar el servicio de kitting para su cobro en Documentos › Registro Servicios Especiales («Agregar»: servicio, cliente, cantidad)", S.regServicios),
     ],
     registros: ["Verificación de kits aplicada", "Servicio de kitting registrado"],
     noConformidades: ["Kit con componentes faltantes o de más", "Componentes sobrantes no devueltos al inventario"],
@@ -558,7 +558,7 @@ export const PROCESOS_SILOS = {
       e("Registrar en Documentos › Transformación: Sucursal, Proceso, Artículo, Ubicación transformación, Pallet destino, Fecha caducidad y Observaciones", S.transformacion),
       e("Confirmar con «Aplicar» para que el WMS descuente el origen y genere el artículo transformado", S.transformacion),
       e("Verificar el inventario resultante en Inventario › Consulta de Inventario", S.consulta),
-      i("Registrar el servicio para su cobro", "eflow"),
+      e("Registrar el servicio para su cobro en Documentos › Registro Servicios Especiales («Agregar»: servicio, cliente, cantidad)", S.regServicios),
     ],
     registros: ["Transformación aplicada en eFlow"],
     noConformidades: ["Transformación física sin registro en el sistema (inventario descuadrado)"],
@@ -584,7 +584,7 @@ export const PROCESOS_SILOS = {
     tablas: [t("EXPEDICIONESCABECERA", "Expedición a la que se cargan los insumos")],
     datosClave: ["Expedición", "Insumo", "Cantidad", "DUA", "Lote"],
     conceptos: [],
-    entradaDe: ["P4"], salidaA: ["VAS-06"],
+    entradaDe: ["CEDI-04"], salidaA: ["VAS-06"],
   },
   "VAS-06": {
     ...VAS, nombre: "Registro de servicios especiales para facturación", macro: "S7 · Facturación de servicios de valor agregado",
@@ -623,7 +623,7 @@ export const PROCESOS_SILOS = {
     conceptos: [],
     entradaDe: ["VAS-06"],
   },
-  // ── P1.6 · Servicio logístico a clientes ─────────────────────────────────
+  // ── OL.6 · Servicio logístico a clientes ─────────────────────────────────
   "SLC-01": {
     ...SLC, nombre: "Corte y facturación de almacenaje y servicios", macro: "S2 · Facturación de servicios logísticos",
     objetivo: "Calcular al cierre del período lo que se cobra a cada cliente por almacenaje (estadía de palets), movimientos y servicios especiales.",
@@ -684,7 +684,7 @@ export const PROCESOS_SILOS = {
     conceptos: [],
   },
 
-  // ── P1.8 · Desempeño logístico ───────────────────────────────────────────
+  // ── OL.8 · Desempeño logístico ───────────────────────────────────────────
   "DES-01": {
     ...DES, nombre: "Medición de productividad por proceso", macro: "S3 · Productividad por proceso",
     objetivo: "Medir cuántas unidades o líneas procesa cada recurso por hora en picking, almacenaje, validación y empaque.",
@@ -764,7 +764,7 @@ export const PROCESOS_SILOS = {
     entradaDe: ["DES-02"],
   },
 
-  // ── P1.19 · Seguimiento y control de la Operación ────────────────────────
+  // ── CEDI-01.19 · Seguimiento y control de la Operación ────────────────────────
   "SEG-01": {
     ...SEG, nombre: "Monitoreo diario de la operación del almacén", macro: "S1 · Monitoreo de indicadores operativos diarios",
     objetivo: "Controlar durante el turno que el trabajo avance, que haya personal asignado y que no se acumulen tareas.",
@@ -821,10 +821,10 @@ export const PROCESOS_SILOS = {
     tablas: [t("MUELLE_X_RUTA", "Muelle asignado por ruta"), t("CHEQUEO_PALET", "Palets pendientes de chequeo")],
     datosClave: ["Muelle", "Pedidos despachados", "Palets pendientes por viaje", "Palets pendientes de chequeo"],
     conceptos: [],
-    entradaDe: ["P8", "P10"],
+    entradaDe: ["CEDI-08", "CEDI-10"],
   },
 
-  // ── P1.18 · Gestión de transporte Local ──────────────────────────────────
+  // ── CEDI-01.18 · Gestión de transporte Local ──────────────────────────────────
   "TRL-01": {
     ...TRL, nombre: "Planificación de rutas y viajes de distribución", macro: "S1 · Planificación de rutas de distribución local",
     objetivo: "Agrupar los pedidos del día en viajes por ruta respetando el horario de corte y la capacidad de las unidades.",
@@ -843,7 +843,7 @@ export const PROCESOS_SILOS = {
     tablas: [t("VIAJE_WMH", "Viaje de Torre de Control visto desde eFlow"), t("MUELLE_X_RUTA", "Muelle por ruta"), t("CONFIGURACION_RUTA", "Configuración de rutas"), { schema: "wmh_cr", tabla: "journeys", motivo: "Viajes en Torre de Control", confianza: "alta" }, { schema: "wmh_cr", tabla: "distribution_routes", motivo: "Rutas de distribución", confianza: "alta" }],
     datosClave: ["Ruta", "Viaje", "Peso y volumen", "Capacidad de la unidad", "Muelle"],
     conceptos: [],
-    entradaDe: ["P1"], salidaA: ["TRL-02"],
+    entradaDe: ["CEDI-01"], salidaA: ["TRL-02"],
   },
   "TRL-02": {
     ...TRL, nombre: "Asignación de unidades y conductores", macro: "S2 · Asignación de unidades y conductores",
@@ -880,7 +880,7 @@ export const PROCESOS_SILOS = {
     tablas: [t("EXPEDICIONCAMION", "Carga por camión"), t("CARGACAMION_TRAMITE", "Trámite de carga"), t("CONTENEDORVIAJE", "Palets por viaje")],
     datosClave: ["Número de viaje", "Placa", "Cédula del chofer", "Palets pendientes", "Hora de salida"],
     conceptos: [],
-    entradaDe: ["TRL-02"], salidaA: ["P9"],
+    entradaDe: ["TRL-02"], salidaA: ["CEDI-09"],
   },
 
   // ── Cross Docking · sorter Mecalux (SORTER CLIRO) — fuente: manual real ───
@@ -911,7 +911,7 @@ export const PROCESOS_SILOS = {
   "XDK-02": {
     ...XDK, nombre: "Despacho por viajes en sorter (Planta Baja)",
     objetivo: "Agrupar los bultos ya clasificados en viajes por bajada y cliente y dejarlos listos para despachar a cada tienda.",
-    alcance: "Desde la clasificación por bajada hasta el despacho del viaje; la carga y el despacho físico a tienda siguen en P4 · Despacho EPA.",
+    alcance: "Desde la clasificación por bajada hasta el despacho del viaje; la carga y el despacho físico a tienda siguen en CEDI-04 · Despacho EPA.",
     responsables: ["Personal de cross-docking EPA (Planta Baja del sorter)"],
     pasos: [
       mx("Los bultos clasificados se agrupan en viajes por bajada y cliente (Control de viajes › Viajes)", "pb_control_viajes"),
@@ -919,7 +919,7 @@ export const PROCESOS_SILOS = {
       mx("Leer cada caja en el Escaner de Planta Baja", "pb_escaner"),
       mx("Verificar el estatus de cada caja en la pestaña Cajas (DESVIADO / Desvío OK)", "pb_cajas"),
       mx("Reasignar un viaje a otra bajada con «Transferir Bajada» si se requiere", "pb_control_viajes"),
-      mx("Despachar el viaje hacia la tienda (la carga y el despacho físico siguen en P4 · Despacho EPA)", "pb_control_viajes"),
+      mx("Despachar el viaje hacia la tienda (la carga y el despacho físico siguen en CEDI-04 · Despacho EPA)", "pb_control_viajes"),
       mx("Revisar tiempos de proceso de viajes y cajas en Reportes (Planta Baja)", "pb_reportes"),
     ],
     registros: ["Viajes por bajada", "Histórico de lecturas de cajas", "Reportes con tiempo de despacho"],
@@ -927,7 +927,7 @@ export const PROCESOS_SILOS = {
     datosClave: ["Viaje", "Bajada", "Cliente", "Cantidad vs. cantidad actual", "Caja (etiqueta, peso, código de tránsito)", "Estatus de desvío"],
     conceptos: CONCEPTOS_SORTER,
     relacionados: [{ silo: "log_almacenaje", nombre: "Cross Docking" }],
-    entradaDe: ["XDK-01"], salidaA: ["P4"],
+    entradaDe: ["XDK-01"], salidaA: ["CEDI-04"],
   },
 };
 

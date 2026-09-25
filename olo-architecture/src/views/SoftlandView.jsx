@@ -35,7 +35,7 @@ export function SoftlandView({ selected, setSelected }) {
   };
   return <div>
     <div style={{ background:"#f0f9ff", border:"1px solid #bae6fd", borderLeft:"3px solid #0284c7", borderRadius:8, padding:"9px 14px", marginBottom:14, fontSize:12.5, color:DESIGN.inkSoft, lineHeight:1.55 }}>
-      <b style={{ color:"#0369a1" }}>Diccionario real:</b> además de los manuales, cada módulo trae su menú, sus tablas y entidades tal como están en {DD.fuente} (extraído el {DD.generado}). Abre un módulo para verlo.
+      <b style={{ color:"#0369a1" }}>Diccionario real:</b> además de los manuales, cada módulo trae su menú, sus tablas y entidades tal como están en {DD.fuente} (extraído el {DD.generado}). Ojo: es el Softland del <b>cliente Cofersa</b> en QA; el Softland propio de OLO no está disponible para lectura. Los manuales de los que sale el resumen de cada módulo no están cargados en el BPA.
     </div>
     {sel && <DetailPanel item={{ ...sel, color:MODULE_COLORS[sel.code] }} onClose={() => setSelected(null)}/>}
     {sel && DD.modulos[sel.code] && <Diccionario key={sel.code} codigo={sel.code} m={DD.modulos[sel.code]}/>}

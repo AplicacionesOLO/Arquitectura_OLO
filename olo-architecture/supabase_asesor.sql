@@ -103,3 +103,6 @@ create trigger solicitudes_cambio_autor before update on public.solicitudes_camb
 insert into public.role_permissions (role_key, tab_id, access)
 select 'admin', 'asesor', 'view'
 where not exists (select 1 from public.role_permissions where role_key = 'admin' and tab_id = 'asesor');
+
+-- Relación con otra solicitud (la calcula asesor/ingestar.mjs): { tipo: duplicado | version_anterior | relacionada, de: id, titulo }
+alter table public.solicitudes_cambio add column if not exists relacion jsonb;

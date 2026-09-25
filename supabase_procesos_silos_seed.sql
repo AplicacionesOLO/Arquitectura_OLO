@@ -20,7 +20,7 @@ declare
   v_sub   uuid;
 begin
 
-  -- INV-01 · Toma física cíclica por ubicación  (P1.5 · Gestión de inventario físico › S1 · Conteos cíclicos)
+  -- INV-01 · Toma física cíclica por ubicación  (OL.5 · Gestión de inventario físico › S1 · Conteos cíclicos)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_inventario' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Conteos cíclicos'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -65,7 +65,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- INV-02 · Inventario general del almacén  (P1.5 · Gestión de inventario físico › S2 · Inventario general)
+  -- INV-02 · Inventario general del almacén  (OL.5 · Gestión de inventario físico › S2 · Inventario general)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_inventario' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S2 · Inventario general'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -108,7 +108,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- INV-03 · Investigación de diferencias de inventario  (P1.5 · Gestión de inventario físico › S3 · Investigación de diferencias)
+  -- INV-03 · Investigación de diferencias de inventario  (OL.5 · Gestión de inventario físico › S3 · Investigación de diferencias)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_inventario' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Investigación de diferencias'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -149,7 +149,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- INV-04 · Ajuste individual de inventario  (P1.5 · Gestión de inventario físico › S4 · Ajustes de inventario)
+  -- INV-04 · Ajuste individual de inventario  (OL.5 · Gestión de inventario físico › S4 · Ajustes de inventario)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_inventario' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S4 · Ajustes de inventario'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -186,7 +186,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- INV-05 · Ajuste masivo desde toma física o archivo  (P1.5 · Gestión de inventario físico › S4 · Ajustes de inventario)
+  -- INV-05 · Ajuste masivo desde toma física o archivo  (OL.5 · Gestión de inventario físico › S4 · Ajustes de inventario)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_inventario' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S4 · Ajustes de inventario'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -217,7 +217,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- INV-06 · Control de vencimientos y alertas de inventario  (P1.5 · Gestión de inventario físico › S5 · Gestión de obsoletos)
+  -- INV-06 · Control de vencimientos y alertas de inventario  (OL.5 · Gestión de inventario físico › S5 · Gestión de obsoletos)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_inventario' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S5 · Gestión de obsoletos'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -248,7 +248,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- INV-07 · Trazabilidad de un artículo, palet o serie  (P1.5 · Gestión de inventario físico › S6 · Trazabilidad de movimientos)
+  -- INV-07 · Trazabilidad de un artículo, palet o serie  (OL.5 · Gestión de inventario físico › S6 · Trazabilidad de movimientos)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_inventario' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S6 · Trazabilidad de movimientos'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -283,7 +283,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- INV-08 · Medición de exactitud de inventario (IRA)  (P1.5 · Gestión de inventario físico › S7 · Exactitud de inventario (IRA))
+  -- INV-08 · Medición de exactitud de inventario (IRA)  (OL.5 · Gestión de inventario físico › S7 · Exactitud de inventario (IRA))
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_inventario' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S7 · Exactitud de inventario (IRA)'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -308,7 +308,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- INV-09 · Conciliación de existencias WMS vs. ERP del cliente  (P1.5 · Gestión de inventario físico › S8 · Conciliación WMS-ERP)
+  -- INV-09 · Conciliación de existencias WMS vs. ERP del cliente  (OL.5 · Gestión de inventario físico › S8 · Conciliación WMS-ERP)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_inventario' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S8 · Conciliación WMS-ERP'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -337,7 +337,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- INV-10 · Carga de inventario inicial de un cliente  (P1.5 · Gestión de inventario físico › S2 · Inventario general)
+  -- INV-10 · Carga de inventario inicial de un cliente  (OL.5 · Gestión de inventario físico › S2 · Inventario general)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_inventario' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S2 · Inventario general'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -366,7 +366,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- ALM-01 · Recepción de mercancía contra orden de recepción  (P1.13 · Gestión de Almacenamiento (zona franca-nacional) › S1 · Recepción y clasificación de mercancía)
+  -- ALM-01 · Recepción de mercancía contra orden de recepción  (CEDI-01.13 · Gestión de Almacenamiento (zona franca-nacional) › S1 · Recepción y clasificación de mercancía)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_almacenamiento' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Recepción y clasificación de mercancía'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -411,7 +411,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- ALM-02 · Consolidación y desconsolidación de recepciones  (P1.13 · Gestión de Almacenamiento (zona franca-nacional) › S1 · Recepción y clasificación de mercancía)
+  -- ALM-02 · Consolidación y desconsolidación de recepciones  (CEDI-01.13 · Gestión de Almacenamiento (zona franca-nacional) › S1 · Recepción y clasificación de mercancía)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_almacenamiento' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Recepción y clasificación de mercancía'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -442,7 +442,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- ALM-03 · Asignación de zonas de almacenaje por artículo y régimen  (P1.13 · Gestión de Almacenamiento (zona franca-nacional) › S2 · Asignación de espacio zona franca vs. nacional)
+  -- ALM-03 · Asignación de zonas de almacenaje por artículo y régimen  (CEDI-01.13 · Gestión de Almacenamiento (zona franca-nacional) › S2 · Asignación de espacio zona franca vs. nacional)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_almacenamiento' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S2 · Asignación de espacio zona franca vs. nacional'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -475,7 +475,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- ALM-04 · Control de inventario por régimen  (P1.13 · Gestión de Almacenamiento (zona franca-nacional) › S3 · Control de inventario por régimen)
+  -- ALM-04 · Control de inventario por régimen  (CEDI-01.13 · Gestión de Almacenamiento (zona franca-nacional) › S3 · Control de inventario por régimen)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_almacenamiento' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Control de inventario por régimen'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -500,7 +500,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- ALM-05 · Condiciones y capacidad de almacenaje  (P1.13 · Gestión de Almacenamiento (zona franca-nacional) › S4 · Custodia y condiciones de almacenaje)
+  -- ALM-05 · Condiciones y capacidad de almacenaje  (CEDI-01.13 · Gestión de Almacenamiento (zona franca-nacional) › S4 · Custodia y condiciones de almacenaje)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_almacenamiento' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S4 · Custodia y condiciones de almacenaje'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -535,7 +535,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- ALM-06 · Traslado de inventario entre sucursales (régimen)  (P1.13 · Gestión de Almacenamiento (zona franca-nacional) › S5 · Traslados entre régimen zona franca y nacional)
+  -- ALM-06 · Traslado de inventario entre sucursales (régimen)  (CEDI-01.13 · Gestión de Almacenamiento (zona franca-nacional) › S5 · Traslados entre régimen zona franca y nacional)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_almacenamiento' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S5 · Traslados entre régimen zona franca y nacional'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -568,7 +568,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- ALM-07 · Reporte de ocupación y capacidad del almacén  (P1.13 · Gestión de Almacenamiento (zona franca-nacional) › S7 · Reportes de ocupación y capacidad)
+  -- ALM-07 · Reporte de ocupación y capacidad del almacén  (CEDI-01.13 · Gestión de Almacenamiento (zona franca-nacional) › S7 · Reportes de ocupación y capacidad)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_almacenamiento' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S7 · Reportes de ocupación y capacidad'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -597,7 +597,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- VAS-01 · Alta de un servicio de valor agregado en el catálogo  (P1.21 · Servicios de Valor Agregado › S1 · Levantamiento de requerimientos de VAS)
+  -- VAS-01 · Alta de un servicio de valor agregado en el catálogo  (CEDI-01.21 · Servicios de Valor Agregado › S1 · Levantamiento de requerimientos de VAS)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_valor_agregado' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Levantamiento de requerimientos de VAS'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -620,7 +620,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- VAS-02 · Etiquetado de artículos y palets  (P1.21 · Servicios de Valor Agregado › S2 · Etiquetado y reempaque)
+  -- VAS-02 · Etiquetado de artículos y palets  (CEDI-01.21 · Servicios de Valor Agregado › S2 · Etiquetado y reempaque)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_valor_agregado' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S2 · Etiquetado y reempaque'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -645,11 +645,13 @@ begin
     insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
       values ('neg_valor_agregado', v_proc, 2, '4. Colocar las etiquetas según el instructivo del cliente y verificar legibilidad con el lector', 3, 'VAS-02.04') returning id into v_sub;
     insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
-      values ('neg_valor_agregado', v_proc, 2, '5. Registrar el servicio realizado para su cobro', 4, 'VAS-02.05') returning id into v_sub;
+      values ('neg_valor_agregado', v_proc, 2, '5. Registrar el servicio realizado para su cobro en Documentos › Registro Servicios Especiales («Agregar»: servicio, cliente, cantidad)', 4, 'VAS-02.05') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__registro_servicios_especiales.jpg', 'eFlow WMS · Documentos › Registro Servicios Especiales.jpg', 'image/jpeg', 60036);
   end if;
   v_macro := null; v_proc := null;
 
-  -- VAS-03 · Armado y verificación de kits  (P1.21 · Servicios de Valor Agregado › S3 · Kitting y ensamble)
+  -- VAS-03 · Armado y verificación de kits  (CEDI-01.21 · Servicios de Valor Agregado › S3 · Kitting y ensamble)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_valor_agregado' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Kitting y ensamble'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -678,11 +680,13 @@ begin
     insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
       values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__verificacion_kits.jpg', 'eFlow WMS · Documentos › Verificación KITS.jpg', 'image/jpeg', 167918);
     insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
-      values ('neg_valor_agregado', v_proc, 2, '6. Registrar el servicio de kitting para su cobro', 5, 'VAS-03.06') returning id into v_sub;
+      values ('neg_valor_agregado', v_proc, 2, '6. Registrar el servicio de kitting para su cobro en Documentos › Registro Servicios Especiales («Agregar»: servicio, cliente, cantidad)', 5, 'VAS-03.06') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__registro_servicios_especiales.jpg', 'eFlow WMS · Documentos › Registro Servicios Especiales.jpg', 'image/jpeg', 60036);
   end if;
   v_macro := null; v_proc := null;
 
-  -- VAS-04 · Transformación de artículos (reempaque / co-packing)  (P1.21 · Servicios de Valor Agregado › S5 · Personalización y co-packing)
+  -- VAS-04 · Transformación de artículos (reempaque / co-packing)  (CEDI-01.21 · Servicios de Valor Agregado › S5 · Personalización y co-packing)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_valor_agregado' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S5 · Personalización y co-packing'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -711,11 +715,13 @@ begin
     insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
       values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_inventario__consulta_de_inventario.jpg', 'eFlow WMS · Inventario › Consulta de Inventario.jpg', 'image/jpeg', 80735);
     insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
-      values ('neg_valor_agregado', v_proc, 2, '6. Registrar el servicio para su cobro', 5, 'VAS-04.06') returning id into v_sub;
+      values ('neg_valor_agregado', v_proc, 2, '6. Registrar el servicio para su cobro en Documentos › Registro Servicios Especiales («Agregar»: servicio, cliente, cantidad)', 5, 'VAS-04.06') returning id into v_sub;
+    insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
+      values (v_sub, 'Detalles_Porcesos', 'wms-manual/screen_documentos__registro_servicios_especiales.jpg', 'eFlow WMS · Documentos › Registro Servicios Especiales.jpg', 'image/jpeg', 60036);
   end if;
   v_macro := null; v_proc := null;
 
-  -- VAS-05 · Consumo de insumos por expedición  (P1.21 · Servicios de Valor Agregado › S6 · Gestión de materiales para VAS)
+  -- VAS-05 · Consumo de insumos por expedición  (CEDI-01.21 · Servicios de Valor Agregado › S6 · Gestión de materiales para VAS)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_valor_agregado' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S6 · Gestión de materiales para VAS'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -746,7 +752,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- VAS-06 · Registro de servicios especiales para facturación  (P1.21 · Servicios de Valor Agregado › S7 · Facturación de servicios de valor agregado)
+  -- VAS-06 · Registro de servicios especiales para facturación  (CEDI-01.21 · Servicios de Valor Agregado › S7 · Facturación de servicios de valor agregado)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_valor_agregado' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S7 · Facturación de servicios de valor agregado'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -775,7 +781,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- VAS-07 · Productividad de los servicios de valor agregado  (P1.21 · Servicios de Valor Agregado › S8 · Reportes de productividad de VAS)
+  -- VAS-07 · Productividad de los servicios de valor agregado  (CEDI-01.21 · Servicios de Valor Agregado › S8 · Reportes de productividad de VAS)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_valor_agregado' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S8 · Reportes de productividad de VAS'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -800,7 +806,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- SLC-01 · Corte y facturación de almacenaje y servicios  (P1.6 · Servicio logístico a clientes › S2 · Facturación de servicios logísticos)
+  -- SLC-01 · Corte y facturación de almacenaje y servicios  (OL.6 · Servicio logístico a clientes › S2 · Facturación de servicios logísticos)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_servicio_cliente' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S2 · Facturación de servicios logísticos'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -829,7 +835,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- SLC-02 · Costeo por actividad con el costo hora de los recursos  (P1.6 · Servicio logístico a clientes › S3 · Costeo por actividad (Slotting → Almacenaje → Picking))
+  -- SLC-02 · Costeo por actividad con el costo hora de los recursos  (OL.6 · Servicio logístico a clientes › S3 · Costeo por actividad (Slotting → Almacenaje → Picking))
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_servicio_cliente' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Costeo por actividad (Slotting → Almacenaje → Picking)'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -862,7 +868,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- SLC-03 · Atención de reclamos de servicio  (P1.6 · Servicio logístico a clientes › S5 · Reclamos de servicio)
+  -- SLC-03 · Atención de reclamos de servicio  (OL.6 · Servicio logístico a clientes › S5 · Reclamos de servicio)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_servicio_cliente' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S5 · Reclamos de servicio'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -893,7 +899,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- DES-01 · Medición de productividad por proceso  (P1.8 · Desempeño logístico › S3 · Productividad por proceso)
+  -- DES-01 · Medición de productividad por proceso  (OL.8 · Desempeño logístico › S3 · Productividad por proceso)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_desempeno' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Productividad por proceso'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -926,7 +932,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- DES-02 · Semáforos operativos del centro de distribución  (P1.8 · Desempeño logístico › S4 · Semáforos operativos del centro de distribución)
+  -- DES-02 · Semáforos operativos del centro de distribución  (OL.8 · Desempeño logístico › S4 · Semáforos operativos del centro de distribución)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_desempeno' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S4 · Semáforos operativos del centro de distribución'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -957,7 +963,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- DES-03 · Cálculo del OTIF de entrega  (P1.8 · Desempeño logístico › S1 · OTIF de entrega)
+  -- DES-03 · Cálculo del OTIF de entrega  (OL.8 · Desempeño logístico › S1 · OTIF de entrega)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_desempeno' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · OTIF de entrega'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -988,7 +994,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- DES-04 · Análisis de fallas de servicio  (P1.8 · Desempeño logístico › S6 · Análisis de fallas de servicio)
+  -- DES-04 · Análisis de fallas de servicio  (OL.8 · Desempeño logístico › S6 · Análisis de fallas de servicio)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'log_desempeno' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S6 · Análisis de fallas de servicio'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1021,7 +1027,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- SEG-01 · Monitoreo diario de la operación del almacén  (P1.19 · Seguimiento y control de la Operación › S1 · Monitoreo de indicadores operativos diarios)
+  -- SEG-01 · Monitoreo diario de la operación del almacén  (CEDI-01.19 · Seguimiento y control de la Operación › S1 · Monitoreo de indicadores operativos diarios)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_seguimiento_operacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Monitoreo de indicadores operativos diarios'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1056,7 +1062,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- SEG-02 · Gestión de incidencias operativas  (P1.19 · Seguimiento y control de la Operación › S3 · Gestión de incidencias operativas)
+  -- SEG-02 · Gestión de incidencias operativas  (CEDI-01.19 · Seguimiento y control de la Operación › S3 · Gestión de incidencias operativas)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_seguimiento_operacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Gestión de incidencias operativas'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1089,7 +1095,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- SEG-03 · Control de despacho por muelle  (P1.19 · Seguimiento y control de la Operación › S5 · Semáforos y tableros de control)
+  -- SEG-03 · Control de despacho por muelle  (CEDI-01.19 · Seguimiento y control de la Operación › S5 · Semáforos y tableros de control)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_seguimiento_operacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S5 · Semáforos y tableros de control'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1116,7 +1122,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- TRL-01 · Planificación de rutas y viajes de distribución  (P1.18 · Gestión de transporte Local › S1 · Planificación de rutas de distribución local)
+  -- TRL-01 · Planificación de rutas y viajes de distribución  (CEDI-01.18 · Gestión de transporte Local › S1 · Planificación de rutas de distribución local)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_transporte_local' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Planificación de rutas de distribución local'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1145,7 +1151,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- TRL-02 · Asignación de unidades y conductores  (P1.18 · Gestión de transporte Local › S2 · Asignación de unidades y conductores)
+  -- TRL-02 · Asignación de unidades y conductores  (CEDI-01.18 · Gestión de transporte Local › S2 · Asignación de unidades y conductores)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_transporte_local' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S2 · Asignación de unidades y conductores'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1170,7 +1176,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- TRL-03 · Carga del camión y control de salida de la ruta  (P1.18 · Gestión de transporte Local › S3 · Despacho y control de salida de rutas)
+  -- TRL-03 · Carga del camión y control de salida de la ruta  (CEDI-01.18 · Gestión de transporte Local › S3 · Despacho y control de salida de rutas)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_transporte_local' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Despacho y control de salida de rutas'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1201,7 +1207,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- XDK-01 · Recepción y clasificación en sorter (Nivel 1)  (Cross Docking › S1 · Cross-docking en sorter (Mecalux SORTER CLIRO))
+  -- XDK-01 · Recepción y clasificación en sorter (Nivel 1)  (OL.9 · Cross Docking › S1 · Cross-docking en sorter (Mecalux SORTER CLIRO))
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'cross_docking' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Cross-docking en sorter (Mecalux SORTER CLIRO)'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1251,7 +1257,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- XDK-02 · Despacho por viajes en sorter (Planta Baja)  (Cross Docking › S1 · Cross-docking en sorter (Mecalux SORTER CLIRO))
+  -- XDK-02 · Despacho por viajes en sorter (Planta Baja)  (OL.9 · Cross Docking › S1 · Cross-docking en sorter (Mecalux SORTER CLIRO))
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'cross_docking' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Cross-docking en sorter (Mecalux SORTER CLIRO)'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1287,7 +1293,7 @@ begin
     insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
       values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__pb_control_viajes.jpg', 'SORTER CLIRO · Planta Baja › Control de viajes.jpg', 'image/jpeg', null);
     insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
-      values ('cross_docking', v_proc, 2, '6. Despachar el viaje hacia la tienda (la carga y el despacho físico siguen en P4 · Despacho EPA)', 5, 'XDK-02.06') returning id into v_sub;
+      values ('cross_docking', v_proc, 2, '6. Despachar el viaje hacia la tienda (la carga y el despacho físico siguen en CEDI-04 · Despacho EPA)', 5, 'XDK-02.06') returning id into v_sub;
     insert into public.procesos_archivos (node_id, bucket, path, file_name, mime_type, size_bytes)
       values (v_sub, 'Detalles_Porcesos', 'sorter-manual/sorter__pb_control_viajes.jpg', 'SORTER CLIRO · Planta Baja › Control de viajes.jpg', 'image/jpeg', null);
     insert into public.procesos_nodes (categoria_id, parent_id, level, name, sort_order, codigo)
@@ -1297,7 +1303,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- COB-01 · Registro y aplicación de pagos de clientes  (P1.11 · Cobro › S4 · Aplicación de pagos recibidos)
+  -- COB-01 · Registro y aplicación de pagos de clientes  (CEDI-01.11 · Cobro › S4 · Aplicación de pagos recibidos)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_cobro' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S4 · Aplicación de pagos recibidos'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1324,7 +1330,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- COB-02 · Seguimiento de cartera vencida  (P1.11 · Cobro › S2 · Gestión de cartera vencida)
+  -- COB-02 · Seguimiento de cartera vencida  (CEDI-01.11 · Cobro › S2 · Gestión de cartera vencida)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_cobro' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S2 · Gestión de cartera vencida'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1351,7 +1357,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- COB-03 · Convenio de pago con el cliente  (P1.11 · Cobro › S3 · Negociación de planes de pago)
+  -- COB-03 · Convenio de pago con el cliente  (CEDI-01.11 · Cobro › S3 · Negociación de planes de pago)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_cobro' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Negociación de planes de pago'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1374,7 +1380,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- COB-04 · Conciliación de cobros con facturación  (P1.11 · Cobro › S8 · Conciliación de cobros con facturación)
+  -- COB-04 · Conciliación de cobros con facturación  (CEDI-01.11 · Cobro › S8 · Conciliación de cobros con facturación)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_cobro' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S8 · Conciliación de cobros con facturación'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1397,7 +1403,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- FAC-01 · Facturación sin pedido (servicios y cargos)  (P1.12 · Facturación › S1 · Generación de la factura electrónica)
+  -- FAC-01 · Facturación sin pedido (servicios y cargos)  (CEDI-01.12 · Facturación › S1 · Generación de la factura electrónica)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_facturacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S1 · Generación de la factura electrónica'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1420,7 +1426,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- FAC-02 · Anulación, devolución y refacturación  (P1.12 · Facturación › S6 · Corrección y refacturación)
+  -- FAC-02 · Anulación, devolución y refacturación  (CEDI-01.12 · Facturación › S6 · Corrección y refacturación)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_facturacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S6 · Corrección y refacturación'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1443,7 +1449,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- FAC-03 · Control de pedidos pendientes de facturar  (P1.12 · Facturación › S7 · Control de facturación pendiente)
+  -- FAC-03 · Control de pedidos pendientes de facturar  (CEDI-01.12 · Facturación › S7 · Control de facturación pendiente)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_facturacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S7 · Control de facturación pendiente'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1464,7 +1470,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- FIN-01 · Cierre contable mensual  (P1.10 · Administración financiera contable a clientes › S6 · Cierre contable mensual por cliente)
+  -- FIN-01 · Cierre contable mensual  (CEDI-01.10 · Administración financiera contable a clientes › S6 · Cierre contable mensual por cliente)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_fin_contable' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S6 · Cierre contable mensual por cliente'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1491,7 +1497,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- FIN-02 · Conciliación de la cuenta de un cliente  (P1.10 · Administración financiera contable a clientes › S2 · Conciliación de cuentas por cliente)
+  -- FIN-02 · Conciliación de la cuenta de un cliente  (CEDI-01.10 · Administración financiera contable a clientes › S2 · Conciliación de cuentas por cliente)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_fin_contable' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S2 · Conciliación de cuentas por cliente'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1512,7 +1518,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- FIN-03 · Estados financieros del período  (P1.10 · Administración financiera contable a clientes › S4 · Reportes financieros a clientes)
+  -- FIN-03 · Estados financieros del período  (CEDI-01.10 · Administración financiera contable a clientes › S4 · Reportes financieros a clientes)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_fin_contable' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S4 · Reportes financieros a clientes'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1533,7 +1539,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- FIN-04 · Ajustes con notas de crédito y débito  (P1.10 · Administración financiera contable a clientes › S7 · Gestión de ajustes y notas de crédito/débito)
+  -- FIN-04 · Ajustes con notas de crédito y débito  (CEDI-01.10 · Administración financiera contable a clientes › S7 · Gestión de ajustes y notas de crédito/débito)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_fin_contable' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S7 · Gestión de ajustes y notas de crédito/débito'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1554,7 +1560,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- COM-01 · Alta de un cliente en Softland  (P1.14 · Gestión de comercialización › S4 · Onboarding comercial de nuevos clientes)
+  -- COM-01 · Alta de un cliente en Softland  (CEDI-01.14 · Gestión de comercialización › S4 · Onboarding comercial de nuevos clientes)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_comercializacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S4 · Onboarding comercial de nuevos clientes'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1575,7 +1581,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- COM-02 · Actualización de precios y descuentos  (P1.14 · Gestión de comercialización › S3 · Negociación de tarifas y contratos)
+  -- COM-02 · Actualización de precios y descuentos  (CEDI-01.14 · Gestión de comercialización › S3 · Negociación de tarifas y contratos)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_comercializacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S3 · Negociación de tarifas y contratos'), '\s+', ' ', 'g'))
     order by sort_order limit 1;
@@ -1600,7 +1606,7 @@ begin
   end if;
   v_macro := null; v_proc := null;
 
-  -- COM-03 · Reporte de ventas y margen  (P1.14 · Gestión de comercialización › S8 · Reportes de ventas y cumplimiento de metas)
+  -- COM-03 · Reporte de ventas y margen  (CEDI-01.14 · Gestión de comercialización › S8 · Reportes de ventas y cumplimiento de metas)
   select id into v_macro from public.procesos_nodes
     where categoria_id = 'neg_comercializacion' and level = 0 and lower(regexp_replace(trim(name), '\s+', ' ', 'g')) = lower(regexp_replace(trim('S8 · Reportes de ventas y cumplimiento de metas'), '\s+', ' ', 'g'))
     order by sort_order limit 1;

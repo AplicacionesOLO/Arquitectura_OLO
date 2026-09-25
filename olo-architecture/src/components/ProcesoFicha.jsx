@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// COMPONENTE · Ficha de proceso CEDI (P1–P14) — panel lateral fijo del módulo
+// COMPONENTE · Ficha de proceso CEDI (CEDI-01–CEDI-14) — panel lateral fijo del módulo
 // Procesos. Conecta el procedimiento con: sistemas y pantallas, tablas reales
 // de BD (eFlow / Torre de Control), procesos anteriores/siguientes del flujo,
 // silos de referencia P1.x, diagrama de flujo y documentos fuente.
@@ -155,7 +155,7 @@ function Resumen({ p, onOpen, onSearch, onNavigate }) {
       </div>
     </>}
 
-    {p.codigo === "P1" && <>
+    {p.codigo === "CEDI-01" && <>
       <L>Aplicación</L>
       <Chip onClick={()=>onNavigate({ tab:"ops", view:"wmh" })}>Operación › Torre de Control · WMH ↗</Chip>
     </>}
@@ -332,7 +332,7 @@ function Documentos({ p, onViewFile, onNavigate }) {
         </button>;
       })}
     </div>
-    {p.codigo === "P1" && <>
+    {p.codigo === "CEDI-01" && <>
       <L>Levantamiento de Torre de Control</L>
       <Chip onClick={()=>onNavigate({ tab:"ops", view:"wmh" })}>Mapeo funcional, datos reales y modelo de datos ↗</Chip>
     </>}

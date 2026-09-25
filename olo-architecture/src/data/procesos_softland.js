@@ -6,7 +6,7 @@
 // inferidos y deben validarse (Workflows › validación).
 // Contexto a confirmar: la base MAR tiene el Softland de las compañías cliente
 // (Cofersa y otras), no el de OLO. Estos procesos describen la gestión que OLO
-// haría en el ERP del cliente (como P7 · Facturación Cofersa); si OLO los hace
+// haría en el ERP del cliente (como CEDI-07 · Facturación Cofersa); si OLO los hace
 // en su propio Softland, las pantallas son las mismas pero cambia la compañía.
 // Se suman a PROCESOS_SILOS en procesos_silos.js (mismos valores por defecto).
 // ═══════════════════════════════════════════════════════════════════════════
@@ -42,13 +42,13 @@ const s = (texto, id) => ({ texto, sistema: "softland", screen: id, pantalla: `S
 const x = (texto, sistema = "fisico") => ({ texto, sistema, screen: null, origen: "inferido" });
 const t = (tabla, motivo) => ({ schema: "softland", tabla, motivo, confianza: "media" });
 
-const COBRO = { silo: "neg_cobro", siloLabel: "P1.11 · Cobro" };
-const FACT = { silo: "neg_facturacion", siloLabel: "P1.12 · Facturación" };
-const FIN = { silo: "neg_fin_contable", siloLabel: "P1.10 · Administración financiera contable a clientes" };
-const COM = { silo: "neg_comercializacion", siloLabel: "P1.14 · Gestión de comercialización" };
+const COBRO = { silo: "neg_cobro", siloLabel: "CEDI-01.11 · Cobro" };
+const FACT = { silo: "neg_facturacion", siloLabel: "CEDI-01.12 · Facturación" };
+const FIN = { silo: "neg_fin_contable", siloLabel: "CEDI-01.10 · Administración financiera contable a clientes" };
+const COM = { silo: "neg_comercializacion", siloLabel: "CEDI-01.14 · Gestión de comercialización" };
 
 export const PROCESOS_SOFTLAND = {
-  // ── P1.11 · Cobro ─────────────────────────────────────────────────────────
+  // ── CEDI-01.11 · Cobro ─────────────────────────────────────────────────────────
   "COB-01": { ...COBRO, macro: "S4 · Aplicación de pagos recibidos", nombre: "Registro y aplicación de pagos de clientes",
     objetivo: "Registrar cada pago recibido y aplicarlo a las facturas que cancela, para que el saldo del cliente quede al día.",
     alcance: "Desde que el pago se refleja en el banco hasta su aplicación en Cuentas por Cobrar y su conciliación bancaria.",
@@ -121,7 +121,7 @@ export const PROCESOS_SOFTLAND = {
     salidaA: ["FIN-01"],
   },
 
-  // ── P1.12 · Facturación ──────────────────────────────────────────────────
+  // ── CEDI-01.12 · Facturación ──────────────────────────────────────────────────
   "FAC-01": { ...FACT, macro: "S1 · Generación de la factura electrónica", nombre: "Facturación sin pedido (servicios y cargos)",
     objetivo: "Facturar cargos que no vienen de un pedido de mercancía (servicios, cargos especiales) con su comprobante electrónico.",
     alcance: "Desde el detalle del cargo a facturar hasta el comprobante enviado y su carga a Cuentas por Cobrar.",
@@ -169,7 +169,7 @@ export const PROCESOS_SOFTLAND = {
     datosClave: ["Pedido", "Estado", "Autorización de crédito", "Remisión"],
   },
 
-  // ── P1.10 · Administración financiera contable a clientes ────────────────
+  // ── CEDI-01.10 · Administración financiera contable a clientes ────────────────
   "FIN-01": { ...FIN, macro: "S6 · Cierre contable mensual por cliente", nombre: "Cierre contable mensual",
     objetivo: "Cerrar el mes con los auxiliares cargados a la contabilidad y los saldos cuadrados.",
     alcance: "Desde la carga de Facturación y Cuentas por Cobrar a Contabilidad hasta el balance de comprobación del mes.",
@@ -230,7 +230,7 @@ export const PROCESOS_SOFTLAND = {
     datosClave: ["Tipo de nota", "Documento ajustado", "Monto", "Aprobación"],
   },
 
-  // ── P1.14 · Gestión de comercialización ──────────────────────────────────
+  // ── CEDI-01.14 · Gestión de comercialización ──────────────────────────────────
   "COM-01": { ...COM, macro: "S4 · Onboarding comercial de nuevos clientes", nombre: "Alta de un cliente en Softland",
     objetivo: "Dejar al cliente nuevo listo para pedir, facturar y cobrar con sus condiciones comerciales.",
     alcance: "Desde la aprobación comercial hasta su configuración en Facturación y Cuentas por Cobrar.",

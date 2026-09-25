@@ -19,7 +19,7 @@ import { SearchIcon, EyeIcon } from "../components/icons.jsx";
 import { ProcesoFicha } from "../components/ProcesoFicha.jsx";
 import { PROCESOS } from "../data/procesos_fichas.js";
 
-// Ficha lateral de los procesos CEDI (P1–P14): cualquier ProcesoRow con
+// Ficha lateral de los procesos CEDI (CEDI-01–CEDI-14): cualquier ProcesoRow con
 // codigo conocido puede abrirla sin pasar props por todo el árbol.
 const FichaContext = createContext({ active: null, open: () => {} });
 
@@ -34,9 +34,16 @@ function buildTree(nodes, filesByNode, parentId) {
 function countFiles(nodes) {
   return nodes.reduce((s, n) => s + (n.files?.length || 0) + countFiles(n.children || []), 0);
 }
-// Cuenta nodos en un nivel exacto del árbol (0 = raíz del array recibido).
+// Un nodo de nivel 2 que solo guarda un documento (procedimiento, manual,
+// diagrama, guía) no es un subproceso: no se cuenta como tal.
+function esDocumento(n) {
+  return n.level === 2 && ((n.codigo && /\.(DOC|MAN|DIA)$/.test(n.codigo)) || /^(Procedimiento|Manual de usuario|Diagrama de flujo|Guía paso a paso)/i.test(n.name || ""));
+}
+// Los silos de referencia (id ref_…) guardan material de consulta, no procesos.
+const esReferencia = cat => String(cat.id).startsWith("ref_");
+// Cuenta nodos en un nivel exacto del árbol (0 = raíz del array recibido), sin documentos.
 function countAtDepth(nodes, target) {
-  if (target === 0) return nodes.length;
+  if (target === 0) return nodes.filter(n => !esDocumento(n)).length;
   return nodes.reduce((s, n) => s + countAtDepth(n.children || [], target - 1), 0);
 }
 function formatSize(bytes) {
@@ -299,10 +306,12 @@ export function ProcesosOperativosView({ onNavigate = () => {}, focusCodigo = nu
   // Proceso = nivel 1 · Subproceso = nivel 2 (nivel más profundo, admite archivos
   // de Detalle). Conteos en vivo, no fijos — siempre sobre el total real, no
   // sobre lo filtrado por búsqueda.
-  const silos = categorias.length;
-  const macroprocesos = categorias.reduce((s, c) => s + countAtDepth(c.tree, 0), 0);
-  const procesos = categorias.reduce((s, c) => s + countAtDepth(c.tree, 1), 0);
-  const subprocesos = categorias.reduce((s, c) => s + countAtDepth(c.tree, 2), 0);
+  const deProcesos = categorias.filter(c => !esReferencia(c));
+  const silos = deProcesos.length;
+  const macroprocesos = deProcesos.reduce((s, c) => s + countAtDepth(c.tree, 0), 0);
+  const procesos = deProcesos.reduce((s, c) => s + countAtDepth(c.tree, 1), 0);
+  const subprocesos = deProcesos.reduce((s, c) => s + countAtDepth(c.tree, 2), 0);
+  const referencia = categorias.filter(esReferencia).reduce((s, c) => s + countAtDepth(c.tree, 1), 0);
   const detalles = categorias.reduce((s, c) => s + countFiles(c.tree), 0);
 
   const fichaCtx = { active: ficha, open: setFicha };
@@ -331,6 +340,7 @@ export function ProcesosOperativosView({ onNavigate = () => {}, focusCodigo = nu
       <span><b style={{ color:DESIGN.ink }}>{procesos}</b> procesos</span>·
       <span><b style={{ color:DESIGN.ink }}>{subprocesos}</b> subprocesos</span>·
       <span><b style={{ color:DESIGN.ink }}>{detalles}</b> documentos adjuntos</span>
+      {referencia > 0 && <><span>·</span><span><b style={{ color:DESIGN.ink }}>{referencia}</b> capítulos de referencia (no son procesos)</span></>}
     </div>
 
     <FlujoCedi active={ficha} onOpen={setFicha}/>
@@ -354,14 +364,14 @@ export function ProcesosOperativosView({ onNavigate = () => {}, focusCodigo = nu
 // Los procedimientos del CEDI agrupados por la etapa física de la operación
 // (no por silo): se lee de izquierda a derecha como recorre la mercancía.
 const ETAPAS_CEDI = [
-  ["Almacenaje", ["P11", "P12", "P13"]],
-  ["Alistamiento", ["P1", "P2", "P5"]],
-  ["Chequeo", ["P6"]],
-  ["Facturación", ["P7"]],
-  ["Despacho", ["P8", "P10", "P4"]],
-  ["Transporte", ["P9"]],
-  ["Devoluciones", ["P14"]],
-  ["Cross docking", ["P3", "XDK-01", "XDK-02"]],
+  ["Almacenaje", ["CEDI-11", "CEDI-12", "CEDI-13"]],
+  ["Alistamiento", ["CEDI-01", "CEDI-02", "CEDI-05"]],
+  ["Chequeo", ["CEDI-06"]],
+  ["Facturación", ["CEDI-07"]],
+  ["Despacho", ["CEDI-08", "CEDI-10", "CEDI-04"]],
+  ["Transporte", ["CEDI-09"]],
+  ["Devoluciones", ["CEDI-14"]],
+  ["Cross docking", ["CEDI-03", "XDK-01", "XDK-02"]],
 ];
 
 function FlujoCedi({ active, onOpen }) {
@@ -424,7 +434,7 @@ function SiloSection({ cat, canEdit, collapsed, onToggle, onReload, setErr, forc
       style={{ display:"flex", alignItems:"center", gap:12, cursor:"pointer", padding:"14px 18px", background: hover?DESIGN.sunken:"transparent", transition:"background 0.15s" }}>
       <span style={{ color:DESIGN.mutedSoft, fontSize:14, flexShrink:0 }}><Chevron collapsed={isCollapsed}/></span>
       <div style={{ flex:1, minWidth:0 }}>
-        <div style={{ fontSize:11, fontWeight:600, color:DESIGN.muted }}>Silo</div>
+        <div style={{ fontSize:11, fontWeight:600, color:DESIGN.muted }}>{esReferencia(cat) ? "Referencia · no son procesos" : "Silo"}</div>
         {editing
           ? <input ref={labelInputRef} value={label} onChange={e=>setLabel(e.target.value)} onClick={e=>e.stopPropagation()}
               onBlur={()=>{ saveLabel(); setEditing(false); }} onKeyDown={e=>{ if(e.key==="Enter") e.currentTarget.blur(); }}
@@ -546,7 +556,7 @@ function ProcesoRow({ node, canEdit, collapsed, onToggle, onReload, setErr, forc
   const [hover, setHover] = useState(false);
   const nameInputRef = useRef(null);
   const isCollapsed = !forceOpen && collapsed.has(node.id);
-  const subCount = node.children.length;
+  const subCount = node.children.filter(n => !esDocumento(n)).length;
   const fichaCtx = useContext(FichaContext);
   const hasFicha = !!(node.codigo && PROCESOS[node.codigo]);
   const esBorrador = hasFicha && PROCESOS[node.codigo].borrador;

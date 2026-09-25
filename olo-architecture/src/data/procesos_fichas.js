@@ -24,11 +24,11 @@ function normalizarBorrador(p) {
 
 // Etiqueta de cada silo de referencia (para mostrar a qué silo apunta un "relacionado")
 export const SILO_LABELS = {
-  log_planificacion: "P1.1 · Planificación logística", log_almacenaje: "P1.2 · Almacenaje", log_preparacion: "P1.3 · Preparación de pedidos",
-  log_transporte: "P1.4 · Transporte", log_inventario: "P1.5 · Inventario físico", log_servicio_cliente: "P1.6 · Servicio logístico",
-  log_desempeno: "P1.8 · Desempeño logístico", neg_facturacion: "P1.12 · Facturación", neg_almacenamiento: "P1.13 · Almacenamiento ZF-nacional",
+  log_planificacion: "OL.1 · Planificación logística", log_almacenaje: "OL.2 · Almacenaje", log_preparacion: "OL.3 · Preparación de pedidos",
+  log_transporte: "OL.4 · Transporte", log_inventario: "OL.5 · Inventario físico", log_servicio_cliente: "OL.6 · Servicio logístico",
+  log_desempeno: "OL.8 · Desempeño logístico", neg_facturacion: "P1.12 · Facturación", neg_almacenamiento: "P1.13 · Almacenamiento ZF-nacional",
   neg_transporte_local: "P1.18 · Transporte local", neg_seguimiento_operacion: "P1.19 · Seguimiento de la operación",
-  neg_valor_agregado: "P1.21 · Valor agregado", cross_docking: "Cross Docking",
+  neg_valor_agregado: "P1.21 · Valor agregado", cross_docking: "OL.9 · Cross Docking",
   neg_fin_contable: "P1.10 · Financiero contable a clientes", neg_cobro: "P1.11 · Cobro", neg_comercializacion: "P1.14 · Comercialización",
 };
 
@@ -36,3 +36,10 @@ export const PROCESOS = {
   ...PROCESOS_CEDI,
   ...Object.fromEntries(Object.entries(PROCESOS_SILOS).map(([c, p]) => [c, normalizarBorrador(p)])),
 };
+
+// Conexiones simétricas: si A «sigue en» B, B «viene de» A (una sola verdad para
+// la ficha, Workflows y el asesor, aunque el documento de origen declare solo un lado).
+for (const p of Object.values(PROCESOS)) for (const d of p.salidaA || []) {
+  const b = PROCESOS[d]; if (!b) continue;
+  if (!(b.entradaDe || []).includes(p.codigo)) b.entradaDe = [...(b.entradaDe || []), p.codigo];
+}

@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// DATOS · PROCESOS CEDI (P1–P14) — fichas de los procedimientos operativos
+// DATOS · PROCESOS CEDI (CEDI-01–CEDI-14) — fichas de los procedimientos operativos
 // Generado desde los documentos fuente (procedimientos, manuales y drawio) junto
 // con supabase_procesos_cedi_seed.sql — ambos deben mantenerse en sincronía.
 // Fuentes: 14 procedimientos (Procesos/*.docx), 10 manuales de usuario
@@ -8,17 +8,17 @@
 // Cada ficha se liga a su nodo de Procesos por procesos_nodes.codigo.
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const PROCESOS_CEDI_ORDEN = ["P11", "P12", "P13", "P1", "P2", "P5", "P6", "P7", "P8", "P10", "P4", "P9", "P3", "P14"];
+export const PROCESOS_CEDI_ORDEN = ["CEDI-11", "CEDI-12", "CEDI-13", "CEDI-01", "CEDI-02", "CEDI-05", "CEDI-06", "CEDI-07", "CEDI-08", "CEDI-10", "CEDI-04", "CEDI-09", "CEDI-03", "CEDI-14"];
 
 export const PROCESOS_CEDI = {
- "P11": {
-  "codigo": "P11",
+ "CEDI-11": {
+  "codigo": "CEDI-11",
   "num": 11,
   "nombre": "Almacenaje REPI",
-  "nodo": "P11 · Almacenaje REPI",
+  "nodo": "CEDI-11 · Almacenaje REPI",
   "compania": "COFERSA",
   "silo": "log_almacenaje",
-  "siloLabel": "P1.2 · Almacenaje",
+  "siloLabel": "OL.2 · Almacenaje",
   "macro": "S1 · Acomodo (putaway)",
   "nodoExistente": "Almacenaje REPI",
   "objetivo": "Establecer el procedimiento de recepción, ubicación y reposición de la mercancía en las zonas de almacenaje y picking.",
@@ -256,9 +256,9 @@ export const PROCESOS_CEDI = {
   ],
   "entradaDe": [],
   "salidaA": [
-   "P12",
-   "P13",
-   "P5"
+   "CEDI-12",
+   "CEDI-13",
+   "CEDI-05"
   ],
   "notas": [
    "SIPOC: proveedor Personal de Recepción; entrada producto recibido y necesidad de reposición; salida artículo repuesto en la zona de picking; cliente Cofersa; indicador por definir.",
@@ -296,14 +296,14 @@ export const PROCESOS_CEDI = {
    }
   ]
  },
- "P12": {
-  "codigo": "P12",
+ "CEDI-12": {
+  "codigo": "CEDI-12",
   "num": 12,
   "nombre": "Almacenaje UBCO",
-  "nodo": "P12 · Almacenaje UBCO",
+  "nodo": "CEDI-12 · Almacenaje UBCO",
   "compania": "COFERSA",
   "silo": "log_almacenaje",
-  "siloLabel": "P1.2 · Almacenaje",
+  "siloLabel": "OL.2 · Almacenaje",
   "macro": "S3 · Reabastecimiento a picking",
   "nodoExistente": "Almacenaje UBCO",
   "objetivo": "Establecer el procedimiento para la atención de las reposiciones generadas hacia las zonas de almacenaje definitivo.",
@@ -315,7 +315,7 @@ export const PROCESOS_CEDI = {
    {
     "texto": "Ingresar al sistema WMS con usuario, contraseña e información extra del encargado",
     "sistema": "eflow",
-    "pantalla": null
+    "pantalla": "Ingreso eFlow (usuario, contraseña y almacén)"
    },
    {
     "texto": "En WMS ir a Control > Acciones de Trabajo y filtrar por tipo de trabajo las reposiciones pendientes de almacenaje",
@@ -501,7 +501,7 @@ export const PROCESOS_CEDI = {
    }
   ],
   "entradaDe": [
-   "P11"
+   "CEDI-11"
   ],
   "salidaA": [],
   "notas": [
@@ -542,14 +542,14 @@ export const PROCESOS_CEDI = {
    }
   ]
  },
- "P13": {
-  "codigo": "P13",
+ "CEDI-13": {
+  "codigo": "CEDI-13",
   "num": 13,
   "nombre": "Traslado libre",
-  "nodo": "P13 · Traslado libre",
+  "nodo": "CEDI-13 · Traslado libre",
   "compania": "CEDI",
   "silo": "log_almacenaje",
-  "siloLabel": "P1.2 · Almacenaje",
+  "siloLabel": "OL.2 · Almacenaje",
   "macro": "S2 · Gestión de ubicaciones",
   "nodoExistente": "Traslado libre",
   "objetivo": "Establecer el procedimiento para el traslado de mercancía extraordinaria o sobrante desde el área de almacenaje hacia el mesanín.",
@@ -684,10 +684,10 @@ export const PROCESOS_CEDI = {
    }
   ],
   "entradaDe": [
-   "P11"
+   "CEDI-11"
   ],
   "salidaA": [
-   "P5"
+   "CEDI-05"
   ],
   "notas": [
    "No existe manual de usuario para este proceso; la información proviene del procedimiento, el diagrama y las notas de campo.",
@@ -711,15 +711,15 @@ export const PROCESOS_CEDI = {
    }
   ]
  },
- "P1": {
-  "codigo": "P1",
+ "CEDI-01": {
+  "codigo": "CEDI-01",
   "num": 1,
   "nombre": "Torre de Control Cofersa",
-  "nodo": "P1 · Torre de Control Cofersa",
+  "nodo": "CEDI-01 · Torre de Control Cofersa",
   "compania": "COFERSA",
-  "silo": "log_transporte",
-  "siloLabel": "P1.4 · Transporte",
-  "macro": "S1 · Planificación de rutas",
+  "silo": "log_preparacion",
+  "siloLabel": "OL.3 · Preparación de pedidos",
+  "macro": "S2 · Picking por pedido, lote o zona",
   "nodoExistente": "Torre de control Cofersa",
   "objetivo": "Establecer la metodología para gestionar y priorizar el alistamiento de los pedidos de la compañía Cofersa, mediante el uso conjunto del sistema eFLOW y la aplicación Torre de Control, con el fin de garantizar el despacho oportuno de las rutas del Gran Área Metropolitana (GAM) y de las rutas rurales.",
   "alcance": "Este procedimiento aplica a las operaciones de alistamiento de pedidos de Cofersa que se procesan mediante banda transportadora y mesanín. No aplica a Ferretería EPA, dado que esta compañía no cuenta con banda transportadora ni con sección de mesanín.",
@@ -1072,11 +1072,11 @@ export const PROCESOS_CEDI = {
   ],
   "entradaDe": [],
   "salidaA": [
-   "P5",
-   "P6",
-   "P8",
-   "P10",
-   "P9"
+   "CEDI-05",
+   "CEDI-06",
+   "CEDI-08",
+   "CEDI-10",
+   "CEDI-09"
   ],
   "notas": [
    "Siempre se da prioridad a las expediciones que indican 'Retira' o 'Pasa' (el cliente viene a retirar), atendiéndolas de inmediato.",
@@ -1124,14 +1124,14 @@ export const PROCESOS_CEDI = {
    }
   ]
  },
- "P2": {
-  "codigo": "P2",
+ "CEDI-02": {
+  "codigo": "CEDI-02",
   "num": 2,
   "nombre": "Torre de Control EPA",
-  "nodo": "P2 · Torre de Control EPA",
+  "nodo": "CEDI-02 · Torre de Control EPA",
   "compania": "EPA",
   "silo": "log_preparacion",
-  "siloLabel": "P1.3 · Preparación de pedidos",
+  "siloLabel": "OL.3 · Preparación de pedidos",
   "macro": "S2 · Picking por pedido, lote o zona",
   "nodoExistente": "Torre de control EPA",
   "objetivo": "Establecer la metodología semanal para el alistamiento y la priorización de los pedidos de Ferretería EPA S.A., diferenciando los tipos de mercancía (picking, exco, exes y upco) y las prioridades comerciales definidas por la compañía.",
@@ -1356,7 +1356,7 @@ export const PROCESOS_CEDI = {
   ],
   "entradaDe": [],
   "salidaA": [
-   "P4"
+   "CEDI-04"
   ],
   "notas": [
    "EPA no tiene banda transportadora ni mesanín, por lo que no usa la aplicación Torre de Control.",
@@ -1391,14 +1391,14 @@ export const PROCESOS_CEDI = {
    }
   ]
  },
- "P5": {
-  "codigo": "P5",
+ "CEDI-05": {
+  "codigo": "CEDI-05",
   "num": 5,
   "nombre": "Alisto Cofersa",
-  "nodo": "P5 · Alisto Cofersa",
+  "nodo": "CEDI-05 · Alisto Cofersa",
   "compania": "COFERSA",
   "silo": "log_preparacion",
-  "siloLabel": "P1.3 · Preparación de pedidos",
+  "siloLabel": "OL.3 · Preparación de pedidos",
   "macro": "S2 · Picking por pedido, lote o zona",
   "nodoExistente": "Alisto de Cofersa",
   "objetivo": "Establecer el procedimiento para el alistamiento de los pedidos de Cofersa mediante el uso del handheld, garantizando la correcta separación de la mercancía por ruta.",
@@ -1558,13 +1558,13 @@ export const PROCESOS_CEDI = {
    }
   ],
   "entradaDe": [
-   "P11",
-   "P13",
-   "P1"
+   "CEDI-11",
+   "CEDI-13",
+   "CEDI-01"
   ],
   "salidaA": [
-   "P6",
-   "P7"
+   "CEDI-06",
+   "CEDI-07"
   ],
   "notas": [
    "El menú principal del handheld (eWMS CEDI OLO) muestra Usuario, Recurso y Almacén 0001; la opción usada es 'Picking, despacho y reposiciones' (picking automático y manual).",
@@ -1595,14 +1595,14 @@ export const PROCESOS_CEDI = {
    }
   ]
  },
- "P6": {
-  "codigo": "P6",
+ "CEDI-06": {
+  "codigo": "CEDI-06",
   "num": 6,
   "nombre": "Chequeo Cofersa",
-  "nodo": "P6 · Chequeo Cofersa",
+  "nodo": "CEDI-06 · Chequeo Cofersa",
   "compania": "COFERSA",
   "silo": "log_preparacion",
-  "siloLabel": "P1.3 · Preparación de pedidos",
+  "siloLabel": "OL.3 · Preparación de pedidos",
   "macro": "S3 · Control de exactitud",
   "nodoExistente": "Chequeo de Cofersa",
   "objetivo": "Verificar la exactitud de los pedidos alistados de Cofersa antes de su envío a despacho.",
@@ -1717,12 +1717,6 @@ export const PROCESOS_CEDI = {
    },
    {
     "schema": "efw",
-    "tabla": "ETIQUETADO",
-    "motivo": "Impresión de la etiqueta tipo Master del palet",
-    "confianza": "media"
-   },
-   {
-    "schema": "efw",
     "tabla": "ARTICULOSEAN",
     "motivo": "Consulta del código EAN (IDEAN) en Catálogos > Artículos EAN",
     "confianza": "alta"
@@ -1758,13 +1752,13 @@ export const PROCESOS_CEDI = {
    }
   ],
   "entradaDe": [
-   "P1",
-   "P5"
+   "CEDI-01",
+   "CEDI-05"
   ],
   "salidaA": [
-   "P7",
-   "P8",
-   "P10"
+   "CEDI-07",
+   "CEDI-08",
+   "CEDI-10"
   ],
   "notas": [
    "SIPOC: proveedor Área de Alistamiento; entrada palet alistado pendiente de chequeo; salida palet máster verificado y etiquetado hacia el Área de Despacho.",
@@ -1802,14 +1796,14 @@ export const PROCESOS_CEDI = {
    }
   ]
  },
- "P7": {
-  "codigo": "P7",
+ "CEDI-07": {
+  "codigo": "CEDI-07",
   "num": 7,
   "nombre": "Facturación Cofersa",
-  "nodo": "P7 · Facturación Cofersa",
+  "nodo": "CEDI-07 · Facturación Cofersa",
   "compania": "COFERSA",
   "silo": "neg_facturacion",
-  "siloLabel": "P1.12 · Facturación",
+  "siloLabel": "CEDI-01.12 · Facturación",
   "macro": "S1 · Generación de la factura electrónica",
   "nodoExistente": "Facturación Cofersa",
   "objetivo": "Establecer el procedimiento de facturación de los pedidos de Cofersa una vez que han sido alistados y entregados a empaque, garantizando la generación correcta del comprobante fiscal.",
@@ -1965,13 +1959,13 @@ export const PROCESOS_CEDI = {
    }
   ],
   "entradaDe": [
-   "P5",
-   "P6"
+   "CEDI-05",
+   "CEDI-06"
   ],
   "salidaA": [
-   "P8",
-   "P10",
-   "P9"
+   "CEDI-08",
+   "CEDI-10",
+   "CEDI-09"
   ],
   "notas": [
    "No existe manual de usuario para este proceso; información tomada del procedimiento, el diagrama y las notas de campo.",
@@ -2001,14 +1995,14 @@ export const PROCESOS_CEDI = {
    }
   ]
  },
- "P8": {
-  "codigo": "P8",
+ "CEDI-08": {
+  "codigo": "CEDI-08",
   "num": 8,
   "nombre": "Despacho de bandas Cofersa",
-  "nodo": "P8 · Despacho de bandas Cofersa",
+  "nodo": "CEDI-08 · Despacho de bandas Cofersa",
   "compania": "COFERSA",
   "silo": "log_transporte",
-  "siloLabel": "P1.4 · Transporte",
+  "siloLabel": "OL.4 · Transporte",
   "macro": "S3 · Despacho",
   "nodoExistente": "Despacho de bandas Cofersa",
   "objetivo": "Establecer el procedimiento para el despacho de la mercancía consolidada en máster mediante el sistema de bandas.",
@@ -2200,12 +2194,12 @@ export const PROCESOS_CEDI = {
    }
   ],
   "entradaDe": [
-   "P1",
-   "P6",
-   "P7"
+   "CEDI-01",
+   "CEDI-06",
+   "CEDI-07"
   ],
   "salidaA": [
-   "P9"
+   "CEDI-09"
   ],
   "notas": [
    "SIPOC: proveedor banda transportadora; entradas máster vacío (almacén de máster) y producto de banda; salida máster despachado por puerta.",
@@ -2243,14 +2237,14 @@ export const PROCESOS_CEDI = {
    }
   ]
  },
- "P10": {
-  "codigo": "P10",
+ "CEDI-10": {
+  "codigo": "CEDI-10",
   "num": 10,
   "nombre": "Despacho de original Cofersa",
-  "nodo": "P10 · Despacho de original Cofersa",
+  "nodo": "CEDI-10 · Despacho de original Cofersa",
   "compania": "COFERSA",
   "silo": "log_transporte",
-  "siloLabel": "P1.4 · Transporte",
+  "siloLabel": "OL.4 · Transporte",
   "macro": "S3 · Despacho",
   "nodoExistente": "Despacho de original Cofersa",
   "objetivo": "Establecer el procedimiento de despacho de las tarimas de mercancía original de Cofersa, garantizando su envío a la ruta y puerta correctas.",
@@ -2428,12 +2422,12 @@ export const PROCESOS_CEDI = {
    }
   ],
   "entradaDe": [
-   "P1",
-   "P6",
-   "P7"
+   "CEDI-01",
+   "CEDI-06",
+   "CEDI-07"
   ],
   "salidaA": [
-   "P9"
+   "CEDI-09"
   ],
   "notas": [
    "SIPOC: proveedor Área de Alistamiento; entradas tarima original, palet máster, código de puerta y número de viaje; salida tarima despachada por la puerta.",
@@ -2463,14 +2457,14 @@ export const PROCESOS_CEDI = {
    }
   ]
  },
- "P4": {
-  "codigo": "P4",
+ "CEDI-04": {
+  "codigo": "CEDI-04",
   "num": 4,
   "nombre": "Despacho EPA",
-  "nodo": "P4 · Despacho EPA",
+  "nodo": "CEDI-04 · Despacho EPA",
   "compania": "EPA",
   "silo": "log_transporte",
-  "siloLabel": "P1.4 · Transporte",
+  "siloLabel": "OL.4 · Transporte",
   "macro": "S3 · Despacho",
   "nodoExistente": "Despacho EPA",
   "objetivo": "Definir el procedimiento de carga de camiones y verificación de expediciones para la distribución de la mercancía de Ferretería EPA hacia las tiendas, mediante la aplicación Apolo y el módulo de Carga Camión.",
@@ -2761,8 +2755,8 @@ export const PROCESOS_CEDI = {
    }
   ],
   "entradaDe": [
-   "P2",
-   "P3"
+   "CEDI-02",
+   "CEDI-03"
   ],
   "salidaA": [],
   "notas": [
@@ -2806,14 +2800,14 @@ export const PROCESOS_CEDI = {
    }
   ]
  },
- "P9": {
-  "codigo": "P9",
+ "CEDI-09": {
+  "codigo": "CEDI-09",
   "num": 9,
   "nombre": "Transporte Cofersa",
-  "nodo": "P9 · Transporte Cofersa",
+  "nodo": "CEDI-09 · Transporte Cofersa",
   "compania": "COFERSA",
   "silo": "log_transporte",
-  "siloLabel": "P1.4 · Transporte",
+  "siloLabel": "OL.4 · Transporte",
   "macro": "S4 · Ejecución de la entrega",
   "nodoExistente": "Transporte Cofersa",
   "objetivo": "Establecer el procedimiento de asignación de choferes, generación de guías y control documental de los envíos de Cofersa.",
@@ -2986,13 +2980,13 @@ export const PROCESOS_CEDI = {
    }
   ],
   "entradaDe": [
-   "P1",
-   "P7",
-   "P8",
-   "P10"
+   "CEDI-01",
+   "CEDI-07",
+   "CEDI-08",
+   "CEDI-10"
   ],
   "salidaA": [
-   "P14"
+   "CEDI-14"
   ],
   "notas": [
    "No existe manual de usuario para este proceso; información tomada del procedimiento, el diagrama y las notas de campo.",
@@ -3023,15 +3017,15 @@ export const PROCESOS_CEDI = {
    }
   ]
  },
- "P3": {
-  "codigo": "P3",
+ "CEDI-03": {
+  "codigo": "CEDI-03",
   "num": 3,
   "nombre": "Cross Docking",
-  "nodo": "P3 · Cross Docking",
+  "nodo": "CEDI-03 · Cross Docking",
   "compania": "CEDI",
-  "silo": "log_almacenaje",
-  "siloLabel": "P1.2 · Almacenaje",
-  "macro": "S1 · Acomodo (putaway)",
+  "silo": "cross_docking",
+  "siloLabel": "OL.9 · Cross Docking",
+  "macro": "S2 · Cross-docking en piso (procedimiento CEDI)",
   "nodoExistente": "Cross Docking",
   "objetivo": "Establecer el procedimiento para la distribución directa de la mercancía recibida hacia los pedidos de tienda, sin pasar por almacenamiento, mediante el uso del handheld.",
   "alcance": "Aplica a toda la mercancía gestionada bajo la modalidad de cross docking, desde la verificación del expediente hasta la entrega en despacho.",
@@ -3284,7 +3278,7 @@ export const PROCESOS_CEDI = {
   ],
   "entradaDe": [],
   "salidaA": [
-   "P4"
+   "CEDI-04"
   ],
   "notas": [
    "SIPOC: proveedor Área de Recepción; entrada expediente de recepción abierto (Sistema WMS) y Packing List impreso; salida tarima distribuida y despachada a la tienda destino y reporte de sobrantes o merma al cliente.",
@@ -3325,14 +3319,14 @@ export const PROCESOS_CEDI = {
    }
   ]
  },
- "P14": {
-  "codigo": "P14",
+ "CEDI-14": {
+  "codigo": "CEDI-14",
   "num": 14,
   "nombre": "Devoluciones Cofersa",
-  "nodo": "P14 · Devoluciones Cofersa",
+  "nodo": "CEDI-14 · Devoluciones Cofersa",
   "compania": "COFERSA",
   "silo": "log_transporte",
-  "siloLabel": "P1.4 · Transporte",
+  "siloLabel": "OL.4 · Transporte",
   "macro": "S7 · Logística inversa (recolección de devoluciones)",
   "nodoExistente": null,
   "objetivo": "Establecer la metodología para la recepción, verificación, clasificación y registro de las devoluciones de mercancía de los clientes de Cofersa, garantizando su correcto acomodo en el almacén según la clasificación correspondiente (bueno, taller, merma y garantías).",
@@ -3622,7 +3616,7 @@ export const PROCESOS_CEDI = {
    }
   ],
   "entradaDe": [
-   "P9"
+   "CEDI-09"
   ],
   "salidaA": [],
   "notas": [

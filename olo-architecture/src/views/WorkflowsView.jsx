@@ -19,7 +19,7 @@ import { useNovedadesDoc } from "../components/NovedadesModal.jsx";
 import { ValidacionPaso, ValidacionProceso } from "../components/Validacion.jsx";
 
 const PESTANAS = [["workflows","Workflows"],["sistemas","Sistemas"],["roles","Roles"],["cambios","Cambios"]];
-const corto = l => (l || "").replace(/^P\d+\.\d+\s*·\s*/, "");
+const corto = l => (l || "").replace(/^(?:P\d+|OL)\.\d+\s*·\s*/, "");
 
 export function WorkflowsView({ focus }) {
   const { navigate } = useNav();

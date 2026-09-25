@@ -13,6 +13,7 @@ import { PROCESOS } from "../data/procesos_fichas.js";
 import { BPA_AREA_COLORS as BPA_COLORS, MATURITY_TINTS, DESIGN } from "../data/constants.js";
 import { KPICard, DetailPanel, ModuleChip } from "../components/ui.jsx";
 import { useValidaciones } from "../lib/useValidaciones.js";
+import { tipoFicha } from "../data/workflows.js";
 
 // Sistema de un paso de ficha → módulo de Operación
 const SIS_A_MODULO = { eflow:"WMS-D", handheld:"WMS-RF", torre:"WMH", sorter:"SORTER" };
@@ -21,8 +22,17 @@ const SIS_A_MODULO = { eflow:"WMS-D", handheld:"WMS-RF", torre:"WMH", sorter:"SO
 // propios, pero son parte del negocio misional y concentran el levantamiento.
 const OPERACION_LOGISTICA = ["log_planificacion","log_almacenaje","log_preparacion","log_transporte","log_inventario","log_servicio_cliente","log_mantenimiento","log_desempeno","cross_docking"];
 
+// Cada silo de operación logística (OL.x) es el detalle operativo del CEDI que
+// sostiene un proceso de negocio del diagnóstico: no lo duplica, lo baja a piso.
+const APORTA_A = {
+  log_planificacion: "neg_almacenamiento", log_almacenaje: "neg_almacenamiento", log_preparacion: "neg_almacenamiento",
+  log_transporte: "neg_transporte_local", log_inventario: "neg_almacenamiento", log_servicio_cliente: "neg_relacion_clientes",
+  log_desempeno: "neg_seguimiento_operacion", cross_docking: "neg_almacenamiento",
+};
+
 const ESTADOS = {
   validado: { label:"Validado",          color:"#047857", desc:"todos sus procesos fueron validados en Workflows" },
+  mixto:    { label:"OLO + borradores",  color:"#0f766e", desc:"tiene procedimientos OLO y también procesos borrador" },
   cedi:     { label:"Procedimiento OLO", color:"#15803d", desc:"tiene fichas de procedimientos aprobados del CEDI" },
   manual:   { label:"Manual del sistema", color:"#0891b2", desc:"mapeado del manual del proveedor, sin procedimiento OLO" },
   borrador: { label:"Borrador",          color:"#b45309", desc:"procesos armados sobre pantallas de eFlow, a validar" },
@@ -31,8 +41,8 @@ const ESTADOS = {
   sinSilo:  { label:"Sin silo",          color:"#cbd5e1", desc:"todavía no tiene silo en Procesos" },
 };
 
-// Tipo de ficha: procedimiento aprobado del CEDI (P1…P14), mapeo del manual de un sistema, o borrador
-const tipoFicha = p => /^P\d+$/.test(p.codigo) ? "cedi" : p.borrador ? "borrador" : "manual";
+// Tipo de ficha: procedimiento aprobado del CEDI (CEDI-01…CEDI-14), mapeo del manual de un sistema, o borrador
+// tipoFicha viene de workflows.js (una sola definición)
 
 // Fichas por silo (registro estático de procesos): cuántas, de qué tipo y qué módulos usan sus pasos
 const FICHAS_POR_SILO = (() => {
@@ -46,8 +56,8 @@ const FICHAS_POR_SILO = (() => {
   return r;
 })();
 
-const codigoSilo = (label = "") => label.match(/^(P\d+\.\d+)/)?.[1] ?? null;
-const nombreSilo = (label = "") => label.replace(/^P\d+\.\d+\s*·\s*/, "");
+const codigoSilo = (label = "") => label.match(/^((?:P\d+|OL)\.\d+)/)?.[1] ?? null;
+const nombreSilo = (label = "") => label.replace(/^(?:P\d+|OL)\.\d+\s*·\s*/, "");
 
 // Estado y datos del levantamiento de un silo
 function levantamiento(siloId, cats, procsPorSilo, val) {
@@ -60,7 +70,7 @@ function levantamiento(siloId, cats, procsPorSilo, val) {
   const res = val?.cargado ? fichas.map(p => val.resumen(p.codigo)) : [];
   const pasosVal = res.reduce((a, r) => a + r.validados, 0), pasosTot = fichas.reduce((a, p) => a + p.pasos.length, 0);
   const procVal = res.filter(r => r.proceso === "validado").length;
-  const estado = fichas.length && procVal === fichas.length ? "validado" : f.cedi ? "cedi" : f.manual ? "manual" : f.borrador ? "borrador" : procesos ? "arbol" : "vacio";
+  const estado = fichas.length && procVal === fichas.length ? "validado" : f.cedi && (f.borrador || f.manual) ? "mixto" : f.cedi ? "cedi" : f.manual ? "manual" : f.borrador ? "borrador" : procesos ? "arbol" : "vacio";
   return { estado, cat, codigo:codigoSilo(cat?.label), procesos, cedi:f.cedi, manual:f.manual, borrador:f.borrador, modulos:[...f.modulos], pasosVal, pasosTot, procVal, fichas:fichas.length };
 }
 
@@ -95,13 +105,18 @@ export function BPAView({ selected, setSelected, onNavigate = () => {} }) {
   const diagnostico = areas.flatMap(a => porArea[a]);
   const operacion = OPERACION_LOGISTICA.map(id => {
     const cat = cats?.find(c => c.id === id);
-    return conLev({ name: cat ? nombreSilo(cat.label) : id, silo:id, maturity:null, priority:null, owner:"—", coverage:[] }, "operacion");
+    const destino = cats?.find(c => c.id === APORTA_A[id]);
+    return conLev({ name: cat ? nombreSilo(cat.label) : id, silo:id, maturity:null, priority:null, owner:"—", coverage:[],
+      note: destino ? `Detalle operativo del CEDI que sostiene «${destino.label}» del diagnóstico.` : "Detalle operativo del CEDI (apoyo: no corresponde a un proceso de negocio del diagnóstico)." }, "operacion");
   });
 
   const total = diagnostico.length, withCov = diagnostico.filter(p => p.cobertura.length > 0).length;
+  const covDiag = diagnostico.filter(p => (p.coverage || []).length > 0).length;
+  const covLev = diagnostico.filter(p => (p.lev.modulos || []).length > 0).length;
   const avgMat = (diagnostico.reduce((s,p) => s + p.maturity, 0) / total).toFixed(2);
   const lider = diagnostico.reduce((a,b) => b.maturity > a.maturity ? b : a);
-  const silosConProcesos = cats ? cats.filter(c => procsPorSilo?.[c.id]).length : null;
+  const catsProc = cats ? cats.filter(c => !String(c.id).startsWith("ref_")) : null;
+  const silosConProcesos = catsProc ? catsProc.filter(c => procsPorSilo?.[c.id]).length : null;
   const fichas = Object.values(PROCESOS);
   const nTipo = t => fichas.filter(p => tipoFicha(p) === t).length;
   const totPasos = fichas.reduce((a, p) => a + p.pasos.length, 0);
@@ -137,13 +152,13 @@ export function BPAView({ selected, setSelected, onNavigate = () => {} }) {
     <div style={{ display:"flex", gap:10, marginBottom:18, flexWrap:"wrap" }}>
       <KPICard label="Procesos del diagnóstico" value={total} color="#1D1D1B" sub="4 áreas · CICR dic 2024"/>
       <KPICard label="Madurez promedio" value={`${avgMat}/5`} color="#f39c12" sub={`${lider.name} (M${lider.maturity}) lidera`}/>
-      <KPICard label="Con cobertura de sistema" value={`${withCov}/${total}`} color="#27ae60" sub="diagnóstico + pasos levantados"/>
-      <KPICard label="Silos con procesos" value={cats ? `${silosConProcesos}/${cats.length}` : "…"} color="#2563eb" sub="módulo Procesos"/>
+      <KPICard label="Con cobertura de sistema" value={`${withCov}/${total}`} color="#27ae60" sub={`${covDiag} según el diagnóstico · ${covLev} por pasos levantados`}/>
+      <KPICard label="Silos con procesos" value={catsProc ? `${silosConProcesos}/${catsProc.length}` : "…"} color="#2563eb" sub="módulo Procesos"/>
       <KPICard label="Pasos validados" value={pasosValidados == null ? "…" : `${pasosValidados}/${totPasos}`} color="#047857" sub={procesosValidados == null ? "" : `${procesosValidados} de ${fichas.length} procesos validados · en Workflows`}/>
       <KPICard label="Fichas de proceso" value={fichas.length} color="#b45309" sub={`${nTipo("cedi")} procedimiento OLO · ${nTipo("manual")} de manual · ${nTipo("borrador")} borrador`}/>
     </div>
     <div style={{ background:"rgba(243,156,18,0.07)", border:"1px solid rgba(243,156,18,0.22)", borderLeft:"3px solid #f39c12", borderRadius:8, padding:"10px 14px", marginBottom:22, fontSize:12, color:"#666", lineHeight:1.6 }}>
-      <b style={{ color:"#d35400" }}>Dos capas:</b> madurez, prioridad y dueño vienen del <i>Informe Final Diagnóstico Procesos OLO · CICR · diciembre 2024</i> (no se modifican). El estado de cada tarjeta, su código P1.x y los sistemas agregados vienen del <b>levantamiento actual</b> en Procesos. Estratégicos arriba, apoyo a la izquierda, negocio al centro, control a la derecha; abajo, la operación logística del CEDI. Click en un proceso para ver su detalle e ir a su silo.
+      <b style={{ color:"#d35400" }}>Dos capas:</b> madurez, prioridad y dueño vienen del <i>Informe Final Diagnóstico Procesos OLO · CICR · diciembre 2024</i> (no se modifican). El estado de cada tarjeta, su código (P1.x negocio · OL.x operación logística) y los sistemas agregados vienen del <b>levantamiento actual</b> en Procesos. Estratégicos arriba, apoyo a la izquierda, negocio al centro, control a la derecha; abajo, la operación logística del CEDI. Click en un proceso para ver su detalle e ir a su silo.
     </div>
     <div ref={detalleRef} style={{ scrollMarginTop:16 }}>{detalle && <DetailPanel item={detalle} onClose={()=>setSelected(null)}/>}</div>
     <BPAArea area="estrategicos" processes={porArea.estrategicos} selected={selected} onSelect={setSelected}/>
@@ -152,12 +167,12 @@ export function BPAView({ selected, setSelected, onNavigate = () => {} }) {
       <BPAArea area="negocio" processes={porArea.negocio} selected={selected} onSelect={setSelected}/>
       <BPAArea area="control" processes={porArea.control} selected={selected} onSelect={setSelected}/>
     </div>
-    <BPAArea area="negocio" titulo="Negocio › Operación logística del CEDI" desc="Silos P1.1–P1.8 y Cross Docking · no evaluados como procesos en el diagnóstico 2024 · aquí están los 14 procedimientos del CEDI"
+    <BPAArea area="negocio" titulo="Negocio › Operación logística del CEDI" desc="Silos OL.1–OL.9 · no evaluados como procesos en el diagnóstico 2024 · aquí están los 14 procedimientos del CEDI"
       processes={operacion} selected={selected} onSelect={setSelected} grid style={{ marginTop:14 }}/>
     <div style={{ marginTop:18, padding:"12px 16px", background:"#fafafa", border:"1px solid #e0e0e0", borderRadius:8 }}>
       <div style={{ fontSize:10, fontWeight:700, color:"#666", letterSpacing:"0.1em", marginBottom:8, textTransform:"uppercase" }}>Lectura</div>
       <div style={{ display:"flex", flexWrap:"wrap", gap:16, alignItems:"center", marginBottom:8 }}>
-        <span style={{ fontSize:11, color:"#444" }}><b>M0–M5</b> madurez · <b>P1–P3</b> prioridad de levantamiento (diagnóstico)</span>
+        <span style={{ fontSize:11, color:"#444" }}><b>M0–M5</b> madurez · <b>Prio 1–3</b> prioridad de levantamiento (diagnóstico)</span>
         {[0,1,2,3].map(m=><span key={m} style={{ fontSize:10, fontWeight:700, color:MATURITY_TINTS[m], background:MATURITY_TINTS[m]+"20", padding:"1px 7px", borderRadius:4 }}>M{m}</span>)}
       </div>
       <div style={{ display:"flex", flexWrap:"wrap", gap:14, alignItems:"center" }}>
@@ -191,7 +206,7 @@ function ProcCard({ p, meta, isSel, onSelect }) {
   return <div onClick={()=>onSelect(isSel?null:p.name)} style={{ background:isSel?meta.color+"1a":"#ffffff", border:`1px solid ${hasCov?meta.color+"55":"#e0e0e0"}`, borderLeft:`3px solid ${tint}`, borderRadius:8, padding:"8px 10px", cursor:"pointer", transition:"all 0.15s", boxShadow:isSel?`0 0 0 2px ${meta.color}33`:"none" }}>
     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", gap:6, marginBottom:5 }}>
       <span style={{ fontSize:11, color:"#1D1D1B", fontWeight:isSel?700:500, lineHeight:1.3, flex:1 }}>{p.name}</span>
-      {p.maturity != null && <span style={{ fontSize:9, fontWeight:700, color:tint, whiteSpace:"nowrap" }}>M{p.maturity}·P{p.priority}</span>}
+      {p.maturity != null && <span style={{ fontSize:9, fontWeight:700, color:tint, whiteSpace:"nowrap" }}>M{p.maturity} · Prio {p.priority}</span>}
     </div>
     <div style={{ display:"flex", flexWrap:"wrap", gap:4, alignItems:"center" }}>
       {lev.codigo && <span style={{ fontSize:9.5, fontWeight:700, color:DESIGN.inkSoft, fontFamily:DESIGN.font }}>{lev.codigo}</span>}

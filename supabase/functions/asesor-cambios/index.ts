@@ -12,7 +12,7 @@ const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY")!;
 const MODELO = Deno.env.get("ASESOR_MODEL") ?? "gpt-4.1";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
-const MAX_VUELTAS = 10;
+const MAX_VUELTAS = 14;
 
 const INSTRUCCIONES = `Eres el ASESOR DE CAMBIOS del WMS de OLO Logistics. El WMS es eFlow (escritorio y handheld RF), fabricado por ePRAC, junto con la Torre de Control (WMH), el SORTER CLIRO de Mecalux, el middleware eIntegra y el ERP Softland. Clientes y compañías: Cofersa, EPA, Mayoreo (Costa Rica) y Febeca, Beval, Sillaca (Venezuela).
 
@@ -32,6 +32,8 @@ Reglas:
 - No inventes tablas, columnas, pantallas ni solicitudes: si no las encontraste con las herramientas, dilo. Si falta información para decidir, usa el veredicto "falta_informacion" y di qué preguntar.
 - La estructura de las tablas de eFlow viene de la base de Venezuela (Beval): es el mismo producto que EFLOW_OLO de Costa Rica, que hoy no se puede leer; dilo cuando sea relevante.
 - Los procesos marcados BORRADOR son inferidos: úsalos con cautela.
+- Una solicitud con relacion.tipo "duplicado" o "version_anterior" es el MISMO cambio que la que indica relacion.de: no la cuentes como precedente independiente; usa la vigente (la que indica relacion.de).
+- Los procedimientos del CEDI se llaman CEDI-01…CEDI-14; los silos de operación logística OL.1…OL.9 y los de negocio P1.9…P1.22.
 - Cita en "fuentes" TODOS los documentos que usaste para concluir (solicitudes, tablas, pantallas, procesos), con su id tal como lo devuelven las herramientas.
 - Escribe en español claro, para personas de operación y TI.`;
 
@@ -101,12 +103,12 @@ Deno.serve(async (req) => {
         return data?.length ? data.map(d => ({ ...d, texto: String(d.texto).slice(0, 9000) })) : { error: `No encontré la tabla ${n}. Prueba buscar_conocimiento con tipo "tabla".` };
       }
       if (nombre === "listar_solicitudes") {
-        let q = supa.from("solicitudes_cambio").select("id,titulo,modulo,fecha,estado,compania,prioridad").order("fecha", { ascending: false }).limit(60);
+        let q = supa.from("solicitudes_cambio").select("id,titulo,modulo,fecha,estado,compania,prioridad,relacion").order("fecha", { ascending: false }).limit(60);
         if (a.filtro) q = q.or(`titulo.ilike.%${String(a.filtro).replace(/[%,()]/g, "")}%,modulo.ilike.%${String(a.filtro).replace(/[%,()]/g, "")}%,descripcion.ilike.%${String(a.filtro).replace(/[%,()]/g, "")}%`);
         const { data } = await q; return data ?? [];
       }
       if (nombre === "ver_solicitud") {
-        const { data } = await supa.from("solicitudes_cambio").select("id,titulo,modulo,fecha,prioridad,cliente,almacen,compania,solicitante,como,necesito,para,situacion_actual,descripcion,estado,notas,entidades,atencion").eq("id", a.id).maybeSingle();
+        const { data } = await supa.from("solicitudes_cambio").select("id,titulo,modulo,fecha,prioridad,cliente,almacen,compania,solicitante,como,necesito,para,situacion_actual,descripcion,estado,notas,entidades,atencion,relacion").eq("id", a.id).maybeSingle();
         return data ? { ...data, descripcion: String(data.descripcion ?? "").slice(0, 12000) } : { error: "No existe esa solicitud." };
       }
       return { error: `Herramienta desconocida: ${nombre}` };
@@ -118,6 +120,12 @@ Deno.serve(async (req) => {
       const cuerpo: Record<string, unknown> = { model: MODELO, instructions: INSTRUCCIONES, input: entrada, tools: HERRAMIENTAS,
         text: { format: { type: "json_schema", name: "evaluacion_cambio", schema: ESQUEMA, strict: true } } };
       if (anterior) cuerpo.previous_response_id = anterior;
+      // última vuelta: debe concluir con lo que ya reunió (sin más consultas)
+      if (vuelta === MAX_VUELTAS - 1) {
+        cuerpo.tool_choice = "none";
+        entrada = [...entrada, { role: "user", content: "Ya no hay más consultas disponibles: concluye ahora con la evidencia reunida. Lo que no alcanzaste a verificar va en preguntas_abiertas." }];
+        cuerpo.input = entrada;
+      }
       const r = await fetch("https://api.openai.com/v1/responses", { method: "POST", headers: { Authorization: `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify(cuerpo) });
       const b = await r.json();
       if (!r.ok) return json({ error: `OpenAI: ${b?.error?.message ?? r.status}` }, 502);

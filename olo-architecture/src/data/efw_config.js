@@ -54,8 +54,8 @@ export const EFW_CONFIG_TABLE_DEFS = {
   ZONARUTAPICKINGSECUENCIA: { pk: "IDALMACEN", cols: ["IDALMACEN→ZONARUTAPICKING", "IDZONAPICKING→ZONARUTAPICKING", "IDRUTAPICKING→ZONARUTAPICKING", "RUTASEQUENCIA", "RUTAORDEN", "IDALMACENAMIENTOINICIAL", "IDALMACENAMIENTOFINAL", "CAMPOINICIAL1"] },
 };
 
-// Enlace tabla → capítulo/Subproceso real dentro de Procesos › P1.2 Almacenaje
-// › S9 Configuración del sistema (eflow WMS). El PDF de cada capítulo vive en
+// Enlace tabla → capítulo/Subproceso real dentro de Procesos › Referencia · Guía de
+// configuración de eFlow (ePRAC). El PDF de cada capítulo vive en
 // el bucket Detalles_Porcesos (mismo storage que usa Procesos para "Detalle"),
 // subido y referenciado ahí mismo — path fijo, no cambia salvo que alguien
 // reemplace el archivo en Procesos.

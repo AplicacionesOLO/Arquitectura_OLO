@@ -29,8 +29,8 @@ export const ORIGEN_WF = {
   inferido:       { label:"Inferido · validar", color:"#b45309" },
 };
 
-// Tipo de ficha: procedimiento aprobado del CEDI (P1…P14), mapeo del manual de un sistema, o borrador
-export const tipoFicha = p => /^P\d+$/.test(p.codigo) ? "cedi" : p.borrador ? "borrador" : "manual";
+// Tipo de ficha: procedimiento aprobado del CEDI (CEDI-01…CEDI-14), mapeo del manual de un sistema, o borrador
+export const tipoFicha = p => /^CEDI-\d+$/.test(p.codigo) ? "cedi" : p.borrador ? "borrador" : "manual";
 export const TIPO_FICHA = {
   cedi:     { label:"Procedimiento OLO", color:"#15803d" },
   manual:   { label:"Manual del sistema", color:"#0891b2" },

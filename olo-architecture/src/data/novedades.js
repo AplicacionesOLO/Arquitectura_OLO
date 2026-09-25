@@ -8,15 +8,29 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const NOVEDADES_FALLBACK = {
-  "version": "2026-09-2",
+  "version": "2026-09-3",
   "titulo": "Novedades",
-  "fecha": "Septiembre 2026 · segunda entrega",
+  "fecha": "Septiembre 2026 · tercera entrega",
   "items": [
+    {
+      "id": "numeracion-2026-09",
+      "estado": "publicada",
+      "titulo": "Numeración única de procesos y silos",
+      "detalle": "Los procedimientos del CEDI ahora se llaman CEDI-01 a CEDI-14 y los silos de operación logística OL.1 a OL.9; los P1.x quedan solo para los procesos de negocio del diagnóstico. Torre de Control Cofersa pasó a Preparación de pedidos (con la de EPA) y el procedimiento de Cross Docking a su silo.",
+      "seccion": "olo-arch"
+    },
+    {
+      "id": "asesor-2026-09",
+      "estado": "publicada",
+      "titulo": "Asesor de cambios del WMS",
+      "detalle": "Describe un cambio que quieras hacer en el WMS y el asesor revisa las solicitudes a ePRAC, la estructura de las bases, las pantallas y los procesos para decir si es viable, qué implica y qué recomienda, con sus fuentes.",
+      "seccion": "asesor"
+    },
     {
       "id": "workflows-2026-09",
       "estado": "publicada",
       "titulo": "Nuevo módulo Workflows: el plano maestro de la operación",
-      "detalle": "Cada proceso como un flujo de tarjetas: paso, sistema, pantalla y roles. Un mapa maestro con los 12 silos y sus 53 procesos conectados, y un lienzo por silo. Toca un paso para ver su captura o presentarlo; los círculos morados llevan al proceso anterior o siguiente. Admin y editores pueden reacomodar y conectar tarjetas.",
+      "detalle": "Cada proceso como un flujo de tarjetas: paso, sistema, pantalla y rol. Un mapa maestro con todos los silos y sus procesos conectados, y un lienzo por silo. Toca un paso para ver su captura o presentarlo; los círculos morados llevan al proceso anterior o siguiente. Admin y editores pueden reacomodar y conectar tarjetas.",
       "seccion": "workflows"
     },
     {
@@ -30,7 +44,7 @@ export const NOVEDADES_FALLBACK = {
       "id": "bpa-levantamiento-2026-09",
       "estado": "publicada",
       "titulo": "BPA · OLO conectado al levantamiento",
-      "detalle": "Cada proceso del diagnóstico muestra su silo P1.x, si ya tiene procedimiento OLO, borrador o está sin levantar, y los sistemas que usan sus pasos. Nuevo bloque Operación logística del CEDI y botón para ir directo al silo en Procesos.",
+      "detalle": "Cada proceso del diagnóstico muestra su silo, si ya tiene procedimiento OLO, borrador o está sin levantar, y los sistemas que usan sus pasos. El bloque Operación logística del CEDI indica a qué proceso del diagnóstico sostiene cada silo, y hay un botón para ir directo al silo en Procesos.",
       "seccion": "bpa"
     },
     {
@@ -50,8 +64,8 @@ export const NOVEDADES_FALLBACK = {
     {
       "id": "silos-borrador-2026-09",
       "estado": "publicada",
-      "titulo": "7 silos con procesos borrador",
-      "detalle": "Inventario físico, Almacenamiento ZF-nacional, Valor agregado, Servicio logístico, Desempeño, Seguimiento y Transporte local tienen procesos armados sobre pantallas reales de eflow. Llevan la marca «borrador»: cada paso indica si viene del WMS o es inferido y debe validarse.",
+      "titulo": "Procesos borrador en los silos sin procedimiento",
+      "detalle": "Los silos que no tenían procedimiento aprobado de OLO tienen procesos armados sobre pantallas reales de eflow y del menú de Softland. Llevan la marca «borrador»: cada paso indica de dónde viene o si es inferido, y se validan en Workflows.",
       "seccion": "olo-arch"
     },
     {
@@ -100,7 +114,7 @@ export const NOVEDADES_FALLBACK = {
       "id": "contexto-2026-09",
       "estado": "publicada",
       "titulo": "Contexto completo",
-      "detalle": "Estado del conocimiento, aplicaciones y versiones, clientes y sus reglas operativas, bases de datos, fuentes del levantamiento, glosario de 97 términos y brechas abiertas.",
+      "detalle": "Estado del conocimiento, aplicaciones y versiones, clientes y sus reglas operativas, bases de datos, fuentes del levantamiento, glosario y brechas abiertas.",
       "seccion": "context"
     },
     {

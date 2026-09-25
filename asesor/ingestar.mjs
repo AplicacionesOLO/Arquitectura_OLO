@@ -161,7 +161,33 @@ for (const p of archivos.sort()) {
     como: r.como || null, necesito: r.necesito || null, para: r.para || null, situacion_actual: r.situacion || null, descripcion: r.descripcion || null,
     atencion: r.atencion || {}, entidades: detectar(texto, `${titulo} ${r.modulo || ""}`), hash });
 }
-console.log(`Solicitudes: ${solicitudes.length} · otros documentos: ${otrosDocs.length}`);
+// Relaciones entre solicitudes del mismo tema: duplicado (texto casi idéntico),
+// versión anterior (mismo módulo y la otra declara una versión mayor) o relacionada.
+const tema = t => norm(t).replace(/\b(v\s*\d+|\d+(\.\d+)?|olo|epra?c?)\b/g, " ").replace(/[^a-z]+/g, " ").trim().split(" ").slice(0, 3).join(" ");
+const version = t => { const m = norm(t).match(/\bv\s*(\d+)|\b(\d+)\.(\d+)\b/); return m ? Number(m[1] || m[2]) + (m[3] ? Number(m[3]) / 10 : 0) : 1; };
+const palabras = s => new Set(norm(`${s.situacion_actual} ${s.descripcion}`).split(/[^a-z0-9]+/).filter(w => w.length > 3));
+const parecido = (a, b) => { const A = palabras(a), B = palabras(b); let n = 0; A.forEach(w => { if (B.has(w)) n++; }); return n / Math.max(1, Math.min(A.size, B.size)); };
+const porTema = {}; solicitudes.forEach(s => (porTema[tema(s.titulo)] ||= []).push(s));
+for (const grupo of Object.values(porTema)) {
+  if (grupo.length < 2) continue;
+  for (const s of grupo) {
+    for (const o of grupo) {
+      if (o === s) continue;
+      const mismoModulo = norm(o.modulo) === norm(s.modulo);
+      if (parecido(s, o) >= 0.9 && mismoModulo) {
+        // se queda la que tiene número de ePRAC o, si no, la más reciente
+        const principal = [s, o].sort((a, b) => (b.numero_eprac ? 1 : 0) - (a.numero_eprac ? 1 : 0) || String(b.fecha).localeCompare(String(a.fecha)))[0];
+        if (principal === o && !s.relacion) s.relacion = { tipo: "duplicado", de: o.id, titulo: `${o.titulo}${o.fecha ? ` (${o.fecha})` : ""}` };
+      } else if (mismoModulo && version(o.titulo) > version(s.titulo)) {
+        if (!s.relacion || s.relacion.tipo === "relacionada") s.relacion = { tipo: "version_anterior", de: o.id, titulo: o.titulo };
+      } else if (mismoModulo && (version(o.titulo) < version(s.titulo) || parecido(s, o) >= 0.9)) {
+        // s es la versión vigente o la principal del duplicado: no se marca
+      } else if (!s.relacion) s.relacion = { tipo: "relacionada", de: o.id, titulo: o.titulo };
+    }
+  }
+}
+solicitudes.forEach(s => { s.relacion ??= null; });
+console.log(`Solicitudes: ${solicitudes.length} · otros documentos: ${otrosDocs.length} · con relación: ${solicitudes.filter(s => s.relacion).map(s => `${s.titulo} → ${s.relacion.tipo} de «${s.relacion.titulo}»`).join(" · ")}`);
 // estado y notas no se envían: al re-ingerir se conservan los que se editaron en el BPA
 await upsert("solicitudes_cambio", solicitudes);
 
@@ -173,6 +199,7 @@ const add = (tipo, ref, titulo, texto, meta = {}) => docs.push({ id: `${tipo}:${
 for (const s of solicitudes) add("solicitud", s.id, `Solicitud de cambio · ${s.titulo}`, [
   `Módulo: ${s.modulo || "—"} · Prioridad: ${s.prioridad || "—"} · Fecha: ${s.fecha || "—"} · Solicitante: ${s.solicitante || "—"}`,
   `Cliente: ${s.cliente || "—"} · Almacén: ${s.almacen || "—"} · Compañía: ${s.compania || "—"}${s.numero_eprac ? ` · N.º ePRAC ${s.numero_eprac}` : ""}`,
+  s.relacion && `Relación: ${{ duplicado: "DUPLICADO de", version_anterior: "VERSIÓN ANTERIOR de", relacionada: "relacionada con" }[s.relacion.tipo]} «${s.relacion.titulo}» (${s.relacion.de})${s.relacion.tipo !== "relacionada" ? " — no contarla como precedente aparte" : ""}`,
   s.como && `Como: ${s.como}`, s.necesito && `Necesito: ${s.necesito}`, s.para && `Para: ${s.para}`,
   s.situacion_actual && `Situación actual:\n${s.situacion_actual}`, s.descripcion && `Cambio solicitado:\n${s.descripcion}`,
   `Tablas: ${s.entidades.tablas.join(", ") || "—"} · Reglas/parámetros: ${s.entidades.reglas.join(", ") || "—"} · Pantallas: ${s.entidades.pantallas.join(", ") || "—"} · Procesos: ${s.entidades.procesos.join(", ") || "—"}`,

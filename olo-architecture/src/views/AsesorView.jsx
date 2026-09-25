@@ -71,7 +71,7 @@ function Consultar({ onVerSolicitud }) {
           onKeyDown={e => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) analizar(); }}/>
         <div style={{ display:"flex", gap:8, alignItems:"center", marginTop:8, flexWrap:"wrap" }}>
           <button onClick={analizar} disabled={cargando || !pregunta.trim()} style={{ ...btn, color:"#fff", background: cargando || !pregunta.trim() ? "#94a3b8" : "#7c3aed" }}>{cargando ? "Analizando…" : "Analizar cambio"}</button>
-          <span style={{ fontSize:11.5, color:DESIGN.muted }}>Ctrl + Enter · tarda entre 20 y 90 segundos</span>
+          <span style={{ fontSize:11.5, color:DESIGN.muted }}>Ctrl + Enter · tarda entre 30 segundos y 2 minutos</span>
         </div>
         {!res && !cargando && <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:10 }}>
           {EJEMPLOS.map(x => <button key={x} onClick={() => setPregunta(x)} style={{ fontSize:12, color:"#6d28d9", background:"#faf5ff", border:"1px solid #ede9fe", borderRadius:999, padding:"4px 10px", cursor:"pointer", fontFamily:DESIGN.font, textAlign:"left" }}>{x}</button>)}
@@ -142,6 +142,7 @@ function Solicitudes({ abrir }) {
   const [abierta, setAbierta] = useState(abrir);
   const [q, setQ] = useState("");
   const [fEstado, setFEstado] = useState("");
+  const [soloVigentes, setSoloVigentes] = useState(true);   // oculta duplicados y versiones anteriores
   const cargar = useCallback(async () => {
     const { data } = await supabase.from("solicitudes_cambio").select("*").order("fecha", { ascending:false, nullsFirst:false });
     setFilas(data || []);
@@ -154,7 +155,8 @@ function Solicitudes({ abrir }) {
   };
   if (filas === null) return <div style={{ color:DESIGN.muted, fontSize:13 }}>Cargando…</div>;
   const n = s => String(s || "").toLowerCase();
-  const vis = filas.filter(f => (!fEstado || f.estado === fEstado) && (!q || [f.titulo, f.modulo, f.descripcion, f.compania].some(x => n(x).includes(n(q)))));
+  const superada = f => f.relacion && f.relacion.tipo !== "relacionada";
+  const vis = filas.filter(f => (!soloVigentes || !superada(f)) && (!fEstado || f.estado === fEstado) && (!q || [f.titulo, f.modulo, f.descripcion, f.compania].some(x => n(x).includes(n(q)))));
   const cuenta = Object.fromEntries(Object.keys(ESTADOS).map(k => [k, filas.filter(f => f.estado === k).length]));
   return <div>
     <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap", marginBottom:10 }}>
@@ -162,6 +164,7 @@ function Solicitudes({ abrir }) {
       <select value={fEstado} onChange={e => setFEstado(e.target.value)} style={{ fontSize:13, padding:"6px 8px", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:7, fontFamily:DESIGN.font }}>
         <option value="">Todos los estados ({filas.length})</option>{Object.entries(ESTADOS).map(([k, l]) => <option key={k} value={k}>{l} ({cuenta[k]})</option>)}
       </select>
+      <label style={{ fontSize:12.5, color:DESIGN.inkSoft, display:"flex", gap:5, alignItems:"center" }}><input type="checkbox" checked={soloVigentes} onChange={e => setSoloVigentes(e.target.checked)}/>Solo vigentes ({filas.filter(f => !superada(f)).length} de {filas.length}: sin duplicados ni versiones anteriores)</label>
       <span style={{ marginLeft:"auto", fontSize:12, color:DESIGN.muted }}>Marca el estado real de cada una: el asesor lo toma en cuenta al responder.</span>
     </div>
     <div style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:10, overflowX:"auto" }}>
@@ -172,7 +175,8 @@ function Solicitudes({ abrir }) {
           return <Fragment key={f.id}>
             <tr onClick={() => setAbierta(open ? null : f.id)} style={{ cursor:"pointer", background: open ? "#f8fafc" : "#fff" }}>
               <td style={{ ...td, whiteSpace:"nowrap" }}>{f.fecha ? new Date(f.fecha + "T12:00").toLocaleDateString("es-CR") : "—"}</td>
-              <td style={{ ...td, fontWeight:600, minWidth:220 }}>{open ? "▾" : "▸"} {f.titulo}{f.numero_eprac && <span style={{ fontSize:11, color:DESIGN.muted, fontWeight:400 }}> · ePRAC {f.numero_eprac}</span>}</td>
+              <td style={{ ...td, fontWeight:600, minWidth:220 }}>{open ? "▾" : "▸"} {f.titulo}{f.numero_eprac && <span style={{ fontSize:11, color:DESIGN.muted, fontWeight:400 }}> · ePRAC {f.numero_eprac}</span>}
+                {f.relacion && <div style={{ fontSize:11, fontWeight:500, color: f.relacion.tipo === "relacionada" ? DESIGN.muted : "#b45309", marginTop:2 }}>{{ duplicado:"Duplicado de", version_anterior:"Versión anterior de", relacionada:"Relacionada con" }[f.relacion.tipo]} «{f.relacion.titulo}»</div>}</td>
               <td style={td}>{f.modulo || "—"}</td><td style={{ ...td, fontSize:12 }}>{f.compania || "—"}</td><td style={{ ...td, fontSize:12 }}>{f.solicitante || "—"}</td>
               <td style={{ ...td, textAlign:"center" }}>{f.prioridad || "—"}</td>
               <td style={td} onClick={e => e.stopPropagation()}>

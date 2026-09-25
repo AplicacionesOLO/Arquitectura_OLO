@@ -106,3 +106,7 @@ where not exists (select 1 from public.role_permissions where role_key = 'admin'
 
 -- Relación con otra solicitud (la calcula asesor/ingestar.mjs): { tipo: duplicado | version_anterior | relacionada, de: id, titulo }
 alter table public.solicitudes_cambio add column if not exists relacion jsonb;
+
+-- Conversación (modo chat): las consultas de un mismo hilo comparten este id
+alter table public.asesor_consultas add column if not exists conversacion text;
+create index if not exists asesor_consultas_conv_idx on public.asesor_consultas (conversacion, created_at);

@@ -6,7 +6,7 @@
 // Solicitudes de cambio: catálogo de lo pedido a ePRAC, con estado editable.
 // Base de conocimiento: qué sabe el asesor y cómo alimentarlo.
 // ═══════════════════════════════════════════════════════════════════════════
-import { useState, useEffect, useCallback, Fragment } from "react";
+import { useState, useEffect, useCallback, useRef, Fragment } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 import { DESIGN } from "../data/constants.js";
 import { Markdown } from "../components/MonitoreoBases.jsx";
@@ -39,57 +39,128 @@ export function AsesorView() {
   </div>;
 }
 
-// ── Consultar ────────────────────────────────────────────────────────────────
+// ── Consultar: conversación con el asesor ───────────────────────────────────
+const nuevoId = () => (crypto.randomUUID ? crypto.randomUUID() : `c-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+const EJEMPLOS = ["¿Ya se pidió a ePRAC que las reglas USA_LECTOR_HH se puedan activar por zona? ¿Qué implica?",
+  "¿Se puede asignar una misma expedición a dos camiones en el carga camión?",
+  "Queremos agregar la fecha prometida del pedido en Órdenes de Expedición: ¿es posible y qué afecta?"];
+
 function Consultar({ onVerSolicitud }) {
-  const [pregunta, setPregunta] = useState("");
-  const [cargando, setCargando] = useState(false);
-  const [res, setRes] = useState(null);
-  const [err, setErr] = useState(null);
-  const [historial, setHistorial] = useState([]);
-  const cargarHist = useCallback(async () => {
-    const { data } = await supabase.from("asesor_consultas").select("id,pregunta,respuesta,modelo,tokens_entrada,tokens_salida,herramientas,duracion_ms,created_at").order("created_at", { ascending:false }).limit(25);
-    setHistorial(data || []);
+  const [conv, setConv] = useState(nuevoId);
+  const [turnos, setTurnos] = useState([]);          // { pregunta, respuesta, modelo, tokens, herramientas, duracion_ms, created_at, cargando, error }
+  const [texto, setTexto] = useState("");
+  const [modal, setModal] = useState(null);
+  const [hilos, setHilos] = useState([]);
+  const [seg, setSeg] = useState(0);
+  const finRef = useRef(null);
+  const cargando = turnos.some(t => t.cargando);
+
+  const cargarHilos = useCallback(async () => {
+    const { data } = await supabase.from("asesor_consultas").select("id,conversacion,pregunta,respuesta,modelo,tokens_entrada,tokens_salida,herramientas,duracion_ms,created_at").order("created_at", { ascending:false }).limit(300);
+    const g = new Map();
+    (data || []).forEach(r => { const k = r.conversacion || `c-${r.id}`; if (!g.has(k)) g.set(k, []); g.get(k).push(r); });
+    setHilos([...g.entries()].map(([id, rows]) => ({ id, rows: rows.slice().reverse(), ultima: rows[0] })));
   }, []);
-  useEffect(() => { const t = setTimeout(cargarHist, 0); return () => clearTimeout(t); }, [cargarHist]);
-  const analizar = async () => {
-    if (!pregunta.trim()) return;
-    setCargando(true); setErr(null); setRes(null);
-    const { data, error } = await supabase.functions.invoke("asesor-cambios", { body: { pregunta: pregunta.trim() } });
-    setCargando(false);
-    if (error || data?.error) { setErr(data?.error || error.message || "No se pudo consultar al asesor."); return; }
-    setRes({ ...data, pregunta: pregunta.trim(), created_at: new Date().toISOString() }); cargarHist();
+  useEffect(() => { const t = setTimeout(cargarHilos, 0); return () => clearTimeout(t); }, [cargarHilos]);
+  useEffect(() => { finRef.current?.scrollIntoView({ behavior:"smooth", block:"end" }); }, [turnos]);
+  useEffect(() => {                                   // segundos transcurridos mientras piensa
+    if (!cargando) return;
+    const t0 = Date.now(); const i = setInterval(() => setSeg(Math.round((Date.now() - t0) / 1000)), 1000);
+    return () => { clearInterval(i); setSeg(0); };
+  }, [cargando]);
+  useEffect(() => {                                   // Esc cierra el modal
+    if (!modal) return;
+    const k = e => { if (e.key === "Escape") setModal(null); };
+    window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k);
+  }, [modal]);
+
+  const enviar = async (q = texto) => {
+    const pregunta = q.trim(); if (!pregunta || cargando) return;
+    const historial = turnos.filter(t => t.respuesta && !t.error).map(t => ({ pregunta:t.pregunta, respuesta:t.respuesta }));
+    setTexto("");
+    setTurnos(ts => [...ts, { pregunta, cargando:true, created_at:new Date().toISOString() }]);
+    const { data, error } = await supabase.functions.invoke("asesor-cambios", { body:{ pregunta, historial, conversacion:conv } });
+    setTurnos(ts => ts.map((t, i) => i !== ts.length - 1 ? t : (error || data?.error)
+      ? { ...t, cargando:false, error: data?.error || error?.message || "No se pudo consultar al asesor." }
+      : { ...t, cargando:false, ...data }));
+    cargarHilos();
   };
-  const EJEMPLOS = ["Quiero que las reglas USA_LECTOR_HH se puedan activar por zona de almacenaje: ¿ya se pidió?, ¿qué implica?",
-    "¿Se puede permitir asignar una misma expedición a dos camiones en el carga camión?",
-    "Queremos agregar la fecha prometida del pedido en la pantalla de Órdenes de Expedición: ¿es posible y qué afecta?"];
-  return <div style={{ display:"grid", gridTemplateColumns:"minmax(0, 1fr) 300px", gap:16, alignItems:"start" }}>
-    <div>
-      <div style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:12, padding:"14px 16px" }}>
-        <div style={{ fontSize:13, color:DESIGN.inkSoft, marginBottom:8, lineHeight:1.5 }}>Describe el cambio que quieres hacer en el WMS (o el problema que tienes). El asesor revisa las solicitudes de cambio a ePRAC, la estructura de las bases, los manuales de pantallas y los procesos antes de responder.</div>
-        <textarea value={pregunta} onChange={e => setPregunta(e.target.value)} rows={4} placeholder="Ej.: quiero que al cerrar el carga camión se pueda dejar una expedición en dos unidades distintas…"
-          style={{ width:"100%", boxSizing:"border-box", fontSize:14, fontFamily:DESIGN.font, padding:"10px 12px", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:9, resize:"vertical" }}
-          onKeyDown={e => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) analizar(); }}/>
-        <div style={{ display:"flex", gap:8, alignItems:"center", marginTop:8, flexWrap:"wrap" }}>
-          <button onClick={analizar} disabled={cargando || !pregunta.trim()} style={{ ...btn, color:"#fff", background: cargando || !pregunta.trim() ? "#94a3b8" : "#7c3aed" }}>{cargando ? "Analizando…" : "Analizar cambio"}</button>
-          <span style={{ fontSize:11.5, color:DESIGN.muted }}>Ctrl + Enter · tarda entre 30 segundos y 2 minutos</span>
-        </div>
-        {!res && !cargando && <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:10 }}>
-          {EJEMPLOS.map(x => <button key={x} onClick={() => setPregunta(x)} style={{ fontSize:12, color:"#6d28d9", background:"#faf5ff", border:"1px solid #ede9fe", borderRadius:999, padding:"4px 10px", cursor:"pointer", fontFamily:DESIGN.font, textAlign:"left" }}>{x}</button>)}
+  const abrirHilo = h => { if (cargando) return; setConv(h.id); setModal(null);
+    setTurnos(h.rows.map(r => ({ pregunta:r.pregunta, respuesta:r.respuesta, modelo:r.modelo, tokens:{ entrada:r.tokens_entrada, salida:r.tokens_salida }, herramientas:r.herramientas, duracion_ms:r.duracion_ms, created_at:r.created_at }))); };
+  const nueva = () => { if (cargando) return; setConv(nuevoId()); setTurnos([]); setTexto(""); };
+
+  return <div style={{ display:"grid", gridTemplateColumns:"minmax(0, 1fr) 290px", gap:16, alignItems:"start" }}>
+    <style>{`@keyframes asesorPunto { 0%,80%,100% { opacity:.25 } 40% { opacity:1 } }`}</style>
+    <div style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:12, display:"flex", flexDirection:"column", height:"calc(100vh - 230px)", minHeight:460 }}>
+      <div style={{ flex:1, overflowY:"auto", padding:"18px 18px 8px", display:"flex", flexDirection:"column", gap:14 }}>
+        {!turnos.length && <div style={{ margin:"auto 0", textAlign:"center", color:DESIGN.muted }}>
+          <div style={{ fontSize:28, color:"#7c3aed" }}>✦</div>
+          <div style={{ fontSize:15, fontWeight:700, color:DESIGN.ink, marginTop:4 }}>¿Qué cambio quieres hacer en el WMS?</div>
+          <div style={{ fontSize:12.5, marginTop:4, lineHeight:1.5, maxWidth:560, marginInline:"auto" }}>El asesor revisa las solicitudes de cambio a ePRAC, la estructura de las bases, las pantallas y los procesos, y te dice si es viable, qué implica y qué recomienda. Puedes repreguntar sobre la misma idea.</div>
+          <div style={{ display:"flex", flexDirection:"column", gap:6, alignItems:"center", marginTop:14 }}>
+            {EJEMPLOS.map(x => <button key={x} onClick={() => enviar(x)} style={{ fontSize:12.5, color:"#6d28d9", background:"#faf5ff", border:"1px solid #ede9fe", borderRadius:999, padding:"6px 14px", cursor:"pointer", fontFamily:DESIGN.font }}>{x}</button>)}
+          </div>
         </div>}
+        {turnos.map((t, i) => <Fragment key={i}>
+          <div style={{ alignSelf:"flex-end", maxWidth:"75%", background:"#7c3aed", color:"#fff", borderRadius:"14px 14px 4px 14px", padding:"9px 13px", fontSize:13.5, lineHeight:1.5, whiteSpace:"pre-wrap" }}>{t.pregunta}</div>
+          {t.cargando ? <div style={{ alignSelf:"flex-start", maxWidth:"80%", background:DESIGN.sunken, border:`1px solid ${DESIGN.border}`, borderRadius:"14px 14px 14px 4px", padding:"10px 14px", fontSize:13, color:DESIGN.inkSoft }}>
+              <span style={{ fontWeight:700, color:"#7c3aed" }}>✦ Asesor</span> está revisando solicitudes, tablas, pantallas y procesos
+              <span style={{ marginLeft:4 }}>{[0, 1, 2].map(k => <span key={k} style={{ animation:`asesorPunto 1.2s ${k * 0.2}s infinite` }}>•</span>)}</span>
+              <span style={{ marginLeft:8, fontSize:11.5, color:DESIGN.muted }}>{seg} s</span>
+            </div>
+            : t.error ? <div style={{ alignSelf:"flex-start", maxWidth:"80%", background:"#fef2f2", border:"1px solid #fecaca", borderRadius:"14px 14px 14px 4px", padding:"10px 14px", fontSize:13, color:"#991b1b" }}>{t.error}</div>
+            : <Burbuja t={t} onVer={() => setModal(t)}/>}
+        </Fragment>)}
+        <div ref={finRef}/>
       </div>
-      {cargando && <div style={{ marginTop:14, fontSize:13, color:DESIGN.muted, background:"#faf5ff", border:"1px solid #ede9fe", borderRadius:10, padding:"12px 14px" }}>El asesor está consultando las solicitudes de cambio, las tablas, las pantallas y los procesos…</div>}
-      {err && <div style={{ marginTop:14, fontSize:13, color:"#991b1b", background:"#fef2f2", border:"1px solid #fecaca", borderRadius:10, padding:"12px 14px" }}>{err}</div>}
-      {res && <Resultado r={res} onVerSolicitud={onVerSolicitud}/>}
+      <div style={{ borderTop:`1px solid ${DESIGN.border}`, padding:"10px 12px", display:"flex", gap:8, alignItems:"flex-end" }}>
+        <textarea value={texto} onChange={e => setTexto(e.target.value)} rows={Math.min(5, Math.max(1, texto.split("\n").length))}
+          onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviar(); } }}
+          placeholder={turnos.length ? "Repregunta o afina el cambio… (Enter para enviar, Shift+Enter para salto de línea)" : "Describe el cambio o el problema…"}
+          style={{ flex:1, boxSizing:"border-box", fontSize:14, fontFamily:DESIGN.font, padding:"9px 12px", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:10, resize:"none", lineHeight:1.45 }}/>
+        <button onClick={() => enviar()} disabled={cargando || !texto.trim()} style={{ ...btn, color:"#fff", background: cargando || !texto.trim() ? "#c4b5fd" : "#7c3aed", padding:"10px 16px" }}>{cargando ? "…" : "Enviar"}</button>
+      </div>
     </div>
-    <aside style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:12, padding:"12px 14px", position:"sticky", top:16, maxHeight:"calc(100vh - 32px)", overflowY:"auto" }}>
-      <div style={{ fontSize:11, fontWeight:700, color:DESIGN.muted, letterSpacing:"0.08em", marginBottom:8 }}>CONSULTAS ANTERIORES</div>
-      {!historial.length && <div style={{ fontSize:12.5, color:DESIGN.muted }}>Todavía no hay consultas.</div>}
-      {historial.map(h => { const v = VEREDICTO[h.respuesta?.veredicto] || VEREDICTO.falta_informacion;
-        return <button key={h.id} onClick={() => setRes({ ...h, respuesta:h.respuesta, tokens:{ entrada:h.tokens_entrada, salida:h.tokens_salida } })} style={{ display:"block", width:"100%", textAlign:"left", background:"none", border:"none", borderBottom:`1px solid ${DESIGN.border}`, padding:"8px 0", cursor:"pointer", fontFamily:DESIGN.font }}>
-          <div style={{ fontSize:12.5, color:DESIGN.ink, lineHeight:1.35, overflow:"hidden", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical" }}>{h.pregunta}</div>
-          <div style={{ fontSize:11, marginTop:3 }}><b style={{ color:v.color }}>{v.label}</b> <span style={{ color:DESIGN.muted }}>· {fecha(h.created_at)}</span></div>
+
+    <aside style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:12, padding:"12px 14px", position:"sticky", top:16, maxHeight:"calc(100vh - 230px)", overflowY:"auto" }}>
+      <button onClick={nueva} disabled={cargando} style={{ ...btn, width:"100%", color:"#7c3aed", background:"#faf5ff", border:"1px solid #ddd6fe", marginBottom:10 }}>＋ Nueva conversación</button>
+      <div style={{ fontSize:11, fontWeight:700, color:DESIGN.muted, letterSpacing:"0.08em", marginBottom:6 }}>CONVERSACIONES</div>
+      {!hilos.length && <div style={{ fontSize:12.5, color:DESIGN.muted }}>Todavía no hay conversaciones.</div>}
+      {hilos.map(h => { const v = VEREDICTO[h.ultima.respuesta?.veredicto] || VEREDICTO.falta_informacion, activo = h.id === conv;
+        return <button key={h.id} onClick={() => abrirHilo(h)} style={{ display:"block", width:"100%", textAlign:"left", background: activo ? "#faf5ff" : "none", border:"none", borderRadius:8, borderBottom:`1px solid ${DESIGN.border}`, padding:"8px 6px", cursor:"pointer", fontFamily:DESIGN.font }}>
+          <div style={{ fontSize:12.5, color:DESIGN.ink, lineHeight:1.35, overflow:"hidden", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", fontWeight: activo ? 700 : 400 }}>{h.rows[0].pregunta}</div>
+          <div style={{ fontSize:11, marginTop:3 }}><b style={{ color:v.color }}>{v.label}</b> <span style={{ color:DESIGN.muted }}>· {h.rows.length > 1 ? `${h.rows.length} mensajes · ` : ""}{fecha(h.ultima.created_at)}</span></div>
         </button>; })}
     </aside>
+
+    {modal && <div onClick={() => setModal(null)} style={{ position:"fixed", inset:0, background:"rgba(15,23,42,.45)", zIndex:900, display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"4vh 16px", overflowY:"auto" }}>
+      <div onClick={e => e.stopPropagation()} style={{ width:"min(1000px, 100%)", background:"#fff", borderRadius:14, boxShadow:"0 24px 60px rgba(15,23,42,.3)", padding:"6px 8px 12px" }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"8px 12px 0" }}>
+          <span style={{ fontSize:12, fontWeight:700, color:"#7c3aed", letterSpacing:"0.06em" }}>✦ ANÁLISIS COMPLETO</span>
+          <button onClick={() => setModal(null)} title="Cerrar (Esc)" style={{ background:"none", border:"none", fontSize:18, color:DESIGN.muted, cursor:"pointer" }}>✕</button>
+        </div>
+        <Resultado r={modal} onVerSolicitud={id => { setModal(null); onVerSolicitud(id); }}/>
+      </div>
+    </div>}
+  </div>;
+}
+
+// Respuesta del asesor como burbuja: veredicto, resumen y recomendación; el resto en el modal
+function Burbuja({ t, onVer }) {
+  const x = t.respuesta || {}, v = VEREDICTO[x.veredicto] || VEREDICTO.falta_informacion;
+  return <div style={{ alignSelf:"flex-start", maxWidth:"82%", background:"#fff", border:`1px solid ${DESIGN.border}`, borderLeft:`4px solid ${v.color}`, borderRadius:"14px 14px 14px 4px", padding:"11px 14px", boxShadow:DESIGN.shadowCard }}>
+    <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap", marginBottom:6 }}>
+      <span style={{ fontSize:12, fontWeight:700, color:"#7c3aed" }}>✦ Asesor</span>
+      <span style={{ fontSize:12, fontWeight:800, color:v.color, background:v.bg, border:`1px solid ${v.color}55`, borderRadius:6, padding:"2px 9px" }}>{v.label}</span>
+    </div>
+    {x.resumen && <div style={{ fontSize:13.5, color:DESIGN.ink, lineHeight:1.55 }}>{x.resumen}</div>}
+    {x.recomendacion && <div style={{ fontSize:12.5, color:DESIGN.inkSoft, lineHeight:1.5, marginTop:8, background:v.bg, borderRadius:8, padding:"7px 10px" }}><b style={{ color:v.color }}>Recomendación: </b>{x.recomendacion}</div>}
+    <div style={{ display:"flex", gap:10, alignItems:"center", flexWrap:"wrap", marginTop:9 }}>
+      <button onClick={onVer} style={{ ...btn, fontSize:12, color:"#fff", background:"#7c3aed", padding:"5px 12px" }}>Ver análisis completo</button>
+      <span style={{ fontSize:11, color:DESIGN.muted }}>
+        {[x.implicaciones?.length && `${x.implicaciones.length} implicaciones`, x.solicitudes_relacionadas?.length && `${x.solicitudes_relacionadas.length} precedentes`, x.fuentes?.length && `${x.fuentes.length} fuentes`, t.duracion_ms && `${Math.round(t.duracion_ms / 1000)} s`].filter(Boolean).join(" · ")}
+      </span>
+    </div>
   </div>;
 }
 

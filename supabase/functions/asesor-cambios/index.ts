@@ -35,7 +35,8 @@ Reglas:
 - Una solicitud con relacion.tipo "duplicado" o "version_anterior" es el MISMO cambio que la que indica relacion.de: no la cuentes como precedente independiente; usa la vigente (la que indica relacion.de).
 - Los procedimientos del CEDI se llaman CEDI-01…CEDI-14; los silos de operación logística OL.1…OL.9 y los de negocio P1.9…P1.22.
 - Cita en "fuentes" TODOS los documentos que usaste para concluir (solicitudes, tablas, pantallas, procesos), con su id tal como lo devuelven las herramientas.
-- Escribe en español claro, para personas de operación y TI.`;
+- Escribe en español claro, para personas de operación y TI.
+- Es una conversación: si la pregunta nueva se apoya en las anteriores («¿y si…?», «¿y para EPA?»), responde sobre el mismo cambio con esa variante, reutilizando lo ya encontrado y verificando solo lo nuevo.`;
 
 const HERRAMIENTAS = [
   { type: "function", name: "buscar_conocimiento", description: "Búsqueda de texto completo en la base de conocimiento del BPA. Devuelve los documentos más relevantes con un fragmento.",
@@ -82,7 +83,7 @@ Deno.serve(async (req) => {
     const { data: rol } = await supa.rpc("current_user_role");
     if (rol !== "admin") return json({ error: "El Asesor de cambios es solo para administradores." }, 403);
 
-    const { pregunta, contexto } = await req.json();
+    const { pregunta, contexto, historial, conversacion } = await req.json();
     if (!pregunta || typeof pregunta !== "string") return json({ error: "Falta la pregunta." }, 400);
 
     // herramientas: todas leen con el JWT del usuario (RLS admin)
@@ -114,7 +115,14 @@ Deno.serve(async (req) => {
       return { error: `Herramienta desconocida: ${nombre}` };
     };
 
-    let entrada: unknown[] = [{ role: "user", content: contexto ? `${pregunta}\n\nContexto adicional: ${contexto}` : pregunta }];
+    // modo conversación: los turnos anteriores (pregunta + conclusión) dan contexto a la nueva pregunta
+    const previos = (Array.isArray(historial) ? historial.slice(-6) : []).flatMap((h: { pregunta?: string; respuesta?: Record<string, unknown> }) => {
+      const r = h.respuesta ?? {};
+      const conclusion = [r.veredicto && `Veredicto: ${r.veredicto}`, r.resumen && `Resumen: ${r.resumen}`, r.recomendacion && `Recomendación: ${r.recomendacion}`,
+        Array.isArray(r.fuentes) && r.fuentes.length ? `Fuentes consultadas: ${(r.fuentes as { id: string }[]).map(f => f.id).join(", ")}` : null].filter(Boolean).join("\n");
+      return [{ role: "user", content: String(h.pregunta ?? "") }, { role: "assistant", content: conclusion || "(sin conclusión)" }];
+    });
+    let entrada: unknown[] = [...previos, { role: "user", content: contexto ? `${pregunta}\n\nContexto adicional: ${contexto}` : pregunta }];
     let anterior: string | null = null, tokIn = 0, tokOut = 0, final: unknown = null;
     for (let vuelta = 0; vuelta < MAX_VUELTAS; vuelta++) {
       const cuerpo: Record<string, unknown> = { model: MODELO, instructions: INSTRUCCIONES, input: entrada, tools: HERRAMIENTAS,
@@ -147,7 +155,7 @@ Deno.serve(async (req) => {
     if (!final) final = { veredicto: "falta_informacion", resumen: "El análisis no terminó dentro del límite de consultas; intenta con una pregunta más concreta." };
 
     const duracion = Date.now() - t0;
-    const { data: fila } = await supa.from("asesor_consultas").insert({ pregunta, respuesta: final, modelo: MODELO, tokens_entrada: tokIn, tokens_salida: tokOut, herramientas: registro, duracion_ms: duracion }).select("id").maybeSingle();
+    const { data: fila } = await supa.from("asesor_consultas").insert({ pregunta, conversacion: typeof conversacion === "string" ? conversacion.slice(0, 64) : null, respuesta: final, modelo: MODELO, tokens_entrada: tokIn, tokens_salida: tokOut, herramientas: registro, duracion_ms: duracion }).select("id").maybeSingle();
     return json({ id: fila?.id ?? null, respuesta: final, modelo: MODELO, tokens: { entrada: tokIn, salida: tokOut }, herramientas: registro, duracion_ms: duracion });
   } catch (e) {
     return json({ error: String((e as Error)?.message ?? e) }, 500);

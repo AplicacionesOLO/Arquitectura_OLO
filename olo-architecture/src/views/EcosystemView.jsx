@@ -4,7 +4,9 @@
 import { useState } from "react";
 import { SOFTLAND_MODULES, OPS_MODULES, SATELLITE_MODULES, EN_OLO } from "../data/softland.js";
 import { MODULE_COLORS, OPS_COLORS, DESIGN } from "../data/constants.js";
-import { StatusBadge, ModuleChip, LayerBlock } from "../components/ui.jsx";
+import { StatusBadge, LayerBlock } from "../components/ui.jsx";
+import { NODO_SIMPLE, queConexion } from "../data/ecosistema_simple.js";
+import { useAncho } from "../lib/useAncho.js";
 
 export function EcosystemView() {
   const [hoveredNode, setHoveredNode] = useState(null);
@@ -28,22 +30,8 @@ export function EcosystemView() {
   const active = hoveredNode || selectedNode;
   const isNodeHl = (code) => { if(!active) return false; if(active===code) return true; return links.some(l=>(l.a===active&&l.b===code)||(l.b===active&&l.a===code)); };
   const isLinkHl = (link) => active && (link.a===active||link.b===active);
-  const selMod = selectedNode ? (getDetail(selectedNode) || { code:selectedNode, name:selectedNode, purpose:"" }) : null;
+  const ancho = useAncho(), angosto = ancho < 1250;
   return <div>
-    {selMod && <div style={{ background:"#fff", border:`1px solid ${MODULE_COLORS[selMod.code]||"#888"}44`, borderLeft:`4px solid ${MODULE_COLORS[selMod.code]||"#888"}`, borderRadius:10, padding:"14px 18px", marginBottom:16 }}>
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
-        <div>
-          <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
-            <ModuleChip code={selMod.code||""} size="lg"/>
-            <span style={{ fontSize:14, fontWeight:700, color:"#1D1D1B" }}>{selMod.name||selMod.code}</span>
-            {selMod.status && <StatusBadge status={selMod.status}/>}
-          </div>
-          {selMod.role && <div style={{ fontSize:11, color:"#777", fontStyle:"italic", marginBottom:4 }}>{selMod.role}</div>}
-          {selMod.purpose && <p style={{ fontSize:12, color:"#444", lineHeight:1.6, margin:"6px 0 0" }}>{selMod.purpose}</p>}
-        </div>
-        <button onClick={()=>setSelectedNode(null)} style={{ background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:16 }}>✕</button>
-      </div>
-    </div>}
 
     <div style={{ display:"flex", flexDirection:"column", marginBottom:24 }}>
       <LayerBlock icon="◇" label="Sistemas Externos · inferidos por contexto 3PL" color="#7f8c8d" bg="rgba(127,140,141,0.08)" border="rgba(127,140,141,0.25)" radiusTop sub="Inferidos a partir del informe BPA y prácticas estándar de operadores logísticos. Sin documentación formal en el corpus accesible.">
@@ -73,7 +61,10 @@ export function EcosystemView() {
     </div>
     <h3 style={{ fontSize:14, fontWeight:700, color:"#1D1D1B", margin:"0 0 4px 0" }}>Diagrama de conexiones</h3>
     <p style={{ fontSize:12, color:"#777", margin:"0 0 14px 0" }}>Líneas continuas: integración declarada en un manual, procedimiento o base leída. Líneas punteadas: inferidas por contexto. Círculos punteados: sistemas inferidos o módulos de Softland que no están en el ERP de OLO.</p>
-    <div style={{ background:"#ffffff", border:"1px solid #e0e0e0", borderRadius:12, overflow:"hidden" }}>
+    <div style={{ display:"flex", flexDirection:angosto ? "column" : "row", gap:14, alignItems:angosto ? "stretch" : "flex-start" }}>
+    <PanelConexion code={selectedNode} links={links} getDetail={getDetail} enOlo={enOlo} angosto={angosto}
+      onSelect={setSelectedNode} onHover={setHoveredNode}/>
+    <div style={{ flex:1, minWidth:0, background:"#ffffff", border:"1px solid #e0e0e0", borderRadius:12, overflow:"hidden" }}>
       <div style={{ padding:"10px 16px", borderBottom:"1px solid #f0f0f0", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:8, background:"#fafafa" }}>
         <span style={{ fontSize:11, color:"#666", fontWeight:600 }}>ECOSISTEMA · 3 CAPAS · {erpNodes.length+opsNodes.length+extNodes.length} SISTEMAS</span>
         <div style={{ display:"flex", gap:14, alignItems:"center" }}>
@@ -91,9 +82,64 @@ export function EcosystemView() {
         {all.map(n=>{ const r=n.kind==="erp"?24:36; const stroke=n.kind==="erp"?(MODULE_COLORS[n.code]??"#c0392b"):n.kind==="ops"?"#1abc9c":"#7f8c8d"; const fill=n.kind==="erp"?"#ffffff":n.kind==="ops"?"#f0fdfa":"#fafafa"; const hl=isNodeHl(n.code); const dim=active&&!hl; const isSel=selectedNode===n.code; return <g key={n.code} onClick={()=>setSelectedNode(selectedNode===n.code?null:n.code)} onMouseEnter={()=>setHoveredNode(n.code)} onMouseLeave={()=>setHoveredNode(null)} style={{ cursor:"pointer", opacity:dim?0.2:1, transition:"opacity 0.15s" }}><circle cx={n.x} cy={n.y} r={r} fill={fill} stroke={isSel?stroke:hl?stroke:stroke} strokeWidth={isSel?3.5:hl?2.5:(n.kind==="erp"?2:1.5)} strokeDasharray={(n.kind==="ext"&&!n.c)||enOlo[n.code]==="no"?"3 3":"0"} strokeOpacity={enOlo[n.code]==="no"?0.55:1}/><text x={n.x} y={n.y+(n.label?-2:4)} textAnchor="middle" fill={stroke} style={{ fontSize:n.kind==="erp"?11:10, fontWeight:700, letterSpacing:"0.04em" }}>{n.code}</text>{n.label&&n.label.split("\n").map((line,j)=><text key={j} x={n.x} y={n.y+14+j*11} textAnchor="middle" fill="#666" style={{ fontSize:9 }}>{line}</text>)}</g>; })}
       </svg>
     </div>
+    </div>
     <div style={{ marginTop:24, padding:"14px 18px", background:"rgba(243,156,18,0.06)", border:"1px solid rgba(243,156,18,0.25)", borderLeft:"3px solid #f39c12", borderRadius:8 }}>
       <div style={{ fontSize:11, fontWeight:700, color:"#d35400", letterSpacing:"0.1em", marginBottom:6 }}>◆ NOTA METODOLÓGICA</div>
       <p style={{ fontSize:12, color:"#444", lineHeight:1.65, margin:0 }}>Hay <b style={{ color:"#c0392b" }}>dos Softland</b>: el <b>propio de OLO</b> (compañía OVERSEAS, servidor 10.17.224.40), donde OLO factura sus servicios logísticos, cobra, paga y lleva la contabilidad, y el <b>de cada cliente</b> (Cofersa y otros), donde nacen los pedidos y compras que opera el CEDI. El del cliente llega a <b style={{ color:"#1abc9c" }}>ePRAC / eflow Cloud Suite</b> por eIntegra («Consultar Interfaz» en Órdenes de Recepción); la Torre de Control lee de EFLOW_OLO por tablas de staging (ext_tms_*); Documentos Electrónicos envía las facturas de OLO a Hacienda. Sigue sin documentar el mecanismo exacto de eIntegra y cómo vuelven a eFlow los datos de la Torre.</p>
     </div>
   </div>;
+}
+
+// Panel lateral del diagrama: qué es el sistema y con quién se conecta, en
+// palabras simples. Tocar una conexión lleva al otro sistema.
+function PanelConexion({ code, links, getDetail, enOlo, angosto, onSelect, onHover }) {
+  const caja = { width:angosto ? "auto" : 340, flexShrink:0, background:"#fff", border:"1px solid #e0e0e0", borderRadius:12, padding:"14px 16px",
+    boxSizing:"border-box", position:angosto ? "static" : "sticky", top:16, maxHeight:angosto ? "none" : "calc(100vh - 32px)", overflowY:"auto" };
+  const titulo = { fontSize:11.5, fontWeight:700, color:"#7a7a7a", letterSpacing:"0.07em", textTransform:"uppercase", margin:"14px 0 6px" };
+  if (!code) return <aside style={caja}>
+    <div style={{ fontSize:15, fontWeight:700, color:DESIGN.ink }}>¿Cómo se conectan los sistemas?</div>
+    <p style={{ fontSize:13.5, color:DESIGN.inkSoft, lineHeight:1.6, margin:"8px 0 0" }}>Toca cualquier círculo del diagrama para ver, en palabras simples, qué hace ese sistema, a quién le envía información y de quién la recibe.</p>
+    <div style={titulo}>Cómo leer el diagrama</div>
+    <div style={{ display:"grid", gap:8, fontSize:13, color:DESIGN.inkSoft, lineHeight:1.5 }}>
+      <div><b style={{ color:"#c0392b" }}>━ Línea continua:</b> la conexión está confirmada por un manual, un procedimiento o una base de datos que el BPA leyó.</div>
+      <div><b style={{ color:"#7f8c8d" }}>┅ Línea punteada:</b> es un supuesto razonable; nadie lo ha confirmado todavía.</div>
+      <div><b>Círculo punteado:</b> un sistema que se supone que existe, o un módulo de Softland que OLO no usa.</div>
+      <div><b>Arriba</b> están los sistemas externos, <b>en medio</b> el ERP de OLO y <b>abajo</b> los sistemas del almacén.</div>
+    </div>
+  </aside>;
+
+  const d = getDetail(code) || {}, s = NODO_SIMPLE[code] || {};
+  const color = MODULE_COLORS[code] || OPS_COLORS[code] || "#475569";
+  const sale = links.filter(l => l.a === code), entra = links.filter(l => l.b === code);
+  const Item = ({ l, otro }) => <button onClick={() => onSelect(otro)} onMouseEnter={() => onHover(otro)} onMouseLeave={() => onHover(null)}
+    style={{ display:"block", width:"100%", textAlign:"left", background:"#fafafa", border:"1px solid #eee", borderLeft:`3px ${l.c ? "solid" : "dashed"} ${l.c ? "#c0392b" : "#9aa5ae"}`, borderRadius:7, padding:"7px 9px", cursor:"pointer", fontFamily:DESIGN.font }}>
+    <div style={{ display:"flex", justifyContent:"space-between", gap:8, alignItems:"baseline" }}>
+      <span style={{ fontSize:13.5, fontWeight:700, color:DESIGN.ink }}>{NODO_SIMPLE[otro]?.nombre || otro}</span>
+      <span style={{ fontSize:11, fontWeight:700, color:l.c ? "#15803d" : "#7f8c8d", whiteSpace:"nowrap" }}>{l.c ? "Confirmada" : "Supuesta"}</span>
+    </div>
+    <div style={{ fontSize:12.5, color:DESIGN.inkSoft, lineHeight:1.45, marginTop:2 }}>{l.a === code ? queConexion(code, otro) : queConexion(otro, code)}</div>
+  </button>;
+  return <aside style={{ ...caja, borderLeft:`4px solid ${color}` }}>
+    <div style={{ display:"flex", gap:8, alignItems:"flex-start" }}>
+      <div style={{ flex:1, minWidth:0 }}>
+        <div style={{ fontSize:12, fontWeight:800, color, letterSpacing:"0.04em" }}>{code}</div>
+        <div style={{ fontSize:16, fontWeight:700, color:DESIGN.ink, lineHeight:1.3 }}>{s.nombre || d.name || code}</div>
+        <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:5 }}>
+          {d.status && <StatusBadge status={d.status}/>}
+          {enOlo[code] && <span style={{ fontSize:11.5, fontWeight:700, color:EN_OLO[enOlo[code]].color }}>● {EN_OLO[enOlo[code]].label}</span>}
+        </div>
+      </div>
+      <button onClick={() => onSelect(null)} title="Cerrar" style={{ background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:16 }}>✕</button>
+    </div>
+    {s.simple && <><div style={titulo}>En palabras simples</div><p style={{ fontSize:14, color:DESIGN.ink, lineHeight:1.6, margin:0 }}>{s.simple}</p></>}
+    <div style={titulo}>Envía información a · {sale.length}</div>
+    {sale.length ? <div style={{ display:"grid", gap:6 }}>{sale.map((l, i) => <Item key={i} l={l} otro={l.b}/>)}</div> : <div style={{ fontSize:13, color:"#888" }}>No envía información a otro sistema del mapa.</div>}
+    <div style={titulo}>Recibe información de · {entra.length}</div>
+    {entra.length ? <div style={{ display:"grid", gap:6 }}>{entra.map((l, i) => <Item key={i} l={l} otro={l.a}/>)}</div> : <div style={{ fontSize:13, color:"#888" }}>No recibe información de otro sistema del mapa.</div>}
+    {(d.purpose || d.role) && <details style={{ marginTop:14 }}>
+      <summary style={{ fontSize:12.5, fontWeight:700, color:"#666", cursor:"pointer" }}>Detalle técnico</summary>
+      {d.role && <div style={{ fontSize:12.5, color:"#777", fontStyle:"italic", marginTop:6 }}>{d.role}</div>}
+      {d.purpose && <p style={{ fontSize:12.5, color:"#555", lineHeight:1.55, margin:"6px 0 0" }}>{d.purpose}</p>}
+    </details>}
+  </aside>;
 }

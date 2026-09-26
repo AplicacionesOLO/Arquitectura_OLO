@@ -8,7 +8,7 @@ import { WMS_INDEX, PASO_PANTALLA } from "../data/wms_links.js";
 import { WMH_BY_ID, pantallaWmhDePaso } from "../data/wmh_manual.js";
 import { SORTER_BY_ID } from "../data/sorter_manual.js";
 import { HH_BY_ID, pantallaHhDePaso } from "../data/hh_manual.js";
-import { SFL_MANUAL_INDEX, SFL_PASO_PANTALLA } from "../data/softland_manual_links.js";
+import { SFL_MANUAL_INDEX, SFL_PASO_PANTALLA, SFL_PASO_OPCION } from "../data/softland_manual_links.js";
 import { privImg } from "./imgPrivada.js";
 
 export const wmsImgUrl = (name) => supabase.storage.from("Detalles_Porcesos").getPublicUrl(`wms-manual/${name}`).data.publicUrl;
@@ -28,7 +28,8 @@ const SIS = { eflow:"eFlow WMS", handheld:"Handheld RF", torre:"Torre de Control
 export function slidesProceso(codigo) {
   const p = PROCESOS[codigo];
   const links = PASO_PANTALLA[codigo] || {};
-  return p.pasos.map((s, i) => {
+  return p.pasos.map((s, i) => ({ ...diapositiva(s, i), sflOpcion: s.sistema === "softland" ? SFL_PASO_OPCION[codigo]?.[i] || null : null }));
+  function diapositiva(s, i) {
     const id = links[i]?.[0];
     const w = id && WMS_INDEX[id];
     const wmh = !w && s.sistema === "torre" ? WMH_BY_ID[pantallaWmhDePaso(s.texto)] : null;
@@ -65,7 +66,7 @@ export function slidesProceso(codigo) {
       origen: s.origen || null,
       screenId: id || null,
     };
-  });
+  }
 }
 
 // Diapositivas de una pantalla: la ventana, sus pestañas y lo que abre.

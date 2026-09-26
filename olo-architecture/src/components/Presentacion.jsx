@@ -12,6 +12,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useSrc } from "../lib/imgPrivada.js";
+import { useSflDescripciones } from "../lib/useSflDescripciones.js";
 
 const ORIGEN = {
   eflow_wms: { label: "eFlow WMS", color: "#22d3ee" },
@@ -47,6 +48,9 @@ export function Presentacion({ slides, start = 0, onClose, onOpenScreen, onOpenW
 
   const s = slides[i];
   const imgSrc = useSrc(s.img); // capturas privadas (priv:…) → URL firmada
+  // Qué hace la opción de Softland de esta diapositiva (validada por el admin o inferida)
+  const descs = useSflDescripciones();
+  const qh = s && (s.sflOpcion || s.sflId) ? descs?.[s.sflOpcion || s.sflId] : null;
   const next = slides[i + 1];
   const prev = slides[i - 1];
   if (!s) return null;
@@ -59,6 +63,8 @@ export function Presentacion({ slides, start = 0, onClose, onOpenScreen, onOpenW
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{ fontSize:13, color:"#94a3b8", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{s.contexto}</div>
         <div style={{ fontSize:19, fontWeight:700, color:"#fff" }}>{s.titulo}</div>
+        {qh && !panel && <div style={{ display:"flex", gap:8, alignItems:"baseline", marginTop:3, maxWidth:1100 }}><QueHaceEtiqueta qh={qh}/>
+          <span style={{ fontSize:14.5, color:"#e2e8f0", lineHeight:1.45 }}>{qh.descripcion}</span></div>}
       </div>
       <span style={{ fontSize:14, color:"#94a3b8" }}>{i + 1} / {slides.length}</span>
       <button onClick={()=>setPanel(p => !p)} title="Mostrar u ocultar la información (I)" style={{ ...btn, padding:"6px 12px", fontSize:13 }}>{panel ? "Ocultar info" : "Mostrar info"}</button>
@@ -84,6 +90,10 @@ export function Presentacion({ slides, start = 0, onClose, onOpenScreen, onOpenW
       {/* Panel de información: siempre legible junto a la imagen */}
       {panel && <aside style={{ width:"clamp(300px, 26vw, 400px)", flexShrink:0, borderLeft:"1px solid rgba(255,255,255,0.1)", background:"#0f172a", display:"flex", flexDirection:"column", minHeight:0 }}>
         <div style={{ padding:"16px 18px", overflowY:"auto", flex:1 }}>
+          {qh && <div style={{ background:"rgba(103,232,249,0.08)", border:"1px solid rgba(103,232,249,0.25)", borderRadius:8, padding:"10px 12px", marginBottom:14 }}>
+            <div style={{ display:"flex", gap:8, alignItems:"center", marginBottom:5 }}><span style={{ fontSize:12, fontWeight:700, color:"#94a3b8", letterSpacing:"0.07em", textTransform:"uppercase" }}>Qué hace</span><QueHaceEtiqueta qh={qh}/></div>
+            <div style={{ fontSize:15.5, color:"#fff", lineHeight:1.55 }}>{qh.descripcion}</div>
+          </div>}
           <div style={{ fontSize:17, color:"#fff", lineHeight:1.55, fontWeight:500 }}>{s.texto}</div>
           <div style={{ display:"grid", gap:8, marginTop:14 }}>
             {s.donde && <Dato k="Dónde">{s.donde}</Dato>}
@@ -228,4 +238,11 @@ function Visor({ src, alt, apiRef }) {
       <button onClick={fit} style={tb} title="Ajustar a la pantalla (0)">Ajustar</button>
     </div>
   </div>;
+}
+
+// Origen de la descripción: validada por el admin (certera) o inferida por el modelo
+function QueHaceEtiqueta({ qh }) {
+  const v = qh.origen === "editado";
+  return <span title={v ? `Validada por ${qh.editado_nombre || "el admin"}` : "Inferida del manual, el mapeo funcional de Softland y cómo funciona un ERP"}
+    style={{ fontSize:11.5, fontWeight:700, color:v ? "#4ade80" : "#fbbf24", border:`1px solid ${v ? "#4ade8066" : "#fbbf2466"}`, borderRadius:4, padding:"0 6px", whiteSpace:"nowrap", flexShrink:0 }}>{v ? "✓ Validada" : "Inferida"}</span>;
 }

@@ -90,7 +90,7 @@ export function SoftlandManualView({ focus }) {
 
   const itemsCap = capitulo.secciones.flatMap(s => s.items.map(it => ({ ...it, seccion: s.titulo })));
   const slidesDe = (lista) => lista.flatMap(it => it.imgs.map((im, k) => ({ img: sflImg(im), titulo: it.titulo + (it.imgs.length > 1 ? ` (${k + 1}/${it.imgs.length})` : ""),
-    texto: (it.desc || it.titulo).replace(/\*\*?/g, ""), donde: `Softland (OVERSEAS) › ${it.ruta || `${it.cap || cap} › ${it.seccion} › ${it.titulo}`}`, sistema: "Softland ERP", contexto: `Manual Softland ERP · ${capitulo.nombre}` })));
+    texto: (it.desc || it.titulo).replace(/\*\*?/g, ""), donde: `Softland (OVERSEAS) › ${it.ruta || `${it.cap || cap} › ${it.seccion} › ${it.titulo}`}`, sistema: "Softland ERP", contexto: `Manual Softland ERP · ${capitulo.nombre}`, sflOpcion: it.id })));
   const presentar = (lista, it, k = 0) => { const sl = slidesDe(lista); const start = sl.findIndex(x => x.img === sflImg(it.imgs[k])); setShow({ slides: sl, start: Math.max(0, start) }); };
   const descargarPdf = async () => {
     const { data: d } = await supabase.storage.from("softland-manual").createSignedUrl(SFL_MANUAL_META.pdf, 600, { download: true });

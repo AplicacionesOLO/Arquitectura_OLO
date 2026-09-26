@@ -1,0 +1,4706 @@
+{
+ "CI.articulos.articulos_lista": {
+  "cap": "CI",
+  "seccion": "Artículos",
+  "titulo": "Artículos – lista",
+  "ruta": "Inventarios › Artículos › Artículos",
+  "img": "CI_01_articulos_lista.jpg",
+  "estado": null
+ },
+ "CI.lotes.lotes": {
+  "cap": "CI",
+  "seccion": "Lotes",
+  "titulo": "Lotes",
+  "ruta": "Inventarios › Lotes › Lotes",
+  "img": "CI_02_lotes_lista.jpg",
+  "estado": null
+ },
+ "CI.m.transacciones.paquetes": {
+  "cap": "CI",
+  "seccion": "Transacciones",
+  "titulo": "Paquetes",
+  "ruta": "CI › Transacciones › Paquetes",
+  "img": null,
+  "estado": null
+ },
+ "CI.m.transacciones.en_linea": {
+  "cap": "CI",
+  "seccion": "Transacciones",
+  "titulo": "En línea",
+  "ruta": "CI › Transacciones › En línea",
+  "img": null,
+  "estado": null
+ },
+ "CI.m.transacciones.despachos": {
+  "cap": "CI",
+  "seccion": "Transacciones",
+  "titulo": "Despachos",
+  "ruta": "CI › Transacciones › Despachos",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "CI.m.consulta.existencias_bodegas_localizaciones_lotes_series_pedimentos": {
+  "cap": "CI",
+  "seccion": "Consulta",
+  "titulo": "Existencias (Bodegas · Localizaciones/Lotes · Series · Pedimentos)",
+  "ruta": "CI › Consulta › Existencias (Bodegas · Localizaciones/Lotes · Series · Pedimentos)",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "CI.m.consulta.transacciones_encabezado_documentos_detalle_documentos": {
+  "cap": "CI",
+  "seccion": "Consulta",
+  "titulo": "Transacciones (Encabezado Documentos · Detalle Documentos)",
+  "ruta": "CI › Consulta › Transacciones (Encabezado Documentos · Detalle Documentos)",
+  "img": null,
+  "estado": null
+ },
+ "CI.reportes.existencias_en_inventario": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Existencias en Inventario",
+  "ruta": "CI › Reportes › Existencias en Inventario",
+  "img": "CI_R01_existencias.jpg",
+  "estado": null
+ },
+ "CI.reportes.valoracion_del_inventario": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Valoración del Inventario",
+  "ruta": "CI › Reportes › Valoración del Inventario",
+  "img": "CI_R02_valoracion.jpg",
+  "estado": null
+ },
+ "CI.reportes.rotacion_del_inventario": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Rotación del Inventario",
+  "ruta": "CI › Reportes › Rotación del Inventario",
+  "img": "CI_R03_rotacion.jpg",
+  "estado": null
+ },
+ "CI.reportes.actividad_de_ventas": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Actividad de Ventas",
+  "ruta": "CI › Reportes › Actividad de Ventas",
+  "img": "CI_R04_actividad_ventas.jpg",
+  "estado": null
+ },
+ "CI.reportes.reporte_de_costos_actividad_de_costos": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Reporte de Costos (Actividad de Costos)",
+  "ruta": "CI › Reportes › Reporte de Costos (Actividad de Costos)",
+  "img": "CI_R05_costos.jpg",
+  "estado": null
+ },
+ "CI.reportes.comparativo_de_costos": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Comparativo de Costos",
+  "ruta": "CI › Reportes › Comparativo de Costos",
+  "img": "CI_R06_comparativo_costos.jpg",
+  "estado": null
+ },
+ "CI.reportes.sugerencias_de_reorden": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Sugerencias de Reorden",
+  "ruta": "CI › Reportes › Sugerencias de Reorden",
+  "img": "CI_R07_sugerencias_reorden.jpg",
+  "estado": null
+ },
+ "CI.reportes.analisis_abc_xyz": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Análisis ABC/XYZ",
+  "ruta": "CI › Reportes › Análisis ABC/XYZ",
+  "img": "CI_R08_abc_xyz.jpg",
+  "estado": null
+ },
+ "CI.reportes.conteo_ciclico": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Conteo Cíclico",
+  "ruta": "CI › Reportes › Conteo Cíclico",
+  "img": "CI_R09_conteo_ciclico.jpg",
+  "estado": null
+ },
+ "CI.reportes.mercaderia_sin_movimiento": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Mercadería sin Movimiento",
+  "ruta": "CI › Reportes › Mercadería sin Movimiento",
+  "img": "CI_R10_sin_movimiento.jpg",
+  "estado": null
+ },
+ "CI.reportes.verificacion_de_existencias": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Verificación de Existencias",
+  "ruta": "CI › Reportes › Verificación de Existencias",
+  "img": "CI_R11_verif_existencias.jpg",
+  "estado": null
+ },
+ "CI.m.reportes.transacciones_por_articulos": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Transacciones por Artículos",
+  "ruta": "CI › Reportes › Transacciones por Artículos",
+  "img": null,
+  "estado": null
+ },
+ "CI.reportes.numeros_de_serie_el_salvador_peru": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Números de Serie, El Salvador, Perú",
+  "ruta": "CI › Reportes › Números de Serie, El Salvador, Perú",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "CI.reportes.atributos_por_articulo": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Atributos por Artículo",
+  "ruta": "CI › Reportes › Atributos por Artículo",
+  "img": "CI_R13_atributos.jpg",
+  "estado": null
+ },
+ "CI.reportes.libro_de_inventario": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Libro de Inventario",
+  "ruta": "CI › Reportes › Libro de Inventario",
+  "img": "CI_R14_libro_inventario.jpg",
+  "estado": null
+ },
+ "CI.m.procesos.inventario_fisico_introd_de_boletas_verif_de_boletas_exportar_boletas_importar_boletas_descongelamiento_ext": {
+  "cap": "CI",
+  "seccion": "Procesos",
+  "titulo": "Inventario Físico (Introd. de Boletas · Verif. de Boletas · Exportar boletas · Importar boletas · Descongelamiento Ext)",
+  "ruta": "CI › Procesos › Inventario Físico (Introd. de Boletas · Verif. de Boletas · Exportar boletas · Importar boletas · Descongelamiento Ext)",
+  "img": null,
+  "estado": null
+ },
+ "CI.m.procesos.movimiento_contable": {
+  "cap": "CI",
+  "seccion": "Procesos",
+  "titulo": "Movimiento Contable",
+  "ruta": "CI › Procesos › Movimiento Contable",
+  "img": null,
+  "estado": null
+ },
+ "CI.m.procesos.purga_de_datos_historicos": {
+  "cap": "CI",
+  "seccion": "Procesos",
+  "titulo": "Purga de Datos Históricos",
+  "ruta": "CI › Procesos › Purga de Datos Históricos",
+  "img": null,
+  "estado": null
+ },
+ "CI.m.procesos.clasificacion_abc_de_articulos": {
+  "cap": "CI",
+  "seccion": "Procesos",
+  "titulo": "Clasificación ABC de artículos",
+  "ruta": "CI › Procesos › Clasificación ABC de artículos",
+  "img": null,
+  "estado": null
+ },
+ "CI.m.procesos.calculo_de_puntos_de_reorden": {
+  "cap": "CI",
+  "seccion": "Procesos",
+  "titulo": "Cálculo de Puntos de Reorden",
+  "ruta": "CI › Procesos › Cálculo de Puntos de Reorden",
+  "img": null,
+  "estado": null
+ },
+ "CI.m.procesos.generar_articulos_talla_color": {
+  "cap": "CI",
+  "seccion": "Procesos",
+  "titulo": "Generar Artículos Talla Color",
+  "ruta": "CI › Procesos › Generar Artículos Talla Color",
+  "img": null,
+  "estado": null
+ },
+ "CI.m.procesos.cierres_de_inventario": {
+  "cap": "CI",
+  "seccion": "Procesos",
+  "titulo": "Cierres de Inventario",
+  "ruta": "CI › Procesos › Cierres de Inventario",
+  "img": null,
+  "estado": null
+ },
+ "CI.m.procesos.colombia": {
+  "cap": "CI",
+  "seccion": "Procesos",
+  "titulo": "Colombia",
+  "ruta": "CI › Procesos › Colombia",
+  "img": null,
+  "estado": null
+ },
+ "CI.administracion.unidades_de_medida": {
+  "cap": "CI",
+  "seccion": "Administración",
+  "titulo": "Unidades de Medida",
+  "ruta": "CI › Administración › Unidades de Medida",
+  "img": "CI_A01_unidades_medida.jpg",
+  "estado": null
+ },
+ "CI.administracion.consecutivos": {
+  "cap": "CI",
+  "seccion": "Administración",
+  "titulo": "Consecutivos",
+  "ruta": "CI › Administración › Consecutivos",
+  "img": "CI_A02_consecutivos.jpg",
+  "estado": null
+ },
+ "CI.administracion.clasificaciones": {
+  "cap": "CI",
+  "seccion": "Administración",
+  "titulo": "Clasificaciones",
+  "ruta": "CI › Administración › Clasificaciones",
+  "img": "CI_A03_clasificaciones.jpg",
+  "estado": null
+ },
+ "CI.administracion.clasificaciones_adicionales": {
+  "cap": "CI",
+  "seccion": "Administración",
+  "titulo": "Clasificaciones Adicionales",
+  "ruta": "CI › Administración › Clasificaciones Adicionales",
+  "img": "CI_A04_clasif_adicionales.jpg",
+  "estado": null
+ },
+ "CI.administracion.cuentas_contables": {
+  "cap": "CI",
+  "seccion": "Administración",
+  "titulo": "Cuentas Contables",
+  "ruta": "CI › Administración › Cuentas Contables",
+  "img": "CI_A05_cuentas_contables.jpg",
+  "estado": null
+ },
+ "CI.administracion.transacciones_configurables": {
+  "cap": "CI",
+  "seccion": "Administración",
+  "titulo": "Transacciones Configurables",
+  "ruta": "CI › Administración › Transacciones Configurables",
+  "img": "CI_A06_trans_configurables.jpg",
+  "estado": null
+ },
+ "CI.administracion.plantillas_de_numeros_de_serie_costo_estandar": {
+  "cap": "CI",
+  "seccion": "Administración",
+  "titulo": "Plantillas de números de serie / Costo Estándar",
+  "ruta": "CI › Administración › Plantillas de números de serie / Costo Estándar",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "CI.m.administracion.costo_estandar_actualiz_individual_actualiz_en_batch": {
+  "cap": "CI",
+  "seccion": "Administración",
+  "titulo": "Costo Estándar (Actualiz. Individual · Actualiz. en Batch)",
+  "ruta": "CI › Administración › Costo Estándar (Actualiz. Individual · Actualiz. en Batch)",
+  "img": null,
+  "estado": null
+ },
+ "CI.administracion.autorizacion_compra_exenta_venta_exenta": {
+  "cap": "CI",
+  "seccion": "Administración",
+  "titulo": "Autorización compra exenta / venta exenta",
+  "ruta": "CI › Administración › Autorización compra exenta / venta exenta",
+  "img": "CI_A07_autoriz_compra_exenta.jpg",
+  "estado": null
+ },
+ "CI.m.administracion.autorizacion_venta_exenta": {
+  "cap": "CI",
+  "seccion": "Administración",
+  "titulo": "Autorización venta exenta",
+  "ruta": "CI › Administración › Autorización venta exenta",
+  "img": null,
+  "estado": null
+ },
+ "CI.administracion.parametros_del_modulo": {
+  "cap": "CI",
+  "seccion": "Administración",
+  "titulo": "Parámetros del Módulo",
+  "ruta": "CI › Administración › Parámetros del Módulo",
+  "img": "CI_A09_parametros.jpg",
+  "estado": null
+ },
+ "CI.articulos.ficha_del_articulo_general": {
+  "cap": "CI",
+  "seccion": "Artículos",
+  "titulo": "Ficha del artículo – General",
+  "ruta": "CI › Artículos › Ficha del artículo – General",
+  "img": "CI_01_articulo_tab01_general.jpg",
+  "estado": null
+ },
+ "CI.articulos.ficha_del_articulo_alias_y_clasificacion": {
+  "cap": "CI",
+  "seccion": "Artículos",
+  "titulo": "Ficha del artículo – Alias y Clasificación",
+  "ruta": "CI › Artículos › Ficha del artículo – Alias y Clasificación",
+  "img": "CI_01_articulo_tab02_alias.jpg",
+  "estado": null
+ },
+ "CI.articulos.ficha_del_articulo_otras_clasificaciones_y_datos_de_compra": {
+  "cap": "CI",
+  "seccion": "Artículos",
+  "titulo": "Ficha del artículo – Otras Clasificaciones y Datos de Compra",
+  "ruta": "CI › Artículos › Ficha del artículo – Otras Clasificaciones y Datos de Compra",
+  "img": "CI_01_articulo_tab04_otras_clasif.jpg",
+  "estado": null
+ },
+ "CI.articulos.ficha_del_articulo_especificaciones_y_proveedor": {
+  "cap": "CI",
+  "seccion": "Artículos",
+  "titulo": "Ficha del artículo – Especificaciones y Proveedor",
+  "ruta": "CI › Artículos › Ficha del artículo – Especificaciones y Proveedor",
+  "img": "CI_01_articulo_tab06_especificaciones.jpg",
+  "estado": null
+ },
+ "CI.articulos.ficha_del_articulo_otros_notas_lote_y_auditoria": {
+  "cap": "CI",
+  "seccion": "Artículos",
+  "titulo": "Ficha del artículo – Otros, Notas, Lote y Auditoría",
+  "ruta": "CI › Artículos › Ficha del artículo – Otros, Notas, Lote y Auditoría",
+  "img": "CI_01_articulo_tab08_otros.jpg",
+  "estado": null
+ },
+ "CI.transacciones.paquetes_de_inventario": {
+  "cap": "CI",
+  "seccion": "Transacciones",
+  "titulo": "Paquetes de inventario",
+  "ruta": "Inventarios › Transacciones › Paquetes",
+  "img": "CI_03_paquetes_busqueda.jpg",
+  "estado": null
+ },
+ "CI.transacciones.transaccion_en_linea": {
+  "cap": "CI",
+  "seccion": "Transacciones",
+  "titulo": "Transacción en línea",
+  "ruta": "Inventarios › Transacciones › En línea",
+  "img": "CI_04_transaccion_en_linea.jpg",
+  "estado": null
+ },
+ "CI.consultas.consulta_de_articulos": {
+  "cap": "CI",
+  "seccion": "Consultas",
+  "titulo": "Consulta de Artículos",
+  "ruta": "Inventarios › Consulta › Artículos",
+  "img": "CI_05_consulta_articulos.jpg",
+  "estado": null
+ },
+ "CI.consultas.existencias_por_bodega": {
+  "cap": "CI",
+  "seccion": "Consultas",
+  "titulo": "Existencias por Bodega",
+  "ruta": "Inventarios › Consulta › Existencias › Bodegas",
+  "img": "CI_06_exist_bodegas.jpg",
+  "estado": null
+ },
+ "CI.consultas.existencias_por_localizaciones_lotes": {
+  "cap": "CI",
+  "seccion": "Consultas",
+  "titulo": "Existencias por Localizaciones/Lotes",
+  "ruta": "Inventarios › Consulta › Existencias › Localizaciones/Lotes",
+  "img": "CI_07_exist_localiz_lotes.jpg",
+  "estado": null
+ },
+ "CI.consultas.transacciones_encabezado_de_documentos": {
+  "cap": "CI",
+  "seccion": "Consultas",
+  "titulo": "Transacciones – Encabezado de Documentos",
+  "ruta": "Inventarios › Consulta › Transacciones › Encabezado Documentos",
+  "img": "CI_08_trans_encabezado.jpg",
+  "estado": null
+ },
+ "CI.consultas.transacciones_detalle_de_documentos": {
+  "cap": "CI",
+  "seccion": "Consultas",
+  "titulo": "Transacciones – Detalle de Documentos",
+  "ruta": "Inventarios › Consulta › Transacciones › Detalle Documentos",
+  "img": "CI_09_trans_detalle.jpg",
+  "estado": null
+ },
+ "CI.consultas.series_y_pedimentos": {
+  "cap": "CI",
+  "seccion": "Consultas",
+  "titulo": "Series y Pedimentos",
+  "ruta": "CI › Consultas › Series y Pedimentos",
+  "img": null,
+  "estado": null
+ },
+ "CI.reportes.transacciones_por_articulo": {
+  "cap": "CI",
+  "seccion": "Reportes",
+  "titulo": "Transacciones por Artículo",
+  "ruta": "CI › Reportes › Transacciones por Artículo",
+  "img": "CI_R12_trans_por_articulo.jpg",
+  "estado": null
+ },
+ "CO.proveedores.proveedores_lista": {
+  "cap": "CO",
+  "seccion": "Proveedores",
+  "titulo": "Proveedores – lista",
+  "ruta": "Compras › Proveedores › Proveedores",
+  "img": "CO_01_proveedores.jpg",
+  "estado": null
+ },
+ "CO.articulos.datos_de_compra": {
+  "cap": "CO",
+  "seccion": "Artículos",
+  "titulo": "Datos de Compra",
+  "ruta": "Compras › Artículos › Datos de Compra",
+  "img": "CO_02_datos_compra.jpg",
+  "estado": null
+ },
+ "CO.articulos.articulos_proveedores": {
+  "cap": "CO",
+  "seccion": "Artículos",
+  "titulo": "Artículos-Proveedores",
+  "ruta": "Compras › Artículos › Artículos-Proveedores",
+  "img": "CO_03_articulos_proveedores.jpg",
+  "estado": null
+ },
+ "CO.consultas.solicitudes_y_lineas_de_solicitudes": {
+  "cap": "CO",
+  "seccion": "Consultas",
+  "titulo": "Solicitudes y Líneas de Solicitudes",
+  "ruta": "CO › Consultas › Solicitudes y Líneas de Solicitudes",
+  "img": "CO_C01_solicitudes.jpg",
+  "estado": null
+ },
+ "CO.consultas.ordenes_encabezados_y_lineas_de_ordenes": {
+  "cap": "CO",
+  "seccion": "Consultas",
+  "titulo": "Órdenes (Encabezados) y Líneas de Órdenes",
+  "ruta": "CO › Consultas › Órdenes (Encabezados) y Líneas de Órdenes",
+  "img": "CO_C03_ordenes.jpg",
+  "estado": null
+ },
+ "CO.operaciones.embarques_lista": {
+  "cap": "CO",
+  "seccion": "Operaciones",
+  "titulo": "Embarques – lista",
+  "ruta": "Compras › Operaciones › Embarques",
+  "img": "CO_06_embarques.jpg",
+  "estado": null
+ },
+ "CO.operaciones.liquidaciones": {
+  "cap": "CO",
+  "seccion": "Operaciones",
+  "titulo": "Liquidaciones",
+  "ruta": "Compras › Operaciones › Liquidaciones",
+  "img": "CO_07_liquidaciones.jpg",
+  "estado": null
+ },
+ "CO.operaciones.pedidos_sugeridos": {
+  "cap": "CO",
+  "seccion": "Operaciones",
+  "titulo": "Pedidos Sugeridos",
+  "ruta": "Compras › Operaciones › Pedidos Sugeridos",
+  "img": "CO_08_pedidos_sugeridos.jpg",
+  "estado": null
+ },
+ "CO.operaciones.documentos_de_compra": {
+  "cap": "CO",
+  "seccion": "Operaciones",
+  "titulo": "Documentos de Compra",
+  "ruta": "Compras › Operaciones › Documentos de Compra",
+  "img": "CO_09_documentos_compra.jpg",
+  "estado": null
+ },
+ "CO.operaciones.evaluacion_de_proveedores_planificadores_de_compras": {
+  "cap": "CO",
+  "seccion": "Operaciones",
+  "titulo": "Evaluación de Proveedores / Planificadores de Compras",
+  "ruta": "CO › Operaciones › Evaluación de Proveedores / Planificadores de Compras",
+  "img": "CO_11_planificadores.jpg",
+  "estado": null
+ },
+ "CO.consultas.documentos": {
+  "cap": "CO",
+  "seccion": "Consultas",
+  "titulo": "Documentos",
+  "ruta": "CO › Consultas › Documentos",
+  "img": "CO_C05_documentos.jpg",
+  "estado": null
+ },
+ "CO.consultas.precios_de_articulos": {
+  "cap": "CO",
+  "seccion": "Consultas",
+  "titulo": "Precios de Artículos",
+  "ruta": "CO › Consultas › Precios de Artículos",
+  "img": "CO_C06_precios_articulos.jpg",
+  "estado": null
+ },
+ "CO.consultas.evaluacion_de_proveedores": {
+  "cap": "CO",
+  "seccion": "Consultas",
+  "titulo": "Evaluación de Proveedores",
+  "ruta": "CO › Consultas › Evaluación de Proveedores",
+  "img": "CO_C07_evaluacion_prov.jpg",
+  "estado": null
+ },
+ "CO.consultas.compras_por_articulo_por_proveedor": {
+  "cap": "CO",
+  "seccion": "Consultas",
+  "titulo": "Compras por Artículo / por Proveedor",
+  "ruta": "CO › Consultas › Compras por Artículo / por Proveedor",
+  "img": "CO_C08_compras_por_articulo.jpg",
+  "estado": null
+ },
+ "CO.m.consultas.compras_por_proveedor": {
+  "cap": "CO",
+  "seccion": "Consultas",
+  "titulo": "Compras por Proveedor",
+  "ruta": "CO › Consultas › Compras por Proveedor",
+  "img": null,
+  "estado": null
+ },
+ "CO.consultas.historico_de_planificacion_por_articulo": {
+  "cap": "CO",
+  "seccion": "Consultas",
+  "titulo": "Histórico de Planificación por Artículo",
+  "ruta": "CO › Consultas › Histórico de Planificación por Artículo",
+  "img": "CO_C10_hist_planificacion.jpg",
+  "estado": null
+ },
+ "CO.reportes.proveedores_de_solicitudes": {
+  "cap": "CO",
+  "seccion": "Reportes",
+  "titulo": "Proveedores de Solicitudes",
+  "ruta": "CO › Reportes › Proveedores de Solicitudes",
+  "img": "CO_R01_prov_solicitudes.jpg",
+  "estado": null
+ },
+ "CO.reportes.abastecimiento_de_solicitudes": {
+  "cap": "CO",
+  "seccion": "Reportes",
+  "titulo": "Abastecimiento de Solicitudes",
+  "ruta": "CO › Reportes › Abastecimiento de Solicitudes",
+  "img": "CO_R02_abastecimiento_sol.jpg",
+  "estado": null
+ },
+ "CO.reportes.historico_de_compras": {
+  "cap": "CO",
+  "seccion": "Reportes",
+  "titulo": "Histórico de Compras",
+  "ruta": "CO › Reportes › Histórico de Compras",
+  "img": "CO_R03_historico_compras.jpg",
+  "estado": null
+ },
+ "CO.reportes.variacion_de_costos": {
+  "cap": "CO",
+  "seccion": "Reportes",
+  "titulo": "Variación de Costos",
+  "ruta": "CO › Reportes › Variación de Costos",
+  "img": "CO_R04_variacion_costos.jpg",
+  "estado": null
+ },
+ "CO.reportes.plazos_de_reabastecimiento": {
+  "cap": "CO",
+  "seccion": "Reportes",
+  "titulo": "Plazos de Reabastecimiento",
+  "ruta": "CO › Reportes › Plazos de Reabastecimiento",
+  "img": "CO_R05_plazos_reabast.jpg",
+  "estado": null
+ },
+ "CO.m.reportes.porc_ajuste_de_costo": {
+  "cap": "CO",
+  "seccion": "Reportes",
+  "titulo": "Porc Ajuste de Costo",
+  "ruta": "CO › Reportes › Porc Ajuste de Costo",
+  "img": null,
+  "estado": null
+ },
+ "CO.reportes.liquidacion_de_compras": {
+  "cap": "CO",
+  "seccion": "Reportes",
+  "titulo": "Liquidación de Compras",
+  "ruta": "CO › Reportes › Liquidación de Compras",
+  "img": "CO_R07_liquidacion_compras.jpg",
+  "estado": null
+ },
+ "CO.m.reportes.ord_recibido_de_mas": {
+  "cap": "CO",
+  "seccion": "Reportes",
+  "titulo": "Órd. Recibido de Más",
+  "ruta": "CO › Reportes › Órd. Recibido de Más",
+  "img": null,
+  "estado": null
+ },
+ "CO.m.reportes.emb_recibido_de_mas": {
+  "cap": "CO",
+  "seccion": "Reportes",
+  "titulo": "Emb. Recibido de Más",
+  "ruta": "CO › Reportes › Emb. Recibido de Más",
+  "img": null,
+  "estado": null
+ },
+ "CO.reportes.analitico_de_devoluciones": {
+  "cap": "CO",
+  "seccion": "Reportes",
+  "titulo": "Analítico de Devoluciones",
+  "ruta": "CO › Reportes › Analítico de Devoluciones",
+  "img": "CO_R10_analitico_devol.jpg",
+  "estado": null
+ },
+ "CO.reportes.evaluacion_de_proveedores": {
+  "cap": "CO",
+  "seccion": "Reportes",
+  "titulo": "Evaluación de Proveedores",
+  "ruta": "CO › Reportes › Evaluación de Proveedores",
+  "img": "CO_R11_evaluacion_prov.jpg",
+  "estado": null
+ },
+ "CO.reportes.reporte_retaceo": {
+  "cap": "CO",
+  "seccion": "Reportes",
+  "titulo": "Reporte Retaceo",
+  "ruta": "CO › Reportes › Reporte Retaceo",
+  "img": "CO_R12_retaceo.jpg",
+  "estado": null
+ },
+ "CO.m.procesos.movimiento_contable": {
+  "cap": "CO",
+  "seccion": "Procesos",
+  "titulo": "Movimiento Contable",
+  "ruta": "CO › Procesos › Movimiento Contable",
+  "img": null,
+  "estado": null
+ },
+ "CO.m.procesos.liquidacion_por_lotes": {
+  "cap": "CO",
+  "seccion": "Procesos",
+  "titulo": "Liquidación por Lotes",
+  "ruta": "CO › Procesos › Liquidación por Lotes",
+  "img": null,
+  "estado": null
+ },
+ "CO.m.procesos.carga_de_solicitudes_de_compra": {
+  "cap": "CO",
+  "seccion": "Procesos",
+  "titulo": "Carga de Solicitudes de Compra",
+  "ruta": "CO › Procesos › Carga de Solicitudes de Compra",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "CO.m.procesos.recalculo_porcentajes_de_ajuste": {
+  "cap": "CO",
+  "seccion": "Procesos",
+  "titulo": "Recálculo Porcentajes de Ajuste",
+  "ruta": "CO › Procesos › Recálculo Porcentajes de Ajuste",
+  "img": null,
+  "estado": null
+ },
+ "CO.m.procesos.cargador_de_direcciones": {
+  "cap": "CO",
+  "seccion": "Procesos",
+  "titulo": "Cargador de Direcciones",
+  "ruta": "CO › Procesos › Cargador de Direcciones",
+  "img": null,
+  "estado": null
+ },
+ "CO.m.procesos.costa_rica_informacion_de_aduana": {
+  "cap": "CO",
+  "seccion": "Procesos",
+  "titulo": "Costa Rica: Información de Aduana",
+  "ruta": "CO › Procesos › Costa Rica: Información de Aduana",
+  "img": null,
+  "estado": null
+ },
+ "CO.m.administracion.compradores": {
+  "cap": "CO",
+  "seccion": "Administración",
+  "titulo": "Compradores",
+  "ruta": "CO › Administración › Compradores",
+  "img": null,
+  "estado": null
+ },
+ "CO.m.administracion.gastos": {
+  "cap": "CO",
+  "seccion": "Administración",
+  "titulo": "Gastos",
+  "ruta": "CO › Administración › Gastos",
+  "img": null,
+  "estado": null
+ },
+ "CO.m.administracion.impuestos": {
+  "cap": "CO",
+  "seccion": "Administración",
+  "titulo": "Impuestos",
+  "ruta": "CO › Administración › Impuestos",
+  "img": null,
+  "estado": null
+ },
+ "CO.m.administracion.aranceles": {
+  "cap": "CO",
+  "seccion": "Administración",
+  "titulo": "Aranceles",
+  "ruta": "CO › Administración › Aranceles",
+  "img": null,
+  "estado": null
+ },
+ "CO.m.administracion.direcciones_de_embarque": {
+  "cap": "CO",
+  "seccion": "Administración",
+  "titulo": "Direcciones de Embarque",
+  "ruta": "CO › Administración › Direcciones de Embarque",
+  "img": null,
+  "estado": null
+ },
+ "CO.m.administracion.centros_de_costo": {
+  "cap": "CO",
+  "seccion": "Administración",
+  "titulo": "Centros de costo",
+  "ruta": "CO › Administración › Centros de costo",
+  "img": null,
+  "estado": null
+ },
+ "CO.m.administracion.rangos_de_autorizacion_por_departamento": {
+  "cap": "CO",
+  "seccion": "Administración",
+  "titulo": "Rangos de Autorización por Departamento",
+  "ruta": "CO › Administración › Rangos de Autorización por Departamento",
+  "img": null,
+  "estado": null
+ },
+ "CO.m.administracion.montos_de_autorizacion_por_usuario": {
+  "cap": "CO",
+  "seccion": "Administración",
+  "titulo": "Montos de Autorización por Usuario",
+  "ruta": "CO › Administración › Montos de Autorización por Usuario",
+  "img": null,
+  "estado": null
+ },
+ "CO.m.administracion.mantenimiento_pronostico_ventas": {
+  "cap": "CO",
+  "seccion": "Administración",
+  "titulo": "Mantenimiento Pronóstico Ventas",
+  "ruta": "CO › Administración › Mantenimiento Pronóstico Ventas",
+  "img": null,
+  "estado": null
+ },
+ "CO.m.administracion.configuracion_del_planificador": {
+  "cap": "CO",
+  "seccion": "Administración",
+  "titulo": "Configuración del Planificador",
+  "ruta": "CO › Administración › Configuración del Planificador",
+  "img": null,
+  "estado": null
+ },
+ "CO.administracion.parametros_del_modulo": {
+  "cap": "CO",
+  "seccion": "Administración",
+  "titulo": "Parámetros del Módulo",
+  "ruta": "CO › Administración › Parámetros del Módulo",
+  "img": "CO_A12_parametros.jpg",
+  "estado": null
+ },
+ "CO.proveedores.ficha_del_proveedor_general_y_otros": {
+  "cap": "CO",
+  "seccion": "Proveedores",
+  "titulo": "Ficha del proveedor – General y Otros",
+  "ruta": "CO › Proveedores › Ficha del proveedor – General y Otros",
+  "img": "CO_01_proveedor_tab01_general.jpg",
+  "estado": null
+ },
+ "CO.proveedores.ficha_del_proveedor_direcciones_cuentas_documentos_electronicos_y_auditoria": {
+  "cap": "CO",
+  "seccion": "Proveedores",
+  "titulo": "Ficha del proveedor – Direcciones, Cuentas, Documentos Electrónicos y Auditoría",
+  "ruta": "CO › Proveedores › Ficha del proveedor – Direcciones, Cuentas, Documentos Electrónicos y Auditoría",
+  "img": "CO_01_proveedor_tab03_direcciones.jpg",
+  "estado": null
+ },
+ "CO.operaciones.solicitudes_de_compra": {
+  "cap": "CO",
+  "seccion": "Operaciones",
+  "titulo": "Solicitudes de Compra",
+  "ruta": "Compras › Operaciones › Solicitudes",
+  "img": "CO_04_solicitudes.jpg",
+  "estado": null
+ },
+ "CO.operaciones.ordenes_de_compra_lista": {
+  "cap": "CO",
+  "seccion": "Operaciones",
+  "titulo": "Órdenes de Compra – lista",
+  "ruta": "Compras › Operaciones › Órdenes",
+  "img": "CO_05_ordenes.jpg",
+  "estado": null
+ },
+ "CO.operaciones.orden_de_compra_detalle": {
+  "cap": "CO",
+  "seccion": "Operaciones",
+  "titulo": "Orden de Compra – detalle",
+  "ruta": "CO › Operaciones › Orden de Compra – detalle",
+  "img": "CO_05_orden_tab01_general.jpg",
+  "estado": null
+ },
+ "CO.operaciones.embarque_detalle": {
+  "cap": "CO",
+  "seccion": "Operaciones",
+  "titulo": "Embarque – detalle",
+  "ruta": "CO › Operaciones › Embarque – detalle",
+  "img": "CO_06_embarque_tab01_general.jpg",
+  "estado": null
+ },
+ "CO.reportes.porcentaje_de_ajuste_de_costo": {
+  "cap": "CO",
+  "seccion": "Reportes",
+  "titulo": "Porcentaje de Ajuste de Costo",
+  "ruta": "CO › Reportes › Porcentaje de Ajuste de Costo",
+  "img": "CO_R06_porc_ajuste_costo.jpg",
+  "estado": null
+ },
+ "CO.reportes.ordenes_embarques_con_recibido_de_mas": {
+  "cap": "CO",
+  "seccion": "Reportes",
+  "titulo": "Órdenes / Embarques con recibido de más",
+  "ruta": "CO › Reportes › Órdenes / Embarques con recibido de más",
+  "img": "CO_R08_ord_recibido_mas.jpg",
+  "estado": null
+ },
+ "CO.administracion.otros_catalogos": {
+  "cap": "CO",
+  "seccion": "Administración",
+  "titulo": "Otros catálogos",
+  "ruta": "CO › Administración › Otros catálogos",
+  "img": null,
+  "estado": null
+ },
+ "FA.clientes.clientes_lista": {
+  "cap": "FA",
+  "seccion": "Clientes",
+  "titulo": "Clientes – lista",
+  "ruta": "Facturación › Clientes › Clientes",
+  "img": "FA_01_clientes.jpg",
+  "estado": null
+ },
+ "FA.clientes.contactos": {
+  "cap": "FA",
+  "seccion": "Clientes",
+  "titulo": "Contactos",
+  "ruta": "FA › Clientes › Contactos",
+  "img": null,
+  "estado": null
+ },
+ "FA.documentos.pedidos_lista": {
+  "cap": "FA",
+  "seccion": "Documentos",
+  "titulo": "Pedidos – lista",
+  "ruta": "Facturación › Documentos › Pedidos",
+  "img": "FA_03_pedidos.jpg",
+  "estado": null
+ },
+ "FA.documentos.facturacion_sin_pedido": {
+  "cap": "FA",
+  "seccion": "Documentos",
+  "titulo": "Facturación sin Pedido",
+  "ruta": "Facturación › Documentos › Facturación sin Pedido",
+  "img": "FA_04_facturacion_sin_pedido.jpg",
+  "estado": null
+ },
+ "FA.documentos.remisiones": {
+  "cap": "FA",
+  "seccion": "Documentos",
+  "titulo": "Remisiones",
+  "ruta": "FA › Documentos › Remisiones",
+  "img": "FA_05_remisiones.jpg",
+  "estado": null
+ },
+ "FA.documentos.anulaciones": {
+  "cap": "FA",
+  "seccion": "Documentos",
+  "titulo": "Anulaciones",
+  "ruta": "FA › Documentos › Anulaciones",
+  "img": "FA_06_anulaciones.jpg",
+  "estado": null
+ },
+ "FA.documentos.devoluciones_con_documento": {
+  "cap": "FA",
+  "seccion": "Documentos",
+  "titulo": "Devoluciones con Documento",
+  "ruta": "FA › Documentos › Devoluciones con Documento",
+  "img": "FA_07_devol_con_doc.jpg",
+  "estado": null
+ },
+ "FA.m.documentos.devoluciones_sin_documento": {
+  "cap": "FA",
+  "seccion": "Documentos",
+  "titulo": "Devoluciones sin Documento",
+  "ruta": "FA › Documentos › Devoluciones sin Documento",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.documentos.devoluciones_con_numero_de_documento": {
+  "cap": "FA",
+  "seccion": "Documentos",
+  "titulo": "Devoluciones con Número de Documento",
+  "ruta": "FA › Documentos › Devoluciones con Número de Documento",
+  "img": null,
+  "estado": null
+ },
+ "FA.documentos.facturacion_de_anticipos": {
+  "cap": "FA",
+  "seccion": "Documentos",
+  "titulo": "Facturación de anticipos",
+  "ruta": "FA › Documentos › Facturación de anticipos",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "FA.documentos.cotizaciones": {
+  "cap": "FA",
+  "seccion": "Documentos",
+  "titulo": "Cotizaciones",
+  "ruta": "FA › Documentos › Cotizaciones",
+  "img": "FA_10_cotizaciones.jpg",
+  "estado": null
+ },
+ "FA.consultas.pedidos_y_lineas_de_pedido": {
+  "cap": "FA",
+  "seccion": "Consultas",
+  "titulo": "Pedidos y Líneas de Pedido",
+  "ruta": "FA › Consultas › Pedidos y Líneas de Pedido",
+  "img": "FA_C01_pedidos.jpg",
+  "estado": null
+ },
+ "FA.consultas.documentos_y_lineas_de_documento": {
+  "cap": "FA",
+  "seccion": "Consultas",
+  "titulo": "Documentos y Líneas de Documento",
+  "ruta": "FA › Consultas › Documentos y Líneas de Documento",
+  "img": "FA_C03_documentos.jpg",
+  "estado": null
+ },
+ "FA.consultas.articulos": {
+  "cap": "FA",
+  "seccion": "Consultas",
+  "titulo": "Artículos",
+  "ruta": "FA › Consultas › Artículos",
+  "img": "FA_C05_articulos.jpg",
+  "estado": null
+ },
+ "FA.consultas.cotizaciones_y_lineas_de_cotizaciones": {
+  "cap": "FA",
+  "seccion": "Consultas",
+  "titulo": "Cotizaciones y Líneas de Cotizaciones",
+  "ruta": "FA › Consultas › Cotizaciones y Líneas de Cotizaciones",
+  "img": "FA_C06_cotizaciones.jpg",
+  "estado": null
+ },
+ "FA.reportes.listas_de_empaque_pedidos_facturas_boletas_remisiones": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "Listas de Empaque (Pedidos, Facturas, Boletas, Remisiones)",
+  "ruta": "FA › Reportes › Listas de Empaque (Pedidos, Facturas, Boletas, Remisiones)",
+  "img": "FA_R01_empaque_pedidos.jpg",
+  "estado": null
+ },
+ "FA.reportes.requerimientos": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "Requerimientos",
+  "ruta": "FA › Reportes › Requerimientos",
+  "img": "FA_R05_requerimientos.jpg",
+  "estado": null
+ },
+ "FA.reportes.pedidos_articulos_pedidos": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "Pedidos / Artículos Pedidos",
+  "ruta": "FA › Reportes › Pedidos / Artículos Pedidos",
+  "img": "FA_R06_pedidos.jpg",
+  "estado": null
+ },
+ "FA.reportes.requerimientos_de_produccion_antiguedad_de_articulos_pedidos": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "Requerimientos de Producción / Antigüedad de artículos pedidos",
+  "ruta": "FA › Reportes › Requerimientos de Producción / Antigüedad de artículos pedidos",
+  "img": "FA_R08_req_produccion.jpg",
+  "estado": null
+ },
+ "FA.reportes.documentos": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "Documentos",
+  "ruta": "FA › Reportes › Documentos",
+  "img": "FA_R10_documentos.jpg",
+  "estado": null
+ },
+ "FA.reportes.utilidad_bruta": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "Utilidad Bruta",
+  "ruta": "FA › Reportes › Utilidad Bruta",
+  "img": "FA_R11_utilidad_bruta.jpg",
+  "estado": null
+ },
+ "FA.m.reportes.lista_de_precios": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "Lista de Precios",
+  "ruta": "FA › Reportes › Lista de Precios",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.reportes.lista_de_ofertas": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "Lista de Ofertas",
+  "ruta": "FA › Reportes › Lista de Ofertas",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.reportes.lista_de_descuentos": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "Lista de Descuentos",
+  "ruta": "FA › Reportes › Lista de Descuentos",
+  "img": null,
+  "estado": null
+ },
+ "FA.reportes.listas_de_precios_ofertas_y_descuentos_ensambles": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "Listas de Precios, Ofertas y Descuentos / Ensambles",
+  "ruta": "FA › Reportes › Listas de Precios, Ofertas y Descuentos / Ensambles",
+  "img": "FA_R12_lista_precios.jpg",
+  "estado": null
+ },
+ "FA.reportes.registro_de_ventas": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "Registro de Ventas",
+  "ruta": "FA › Reportes › Registro de Ventas",
+  "img": "FA_R16_registro_ventas.jpg",
+  "estado": null
+ },
+ "FA.m.reportes.el_salvador": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "El Salvador",
+  "ruta": "FA › Reportes › El Salvador",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.reportes.guatemala": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "Guatemala",
+  "ruta": "FA › Reportes › Guatemala",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.reportes.colombia": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "Colombia",
+  "ruta": "FA › Reportes › Colombia",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.reportes.republica_dominicana": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "República Dominicana",
+  "ruta": "FA › Reportes › República Dominicana",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.reportes.reportes_honduras": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "Reportes Honduras",
+  "ruta": "FA › Reportes › Reportes Honduras",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.procesos.carga_a_contabilidad": {
+  "cap": "FA",
+  "seccion": "Procesos",
+  "titulo": "Carga a Contabilidad",
+  "ruta": "FA › Procesos › Carga a Contabilidad",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.procesos.recalculo_de_precios": {
+  "cap": "FA",
+  "seccion": "Procesos",
+  "titulo": "Recálculo de Precios",
+  "ruta": "FA › Procesos › Recálculo de Precios",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.procesos.purga_de_datos_pedidos_facturas_boletas_devoluciones_remisiones_autorizaciones": {
+  "cap": "FA",
+  "seccion": "Procesos",
+  "titulo": "Purga de datos (Pedidos · Facturas · Boletas · Devoluciones · Remisiones · Autorizaciones)",
+  "ruta": "FA › Procesos › Purga de datos (Pedidos · Facturas · Boletas · Devoluciones · Remisiones · Autorizaciones)",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.procesos.autorizacion_automatica_de_pedidos": {
+  "cap": "FA",
+  "seccion": "Procesos",
+  "titulo": "Autorización Automática de Pedidos",
+  "ruta": "FA › Procesos › Autorización Automática de Pedidos",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.procesos.cargador_de_direcciones": {
+  "cap": "FA",
+  "seccion": "Procesos",
+  "titulo": "Cargador de Direcciones",
+  "ruta": "FA › Procesos › Cargador de Direcciones",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.procesos.editor_de_listas_de_precios": {
+  "cap": "FA",
+  "seccion": "Procesos",
+  "titulo": "Editor de Listas de Precios",
+  "ruta": "FA › Procesos › Editor de Listas de Precios",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.procesos.costa_rica_informacion_de_aduana": {
+  "cap": "FA",
+  "seccion": "Procesos",
+  "titulo": "Costa Rica: Información de Aduana",
+  "ruta": "FA › Procesos › Costa Rica: Información de Aduana",
+  "img": null,
+  "estado": null
+ },
+ "FA.administracion.precios_base_versiones_de_precios_ensambles_kits": {
+  "cap": "FA",
+  "seccion": "Administración",
+  "titulo": "Precios Base, Versiones de Precios, Ensambles (Kits)",
+  "ruta": "FA › Administración › Precios Base, Versiones de Precios, Ensambles (Kits)",
+  "img": "FA_A01_precios_base.jpg",
+  "estado": null
+ },
+ "FA.m.administracion.versiones_de_precios_de_articulos": {
+  "cap": "FA",
+  "seccion": "Administración",
+  "titulo": "Versiones de Precios de Artículos",
+  "ruta": "FA › Administración › Versiones de Precios de Artículos",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.administracion.excepciones_descuentos_y_bonificaciones": {
+  "cap": "FA",
+  "seccion": "Administración",
+  "titulo": "Excepciones Descuentos y Bonificaciones",
+  "ruta": "FA › Administración › Excepciones Descuentos y Bonificaciones",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.administracion.ensambles_de_articulos": {
+  "cap": "FA",
+  "seccion": "Administración",
+  "titulo": "Ensambles de Artículos",
+  "ruta": "FA › Administración › Ensambles de Artículos",
+  "img": null,
+  "estado": null
+ },
+ "FA.administracion.niveles_de_precio": {
+  "cap": "FA",
+  "seccion": "Administración",
+  "titulo": "Niveles de Precio",
+  "ruta": "FA › Administración › Niveles de Precio",
+  "img": "FA_A05_niveles_precio.jpg",
+  "estado": null
+ },
+ "FA.m.administracion.resoluciones": {
+  "cap": "FA",
+  "seccion": "Administración",
+  "titulo": "Resoluciones",
+  "ruta": "FA › Administración › Resoluciones",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.administracion.paquetes_de_desc_y_bon": {
+  "cap": "FA",
+  "seccion": "Administración",
+  "titulo": "Paquetes de Desc y Bon.",
+  "ruta": "FA › Administración › Paquetes de Desc y Bon.",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.administracion.reglas_de_desc_y_bon": {
+  "cap": "FA",
+  "seccion": "Administración",
+  "titulo": "Reglas de Desc y Bon.",
+  "ruta": "FA › Administración › Reglas de Desc y Bon.",
+  "img": null,
+  "estado": null
+ },
+ "FA.administracion.autorizaciones_de_pedidos_por_ventas_credito": {
+  "cap": "FA",
+  "seccion": "Administración",
+  "titulo": "Autorizaciones de Pedidos por Ventas / Crédito",
+  "ruta": "FA › Administración › Autorizaciones de Pedidos por Ventas / Crédito",
+  "img": "FA_A09_autoriz_ventas.jpg",
+  "estado": null
+ },
+ "FA.m.administracion.configuracion_clientes": {
+  "cap": "FA",
+  "seccion": "Administración",
+  "titulo": "Configuración Clientes",
+  "ruta": "FA › Administración › Configuración Clientes",
+  "img": null,
+  "estado": null
+ },
+ "FA.administracion.consecutivos": {
+  "cap": "FA",
+  "seccion": "Administración",
+  "titulo": "Consecutivos",
+  "ruta": "FA › Administración › Consecutivos",
+  "img": "FA_A12_consecutivos.jpg",
+  "estado": null
+ },
+ "FA.m.administracion.motivos_cancelacion_cotizaciones": {
+  "cap": "FA",
+  "seccion": "Administración",
+  "titulo": "Motivos Cancelación Cotizaciones",
+  "ruta": "FA › Administración › Motivos Cancelación Cotizaciones",
+  "img": null,
+  "estado": null
+ },
+ "FA.m.administracion.parametros_del_modulo": {
+  "cap": "FA",
+  "seccion": "Administración",
+  "titulo": "Parámetros del Módulo",
+  "ruta": "FA › Administración › Parámetros del Módulo",
+  "img": null,
+  "estado": null
+ },
+ "FA.clientes.ficha_del_cliente": {
+  "cap": "FA",
+  "seccion": "Clientes",
+  "titulo": "Ficha del cliente",
+  "ruta": "FA › Clientes › Ficha del cliente",
+  "img": "FA_01_cliente_tab01_general.jpg",
+  "estado": null
+ },
+ "FA.documentos.pedido_detalle": {
+  "cap": "FA",
+  "seccion": "Documentos",
+  "titulo": "Pedido – detalle",
+  "ruta": "FA › Documentos › Pedido – detalle",
+  "img": "FA_03_pedido_tab01_lineas.jpg",
+  "estado": null
+ },
+ "FA.documentos.devolucion_sin_documento_con_numero_de_documento": {
+  "cap": "FA",
+  "seccion": "Documentos",
+  "titulo": "Devolución sin Documento / con Número de Documento",
+  "ruta": "FA › Documentos › Devolución sin Documento / con Número de Documento",
+  "img": "FA_08_devol_sin_doc.jpg",
+  "estado": null
+ },
+ "FA.reportes.carpetas_de_pais": {
+  "cap": "FA",
+  "seccion": "Reportes",
+  "titulo": "Carpetas de país",
+  "ruta": "FA › Reportes › Carpetas de país",
+  "img": null,
+  "estado": null
+ },
+ "FA.administracion.parametros_de_facturacion": {
+  "cap": "FA",
+  "seccion": "Administración",
+  "titulo": "Parámetros de Facturación",
+  "ruta": "FA › Administración › Parámetros de Facturación",
+  "img": "FA_A14_parametros.jpg",
+  "estado": null
+ },
+ "FA.administracion.otros_catalogos": {
+  "cap": "FA",
+  "seccion": "Administración",
+  "titulo": "Otros catálogos",
+  "ruta": "FA › Administración › Otros catálogos",
+  "img": null,
+  "estado": null
+ },
+ "CC.mantenimiento_de_clientes.clientes": {
+  "cap": "CC",
+  "seccion": "Mantenimiento de Clientes",
+  "titulo": "Clientes",
+  "ruta": "CC › Mantenimiento de Clientes › Clientes",
+  "img": "CC_001_clientes.jpg",
+  "estado": null
+ },
+ "CC.mantenimiento_de_clientes.contactos": {
+  "cap": "CC",
+  "seccion": "Mantenimiento de Clientes",
+  "titulo": "Contactos",
+  "ruta": "CC › Mantenimiento de Clientes › Contactos",
+  "img": "CC_002_contactos.jpg",
+  "estado": null
+ },
+ "CC.transacciones.documentos": {
+  "cap": "CC",
+  "seccion": "Transacciones",
+  "titulo": "Documentos",
+  "ruta": "CC › Transacciones › Documentos",
+  "img": "CC_003_documentos.jpg",
+  "estado": null
+ },
+ "CC.transacciones.contrarecibos": {
+  "cap": "CC",
+  "seccion": "Transacciones",
+  "titulo": "Contrarecibos",
+  "ruta": "CC › Transacciones › Contrarecibos",
+  "img": "CC_004_ccntrarecibos.jpg",
+  "estado": null
+ },
+ "CC.m.transacciones.convenios": {
+  "cap": "CC",
+  "seccion": "Transacciones",
+  "titulo": "Convenios",
+  "ruta": "CC › Transacciones › Convenios",
+  "img": null,
+  "estado": null
+ },
+ "CC.transacciones.carga_masiva_docs_peru": {
+  "cap": "CC",
+  "seccion": "Transacciones",
+  "titulo": "Carga Masiva Docs / Perú",
+  "ruta": "CC › Transacciones › Carga Masiva Docs / Perú",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.transacciones.peru_recepcion_detracciones_sunat_cc": {
+  "cap": "CC",
+  "seccion": "Transacciones",
+  "titulo": "Perú: Recepción detracciones SUNAT CC",
+  "ruta": "CC › Transacciones › Perú: Recepción detracciones SUNAT CC",
+  "img": null,
+  "estado": "bloqueada"
+ },
+ "CC.consultas.consulta_general_de_documentos": {
+  "cap": "CC",
+  "seccion": "Consultas",
+  "titulo": "Consulta General de Documentos",
+  "ruta": "CC › Consultas › Consulta General de Documentos",
+  "img": "CC_008_consulta_general_de_documentos.jpg",
+  "estado": null
+ },
+ "CC.consultas.consulta_corporativa_de_documentos": {
+  "cap": "CC",
+  "seccion": "Consultas",
+  "titulo": "Consulta Corporativa de Documentos",
+  "ruta": "CC › Consultas › Consulta Corporativa de Documentos",
+  "img": "CC_009_consulta_corporativa_de_documentos.jpg",
+  "estado": null
+ },
+ "CC.consultas.contrarecibos": {
+  "cap": "CC",
+  "seccion": "Consultas",
+  "titulo": "Contrarecibos",
+  "ruta": "CC › Consultas › Contrarecibos",
+  "img": "CC_010_contrarecibos.jpg",
+  "estado": null
+ },
+ "CC.consultas.mejores_clientes": {
+  "cap": "CC",
+  "seccion": "Consultas",
+  "titulo": "Mejores Clientes",
+  "ruta": "CC › Consultas › Mejores Clientes",
+  "img": "CC_011_mejores_clientes.jpg",
+  "estado": null
+ },
+ "CC.reportes.cuentas_por_cobrar": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "Cuentas por Cobrar",
+  "ruta": "CC › Reportes › Cuentas por Cobrar",
+  "img": "CC_034_cuentas_por_cobrar.jpg",
+  "estado": null
+ },
+ "CC.reportes.estados_de_cuenta": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "Estados de Cuenta",
+  "ruta": "CC › Reportes › Estados de Cuenta",
+  "img": "CC_035_estados_de_cuenta.jpg",
+  "estado": null
+ },
+ "CC.reportes.saldos_por_cuenta": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "Saldos por Cuenta",
+  "ruta": "CC › Reportes › Saldos por Cuenta",
+  "img": "CC_036_saldos_por_cuenta.jpg",
+  "estado": null
+ },
+ "CC.reportes.general_de_cuentas": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "General de Cuentas",
+  "ruta": "CC › Reportes › General de Cuentas",
+  "img": "CC_037_general_de_cuentas.jpg",
+  "estado": null
+ },
+ "CC.reportes.proyeccion_por_vencimiento_analisis_de_antiguedad": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "Proyección por Vencimiento / Análisis de Antigüedad",
+  "ruta": "CC › Reportes › Proyección por Vencimiento / Análisis de Antigüedad",
+  "img": "CC_038_proyeccion_por_vencimiento.jpg",
+  "estado": null
+ },
+ "CC.m.reportes.analisis_de_vencimiento": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "Análisis de Vencimiento",
+  "ruta": "CC › Reportes › Análisis de Vencimiento",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.reportes_reportes_por_moneda.analisis_de_vencimiento": {
+  "cap": "CC",
+  "seccion": "Reportes › Reportes por Moneda",
+  "titulo": "Análisis de Vencimiento",
+  "ruta": "CC › Reportes › Reportes por Moneda › Análisis de Vencimiento",
+  "img": null,
+  "estado": null
+ },
+ "CC.reportes.movimiento_diario_tipo_de_documento_por_cliente_resumen_diario": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "Movimiento Diario (Tipo de Documento, Por Cliente, Resumen Diario)",
+  "ruta": "CC › Reportes › Movimiento Diario (Tipo de Documento, Por Cliente, Resumen Diario)",
+  "img": "CC_042_tipo_de_documento.jpg",
+  "estado": null
+ },
+ "CC.m.reportes_movimiento_diario.tipo_de_documento": {
+  "cap": "CC",
+  "seccion": "Reportes › Movimiento Diario",
+  "titulo": "Tipo de Documento",
+  "ruta": "CC › Reportes › Movimiento Diario › Tipo de Documento",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.reportes_movimiento_diario.por_cliente": {
+  "cap": "CC",
+  "seccion": "Reportes › Movimiento Diario",
+  "titulo": "Por Cliente",
+  "ruta": "CC › Reportes › Movimiento Diario › Por Cliente",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.reportes_movimiento_diario.resumen_diario": {
+  "cap": "CC",
+  "seccion": "Reportes › Movimiento Diario",
+  "titulo": "Resumen Diario",
+  "ruta": "CC › Reportes › Movimiento Diario › Resumen Diario",
+  "img": null,
+  "estado": null
+ },
+ "CC.reportes.documentos_pendientes": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "Documentos Pendientes",
+  "ruta": "CC › Reportes › Documentos Pendientes",
+  "img": "CC_045_documentos_pendientes.jpg",
+  "estado": null
+ },
+ "CC.m.reportes.tipo_de_documento": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "Tipo de Documento",
+  "ruta": "CC › Reportes › Tipo de Documento",
+  "img": null,
+  "estado": null
+ },
+ "CC.reportes.aplicaciones_por_aplicacion": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "Aplicaciones / Por Aplicación",
+  "ruta": "CC › Reportes › Aplicaciones / Por Aplicación",
+  "img": "CC_048_aplicaciones.jpg",
+  "estado": null
+ },
+ "CC.reportes.diferencias_cambiarias_intereses_de_mora": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "Diferencias Cambiarias / Intereses de Mora",
+  "ruta": "CC › Reportes › Diferencias Cambiarias / Intereses de Mora",
+  "img": "CC_049_diferencias_cambiarias.jpg",
+  "estado": null
+ },
+ "CC.m.reportes_clientes_corporativos.jerarquia_de_clientes": {
+  "cap": "CC",
+  "seccion": "Reportes › Clientes Corporativos",
+  "titulo": "Jerarquía de Clientes",
+  "ruta": "CC › Reportes › Clientes Corporativos › Jerarquía de Clientes",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.reportes_clientes_corporativos.listado_docs_de_clientes_corporativos": {
+  "cap": "CC",
+  "seccion": "Reportes › Clientes Corporativos",
+  "titulo": "Listado docs de Clientes Corporativos",
+  "ruta": "CC › Reportes › Clientes Corporativos › Listado docs de Clientes Corporativos",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.reportes_reportes_de_retenciones.listado_de_retenciones": {
+  "cap": "CC",
+  "seccion": "Reportes › Reportes de Retenciones",
+  "titulo": "Listado de Retenciones",
+  "ruta": "CC › Reportes › Reportes de Retenciones › Listado de Retenciones",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.reportes_reportes_de_retenciones.retenciones_por_numero_de_contribuyente": {
+  "cap": "CC",
+  "seccion": "Reportes › Reportes de Retenciones",
+  "titulo": "Retenciones por Número de Contribuyente",
+  "ruta": "CC › Reportes › Reportes de Retenciones › Retenciones por Número de Contribuyente",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.reportes.reportes_el_salvador": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "Reportes El Salvador",
+  "ruta": "CC › Reportes › Reportes El Salvador",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.reportes.reportes_guatemala": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "Reportes Guatemala",
+  "ruta": "CC › Reportes › Reportes Guatemala",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.reportes.reporte_diferencias_de_cambio": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "Reporte Diferencias de Cambio",
+  "ruta": "CC › Reportes › Reporte Diferencias de Cambio",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.reportes_rep_rep_dominicana.dgii": {
+  "cap": "CC",
+  "seccion": "Reportes › Rep. Rep. Dominicana",
+  "titulo": "DGII",
+  "ruta": "CC › Reportes › Rep. Rep. Dominicana › DGII",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.reportes_rep_rep_dominicana.colombia": {
+  "cap": "CC",
+  "seccion": "Reportes › Rep. Rep. Dominicana",
+  "titulo": "Colombia",
+  "ruta": "CC › Reportes › Rep. Rep. Dominicana › Colombia",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.reportes_rep_rep_dominicana.reportes_honduras": {
+  "cap": "CC",
+  "seccion": "Reportes › Rep. Rep. Dominicana",
+  "titulo": "Reportes Honduras",
+  "ruta": "CC › Reportes › Rep. Rep. Dominicana › Reportes Honduras",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.procesos.aprobar_movimiento_diario": {
+  "cap": "CC",
+  "seccion": "Procesos",
+  "titulo": "Aprobar movimiento diario",
+  "ruta": "CC › Procesos › Aprobar movimiento diario",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.procesos.facturacion_cargar": {
+  "cap": "CC",
+  "seccion": "Procesos",
+  "titulo": "Facturación - Cargar",
+  "ruta": "CC › Procesos › Facturación - Cargar",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.procesos.procesos_contables_diferencias_cambiarias_intereses_de_mora": {
+  "cap": "CC",
+  "seccion": "Procesos",
+  "titulo": "Procesos Contables (Diferencias Cambiarias · Intereses de Mora)",
+  "ruta": "CC › Procesos › Procesos Contables (Diferencias Cambiarias · Intereses de Mora)",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.procesos.dias_promedio_de_atraso": {
+  "cap": "CC",
+  "seccion": "Procesos",
+  "titulo": "Días Promedio de Atraso",
+  "ruta": "CC › Procesos › Días Promedio de Atraso",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.procesos.manejo_de_dias_de_revision": {
+  "cap": "CC",
+  "seccion": "Procesos",
+  "titulo": "Manejo de días de Revisión",
+  "ruta": "CC › Procesos › Manejo de días de Revisión",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.procesos.saldos_recalcular": {
+  "cap": "CC",
+  "seccion": "Procesos",
+  "titulo": "Saldos - Recalcular",
+  "ruta": "CC › Procesos › Saldos - Recalcular",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.procesos.purga_de_datos": {
+  "cap": "CC",
+  "seccion": "Procesos",
+  "titulo": "Purga de Datos",
+  "ruta": "CC › Procesos › Purga de Datos",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.procesos.cargador_de_direcciones": {
+  "cap": "CC",
+  "seccion": "Procesos",
+  "titulo": "Cargador de Direcciones",
+  "ruta": "CC › Procesos › Cargador de Direcciones",
+  "img": null,
+  "estado": null
+ },
+ "CC.m.procesos.generacion_de_asientos": {
+  "cap": "CC",
+  "seccion": "Procesos",
+  "titulo": "Generación de Asientos",
+  "ruta": "CC › Procesos › Generación de Asientos",
+  "img": null,
+  "estado": null
+ },
+ "CC.administracion.subtipos_de_documentos": {
+  "cap": "CC",
+  "seccion": "Administración",
+  "titulo": "Subtipos de Documentos",
+  "ruta": "CC › Administración › Subtipos de Documentos",
+  "img": "CC_075_subtipos_de_documentos.jpg",
+  "estado": null
+ },
+ "CC.administracion.tipos_de_retenciones": {
+  "cap": "CC",
+  "seccion": "Administración",
+  "titulo": "Tipos de Retenciones",
+  "ruta": "CC › Administración › Tipos de Retenciones",
+  "img": "CC_076_tipos_de_retenciones.jpg",
+  "estado": null
+ },
+ "CC.m.administracion.parametros_del_modulo": {
+  "cap": "CC",
+  "seccion": "Administración",
+  "titulo": "Parámetros del Módulo",
+  "ruta": "CC › Administración › Parámetros del Módulo",
+  "img": null,
+  "estado": null
+ },
+ "CC.transacciones.convenios_de_pago": {
+  "cap": "CC",
+  "seccion": "Transacciones",
+  "titulo": "Convenios de Pago",
+  "ruta": "CC › Transacciones › Convenios de Pago",
+  "img": "CC_005_convenios.jpg",
+  "estado": null
+ },
+ "CC.reportes.clientes_corporativos_retenciones": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "Clientes Corporativos / Retenciones",
+  "ruta": "CC › Reportes › Clientes Corporativos / Retenciones",
+  "img": "CC_051_jerarquia_de_clientes.jpg",
+  "estado": null
+ },
+ "CC.reportes.reportes_de_pais": {
+  "cap": "CC",
+  "seccion": "Reportes",
+  "titulo": "Reportes de país",
+  "ruta": "CC › Reportes › Reportes de país",
+  "img": null,
+  "estado": null
+ },
+ "CC.administracion.parametros_de_cuentas_por_cobrar": {
+  "cap": "CC",
+  "seccion": "Administración",
+  "titulo": "Parámetros de Cuentas por Cobrar",
+  "ruta": "CC › Administración › Parámetros de Cuentas por Cobrar",
+  "img": "CC_077_parametros_del_modulo.jpg",
+  "estado": null
+ },
+ "CP.proveedores.proveedores": {
+  "cap": "CP",
+  "seccion": "Proveedores",
+  "titulo": "Proveedores",
+  "ruta": "CP › Proveedores › Proveedores",
+  "img": "CP_021_proveedores.jpg",
+  "estado": null
+ },
+ "CP.transacciones.documentos": {
+  "cap": "CP",
+  "seccion": "Transacciones",
+  "titulo": "Documentos",
+  "ruta": "CP › Transacciones › Documentos",
+  "img": "CP_022_documentos.jpg",
+  "estado": null
+ },
+ "CP.transacciones.contrarecibos": {
+  "cap": "CP",
+  "seccion": "Transacciones",
+  "titulo": "Contrarecibos",
+  "ruta": "CP › Transacciones › Contrarecibos",
+  "img": "CP_023_ccntrarecibos.jpg",
+  "estado": null
+ },
+ "CP.transacciones.cheques_impresion_de_cheques": {
+  "cap": "CP",
+  "seccion": "Transacciones",
+  "titulo": "Cheques (Impresión de Cheques)",
+  "ruta": "CP › Transacciones › Cheques (Impresión de Cheques)",
+  "img": "CP_024_cheques.jpg",
+  "estado": null
+ },
+ "CP.transacciones.transferencias_generacion_de_transferencias_electronicas": {
+  "cap": "CP",
+  "seccion": "Transacciones",
+  "titulo": "Transferencias (Generación de Transferencias Electrónicas)",
+  "ruta": "CP › Transacciones › Transferencias (Generación de Transferencias Electrónicas)",
+  "img": "CP_025_transferencias.jpg",
+  "estado": null
+ },
+ "CP.m.transacciones.peru": {
+  "cap": "CP",
+  "seccion": "Transacciones",
+  "titulo": "Perú",
+  "ruta": "CP › Transacciones › Perú",
+  "img": null,
+  "estado": null
+ },
+ "CP.consultas.documentos_consulta_de_movimiento_de_proveedores": {
+  "cap": "CP",
+  "seccion": "Consultas",
+  "titulo": "Documentos (Consulta de Movimiento de Proveedores)",
+  "ruta": "CP › Consultas › Documentos (Consulta de Movimiento de Proveedores)",
+  "img": "CP_026_docurnentos.jpg",
+  "estado": null
+ },
+ "CP.consultas.contrarecibos": {
+  "cap": "CP",
+  "seccion": "Consultas",
+  "titulo": "Contrarecibos",
+  "ruta": "CP › Consultas › Contrarecibos",
+  "img": "CP_027_contrarecibos.jpg",
+  "estado": null
+ },
+ "CP.consultas.mejores_proveedores": {
+  "cap": "CP",
+  "seccion": "Consultas",
+  "titulo": "Mejores Proveedores",
+  "ruta": "CP › Consultas › Mejores Proveedores",
+  "img": "CP_028_mejores_proveedores.jpg",
+  "estado": null
+ },
+ "CP.reportes.cuentas_por_pagar_estados_de_cuenta_saldos_por_cuenta_general_de_cuentas": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Cuentas por Pagar / Estados de Cuenta / Saldos por Cuenta / General de Cuentas",
+  "ruta": "CP › Reportes › Cuentas por Pagar / Estados de Cuenta / Saldos por Cuenta / General de Cuentas",
+  "img": "CP_029_cuentas_por_pagar.jpg",
+  "estado": null
+ },
+ "CP.m.reportes.proyeccion_por_vencimiento": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Proyección por Vencimiento",
+  "ruta": "CP › Reportes › Proyección por Vencimiento",
+  "img": null,
+  "estado": null
+ },
+ "CP.reportes.proyeccion_analisis_de_vencimiento_y_de_antiguedad": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Proyección, Análisis de Vencimiento y de Antigüedad",
+  "ruta": "CP › Reportes › Proyección, Análisis de Vencimiento y de Antigüedad",
+  "img": "CP_033_proyeccion_por_vencimiento.jpg",
+  "estado": null
+ },
+ "CP.m.reportes.analisis_de_antiguedad": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Análisis de Antigüedad",
+  "ruta": "CP › Reportes › Análisis de Antigüedad",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes_reportes_por_moneda.proyeccion_por_vencimiento": {
+  "cap": "CP",
+  "seccion": "Reportes › Reportes por Moneda",
+  "titulo": "Proyección por Vencimiento",
+  "ruta": "CP › Reportes › Reportes por Moneda › Proyección por Vencimiento",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes_reportes_por_moneda.analisis_de_antiguedad": {
+  "cap": "CP",
+  "seccion": "Reportes › Reportes por Moneda",
+  "titulo": "Análisis de Antigüedad",
+  "ruta": "CP › Reportes › Reportes por Moneda › Análisis de Antigüedad",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes_reportes_por_moneda.movimiento_diario_por_tipo_de_documento_por_proveedor": {
+  "cap": "CP",
+  "seccion": "Reportes › Reportes por Moneda",
+  "titulo": "Movimiento Diario (Por Tipo de Documento · Por Proveedor)",
+  "ruta": "CP › Reportes › Reportes por Moneda › Movimiento Diario (Por Tipo de Documento · Por Proveedor)",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes_movimiento_diario.por_proveedor": {
+  "cap": "CP",
+  "seccion": "Reportes › Movimiento Diario",
+  "titulo": "Por Proveedor",
+  "ruta": "CP › Reportes › Movimiento Diario › Por Proveedor",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes_movimiento_diario.por_documento": {
+  "cap": "CP",
+  "seccion": "Reportes › Movimiento Diario",
+  "titulo": "Por Documento",
+  "ruta": "CP › Reportes › Movimiento Diario › Por Documento",
+  "img": null,
+  "estado": null
+ },
+ "CP.reportes.documentos_pendientes_y_aplicaciones": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Documentos Pendientes y Aplicaciones",
+  "ruta": "CP › Reportes › Documentos Pendientes y Aplicaciones",
+  "img": "CP_039_documentos_pendientes.jpg",
+  "estado": null
+ },
+ "CP.m.reportes.listado_por_aplicacion": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Listado por Aplicación",
+  "ruta": "CP › Reportes › Listado por Aplicación",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes.listado_de_aplicaciones": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Listado de Aplicaciones",
+  "ruta": "CP › Reportes › Listado de Aplicaciones",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes.aplicaciones_de_debitos": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Aplicaciones de Débitos",
+  "ruta": "CP › Reportes › Aplicaciones de Débitos",
+  "img": null,
+  "estado": null
+ },
+ "CP.reportes.diferencias_cambiarias": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Diferencias Cambiarias",
+  "ruta": "CP › Reportes › Diferencias Cambiarias",
+  "img": "CP_043_diferencias_cambiarias.jpg",
+  "estado": null
+ },
+ "CP.m.reportes_transferencias.listado_general": {
+  "cap": "CP",
+  "seccion": "Reportes › Transferencias",
+  "titulo": "Listado General",
+  "ruta": "CP › Reportes › Transferencias › Listado General",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes_transferencias.crear_archivo_ascii": {
+  "cap": "CP",
+  "seccion": "Reportes › Transferencias",
+  "titulo": "Crear Archivo ASCII",
+  "ruta": "CP › Reportes › Transferencias › Crear Archivo ASCII",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes_retenciones.listado_de_retenciones": {
+  "cap": "CP",
+  "seccion": "Reportes › Retenciones",
+  "titulo": "Listado de Retenciones",
+  "ruta": "CP › Reportes › Retenciones › Listado de Retenciones",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes_retenciones.listado_por_numero_de_contribuyente": {
+  "cap": "CP",
+  "seccion": "Reportes › Retenciones",
+  "titulo": "Listado por Número de Contribuyente",
+  "ruta": "CP › Reportes › Retenciones › Listado por Número de Contribuyente",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes.constancia_de_retenciones": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Constancia de Retenciones",
+  "ruta": "CP › Reportes › Constancia de Retenciones",
+  "img": null,
+  "estado": null
+ },
+ "CP.reportes.impuestos_sobre_la_renta_reporte_diferencias_de_cambio": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Impuestos sobre la Renta / Reporte Diferencias de Cambio",
+  "ruta": "CP › Reportes › Impuestos sobre la Renta / Reporte Diferencias de Cambio",
+  "img": "CP_048_irnpuestos_sobre_la_renta.jpg",
+  "estado": null
+ },
+ "CP.m.reportes.reportes_el_salvador": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Reportes El Salvador",
+  "ruta": "CP › Reportes › Reportes El Salvador",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes.reportes_guatemala": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Reportes Guatemala",
+  "ruta": "CP › Reportes › Reportes Guatemala",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes_rep_rep_dominicana.dgii": {
+  "cap": "CP",
+  "seccion": "Reportes › Rep. Rep. Dominicana",
+  "titulo": "DGII",
+  "ruta": "CP › Reportes › Rep. Rep. Dominicana › DGII",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes_rep_rep_dominicana.reportes_nicaragua": {
+  "cap": "CP",
+  "seccion": "Reportes › Rep. Rep. Dominicana",
+  "titulo": "Reportes Nicaragua",
+  "ruta": "CP › Reportes › Rep. Rep. Dominicana › Reportes Nicaragua",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes_rep_rep_dominicana.reportes_panama": {
+  "cap": "CP",
+  "seccion": "Reportes › Rep. Rep. Dominicana",
+  "titulo": "Reportes Panamá",
+  "ruta": "CP › Reportes › Rep. Rep. Dominicana › Reportes Panamá",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes_rep_rep_dominicana.reportes_mexico": {
+  "cap": "CP",
+  "seccion": "Reportes › Rep. Rep. Dominicana",
+  "titulo": "Reportes México",
+  "ruta": "CP › Reportes › Rep. Rep. Dominicana › Reportes México",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes_rep_rep_dominicana.reportes_honduras": {
+  "cap": "CP",
+  "seccion": "Reportes › Rep. Rep. Dominicana",
+  "titulo": "Reportes Honduras",
+  "ruta": "CP › Reportes › Rep. Rep. Dominicana › Reportes Honduras",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.reportes_rep_rep_dominicana.peru": {
+  "cap": "CP",
+  "seccion": "Reportes › Rep. Rep. Dominicana",
+  "titulo": "Perú",
+  "ruta": "CP › Reportes › Rep. Rep. Dominicana › Perú",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.procesos.aprobar_movimiento_diario": {
+  "cap": "CP",
+  "seccion": "Procesos",
+  "titulo": "Aprobar movimiento diario",
+  "ruta": "CP › Procesos › Aprobar movimiento diario",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.procesos.pago_de_retenciones": {
+  "cap": "CP",
+  "seccion": "Procesos",
+  "titulo": "Pago de Retenciones",
+  "ruta": "CP › Procesos › Pago de Retenciones",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.procesos.generacion_de_facturas_de_compras": {
+  "cap": "CP",
+  "seccion": "Procesos",
+  "titulo": "Generación de Facturas de Compras",
+  "ruta": "CP › Procesos › Generación de Facturas de Compras",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.procesos.manejo_de_dias_de_revision": {
+  "cap": "CP",
+  "seccion": "Procesos",
+  "titulo": "Manejo de días de Revisión",
+  "ruta": "CP › Procesos › Manejo de días de Revisión",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "CP.m.procesos.saldos_recalcular": {
+  "cap": "CP",
+  "seccion": "Procesos",
+  "titulo": "Saldos - Recalcular",
+  "ruta": "CP › Procesos › Saldos - Recalcular",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.procesos.purga_de_datos": {
+  "cap": "CP",
+  "seccion": "Procesos",
+  "titulo": "Purga de Datos",
+  "ruta": "CP › Procesos › Purga de Datos",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.procesos.cargador_de_direcciones": {
+  "cap": "CP",
+  "seccion": "Procesos",
+  "titulo": "Cargador de Direcciones",
+  "ruta": "CP › Procesos › Cargador de Direcciones",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.procesos.generacion_de_asientos": {
+  "cap": "CP",
+  "seccion": "Procesos",
+  "titulo": "Generación de Asientos",
+  "ruta": "CP › Procesos › Generación de Asientos",
+  "img": null,
+  "estado": null
+ },
+ "CP.m.procesos.peru": {
+  "cap": "CP",
+  "seccion": "Procesos",
+  "titulo": "Perú",
+  "ruta": "CP › Procesos › Perú",
+  "img": null,
+  "estado": null
+ },
+ "CP.administracion.subtipos_de_documentos_tipos_de_retenciones": {
+  "cap": "CP",
+  "seccion": "Administración",
+  "titulo": "Subtipos de Documentos / Tipos de Retenciones",
+  "ruta": "CP › Administración › Subtipos de Documentos / Tipos de Retenciones",
+  "img": "CP_066_subtipos_de_documentos.jpg",
+  "estado": null
+ },
+ "CP.administracion.parametros_del_modulo": {
+  "cap": "CP",
+  "seccion": "Administración",
+  "titulo": "Parámetros del Módulo",
+  "ruta": "CP › Administración › Parámetros del Módulo",
+  "img": "CP_068_parametros_del_modulo.jpg",
+  "estado": null
+ },
+ "CP.administracion.codigo_de_ingreso_tipos_de_cuenta": {
+  "cap": "CP",
+  "seccion": "Administración",
+  "titulo": "Código de ingreso / Tipos de cuenta",
+  "ruta": "CP › Administración › Código de ingreso / Tipos de cuenta",
+  "img": null,
+  "estado": null
+ },
+ "CP.reportes.movimiento_diario_por_tipo_de_documento_por_proveedor_por_documento": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Movimiento Diario (Por Tipo de Documento, Por Proveedor, Por Documento)",
+  "ruta": "CP › Reportes › Movimiento Diario (Por Tipo de Documento, Por Proveedor, Por Documento)",
+  "img": "CP_036_por_tipo_de_documento.jpg",
+  "estado": null
+ },
+ "CP.reportes.transferencias_listado_general": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Transferencias › Listado General",
+  "ruta": "CP › Reportes › Transferencias › Listado General",
+  "img": "CP_044_listado_general.jpg",
+  "estado": null
+ },
+ "CP.reportes.retenciones": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Retenciones",
+  "ruta": "CP › Reportes › Retenciones",
+  "img": "CP_045_listado_de_retenciones.jpg",
+  "estado": null
+ },
+ "CP.reportes.reportes_de_pais": {
+  "cap": "CP",
+  "seccion": "Reportes",
+  "titulo": "Reportes de país",
+  "ruta": "CP › Reportes › Reportes de país",
+  "img": null,
+  "estado": null
+ },
+ "DE.comprobantes.comprobantes_enviados": {
+  "cap": "DE",
+  "seccion": "Comprobantes",
+  "titulo": "Comprobantes Enviados",
+  "ruta": "DE › Comprobantes › Comprobantes Enviados",
+  "img": "DE_01_comprobantes_enviados.jpg",
+  "estado": null
+ },
+ "DE.comprobantes.comprobantes_recibidos": {
+  "cap": "DE",
+  "seccion": "Comprobantes",
+  "titulo": "Comprobantes Recibidos",
+  "ruta": "DE › Comprobantes › Comprobantes Recibidos",
+  "img": "DE_02_comprobantes_recibidos.jpg",
+  "estado": null
+ },
+ "DE.m.consulta.consulta": {
+  "cap": "DE",
+  "seccion": "Consulta",
+  "titulo": "Consulta",
+  "ruta": "DE › Consulta › Consulta",
+  "img": null,
+  "estado": null
+ },
+ "DE.m.procesos.servicio": {
+  "cap": "DE",
+  "seccion": "Procesos",
+  "titulo": "Servicio",
+  "ruta": "DE › Procesos › Servicio",
+  "img": null,
+  "estado": null
+ },
+ "DE.m.procesos.bitacora": {
+  "cap": "DE",
+  "seccion": "Procesos",
+  "titulo": "Bitácora",
+  "ruta": "DE › Procesos › Bitácora",
+  "img": null,
+  "estado": null
+ },
+ "DE.m.procesos.servicio_recibido": {
+  "cap": "DE",
+  "seccion": "Procesos",
+  "titulo": "Servicio Recibido",
+  "ruta": "DE › Procesos › Servicio Recibido",
+  "img": null,
+  "estado": null
+ },
+ "DE.administracion.gestor_de_reportes": {
+  "cap": "DE",
+  "seccion": "Administración",
+  "titulo": "Gestor de Reportes",
+  "ruta": "DE › Administración › Gestor de Reportes",
+  "img": "DE_04_gestor_reportes.jpg",
+  "estado": null
+ },
+ "DE.administracion.configuracion": {
+  "cap": "DE",
+  "seccion": "Administración",
+  "titulo": "Configuración",
+  "ruta": "DE › Administración › Configuración",
+  "img": null,
+  "estado": null
+ },
+ "DE.consulta.consulta_documentos_electronicos": {
+  "cap": "DE",
+  "seccion": "Consulta",
+  "titulo": "Consulta Documentos Electrónicos",
+  "ruta": "DE › Consulta › Consulta Documentos Electrónicos",
+  "img": "DE_03_consulta.jpg",
+  "estado": null
+ },
+ "CG.m.cuentas.cuentas": {
+  "cap": "CG",
+  "seccion": "Cuentas",
+  "titulo": "Cuentas",
+  "ruta": "CG › Cuentas › Cuentas",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.transacciones.diario": {
+  "cap": "CG",
+  "seccion": "Transacciones",
+  "titulo": "Diario",
+  "ruta": "CG › Transacciones › Diario",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.transacciones.recurrentes": {
+  "cap": "CG",
+  "seccion": "Transacciones",
+  "titulo": "Recurrentes",
+  "ruta": "CG › Transacciones › Recurrentes",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.transacciones.distribuidas": {
+  "cap": "CG",
+  "seccion": "Transacciones",
+  "titulo": "Distribuidas",
+  "ruta": "CG › Transacciones › Distribuidas",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.transacciones.anulacion": {
+  "cap": "CG",
+  "seccion": "Transacciones",
+  "titulo": "Anulación",
+  "ruta": "CG › Transacciones › Anulación",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.transacciones.reversion": {
+  "cap": "CG",
+  "seccion": "Transacciones",
+  "titulo": "Reversión",
+  "ruta": "CG › Transacciones › Reversión",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.transacciones.diferidos": {
+  "cap": "CG",
+  "seccion": "Transacciones",
+  "titulo": "Diferidos",
+  "ruta": "CG › Transacciones › Diferidos",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.consulta.de_cuentas_contables": {
+  "cap": "CG",
+  "seccion": "Consulta",
+  "titulo": "De Cuentas Contables",
+  "ruta": "CG › Consulta › De Cuentas Contables",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.consulta.de_centros_de_costo": {
+  "cap": "CG",
+  "seccion": "Consulta",
+  "titulo": "De Centros de Costo",
+  "ruta": "CG › Consulta › De Centros de Costo",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.consulta.por_periodos_contables": {
+  "cap": "CG",
+  "seccion": "Consulta",
+  "titulo": "Por Períodos Contables",
+  "ruta": "CG › Consulta › Por Períodos Contables",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.consulta.por_nits": {
+  "cap": "CG",
+  "seccion": "Consulta",
+  "titulo": "Por NITs",
+  "ruta": "CG › Consulta › Por NITs",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.consulta.de_saldos_promedios": {
+  "cap": "CG",
+  "seccion": "Consulta",
+  "titulo": "De Saldos Promedios",
+  "ruta": "CG › Consulta › De Saldos Promedios",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.consulta.libro_mayor": {
+  "cap": "CG",
+  "seccion": "Consulta",
+  "titulo": "Libro Mayor",
+  "ruta": "CG › Consulta › Libro Mayor",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.consulta_del_mayor.asientos": {
+  "cap": "CG",
+  "seccion": "Consulta › Del Mayor",
+  "titulo": "Asientos",
+  "ruta": "CG › Consulta › Del Mayor › Asientos",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.consulta_del_mayor.transacciones": {
+  "cap": "CG",
+  "seccion": "Consulta › Del Mayor",
+  "titulo": "Transacciones",
+  "ruta": "CG › Consulta › Del Mayor › Transacciones",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.consulta_del_diario.asientos": {
+  "cap": "CG",
+  "seccion": "Consulta › Del Diario",
+  "titulo": "Asientos",
+  "ruta": "CG › Consulta › Del Diario › Asientos",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.consulta_del_diario.transacciones": {
+  "cap": "CG",
+  "seccion": "Consulta › Del Diario",
+  "titulo": "Transacciones",
+  "ruta": "CG › Consulta › Del Diario › Transacciones",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.reportes_balance_de_comprobacion.por_cuentas_contables": {
+  "cap": "CG",
+  "seccion": "Reportes › Balance de Comprobación",
+  "titulo": "Por Cuentas Contables",
+  "ruta": "CG › Reportes › Balance de Comprobación › Por Cuentas Contables",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.reportes_balance_de_comprobacion.por_centros_de_costo": {
+  "cap": "CG",
+  "seccion": "Reportes › Balance de Comprobación",
+  "titulo": "Por Centros de Costo",
+  "ruta": "CG › Reportes › Balance de Comprobación › Por Centros de Costo",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.reportes.balance_general": {
+  "cap": "CG",
+  "seccion": "Reportes",
+  "titulo": "Balance General",
+  "ruta": "CG › Reportes › Balance General",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.reportes.estado_de_resultados": {
+  "cap": "CG",
+  "seccion": "Reportes",
+  "titulo": "Estado de Resultados",
+  "ruta": "CG › Reportes › Estado de Resultados",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.reportes.reporte_de_asientos": {
+  "cap": "CG",
+  "seccion": "Reportes",
+  "titulo": "Reporte de Asientos",
+  "ruta": "CG › Reportes › Reporte de Asientos",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.reportes.reporte_libro_mayor": {
+  "cap": "CG",
+  "seccion": "Reportes",
+  "titulo": "Reporte Libro Mayor",
+  "ruta": "CG › Reportes › Reporte Libro Mayor",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.reportes.reporte_diferencias": {
+  "cap": "CG",
+  "seccion": "Reportes",
+  "titulo": "Reporte Diferencias",
+  "ruta": "CG › Reportes › Reporte Diferencias",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.reportes.excel": {
+  "cap": "CG",
+  "seccion": "Reportes",
+  "titulo": "Excel",
+  "ruta": "CG › Reportes › Excel",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.reportes.colombia": {
+  "cap": "CG",
+  "seccion": "Reportes",
+  "titulo": "Colombia",
+  "ruta": "CG › Reportes › Colombia",
+  "img": null,
+  "estado": "vacia"
+ },
+ "CG.m.reportes.reporte_diferencias_de_cambio": {
+  "cap": "CG",
+  "seccion": "Reportes",
+  "titulo": "Reporte Diferencias de Cambio",
+  "ruta": "CG › Reportes › Reporte Diferencias de Cambio",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.reportes_costa_rica.formulario_d151": {
+  "cap": "CG",
+  "seccion": "Reportes › Costa Rica",
+  "titulo": "Formulario D151",
+  "ruta": "CG › Reportes › Costa Rica › Formulario D151",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.reportes_costa_rica.declaracion_d104": {
+  "cap": "CG",
+  "seccion": "Reportes › Costa Rica",
+  "titulo": "Declaración D104",
+  "ruta": "CG › Reportes › Costa Rica › Declaración D104",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.reportes_costa_rica.informes_electronicos_de_ventas_y_compras": {
+  "cap": "CG",
+  "seccion": "Reportes › Costa Rica",
+  "titulo": "Informes Electrónicos de ventas y compras",
+  "ruta": "CG › Reportes › Costa Rica › Informes Electrónicos de ventas y compras",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.reportes.panama": {
+  "cap": "CG",
+  "seccion": "Reportes",
+  "titulo": "Panamá",
+  "ruta": "CG › Reportes › Panamá",
+  "img": null,
+  "estado": "vacia"
+ },
+ "CG.m.reportes_mexico.contabilidad_electronica": {
+  "cap": "CG",
+  "seccion": "Reportes › México",
+  "titulo": "Contabilidad Electrónica",
+  "ruta": "CG › Reportes › México › Contabilidad Electrónica",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.reportes_mexico.ecuador": {
+  "cap": "CG",
+  "seccion": "Reportes › México",
+  "titulo": "Ecuador",
+  "ruta": "CG › Reportes › México › Ecuador",
+  "img": null,
+  "estado": "vacia"
+ },
+ "CG.m.reportes_mexico.el_salvador": {
+  "cap": "CG",
+  "seccion": "Reportes › México",
+  "titulo": "El Salvador",
+  "ruta": "CG › Reportes › México › El Salvador",
+  "img": null,
+  "estado": "vacia"
+ },
+ "CG.m.reportes_rep_rep_dominicana.dgii": {
+  "cap": "CG",
+  "seccion": "Reportes › Rep. Rep. Dominicana",
+  "titulo": "DGII",
+  "ruta": "CG › Reportes › Rep. Rep. Dominicana › DGII",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.procesos.diferencias_cambiarias": {
+  "cap": "CG",
+  "seccion": "Procesos",
+  "titulo": "Diferencias Cambiarias",
+  "ruta": "CG › Procesos › Diferencias Cambiarias",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.procesos.cierre_anual": {
+  "cap": "CG",
+  "seccion": "Procesos",
+  "titulo": "Cierre Anual",
+  "ruta": "CG › Procesos › Cierre Anual",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.procesos.ajuste_del_cierre_anual": {
+  "cap": "CG",
+  "seccion": "Procesos",
+  "titulo": "Ajuste del Cierre Anual",
+  "ruta": "CG › Procesos › Ajuste del Cierre Anual",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.procesos.recalculo_de_saldos": {
+  "cap": "CG",
+  "seccion": "Procesos",
+  "titulo": "Recálculo de Saldos",
+  "ruta": "CG › Procesos › Recálculo de Saldos",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.procesos.ajuste_por_inflacion": {
+  "cap": "CG",
+  "seccion": "Procesos",
+  "titulo": "Ajuste por Inflación",
+  "ruta": "CG › Procesos › Ajuste por Inflación",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.procesos.eliminacion_de_aplicaciones": {
+  "cap": "CG",
+  "seccion": "Procesos",
+  "titulo": "Eliminación de Aplicaciones",
+  "ruta": "CG › Procesos › Eliminación de Aplicaciones",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.procesos_consolidacion.cuentas": {
+  "cap": "CG",
+  "seccion": "Procesos › Consolidación",
+  "titulo": "Cuentas",
+  "ruta": "CG › Procesos › Consolidación › Cuentas",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "CG.m.procesos_consolidacion.proceso_de_consolidacion": {
+  "cap": "CG",
+  "seccion": "Procesos › Consolidación",
+  "titulo": "Proceso de Consolidación",
+  "ruta": "CG › Procesos › Consolidación › Proceso de Consolidación",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "CG.m.procesos_consolidacion.reversion": {
+  "cap": "CG",
+  "seccion": "Procesos › Consolidación",
+  "titulo": "Reversión",
+  "ruta": "CG › Procesos › Consolidación › Reversión",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "CG.m.procesos_consolidacion.historico": {
+  "cap": "CG",
+  "seccion": "Procesos › Consolidación",
+  "titulo": "Histórico",
+  "ruta": "CG › Procesos › Consolidación › Histórico",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "CG.m.procesos_consolidacion.transaccion_para_consolidacion": {
+  "cap": "CG",
+  "seccion": "Procesos › Consolidación",
+  "titulo": "Transacción para Consolidación",
+  "ruta": "CG › Procesos › Consolidación › Transacción para Consolidación",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "CG.m.procesos_consolidacion.companias_consolidadas": {
+  "cap": "CG",
+  "seccion": "Procesos › Consolidación",
+  "titulo": "Compañías Consolidadas",
+  "ruta": "CG › Procesos › Consolidación › Compañías Consolidadas",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "CG.m.procesos_consolidacion.sincronizacion_reversion": {
+  "cap": "CG",
+  "seccion": "Procesos › Consolidación",
+  "titulo": "Sincronización Reversión",
+  "ruta": "CG › Procesos › Consolidación › Sincronización Reversión",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "CG.m.procesos.cuadre_de_auxiliares": {
+  "cap": "CG",
+  "seccion": "Procesos",
+  "titulo": "Cuadre de Auxiliares",
+  "ruta": "CG › Procesos › Cuadre de Auxiliares",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.procesos.cierre_de_cuentas_especiales": {
+  "cap": "CG",
+  "seccion": "Procesos",
+  "titulo": "Cierre de Cuentas Especiales",
+  "ruta": "CG › Procesos › Cierre de Cuentas Especiales",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.procesos_mexico.traslado_del_iva": {
+  "cap": "CG",
+  "seccion": "Procesos › México",
+  "titulo": "Traslado del IVA",
+  "ruta": "CG › Procesos › México › Traslado del IVA",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "CG.m.procesos_mexico.carga_codigo_agrupador_sat": {
+  "cap": "CG",
+  "seccion": "Procesos › México",
+  "titulo": "Carga Código Agrupador SAT",
+  "ruta": "CG › Procesos › México › Carga Código Agrupador SAT",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.procesos_mexico.sincronizacion_de_uuids": {
+  "cap": "CG",
+  "seccion": "Procesos › México",
+  "titulo": "Sincronización de UUIDS",
+  "ruta": "CG › Procesos › México › Sincronización de UUIDS",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.procesos.cambio_de_patron_contable": {
+  "cap": "CG",
+  "seccion": "Procesos",
+  "titulo": "Cambio de Patrón Contable",
+  "ruta": "CG › Procesos › Cambio de Patrón Contable",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.procesos.consolidacion_masiva_de_asientos": {
+  "cap": "CG",
+  "seccion": "Procesos",
+  "titulo": "Consolidación Masiva de Asientos",
+  "ruta": "CG › Procesos › Consolidación Masiva de Asientos",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.administracion.paquetes": {
+  "cap": "CG",
+  "seccion": "Administración",
+  "titulo": "Paquetes",
+  "ruta": "CG › Administración › Paquetes",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.administracion.tipos_de_transacciones_contables": {
+  "cap": "CG",
+  "seccion": "Administración",
+  "titulo": "Tipos de Transacciones Contables",
+  "ruta": "CG › Administración › Tipos de Transacciones Contables",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.administracion.asignacion_centro_cuenta": {
+  "cap": "CG",
+  "seccion": "Administración",
+  "titulo": "Asignación Centro-Cuenta",
+  "ruta": "CG › Administración › Asignación Centro-Cuenta",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.administracion.cuenta_doble_asiento": {
+  "cap": "CG",
+  "seccion": "Administración",
+  "titulo": "Cuenta Doble Asiento",
+  "ruta": "CG › Administración › Cuenta Doble Asiento",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.administracion.reportes_contables": {
+  "cap": "CG",
+  "seccion": "Administración",
+  "titulo": "Reportes Contables",
+  "ruta": "CG › Administración › Reportes Contables",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.administracion.tipo_de_diferido": {
+  "cap": "CG",
+  "seccion": "Administración",
+  "titulo": "Tipo de Diferido",
+  "ruta": "CG › Administración › Tipo de Diferido",
+  "img": null,
+  "estado": null
+ },
+ "CG.m.administracion.parametros_del_modulo": {
+  "cap": "CG",
+  "seccion": "Administración",
+  "titulo": "Parámetros del Módulo",
+  "ruta": "CG › Administración › Parámetros del Módulo",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.cuentas_bancarias.cuentas": {
+  "cap": "CB",
+  "seccion": "Cuentas Bancarias",
+  "titulo": "Cuentas",
+  "ruta": "CB › Cuentas Bancarias › Cuentas",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.documentos.movimientos_en_libros": {
+  "cap": "CB",
+  "seccion": "Documentos",
+  "titulo": "Movimientos en Libros",
+  "ruta": "CB › Documentos › Movimientos en Libros",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.documentos.movimientos_en_bancos": {
+  "cap": "CB",
+  "seccion": "Documentos",
+  "titulo": "Movimientos en Bancos",
+  "ruta": "CB › Documentos › Movimientos en Bancos",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.documentos.transferencias": {
+  "cap": "CB",
+  "seccion": "Documentos",
+  "titulo": "Transferencias",
+  "ruta": "CB › Documentos › Transferencias",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.documentos.cheques_recurrentes": {
+  "cap": "CB",
+  "seccion": "Documentos",
+  "titulo": "Cheques Recurrentes",
+  "ruta": "CB › Documentos › Cheques Recurrentes",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.documentos.solicitudes_de_cheques": {
+  "cap": "CB",
+  "seccion": "Documentos",
+  "titulo": "Solicitudes de Cheques",
+  "ruta": "CB › Documentos › Solicitudes de Cheques",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.documentos.imprimir_depositos": {
+  "cap": "CB",
+  "seccion": "Documentos",
+  "titulo": "Imprimir Depósitos",
+  "ruta": "CB › Documentos › Imprimir Depósitos",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.documentos.conciliar_cuentas": {
+  "cap": "CB",
+  "seccion": "Documentos",
+  "titulo": "Conciliar Cuentas",
+  "ruta": "CB › Documentos › Conciliar Cuentas",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.consultas.consulta": {
+  "cap": "CB",
+  "seccion": "Consultas",
+  "titulo": "Consulta",
+  "ruta": "CB › Consultas › Consulta",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.reportes_movimiento_en_libros.movimiento_por_fecha": {
+  "cap": "CB",
+  "seccion": "Reportes › Movimiento en Libros",
+  "titulo": "Movimiento por Fecha",
+  "ruta": "CB › Reportes › Movimiento en Libros › Movimiento por Fecha",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.reportes_movimiento_en_libros.movimiento_por_tipo": {
+  "cap": "CB",
+  "seccion": "Reportes › Movimiento en Libros",
+  "titulo": "Movimiento por Tipo",
+  "ruta": "CB › Reportes › Movimiento en Libros › Movimiento por Tipo",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.reportes_movimiento_en_libros.resumen_de_movimiento": {
+  "cap": "CB",
+  "seccion": "Reportes › Movimiento en Libros",
+  "titulo": "Resumen de Movimiento",
+  "ruta": "CB › Reportes › Movimiento en Libros › Resumen de Movimiento",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.reportes_movimiento_en_libros.saldos_promedio": {
+  "cap": "CB",
+  "seccion": "Reportes › Movimiento en Libros",
+  "titulo": "Saldos Promedio",
+  "ruta": "CB › Reportes › Movimiento en Libros › Saldos Promedio",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.reportes_movimiento_en_bancos.movimiento_por_fecha": {
+  "cap": "CB",
+  "seccion": "Reportes › Movimiento en Bancos",
+  "titulo": "Movimiento por Fecha",
+  "ruta": "CB › Reportes › Movimiento en Bancos › Movimiento por Fecha",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.reportes_movimiento_en_bancos.movimiento_por_tipo": {
+  "cap": "CB",
+  "seccion": "Reportes › Movimiento en Bancos",
+  "titulo": "Movimiento por Tipo",
+  "ruta": "CB › Reportes › Movimiento en Bancos › Movimiento por Tipo",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.reportes_conciliacion.documentos_no_conciliados": {
+  "cap": "CB",
+  "seccion": "Reportes › Conciliación",
+  "titulo": "Documentos no Conciliados",
+  "ruta": "CB › Reportes › Conciliación › Documentos no Conciliados",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.reportes_conciliacion.resumen_de_conciliacion": {
+  "cap": "CB",
+  "seccion": "Reportes › Conciliación",
+  "titulo": "Resumen de Conciliación",
+  "ruta": "CB › Reportes › Conciliación › Resumen de Conciliación",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.reportes_conciliacion.reporte_de_conciliacion": {
+  "cap": "CB",
+  "seccion": "Reportes › Conciliación",
+  "titulo": "Reporte de Conciliación",
+  "ruta": "CB › Reportes › Conciliación › Reporte de Conciliación",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.reportes.reporte_diferencias_de_cambio": {
+  "cap": "CB",
+  "seccion": "Reportes",
+  "titulo": "Reporte Diferencias de Cambio",
+  "ruta": "CB › Reportes › Reporte Diferencias de Cambio",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.reportes.reportes_nicaragua": {
+  "cap": "CB",
+  "seccion": "Reportes",
+  "titulo": "Reportes Nicaragua",
+  "ruta": "CB › Reportes › Reportes Nicaragua",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.procesos.diferencias_cambiarias": {
+  "cap": "CB",
+  "seccion": "Procesos",
+  "titulo": "Diferencias Cambiarias",
+  "ruta": "CB › Procesos › Diferencias Cambiarias",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.procesos.recalculo_de_saldos": {
+  "cap": "CB",
+  "seccion": "Procesos",
+  "titulo": "Recálculo de Saldos",
+  "ruta": "CB › Procesos › Recálculo de Saldos",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.procesos.purga_de_movimientos": {
+  "cap": "CB",
+  "seccion": "Procesos",
+  "titulo": "Purga de Movimientos",
+  "ruta": "CB › Procesos › Purga de Movimientos",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.procesos.opciones_costa_rica_autorizacion_de_cheques_bncr": {
+  "cap": "CB",
+  "seccion": "Procesos",
+  "titulo": "Opciones Costa Rica: Autorización de Cheques BNCR",
+  "ruta": "CB › Procesos › Opciones Costa Rica: Autorización de Cheques BNCR",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.procesos.generacion_de_asientos": {
+  "cap": "CB",
+  "seccion": "Procesos",
+  "titulo": "Generación de Asientos",
+  "ruta": "CB › Procesos › Generación de Asientos",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.procesos.generacion_transferencias_electronicas": {
+  "cap": "CB",
+  "seccion": "Procesos",
+  "titulo": "Generación Transferencias Electrónicas",
+  "ruta": "CB › Procesos › Generación Transferencias Electrónicas",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.administracion.subtipos_de_documentos": {
+  "cap": "CB",
+  "seccion": "Administración",
+  "titulo": "Subtipos de Documentos",
+  "ruta": "CB › Administración › Subtipos de Documentos",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.administracion.tipos_de_cuenta": {
+  "cap": "CB",
+  "seccion": "Administración",
+  "titulo": "Tipos de cuenta",
+  "ruta": "CB › Administración › Tipos de cuenta",
+  "img": null,
+  "estado": null
+ },
+ "CB.m.administracion.parametros_del_modulo": {
+  "cap": "CB",
+  "seccion": "Administración",
+  "titulo": "Parámetros del Módulo",
+  "ruta": "CB › Administración › Parámetros del Módulo",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.activos.activos_fijos": {
+  "cap": "AF",
+  "seccion": "Activos",
+  "titulo": "Activos Fijos",
+  "ruta": "AF › Activos › Activos Fijos",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.activos.mejoras": {
+  "cap": "AF",
+  "seccion": "Activos",
+  "titulo": "Mejoras",
+  "ruta": "AF › Activos › Mejoras",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.activos.registro_de_acciones": {
+  "cap": "AF",
+  "seccion": "Activos",
+  "titulo": "Registro de Acciones",
+  "ruta": "AF › Activos › Registro de Acciones",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.consulta.consultas": {
+  "cap": "AF",
+  "seccion": "Consulta",
+  "titulo": "Consultas",
+  "ruta": "AF › Consulta › Consultas",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.reportes.depreciacion_de_activos_por_codigo_de_activo_por_tipo_de_activo_centro_de_costo": {
+  "cap": "AF",
+  "seccion": "Reportes",
+  "titulo": "Depreciación de Activos (Por Código de Activo · Por Tipo de Activo · Centro de Costo)",
+  "ruta": "AF › Reportes › Depreciación de Activos (Por Código de Activo · Por Tipo de Activo · Centro de Costo)",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.reportes.revaluacion_de_activos": {
+  "cap": "AF",
+  "seccion": "Reportes",
+  "titulo": "Revaluación de Activos",
+  "ruta": "AF › Reportes › Revaluación de Activos",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.reportes.valoracion_de_activos": {
+  "cap": "AF",
+  "seccion": "Reportes",
+  "titulo": "Valoración de Activos",
+  "ruta": "AF › Reportes › Valoración de Activos",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.reportes.indices_faltantes_para_revaluacion": {
+  "cap": "AF",
+  "seccion": "Reportes",
+  "titulo": "Índices Faltantes para Revaluación",
+  "ruta": "AF › Reportes › Índices Faltantes para Revaluación",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.reportes.impuesto_a_los_activos": {
+  "cap": "AF",
+  "seccion": "Reportes",
+  "titulo": "Impuesto a los Activos",
+  "ruta": "AF › Reportes › Impuesto a los Activos",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.reportes.impuesto_sobre_la_renta": {
+  "cap": "AF",
+  "seccion": "Reportes",
+  "titulo": "Impuesto Sobre la Renta",
+  "ruta": "AF › Reportes › Impuesto Sobre la Renta",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.reportes.desmantelamiento_de_activos": {
+  "cap": "AF",
+  "seccion": "Reportes",
+  "titulo": "Desmantelamiento de Activos",
+  "ruta": "AF › Reportes › Desmantelamiento de Activos",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.reportes.deterioro_de_activos": {
+  "cap": "AF",
+  "seccion": "Reportes",
+  "titulo": "Deterioro de activos",
+  "ruta": "AF › Reportes › Deterioro de activos",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.reportes.el_salvador": {
+  "cap": "AF",
+  "seccion": "Reportes",
+  "titulo": "El Salvador",
+  "ruta": "AF › Reportes › El Salvador",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.procesos.depreciacion_mensual": {
+  "cap": "AF",
+  "seccion": "Procesos",
+  "titulo": "Depreciación Mensual",
+  "ruta": "AF › Procesos › Depreciación Mensual",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.procesos.revaluacion_de_activos": {
+  "cap": "AF",
+  "seccion": "Procesos",
+  "titulo": "Revaluación de Activos",
+  "ruta": "AF › Procesos › Revaluación de Activos",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.procesos.retiro_de_activos": {
+  "cap": "AF",
+  "seccion": "Procesos",
+  "titulo": "Retiro de Activos",
+  "ruta": "AF › Procesos › Retiro de Activos",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.procesos.recalculo_de_acumulados": {
+  "cap": "AF",
+  "seccion": "Procesos",
+  "titulo": "Recálculo de Acumulados",
+  "ruta": "AF › Procesos › Recálculo de Acumulados",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.procesos.generacion_depreciaciones_historicas": {
+  "cap": "AF",
+  "seccion": "Procesos",
+  "titulo": "Generación Depreciaciones Históricas",
+  "ruta": "AF › Procesos › Generación Depreciaciones Históricas",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.procesos.aplicacion_de_acciones": {
+  "cap": "AF",
+  "seccion": "Procesos",
+  "titulo": "Aplicación de Acciones",
+  "ruta": "AF › Procesos › Aplicación de Acciones",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.procesos.reversion_de_depreciaciones": {
+  "cap": "AF",
+  "seccion": "Procesos",
+  "titulo": "Reversión de Depreciaciones",
+  "ruta": "AF › Procesos › Reversión de Depreciaciones",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.procesos.cambio_estado": {
+  "cap": "AF",
+  "seccion": "Procesos",
+  "titulo": "Cambio Estado",
+  "ruta": "AF › Procesos › Cambio Estado",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.procesos.generacion_de_asientos_de_ingreso": {
+  "cap": "AF",
+  "seccion": "Procesos",
+  "titulo": "Generación de Asientos de Ingreso",
+  "ruta": "AF › Procesos › Generación de Asientos de Ingreso",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.procesos.cargador_desmantelamientos": {
+  "cap": "AF",
+  "seccion": "Procesos",
+  "titulo": "Cargador Desmantelamientos",
+  "ruta": "AF › Procesos › Cargador Desmantelamientos",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.procesos.cargador_deterioro": {
+  "cap": "AF",
+  "seccion": "Procesos",
+  "titulo": "Cargador Deterioro",
+  "ruta": "AF › Procesos › Cargador Deterioro",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.procesos.cargador_de_impuestos": {
+  "cap": "AF",
+  "seccion": "Procesos",
+  "titulo": "Cargador de Impuestos",
+  "ruta": "AF › Procesos › Cargador de Impuestos",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.administracion.tipos_de_activo": {
+  "cap": "AF",
+  "seccion": "Administración",
+  "titulo": "Tipos de Activo",
+  "ruta": "AF › Administración › Tipos de Activo",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.administracion.centros_de_costo": {
+  "cap": "AF",
+  "seccion": "Administración",
+  "titulo": "Centros de Costo",
+  "ruta": "AF › Administración › Centros de Costo",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.administracion.indices_de_precio": {
+  "cap": "AF",
+  "seccion": "Administración",
+  "titulo": "Índices de Precio",
+  "ruta": "AF › Administración › Índices de Precio",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.administracion.asignacion_de_centros": {
+  "cap": "AF",
+  "seccion": "Administración",
+  "titulo": "Asignación de Centros",
+  "ruta": "AF › Administración › Asignación de Centros",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.administracion.historico_de_revaluaciones": {
+  "cap": "AF",
+  "seccion": "Administración",
+  "titulo": "Histórico de Revaluaciones",
+  "ruta": "AF › Administración › Histórico de Revaluaciones",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.administracion.tipos_de_observaciones": {
+  "cap": "AF",
+  "seccion": "Administración",
+  "titulo": "Tipos de Observaciones",
+  "ruta": "AF › Administración › Tipos de Observaciones",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.administracion.historico_de_depreciaciones": {
+  "cap": "AF",
+  "seccion": "Administración",
+  "titulo": "Histórico de Depreciaciones",
+  "ruta": "AF › Administración › Histórico de Depreciaciones",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.administracion.estado_de_activo": {
+  "cap": "AF",
+  "seccion": "Administración",
+  "titulo": "Estado de Activo",
+  "ruta": "AF › Administración › Estado de Activo",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.administracion.tipo_de_accion": {
+  "cap": "AF",
+  "seccion": "Administración",
+  "titulo": "Tipo de Acción",
+  "ruta": "AF › Administración › Tipo de Acción",
+  "img": null,
+  "estado": null
+ },
+ "AF.m.administracion.parametros_del_modulo": {
+  "cap": "AF",
+  "seccion": "Administración",
+  "titulo": "Parámetros del Módulo",
+  "ruta": "AF › Administración › Parámetros del Módulo",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.partidas.partidas": {
+  "cap": "CR",
+  "seccion": "Partidas",
+  "titulo": "Partidas",
+  "ruta": "CR › Partidas › Partidas",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.presupuestos.mantenimiento": {
+  "cap": "CR",
+  "seccion": "Presupuestos",
+  "titulo": "Mantenimiento",
+  "ruta": "CR › Presupuestos › Mantenimiento",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.presupuestos.desglose": {
+  "cap": "CR",
+  "seccion": "Presupuestos",
+  "titulo": "Desglose",
+  "ruta": "CR › Presupuestos › Desglose",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.presupuestos.movimientos_presupuestales": {
+  "cap": "CR",
+  "seccion": "Presupuestos",
+  "titulo": "Movimientos Presupuestales",
+  "ruta": "CR › Presupuestos › Movimientos Presupuestales",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.presupuestos.anulacion_de_movimientos_presupuestales": {
+  "cap": "CR",
+  "seccion": "Presupuestos",
+  "titulo": "Anulación de Movimientos Presupuestales",
+  "ruta": "CR › Presupuestos › Anulación de Movimientos Presupuestales",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.consultas.presupuesto_por_partida": {
+  "cap": "CR",
+  "seccion": "Consultas",
+  "titulo": "Presupuesto por Partida",
+  "ruta": "CR › Consultas › Presupuesto por Partida",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.consultas.presupuesto_por_concepto": {
+  "cap": "CR",
+  "seccion": "Consultas",
+  "titulo": "Presupuesto por Concepto",
+  "ruta": "CR › Consultas › Presupuesto por Concepto",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.consultas.movimientos_aplicados_encabezado_de_movimientos_detalle_de_movimientos": {
+  "cap": "CR",
+  "seccion": "Consultas",
+  "titulo": "Movimientos Aplicados (Encabezado de Movimientos · Detalle de Movimientos)",
+  "ruta": "CR › Consultas › Movimientos Aplicados (Encabezado de Movimientos · Detalle de Movimientos)",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.reportes.movimientos_aplicados": {
+  "cap": "CR",
+  "seccion": "Reportes",
+  "titulo": "Movimientos Aplicados",
+  "ruta": "CR › Reportes › Movimientos Aplicados",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.reportes.presupuesto_detallado": {
+  "cap": "CR",
+  "seccion": "Reportes",
+  "titulo": "Presupuesto Detallado",
+  "ruta": "CR › Reportes › Presupuesto Detallado",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.reportes.homologacion_contable": {
+  "cap": "CR",
+  "seccion": "Reportes",
+  "titulo": "Homologación Contable",
+  "ruta": "CR › Reportes › Homologación Contable",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.procesos.cierre_de_presupuestos_cierre_por_periodo_cierre_por_presupuesto_calculo_de_cifra_de_control": {
+  "cap": "CR",
+  "seccion": "Procesos",
+  "titulo": "Cierre de Presupuestos (Cierre por Periodo · Cierre por Presupuesto · Cálculo de Cifra de Control)",
+  "ruta": "CR › Procesos › Cierre de Presupuestos (Cierre por Periodo · Cierre por Presupuesto · Cálculo de Cifra de Control)",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.procesos.procesos_varios_recalculo_de_flujo_efectivo_definicion_de_periodos_cancelacion_de_apartados_traspaso_de_apartados": {
+  "cap": "CR",
+  "seccion": "Procesos",
+  "titulo": "Procesos Varios (Recálculo de Flujo Efectivo · Definición de Periodos · Cancelación de Apartados · Traspaso de Apartados)",
+  "ruta": "CR › Procesos › Procesos Varios (Recálculo de Flujo Efectivo · Definición de Periodos · Cancelación de Apartados · Traspaso de Apartados)",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.procesos.exportar_movimientos": {
+  "cap": "CR",
+  "seccion": "Procesos",
+  "titulo": "Exportar Movimientos",
+  "ruta": "CR › Procesos › Exportar Movimientos",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.procesos.importar_movimientos": {
+  "cap": "CR",
+  "seccion": "Procesos",
+  "titulo": "Importar Movimientos",
+  "ruta": "CR › Procesos › Importar Movimientos",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.procesos.purga_de_presupuestos": {
+  "cap": "CR",
+  "seccion": "Procesos",
+  "titulo": "Purga de Presupuestos",
+  "ruta": "CR › Procesos › Purga de Presupuestos",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.procesos.copia_de_centros_de_costo": {
+  "cap": "CR",
+  "seccion": "Procesos",
+  "titulo": "Copia de Centros de Costo",
+  "ruta": "CR › Procesos › Copia de Centros de Costo",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.procesos.copia_de_cuentas_contables": {
+  "cap": "CR",
+  "seccion": "Procesos",
+  "titulo": "Copia de Cuentas Contables",
+  "ruta": "CR › Procesos › Copia de Cuentas Contables",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.procesos.procesar_asientos_mayorizados": {
+  "cap": "CR",
+  "seccion": "Procesos",
+  "titulo": "Procesar asientos mayorizados",
+  "ruta": "CR › Procesos › Procesar asientos mayorizados",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.administracion.indicadores": {
+  "cap": "CR",
+  "seccion": "Administración",
+  "titulo": "Indicadores",
+  "ruta": "CR › Administración › Indicadores",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.administracion.paquetes": {
+  "cap": "CR",
+  "seccion": "Administración",
+  "titulo": "Paquetes",
+  "ruta": "CR › Administración › Paquetes",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.administracion.centros_de_costos": {
+  "cap": "CR",
+  "seccion": "Administración",
+  "titulo": "Centros de costos",
+  "ruta": "CR › Administración › Centros de costos",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.administracion.unidades_operativas": {
+  "cap": "CR",
+  "seccion": "Administración",
+  "titulo": "Unidades Operativas",
+  "ruta": "CR › Administración › Unidades Operativas",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.administracion.conceptos_de_flujo_de_efectivo": {
+  "cap": "CR",
+  "seccion": "Administración",
+  "titulo": "Conceptos de Flujo de Efectivo",
+  "ruta": "CR › Administración › Conceptos de Flujo de Efectivo",
+  "img": null,
+  "estado": null
+ },
+ "CR.m.administracion.parametros_del_modulo": {
+  "cap": "CR",
+  "seccion": "Administración",
+  "titulo": "Parámetros del Módulo",
+  "ruta": "CR › Administración › Parámetros del Módulo",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.cajas_chicas.cajas_chicas": {
+  "cap": "CH",
+  "seccion": "Cajas Chicas",
+  "titulo": "Cajas Chicas",
+  "ruta": "CH › Cajas Chicas › Cajas Chicas",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.transacciones.vales_definitivos": {
+  "cap": "CH",
+  "seccion": "Transacciones",
+  "titulo": "Vales Definitivos",
+  "ruta": "CH › Transacciones › Vales Definitivos",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.transacciones.vales_provisionales": {
+  "cap": "CH",
+  "seccion": "Transacciones",
+  "titulo": "Vales Provisionales",
+  "ruta": "CH › Transacciones › Vales Provisionales",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.transacciones.impresion_de_vales": {
+  "cap": "CH",
+  "seccion": "Transacciones",
+  "titulo": "Impresión de Vales",
+  "ruta": "CH › Transacciones › Impresión de Vales",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.transacciones.transacciones_peru": {
+  "cap": "CH",
+  "seccion": "Transacciones",
+  "titulo": "Transacciones Perú",
+  "ruta": "CH › Transacciones › Transacciones Perú",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.consultas.arqueo_de_caja_chica": {
+  "cap": "CH",
+  "seccion": "Consultas",
+  "titulo": "Arqueo de Caja Chica",
+  "ruta": "CH › Consultas › Arqueo de Caja Chica",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.reportes.vales": {
+  "cap": "CH",
+  "seccion": "Reportes",
+  "titulo": "Vales",
+  "ruta": "CH › Reportes › Vales",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.reportes.reintegros_y_adelantos": {
+  "cap": "CH",
+  "seccion": "Reportes",
+  "titulo": "Reintegros y Adelantos",
+  "ruta": "CH › Reportes › Reintegros y Adelantos",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.reportes.reportes_guatemala": {
+  "cap": "CH",
+  "seccion": "Reportes",
+  "titulo": "Reportes Guatemala",
+  "ruta": "CH › Reportes › Reportes Guatemala",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.reportes.reportes_el_salvador": {
+  "cap": "CH",
+  "seccion": "Reportes",
+  "titulo": "Reportes El Salvador",
+  "ruta": "CH › Reportes › Reportes El Salvador",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.reportes.rep_rep_dominicana": {
+  "cap": "CH",
+  "seccion": "Reportes",
+  "titulo": "Rep. Rep. Dominicana",
+  "ruta": "CH › Reportes › Rep. Rep. Dominicana",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.reportes.reportes_honduras": {
+  "cap": "CH",
+  "seccion": "Reportes",
+  "titulo": "Reportes Honduras",
+  "ruta": "CH › Reportes › Reportes Honduras",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.reportes.reportes_peru": {
+  "cap": "CH",
+  "seccion": "Reportes",
+  "titulo": "Reportes Perú",
+  "ruta": "CH › Reportes › Reportes Perú",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.procesos.adelanto_caja_chica": {
+  "cap": "CH",
+  "seccion": "Procesos",
+  "titulo": "Adelanto Caja Chica",
+  "ruta": "CH › Procesos › Adelanto Caja Chica",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.procesos.reintegro_de_caja_chica": {
+  "cap": "CH",
+  "seccion": "Procesos",
+  "titulo": "Reintegro de Caja Chica",
+  "ruta": "CH › Procesos › Reintegro de Caja Chica",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.procesos.historico_de_reintegros_y_adelantos": {
+  "cap": "CH",
+  "seccion": "Procesos",
+  "titulo": "Histórico de Reintegros y Adelantos",
+  "ruta": "CH › Procesos › Histórico de Reintegros y Adelantos",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.procesos.procesos_peru": {
+  "cap": "CH",
+  "seccion": "Procesos",
+  "titulo": "Procesos Perú",
+  "ruta": "CH › Procesos › Procesos Perú",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.administracion.conceptos": {
+  "cap": "CH",
+  "seccion": "Administración",
+  "titulo": "Conceptos",
+  "ruta": "CH › Administración › Conceptos",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.administracion.tipos_de_retenciones": {
+  "cap": "CH",
+  "seccion": "Administración",
+  "titulo": "Tipos de Retenciones",
+  "ruta": "CH › Administración › Tipos de Retenciones",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.administracion.modelo_retenciones": {
+  "cap": "CH",
+  "seccion": "Administración",
+  "titulo": "Modelo Retenciones",
+  "ruta": "CH › Administración › Modelo Retenciones",
+  "img": null,
+  "estado": null
+ },
+ "CH.m.administracion.parametros_del_modulo": {
+  "cap": "CH",
+  "seccion": "Administración",
+  "titulo": "Parámetros del Módulo",
+  "ruta": "CH › Administración › Parámetros del Módulo",
+  "img": null,
+  "estado": null
+ },
+ "RP.m.mantenimiento.reportes": {
+  "cap": "RP",
+  "seccion": "Mantenimiento",
+  "titulo": "Reportes",
+  "ruta": "RP › Mantenimiento › Reportes",
+  "img": null,
+  "estado": null
+ },
+ "RP.m.mantenimiento.privilegios_reporte": {
+  "cap": "RP",
+  "seccion": "Mantenimiento",
+  "titulo": "Privilegios Reporte",
+  "ruta": "RP › Mantenimiento › Privilegios Reporte",
+  "img": null,
+  "estado": null
+ },
+ "RP.m.mantenimiento.pivotes_area_financiero_contable_contabilidad_general_control_bancario_cuentas_por_cobrar_cuentas_por_pagar_area_comercial_compras_facturacion_inventarios_area_industrial_area_recursos_humanos_y_nomina_control_de_nomina_otras_areas": {
+  "cap": "RP",
+  "seccion": "Mantenimiento",
+  "titulo": "Pivotes (Área Financiero Contable: Contabilidad General · Control Bancario · Cuentas por Cobrar · Cuentas por Pagar | Área Comercial: Compras · Facturación · Inventarios | Área Industrial | Área Recursos Humanos y Nómina: Control de Nómina | Otras Áreas)",
+  "ruta": "RP › Mantenimiento › Pivotes (Área Financiero Contable: Contabilidad General · Control Bancario · Cuentas por Cobrar · Cuentas por Pagar | Área Comercial: Compras · Facturación · Inventarios | Área Industrial | Área Recursos Humanos y Nómina: Control de Nómina | Otras Áreas)",
+  "img": null,
+  "estado": null
+ },
+ "RP.m.mantenimiento.vistas": {
+  "cap": "RP",
+  "seccion": "Mantenimiento",
+  "titulo": "Vistas",
+  "ruta": "RP › Mantenimiento › Vistas",
+  "img": null,
+  "estado": null
+ },
+ "RP.m.procesos.reparacion_ubicaciones": {
+  "cap": "RP",
+  "seccion": "Procesos",
+  "titulo": "Reparación Ubicaciones",
+  "ruta": "RP › Procesos › Reparación Ubicaciones",
+  "img": null,
+  "estado": null
+ },
+ "RP.m.procesos.cubos_de_informacion_procesar_cubo": {
+  "cap": "RP",
+  "seccion": "Procesos",
+  "titulo": "Cubos de Información: Procesar Cubo",
+  "ruta": "RP › Procesos › Cubos de Información: Procesar Cubo",
+  "img": null,
+  "estado": null
+ },
+ "RP.m.administracion.licencias": {
+  "cap": "RP",
+  "seccion": "Administración",
+  "titulo": "Licencias",
+  "ruta": "RP › Administración › Licencias",
+  "img": null,
+  "estado": null
+ },
+ "RP.m.administracion.parametros_del_modulo": {
+  "cap": "RP",
+  "seccion": "Administración",
+  "titulo": "Parámetros del Módulo",
+  "ruta": "RP › Administración › Parámetros del Módulo",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.empleados.mantenimiento": {
+  "cap": "GN",
+  "seccion": "Empleados",
+  "titulo": "Mantenimiento",
+  "ruta": "GN › Empleados › Mantenimiento",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.empleados.conceptos": {
+  "cap": "GN",
+  "seccion": "Empleados",
+  "titulo": "Conceptos",
+  "ruta": "GN › Empleados › Conceptos",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.empleados.horarios": {
+  "cap": "GN",
+  "seccion": "Empleados",
+  "titulo": "Horarios",
+  "ruta": "GN › Empleados › Horarios",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.nominas.procesar": {
+  "cap": "GN",
+  "seccion": "Nóminas",
+  "titulo": "Procesar",
+  "ruta": "GN › Nóminas › Procesar",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.nominas.detalle_por_empleados": {
+  "cap": "GN",
+  "seccion": "Nóminas",
+  "titulo": "Detalle por Empleados",
+  "ruta": "GN › Nóminas › Detalle por Empleados",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.nominas.detalle_por_conceptos": {
+  "cap": "GN",
+  "seccion": "Nóminas",
+  "titulo": "Detalle por Conceptos",
+  "ruta": "GN › Nóminas › Detalle por Conceptos",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.nominas.notas_de_nomina": {
+  "cap": "GN",
+  "seccion": "Nóminas",
+  "titulo": "Notas de Nómina",
+  "ruta": "GN › Nóminas › Notas de Nómina",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.nominas.horas_laboradas_por_empleado_marcas_de_reloj_registro_de_horas": {
+  "cap": "GN",
+  "seccion": "Nóminas",
+  "titulo": "Horas Laboradas por Empleado (Marcas de Reloj · Registro de Horas)",
+  "ruta": "GN › Nóminas › Horas Laboradas por Empleado (Marcas de Reloj · Registro de Horas)",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.consultas.nominas": {
+  "cap": "GN",
+  "seccion": "Consultas",
+  "titulo": "Nóminas",
+  "ruta": "GN › Consultas › Nóminas",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.consultas.empleados": {
+  "cap": "GN",
+  "seccion": "Consultas",
+  "titulo": "Empleados",
+  "ruta": "GN › Consultas › Empleados",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.consultas.jerarquia_de_conceptos": {
+  "cap": "GN",
+  "seccion": "Consultas",
+  "titulo": "Jerarquía de Conceptos",
+  "ruta": "GN › Consultas › Jerarquía de Conceptos",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.consultas.colombia_historico_de_nominas_electronicas": {
+  "cap": "GN",
+  "seccion": "Consultas",
+  "titulo": "Colombia: Histórico de Nóminas Electrónicas",
+  "ruta": "GN › Consultas › Colombia: Histórico de Nóminas Electrónicas",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.consultas.ajustes_y_anulacion_de_pagos_de_nomina": {
+  "cap": "GN",
+  "seccion": "Consultas",
+  "titulo": "Ajustes y Anulación de Pagos de Nómina",
+  "ruta": "GN › Consultas › Ajustes y Anulación de Pagos de Nómina",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.consultas.consulta_historico_creditos_por_empleado": {
+  "cap": "GN",
+  "seccion": "Consultas",
+  "titulo": "Consulta Histórico Créditos por Empleado",
+  "ruta": "GN › Consultas › Consulta Histórico Créditos por Empleado",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.inconsistencias_de_nominas": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Inconsistencias de Nóminas",
+  "ruta": "GN › Reportes › Inconsistencias de Nóminas",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.desglose_por_entidad": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Desglose por Entidad",
+  "ruta": "GN › Reportes › Desglose por Entidad",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.comprobantes_de_pago": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Comprobantes de Pago",
+  "ruta": "GN › Reportes › Comprobantes de Pago",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.desglose_de_monedas_y_billetes": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Desglose de Monedas y Billetes",
+  "ruta": "GN › Reportes › Desglose de Monedas y Billetes",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.resumen_por_conceptos": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Resumen por Conceptos",
+  "ruta": "GN › Reportes › Resumen por Conceptos",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.listado_de_nomina": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Listado de Nómina",
+  "ruta": "GN › Reportes › Listado de Nómina",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.libro_de_salarios": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Libro de Salarios",
+  "ruta": "GN › Reportes › Libro de Salarios",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.tarjetas_de_empleados": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Tarjetas de Empleados",
+  "ruta": "GN › Reportes › Tarjetas de Empleados",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.modificaciones_de_nominas": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Modificaciones de Nóminas",
+  "ruta": "GN › Reportes › Modificaciones de Nóminas",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.horas_laboradas_por_empleado": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Horas Laboradas por Empleado",
+  "ruta": "GN › Reportes › Horas Laboradas por Empleado",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.comprobante_para_liquidacion_de_aportes": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Comprobante para Liquidación de Aportes",
+  "ruta": "GN › Reportes › Comprobante para Liquidación de Aportes",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.liquidacion_de_aportes": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Liquidación de Aportes",
+  "ruta": "GN › Reportes › Liquidación de Aportes",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.columnar_de_nomina": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Columnar de Nómina",
+  "ruta": "GN › Reportes › Columnar de Nómina",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.incidencia_ajustes_y_anulacion_de_nomina": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Incidencia Ajustes y Anulación de Nómina",
+  "ruta": "GN › Reportes › Incidencia Ajustes y Anulación de Nómina",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.costa_rica_ccss_riesgos_del_trabajo_i_n_s_reporte_anual_de_renta": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Costa Rica (CCSS · Riesgos del Trabajo I.N.S. · Reporte Anual de Renta)",
+  "ruta": "GN › Reportes › Costa Rica (CCSS · Riesgos del Trabajo I.N.S. · Reporte Anual de Renta)",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.panama": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Panamá",
+  "ruta": "GN › Reportes › Panamá",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.el_salvador": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "El Salvador",
+  "ruta": "GN › Reportes › El Salvador",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.guatemala": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Guatemala",
+  "ruta": "GN › Reportes › Guatemala",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.mexico": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "México",
+  "ruta": "GN › Reportes › México",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.colombia": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Colombia",
+  "ruta": "GN › Reportes › Colombia",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.rep_dominicana": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Rep. Dominicana",
+  "ruta": "GN › Reportes › Rep. Dominicana",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.ecuador": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Ecuador",
+  "ruta": "GN › Reportes › Ecuador",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.reorganizar_conceptos": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Reorganizar Conceptos",
+  "ruta": "GN › Procesos › Reorganizar Conceptos",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.generacion_transferencias_electronicas": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Generación Transferencias Electrónicas",
+  "ruta": "GN › Procesos › Generación Transferencias Electrónicas",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.cargador_de_direcciones": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Cargador de Direcciones",
+  "ruta": "GN › Procesos › Cargador de Direcciones",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.carga_de_nominas_preconfiguradas": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Carga de Nóminas Preconfiguradas",
+  "ruta": "GN › Procesos › Carga de Nóminas Preconfiguradas",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.copia_de_nominas_intercompania": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Copia de Nóminas Intercompañía",
+  "ruta": "GN › Procesos › Copia de Nóminas Intercompañía",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.inicializar_salario_promedio_diario": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Inicializar Salario Promedio Diario",
+  "ruta": "GN › Procesos › Inicializar Salario Promedio Diario",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.anul_descuentos_por_saldos_y_cuotas": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Anul. Descuentos por Saldos y Cuotas",
+  "ruta": "GN › Procesos › Anul. Descuentos por Saldos y Cuotas",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.anul_descuentos_de_creditos_de_empleado": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Anul. Descuentos de Créditos de Empleado",
+  "ruta": "GN › Procesos › Anul. Descuentos de Créditos de Empleado",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.ajuste_de_nomina_por_empleado": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Ajuste de Nómina por Empleado",
+  "ruta": "GN › Procesos › Ajuste de Nómina por Empleado",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.anulacion_pagos_de_nomina_por_empleado": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Anulación Pagos de Nómina por Empleado",
+  "ruta": "GN › Procesos › Anulación Pagos de Nómina por Empleado",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.panama": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Panamá",
+  "ruta": "GN › Procesos › Panamá",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.suspension_o_reactivacion_de_credito": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Suspensión o Reactivación de Crédito",
+  "ruta": "GN › Procesos › Suspensión o Reactivación de Crédito",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.colombia": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Colombia",
+  "ruta": "GN › Procesos › Colombia",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.cargador_de_adicionales_de_empleado": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Cargador de Adicionales de Empleado",
+  "ruta": "GN › Procesos › Cargador de Adicionales de Empleado",
+  "img": null,
+  "estado": "bloqueada"
+ },
+ "GN.m.procesos.cargador_de_adicionales_de_nomina": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Cargador de Adicionales de Nómina",
+  "ruta": "GN › Procesos › Cargador de Adicionales de Nómina",
+  "img": null,
+  "estado": "bloqueada"
+ },
+ "GN.m.administracion.clases_de_nomina": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Clases de Nómina",
+  "ruta": "GN › Administración › Clases de Nómina",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.conceptos": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Conceptos",
+  "ruta": "GN › Administración › Conceptos",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.departamentos": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Departamentos",
+  "ruta": "GN › Administración › Departamentos",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.estados_del_empleado": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Estados del Empleado",
+  "ruta": "GN › Administración › Estados del Empleado",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.horarios": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Horarios",
+  "ruta": "GN › Administración › Horarios",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.puestos": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Puestos",
+  "ruta": "GN › Administración › Puestos",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.catalogo_de_puestos_externos": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Catálogo de Puestos Externos",
+  "ruta": "GN › Administración › Catálogo de Puestos Externos",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.clases_de_seguro_social": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Clases de Seguro Social",
+  "ruta": "GN › Administración › Clases de Seguro Social",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.liquidacion_de_aportes": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Liquidación de Aportes",
+  "ruta": "GN › Administración › Liquidación de Aportes",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.grupos_de_conceptos": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Grupos de Conceptos",
+  "ruta": "GN › Administración › Grupos de Conceptos",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.transferencias_colombia_bancolombia_banco_bogota_banco_davivienda": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Transferencias Colombia (Bancolombia · Banco Bogotá · Banco DaVivienda)",
+  "ruta": "GN › Administración › Transferencias Colombia (Bancolombia · Banco Bogotá · Banco DaVivienda)",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.cuentas_contables_por_concepto": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Cuentas Contables por Concepto",
+  "ruta": "GN › Administración › Cuentas Contables por Concepto",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.liquidacion_de_pago_por_descuentos": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Liquidación de Pago por Descuentos",
+  "ruta": "GN › Administración › Liquidación de Pago por Descuentos",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.informacion_del_cotizante": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Información del cotizante",
+  "ruta": "GN › Administración › Información del cotizante",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.act_economicas_sist_gest_riesgo_laboral": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Act. Económicas Sist. Gest. Riesgo Laboral",
+  "ruta": "GN › Administración › Act. Económicas Sist. Gest. Riesgo Laboral",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.administradoras": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Administradoras",
+  "ruta": "GN › Administración › Administradoras",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.historico_de_proyectos": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Histórico de Proyectos",
+  "ruta": "GN › Administración › Histórico de Proyectos",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.centros_de_trabajo": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Centros de Trabajo",
+  "ruta": "GN › Administración › Centros de Trabajo",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.adicionales_empleado": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Adicionales Empleado",
+  "ruta": "GN › Administración › Adicionales Empleado",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.adicionales_nomina": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Adicionales Nómina",
+  "ruta": "GN › Administración › Adicionales Nómina",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.constantes_para_calculo": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Constantes para Cálculo",
+  "ruta": "GN › Administración › Constantes para Cálculo",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.codigo_de_ingreso": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Código de ingreso",
+  "ruta": "GN › Administración › Código de ingreso",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.nomina_electronica": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Nómina Electrónica",
+  "ruta": "GN › Administración › Nómina Electrónica",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.razones_ajuste_y_anulacion_de_nomina": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Razones Ajuste y Anulación de Nómina",
+  "ruta": "GN › Administración › Razones Ajuste y Anulación de Nómina",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.configuracion_de_datos_para_la_nomina": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Configuración de Datos para la Nómina",
+  "ruta": "GN › Administración › Configuración de Datos para la Nómina",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.empleados.mantenimiento_": {
+  "cap": "GN",
+  "seccion": "Empleados",
+  "titulo": "Mantenimiento",
+  "ruta": "GN › Empleados › Mantenimiento",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.empleados.informacion_vacacional": {
+  "cap": "GN",
+  "seccion": "Empleados",
+  "titulo": "Información Vacacional",
+  "ruta": "GN › Empleados › Información Vacacional",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.empleados.jerarquia": {
+  "cap": "GN",
+  "seccion": "Empleados",
+  "titulo": "Jerarquía",
+  "ruta": "GN › Empleados › Jerarquía",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.empleados.contratos": {
+  "cap": "GN",
+  "seccion": "Empleados",
+  "titulo": "Contratos",
+  "ruta": "GN › Empleados › Contratos",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.operacion.acciones_de_personal": {
+  "cap": "GN",
+  "seccion": "Operación",
+  "titulo": "Acciones de Personal",
+  "ruta": "GN › Operación › Acciones de Personal",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.operacion.liquidaciones_de_empleado": {
+  "cap": "GN",
+  "seccion": "Operación",
+  "titulo": "Liquidaciones de Empleado",
+  "ruta": "GN › Operación › Liquidaciones de Empleado",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.operacion.calculos_vacacionales": {
+  "cap": "GN",
+  "seccion": "Operación",
+  "titulo": "Cálculos Vacacionales",
+  "ruta": "GN › Operación › Cálculos Vacacionales",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.operacion.goce_masivo_de_vacaciones": {
+  "cap": "GN",
+  "seccion": "Operación",
+  "titulo": "Goce Masivo de Vacaciones",
+  "ruta": "GN › Operación › Goce Masivo de Vacaciones",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.operacion.documentos": {
+  "cap": "GN",
+  "seccion": "Operación",
+  "titulo": "Documentos",
+  "ruta": "GN › Operación › Documentos",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.operacion.calculo_de_incapacidades_en_horas": {
+  "cap": "GN",
+  "seccion": "Operación",
+  "titulo": "Cálculo de Incapacidades en Horas",
+  "ruta": "GN › Operación › Cálculo de Incapacidades en Horas",
+  "img": null,
+  "estado": "deshabilitada"
+ },
+ "GN.m.operacion.movimiento_a_traves_de_escala": {
+  "cap": "GN",
+  "seccion": "Operación",
+  "titulo": "Movimiento a través de Escala",
+  "ruta": "GN › Operación › Movimiento a través de Escala",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.operacion.proceso_de_aumentos_masivos": {
+  "cap": "GN",
+  "seccion": "Operación",
+  "titulo": "Proceso de Aumentos Masivos",
+  "ruta": "GN › Operación › Proceso de Aumentos Masivos",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.consultas.descuento_de_saldos_de_acciones": {
+  "cap": "GN",
+  "seccion": "Consultas",
+  "titulo": "Descuento de Saldos de Acciones",
+  "ruta": "GN › Consultas › Descuento de Saldos de Acciones",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.consultas.saldo_de_vacaciones_por_ano": {
+  "cap": "GN",
+  "seccion": "Consultas",
+  "titulo": "Saldo de Vacaciones por Año",
+  "ruta": "GN › Consultas › Saldo de Vacaciones por Año",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.consultas.acciones_por_empleado": {
+  "cap": "GN",
+  "seccion": "Consultas",
+  "titulo": "Acciones por Empleado",
+  "ruta": "GN › Consultas › Acciones por Empleado",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.aplicacion_de_acciones_de_personal": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Aplicación de Acciones de Personal",
+  "ruta": "GN › Procesos › Aplicación de Acciones de Personal",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.aumento_masivo_de_salarios": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Aumento Masivo de Salarios",
+  "ruta": "GN › Procesos › Aumento Masivo de Salarios",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.salarios_diarios_integrados": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Salarios Diarios Integrados",
+  "ruta": "GN › Procesos › Salarios Diarios Integrados",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.cambio_masivo_de_nomina": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Cambio Masivo De Nómina",
+  "ruta": "GN › Procesos › Cambio Masivo De Nómina",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.cargador_de_direcciones_": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "Cargador de Direcciones",
+  "ruta": "GN › Procesos › Cargador de Direcciones",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.procesos.mexico_certificacion_de_nomina_cfdi_mexico": {
+  "cap": "GN",
+  "seccion": "Procesos",
+  "titulo": "México: Certificación de Nómina CFDi México",
+  "ruta": "GN › Procesos › México: Certificación de Nómina CFDi México",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.calculos_vacacionales": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Cálculos Vacacionales",
+  "ruta": "GN › Reportes › Cálculos Vacacionales",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.costa_rica_sicere_c_c_s_s": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Costa Rica: SICERE - C.C.S.S.",
+  "ruta": "GN › Reportes › Costa Rica: SICERE - C.C.S.S.",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.mexico_": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "México",
+  "ruta": "GN › Reportes › México",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.nicaragua": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Nicaragua",
+  "ruta": "GN › Reportes › Nicaragua",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.republica_dominicana": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "República Dominicana",
+  "ruta": "GN › Reportes › República Dominicana",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.reportes.guatemala_": {
+  "cap": "GN",
+  "seccion": "Reportes",
+  "titulo": "Guatemala",
+  "ruta": "GN › Reportes › Guatemala",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.plazas": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Plazas",
+  "ruta": "GN › Administración › Plazas",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.tipos_de_accion_de_personal": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Tipos de Acción de Personal",
+  "ruta": "GN › Administración › Tipos de Acción de Personal",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.clases_de_seguro_social_": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Clases de Seguro Social",
+  "ruta": "GN › Administración › Clases de Seguro Social",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.auditoria_de_modificaciones_de_empleado": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Auditoría de Modificaciones de Empleado",
+  "ruta": "GN › Administración › Auditoría de Modificaciones de Empleado",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.regimenes_vacacionales": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Regímenes Vacacionales",
+  "ruta": "GN › Administración › Regímenes Vacacionales",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.contribuciones_vacacionales": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Contribuciones Vacacionales",
+  "ruta": "GN › Administración › Contribuciones Vacacionales",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.vacaciones_por_antiguedad": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Vacaciones por Antigüedad",
+  "ruta": "GN › Administración › Vacaciones por Antigüedad",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.tipos_de_solicitud_de_empleados": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Tipos de Solicitud de Empleados",
+  "ruta": "GN › Administración › Tipos de Solicitud de Empleados",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.tipos_de_ausencia": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Tipos de Ausencia",
+  "ruta": "GN › Administración › Tipos de Ausencia",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.tipos_de_contrato": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Tipos de Contrato",
+  "ruta": "GN › Administración › Tipos de Contrato",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.nomina_electronica_": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Nómina Electrónica",
+  "ruta": "GN › Administración › Nómina Electrónica",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.configuracion_de_datos_del_empleado": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Configuración de Datos del Empleado",
+  "ruta": "GN › Administración › Configuración de Datos del Empleado",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.mantenimiento_niveles_organizacionales": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Mantenimiento Niveles Organizacionales",
+  "ruta": "GN › Administración › Mantenimiento Niveles Organizacionales",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.mantenimiento_de_pasos_salariales": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Mantenimiento de Pasos Salariales",
+  "ruta": "GN › Administración › Mantenimiento de Pasos Salariales",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.mantenimiento_de_elementos_de_pago": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Mantenimiento de Elementos de Pago",
+  "ruta": "GN › Administración › Mantenimiento de Elementos de Pago",
+  "img": null,
+  "estado": null
+ },
+ "GN.m.administracion.mantenimiento_de_tipos_de_escala": {
+  "cap": "GN",
+  "seccion": "Administración",
+  "titulo": "Mantenimiento de Tipos de Escala",
+  "ruta": "GN › Administración › Mantenimiento de Tipos de Escala",
+  "img": null,
+  "estado": null
+ },
+ "MF.m.consultas.proporcionalidad_general": {
+  "cap": "MF",
+  "seccion": "Consultas",
+  "titulo": "Proporcionalidad General",
+  "ruta": "MF › Consultas › Proporcionalidad General",
+  "img": null,
+  "estado": null
+ },
+ "MF.m.consultas.proporcionalidad_desglose": {
+  "cap": "MF",
+  "seccion": "Consultas",
+  "titulo": "Proporcionalidad Desglose",
+  "ruta": "MF › Consultas › Proporcionalidad Desglose",
+  "img": null,
+  "estado": null
+ },
+ "MF.m.consultas.resumen_periodo": {
+  "cap": "MF",
+  "seccion": "Consultas",
+  "titulo": "Resumen Período",
+  "ruta": "MF › Consultas › Resumen Período",
+  "img": null,
+  "estado": null
+ },
+ "MF.m.consultas.liquidacion_de_proyeccion_anual": {
+  "cap": "MF",
+  "seccion": "Consultas",
+  "titulo": "Liquidación de proyección anual",
+  "ruta": "MF › Consultas › Liquidación de proyección anual",
+  "img": null,
+  "estado": null
+ },
+ "MF.m.reportes.libro_ventas": {
+  "cap": "MF",
+  "seccion": "Reportes",
+  "titulo": "Libro Ventas",
+  "ruta": "MF › Reportes › Libro Ventas",
+  "img": null,
+  "estado": null
+ },
+ "MF.m.reportes.libro_compras": {
+  "cap": "MF",
+  "seccion": "Reportes",
+  "titulo": "Libro Compras",
+  "ruta": "MF › Reportes › Libro Compras",
+  "img": null,
+  "estado": null
+ },
+ "MF.m.reportes.declaracion_d104": {
+  "cap": "MF",
+  "seccion": "Reportes",
+  "titulo": "Declaración D104",
+  "ruta": "MF › Reportes › Declaración D104",
+  "img": null,
+  "estado": null
+ },
+ "MF.m.procesos.cierre": {
+  "cap": "MF",
+  "seccion": "Procesos",
+  "titulo": "Cierre",
+  "ruta": "MF › Procesos › Cierre",
+  "img": null,
+  "estado": null
+ },
+ "MF.m.administracion.parametros_del_modulo": {
+  "cap": "MF",
+  "seccion": "Administración",
+  "titulo": "Parámetros del módulo",
+  "ruta": "MF › Administración › Parámetros del módulo",
+  "img": null,
+  "estado": null
+ }
+}

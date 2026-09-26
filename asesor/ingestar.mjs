@@ -270,19 +270,27 @@ add("contexto", "hh_hallazgos", "Handheld eFlow WMS · hallazgos del mapeo (25/0
 for (const s of SORTER_PANTALLAS) add("pantalla_sorter", s.id, `SORTER CLIRO (Mecalux) › ${s.modulo} › ${s.nombre}`, [s.descripcion, s.detalle && JSON.stringify(s.detalle)].filter(Boolean).join("\n"));
 // Manual del Softland propio de OLO (compañía OVERSEAS): texto de cada pantalla (las capturas son privadas)
 const SFLM = JSON.parse(fs.readFileSync(path.join(DATA, "softland_manual.json"), "utf8"));
-const { SFL_PASO_PANTALLA } = await imp("softland_manual_links.js");
+const { SFL_PASO_OPCION } = await imp("softland_manual_links.js");
 const usosSfl = {};
-for (const [c, pasos] of Object.entries(SFL_PASO_PANTALLA)) for (const [i, id] of Object.entries(pasos)) ((usosSfl[id] ||= {})[c] ||= []).push(Number(i) + 1);
+for (const [c, pasos] of Object.entries(SFL_PASO_OPCION)) for (const [i, id] of Object.entries(pasos)) ((usosSfl[id] ||= {})[c] ||= []).push(Number(i) + 1);
 const plano = (s) => String(s || "").replace(/\*\*?/g, "");
+// Qué hace cada opción: la versión de la base (incluye las corregidas por el admin)
+const QUEHACE = Object.fromEntries((await api("GET", "softland_opciones?select=id,descripcion,origen", null, "count=none") || []).map(r => [r.id, r]));
+const queHace = (id) => QUEHACE[id] && `Qué hace${QUEHACE[id].origen === "editado" ? " (validado por el admin)" : " (inferido)"}: ${QUEHACE[id].descripcion}`;
 for (const c of SFLM.capitulos) {
   if (c.intro) add("pantalla_softland", `manual:${c.codigo}`, `Softland OLO (OVERSEAS) › ${c.codigo} ${c.nombre} · resumen`,
     [plano(c.intro), ...c.secciones.filter(s => s.desc).map(s => `${s.titulo}: ${plano(s.desc)}`)].join("\n"), { modulo: c.codigo });
   for (const s of c.secciones) for (const it of s.items) add("pantalla_softland", `manual:${it.id}`, `Softland OLO (OVERSEAS) › ${it.ruta || `${c.codigo} › ${s.titulo} › ${it.titulo}`}`, [
     `Pantalla del Softland propio de OLO (compañía OVERSEAS, manual del 25/09/2026). Módulo ${c.codigo} ${c.nombre}, sección ${s.titulo}.`,
-    it.desc && plano(it.desc), it.puntos && it.puntos.map(plano).join(" · "), it.campos && `Campos: ${it.campos.map(([k, d]) => `${plano(k)}: ${plano(d)}`).join(" · ")}`,
+    queHace(it.id), it.desc && plano(it.desc), it.puntos && it.puntos.map(plano).join(" · "), it.campos && `Campos: ${it.campos.map(([k, d]) => `${plano(k)}: ${plano(d)}`).join(" · ")}`,
     it.aviso && `Precaución: ${plano(it.aviso)}`,
     usosSfl[it.id] && `Procesos que la usan: ${Object.entries(usosSfl[it.id]).map(([k, n]) => `${k} (pasos ${n.join(", ")})`).join(" · ")}`,
   ].filter(Boolean).join("\n"), { modulo: c.codigo });
+  // Opciones del mapa de menús sin pantalla: un documento por opción con qué hace
+  for (const g of c.menu || []) for (const o of g.opciones) if (o.id.includes(".m.") && queHace(o.id)) add("pantalla_softland", `opcion:${o.id}`,
+    `Softland OLO (OVERSEAS) › ${c.codigo} › ${g.carpeta} › ${o.titulo}`,
+    [`Opción del menú del Softland de OLO (módulo ${c.codigo} ${c.nombre}), sin captura en el manual.${o.estado ? ` Estado: ${o.estado}.` : ""}`, queHace(o.id),
+      usosSfl[o.id] && `Procesos que la usan: ${Object.entries(usosSfl[o.id]).map(([k, n]) => `${k} (pasos ${n.join(", ")})`).join(" · ")}`].filter(Boolean).join("\n"), { modulo: c.codigo });
 }
 for (const [k, m] of Object.entries(DD.modulos)) if (m.instaladoEnCofersa) add("pantalla_softland", k, `Softland › ${k} ${m.nombre} (menú)`,
   `Menú real de Softland, módulo ${k} (${m.nombre}), compañía Cofersa. Opciones:\n` + m.pantallas.map(p => `${p.nombre}${p.tabla ? ` [${p.tabla}]` : ""}${p.acciones.length ? `: ${p.acciones.join(", ")}` : ""}`).join("\n")

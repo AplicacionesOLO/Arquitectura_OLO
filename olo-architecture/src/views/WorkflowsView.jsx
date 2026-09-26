@@ -16,6 +16,8 @@ import { WorkflowCanvas, Icono } from "../components/WorkflowCanvas.jsx";
 import { Presentacion } from "../components/Presentacion.jsx";
 import { slidesProceso } from "../lib/presentacion.js";
 import { useSrc } from "../lib/imgPrivada.js";
+import { SflQueHace } from "../components/SflQueHace.jsx";
+import { SFL_PASO_OPCION } from "../data/softland_manual_links.js";
 import { useNovedadesDoc } from "../components/NovedadesModal.jsx";
 import { ValidacionPaso, ValidacionProceso } from "../components/Validacion.jsx";
 
@@ -166,6 +168,7 @@ function Panel({ sel, canEdit, rolesMano, onGuardarRol, onClose, onIr, onPresent
       </div>
       {(sl?.donde || s.pantalla) && <><Titulo>Pantalla</Titulo><div style={{ fontSize:12.5, color:DESIGN.inkSoft }}>{sl?.donde || s.pantalla}</div></>}
       {sl?.img && <Captura src={sl.img} onClick={() => onPresentar(p.codigo, sel.i)}/>}
+      {s.sistema === "softland" && SFL_PASO_OPCION[p.codigo]?.[sel.i] && <div style={{ marginTop:8 }}><SflQueHace id={SFL_PASO_OPCION[p.codigo][sel.i]}/></div>}
       <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:12 }}>
         <button onClick={() => onPresentar(p.codigo, sel.i)} style={{ ...ir, color:"#fff", background:"#0891b2" }}>▶ Presentar desde aquí</button>
         {abrirPantalla && <button onClick={abrirPantalla} style={{ ...ir, color:DESIGN.ink, background:DESIGN.sunken2 }}>Abrir en el manual ›</button>}

@@ -8,10 +8,17 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const NOVEDADES_FALLBACK = {
-  "version": "2026-09-6",
+  "version": "2026-09-7",
   "titulo": "Novedades",
-  "fecha": "Septiembre 2026 · sexta entrega",
+  "fecha": "Septiembre 2026 · séptima entrega",
   "items": [
+    {
+      "id": "softland-quehace-2026-09",
+      "estado": "publicada",
+      "titulo": "Qué hace cada opción de Softland",
+      "detalle": "El manual Softland de OLO ahora explica qué hace cada una de sus 588 opciones (con o sin pantalla), en el mapa de menús de cada módulo. La primera versión es inferida (manual, mapeo funcional y cómo funciona un ERP) y el admin la puede corregir y validar. Esa explicación aparece también en cada paso de los procesos que usan Softland.",
+      "seccion": "softland"
+    },
     {
       "id": "ecosistema-sfl-2026-09",
       "estado": "publicada",

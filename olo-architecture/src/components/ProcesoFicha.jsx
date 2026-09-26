@@ -17,7 +17,8 @@ import { slidesProceso } from "../lib/presentacion.js";
 import { WMH_BY_ID, pantallaWmhDePaso } from "../data/wmh_manual.js";
 import { SORTER_BY_ID } from "../data/sorter_manual.js";
 import { HH_BY_ID, pantallaHhDePaso } from "../data/hh_manual.js";
-import { SFL_MANUAL_INDEX, SFL_PASO_PANTALLA } from "../data/softland_manual_links.js";
+import { SFL_MANUAL_INDEX, SFL_PASO_PANTALLA, SFL_PASO_OPCION, SFL_OPCIONES_PASO } from "../data/softland_manual_links.js";
+import { SflQueHace } from "./SflQueHace.jsx";
 
 const BUCKET = "Detalles_Porcesos";
 const DRAWIO = import.meta.glob("../assets/procesos_cedi/*.drawio", { query: "?raw", import: "default" });
@@ -210,8 +211,8 @@ function HhLink({ id, onNavigate }) {
 
 // Pantalla del manual Softland de OLO ligada a un paso en "softland"
 function SflLink({ id, onNavigate }) {
-  const w = SFL_MANUAL_INDEX[id];
-  return <button onClick={()=>onNavigate({ tab:"softland", view:"manual", sflScreen:id })} title="Ver la pantalla en el manual de Softland de OLO (OVERSEAS)"
+  const w = SFL_MANUAL_INDEX[id] || SFL_OPCIONES_PASO[id];
+  return <button onClick={()=>onNavigate({ tab:"softland", view:"manual", sflScreen:id })} title={SFL_MANUAL_INDEX[id]?.img ? "Ver la pantalla en el manual de Softland de OLO (OVERSEAS)" : "Ver la opción en el mapa de menús de Softland (sin captura)"}
     style={{ fontSize:10.5, fontWeight:700, color:"#c0392b", background:"#c0392b14", border:"1px solid #c0392b40", borderRadius:5, padding:"1px 6px", cursor:"pointer", fontFamily:DESIGN.font }}>
     Softland › {w.cap} › {w.titulo} ↗
   </button>;
@@ -226,6 +227,7 @@ function Pasos({ p, onNavigate }) {
   const srtDe = (s) => s.sistema === "sorter" && SORTER_BY_ID[s.screen] ? s.screen : null;
   const hhDe = (s) => pantallaHhDePaso(s, p.codigo);
   const sflDe = (s, i) => s.sistema === "softland" ? SFL_PASO_PANTALLA[p.codigo]?.[i] : null;
+  const sflOp = (s, i) => s.sistema === "softland" ? SFL_PASO_OPCION[p.codigo]?.[i] : null;
   const conPantalla = p.pasos.filter((s, i) => links[i] || wmhDe(s) || srtDe(s) || hhDe(s) || sflDe(s, i)).length;
   return <>
   {conPantalla > 0 && <button onClick={()=>setShow(0)} title="Presentar el proceso pantalla por pantalla"
@@ -256,9 +258,11 @@ function Pasos({ p, onNavigate }) {
             : srtDe(s) ? <SorterLink id={srtDe(s)} onNavigate={onNavigate}/>
             : wmhDe(s) ? <WmhLink id={wmhDe(s)} onNavigate={onNavigate}/>
             : sflDe(s, i) ? <><SflLink id={sflDe(s, i)} onNavigate={onNavigate}/>{s.pantalla && <span style={{ fontSize:10.5, color:DESIGN.muted }}>{s.pantalla}</span>}</>
+            : sflOp(s, i) ? <><SflLink id={sflOp(s, i)} onNavigate={onNavigate}/>{s.pantalla && <span style={{ fontSize:10.5, color:DESIGN.muted }}>{s.pantalla}</span>}</>
             : hhDe(s) ? <><HhLink id={hhDe(s)} onNavigate={onNavigate}/>{s.pantalla && s.pantalla !== HH_BY_ID[hhDe(s)].url && <span style={{ fontSize:10.5, color:DESIGN.muted }}>{s.pantalla}</span>}</>
             : s.pantalla && <span style={{ fontSize:10.5, color:DESIGN.muted }}>{s.pantalla}</span>}
         </div>
+        {sflOp(s, i) && <SflQueHace id={sflOp(s, i)} compacto/>}
       </div>
     </li>)}
     {p.decisiones.length > 0 && <li><L>Decisiones del diagrama</L><Bullets items={p.decisiones}/></li>}

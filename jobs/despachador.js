@@ -24,6 +24,8 @@ const JOBS = {
     return a;
   },
   softland_dd: () => [path.join(RAIZ, 'softland_dd', 'run.js')],
+  // documentación de ePRAC cargada en el Asesor: solo trabaja si hay cargas pendientes
+  eprac_docs: () => [path.join(RAIZ, 'asesor', 'ingestar.mjs'), '--solo-si-pendientes'],
 };
 
 const env = {};

@@ -7,9 +7,14 @@
 //      tablas (estructura real de la instantánea de schema_watch + lo mapeado),
 //      pantallas de eFlow WMS / Torre de Control / SORTER / Softland, los 67
 //      procesos, reglas operativas y contexto.
-// Uso: node asesor/ingestar.mjs ["C:\ruta\a\las\solicitudes"]
+//   3. Documentación oficial ePRAC cargada desde el BPA (bucket privado eprac-docs,
+//      registro en eprac_cargas): se suma a la carpeta con la misma lógica y cada
+//      carga queda procesada, duplicada o con error.
+// Uso: node asesor/ingestar.mjs ["C:\ruta\a\las\solicitudes"] [--solo-si-pendientes]
+//   --solo-si-pendientes: termina de inmediato si no hay cargas pendientes (job eprac_docs)
 // Credenciales: ../.env (clave de servicio de Supabase). Solo escribe en Supabase.
 import fs from "fs";
+import os from "os";
 import path from "path";
 import zlib from "zlib";
 import crypto from "crypto";
@@ -18,7 +23,9 @@ import { pathToFileURL, fileURLToPath } from "url";
 
 const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DATA = path.join(RAIZ, "olo-architecture", "src", "data");
-const CARPETA = process.argv[2] || "C:/Users/arojast/Desktop/ar/Eprac";
+const POSICIONALES = process.argv.slice(2).filter(a => !a.startsWith("--"));
+const CARPETA = POSICIONALES[0] || "C:/Users/arojast/Desktop/ar/Eprac";
+const SOLO_SI_PENDIENTES = process.argv.includes("--solo-si-pendientes");
 const imp = f => import(pathToFileURL(path.join(DATA, f)).href);
 
 // ── Supabase (clave de servicio) ────────────────────────────────────────────
@@ -36,6 +43,21 @@ async function api(metodo, ruta, cuerpo, prefer = "return=minimal") {
 async function upsert(tabla, filas, conflicto = "id") {
   for (let i = 0; i < filas.length; i += 200)
     await api("POST", `${tabla}?on_conflict=${conflicto}`, filas.slice(i, i + 200), "resolution=merge-duplicates,return=minimal");
+}
+
+// ── Documentación ePRAC cargada desde el BPA ────────────────────────────────
+const CARGAS = await api("GET", "eprac_cargas?select=id,nombre,path,estado&order=created_at", null, "count=none");
+if (SOLO_SI_PENDIENTES && !CARGAS.some(c => c.estado === "pendiente")) { console.log("sin cargas pendientes: nada que procesar"); process.exit(0); }
+// Se descargan todas (no solo las pendientes): la base de conocimiento se regenera completa en cada corrida
+const DIR_CARGAS = path.join(os.tmpdir(), "bpa-eprac-cargas");
+fs.mkdirSync(DIR_CARGAS, { recursive: true });
+for (const c of CARGAS) {
+  if (c.estado === "error") continue; // se reintenta solo si el admin la vuelve a dejar pendiente
+  c.local = path.join(DIR_CARGAS, `${c.id}${path.extname(c.nombre).toLowerCase()}`);
+  if (fs.existsSync(c.local)) continue;
+  const r = await fetch(`${env.SUPABASE_URL}/storage/v1/object/eprac-docs/${c.path.split("/").map(encodeURIComponent).join("/")}`, { headers: H });
+  if (!r.ok) { c.fallo = `no se pudo descargar (${r.status})`; delete c.local; continue; }
+  fs.writeFileSync(c.local, Buffer.from(await r.arrayBuffer()));
 }
 
 // ── Datos del BPA ───────────────────────────────────────────────────────────
@@ -137,20 +159,26 @@ function detectar(texto, titulo) {
 }
 
 const archivos = [];
-(function recorrer(d) { for (const f of fs.readdirSync(d)) { const p = path.join(d, f); if (fs.statSync(p).isDirectory()) recorrer(p); else if (/\.(docx|pdf)$/i.test(f)) archivos.push(p); } })(CARPETA);
-const vistos = new Set(), solicitudes = [], otrosDocs = [];
-for (const p of archivos.sort()) {
+if (fs.existsSync(CARPETA)) (function recorrer(d) { for (const f of fs.readdirSync(d)) { const p = path.join(d, f); if (fs.statSync(p).isDirectory()) recorrer(p); else if (/\.(docx|pdf)$/i.test(f)) archivos.push({ p, rel: path.relative(CARPETA, p), nombre: f }); } })(CARPETA);
+archivos.sort((a, b) => a.rel.localeCompare(b.rel));
+// después de la carpeta, lo cargado desde el BPA (si ya estaba en la carpeta, queda como duplicado)
+for (const c of CARGAS) if (c.local) archivos.push({ p: c.local, rel: `BPA/${c.nombre}`, nombre: c.nombre, carga: c });
+const vistos = new Map(), solicitudes = [], otrosDocs = [];
+const resultadoCarga = (c, cambios) => { if (c) Object.assign(c, { resultado: { ...cambios, procesado_at: new Date().toISOString() } }); };
+for (const { p, rel, nombre, carga } of archivos) {
   let texto;
-  try { texto = /\.pdf$/i.test(p) ? textoPdf(p) : textoDocx(p); } catch (e) { console.log(`  ✗ ${path.basename(p)}: ${e.message}`); continue; }
+  try { texto = /\.pdf$/i.test(p) ? textoPdf(p) : textoDocx(p); } catch (e) { console.log(`  ✗ ${nombre}: ${e.message}`); resultadoCarga(carga, { estado: "error", mensaje: /\.pdf$/i.test(p) ? "No se pudo leer el PDF: está dañado, protegido o no es un PDF válido." : "No se pudo leer el Word: está dañado o no es un .docx válido (los .doc antiguos no se aceptan)." }); continue; }
+  if (!texto.trim()) { resultadoCarga(carga, { estado: "error", mensaje: "El documento no tiene texto legible (¿PDF escaneado?)." }); continue; }
   const hash = crypto.createHash("sha1").update(texto.replace(/\s+/g, " ")).digest("hex");
-  if (vistos.has(hash)) { console.log(`  = ${path.relative(CARPETA, p)} (duplicado, se omite)`); continue; }
-  vistos.add(hash);
-  const base = path.basename(p).replace(/\.(docx|pdf)$/i, "").replace(/\.docx$/i, "");
-  const rel = path.relative(CARPETA, p);
+  if (vistos.has(hash)) { console.log(`  = ${rel} (duplicado, se omite)`); resultadoCarga(carga, { estado: "duplicado", mensaje: `Es el mismo documento que «${vistos.get(hash)}».` }); continue; }
+  vistos.set(hash, rel);
+  const base = nombre.replace(/\.(docx|pdf)$/i, "").replace(/\.docx$/i, "");
   // «FORMATO» es la plantilla en blanco: va como estándar, no como solicitud
   const esSolicitud = (/SOLICITUD DE CAMBIO/i.test(texto.slice(0, 400)) || /^ePRAC\s*-\s*\d+/i.test(base)) && !/FORMATO/i.test(base);
   if (!esSolicitud) {
-    otrosDocs.push({ id: `estandar:${base}`, tipo: /documentaci|formato/i.test(rel) ? "estandar" : "contexto", ref: base, titulo: base.replace(/_/g, " "), texto: texto.slice(0, 150000), meta: { archivo: rel, fuente: "Carpeta ePRAC" } });
+    const tipo = /documentaci|formato|manual/i.test(rel) ? "estandar" : "contexto";
+    otrosDocs.push({ id: `estandar:${base}`, tipo, ref: base, titulo: base.replace(/_/g, " "), texto: texto.slice(0, 150000), meta: { archivo: rel, fuente: carga ? "Cargado en el BPA" : "Carpeta ePRAC" } });
+    resultadoCarga(carga, { estado: "procesado", tipo, mensaje: "Documento oficial de ePRAC (no es una solicitud de cambio): se agregó a la base de conocimiento." });
     continue;
   }
   const r = estructurar(texto);
@@ -161,7 +189,10 @@ for (const p of archivos.sort()) {
     solicitante: r.solicitante || null, fecha: r.fecha || null, modulo: r.modulo || null, prioridad: r.prioridad || null,
     como: r.como || null, necesito: r.necesito || null, para: r.para || null, situacion_actual: r.situacion || null, descripcion: r.descripcion || null,
     atencion: r.atencion || {}, entidades: detectar(texto, `${titulo} ${r.modulo || ""}`), hash });
+  resultadoCarga(carga, { estado: "procesado", tipo: "solicitud", solicitud_id: id, mensaje: `Solicitud de cambio «${titulo}»${numero ? ` (ePRAC ${numero})` : ""}.` });
 }
+// Cargas que no se pudieron descargar del bucket
+for (const c of CARGAS) if (c.fallo) resultadoCarga(c, { estado: "error", mensaje: c.fallo });
 // Relaciones entre solicitudes del mismo tema: duplicado (texto casi idéntico),
 // versión anterior (mismo módulo y la otra declara una versión mayor) o relacionada.
 const tema = t => norm(t).replace(/\b(v\s*\d+|\d+(\.\d+)?|olo|epra?c?)\b/g, " ").replace(/[^a-z]+/g, " ").trim().split(" ").slice(0, 3).join(" ");
@@ -191,6 +222,11 @@ solicitudes.forEach(s => { s.relacion ??= null; });
 console.log(`Solicitudes: ${solicitudes.length} · otros documentos: ${otrosDocs.length} · con relación: ${solicitudes.filter(s => s.relacion).map(s => `${s.titulo} → ${s.relacion.tipo} de «${s.relacion.titulo}»`).join(" · ")}`);
 // estado y notas no se envían: al re-ingerir se conservan los que se editaron en el BPA
 await upsert("solicitudes_cambio", solicitudes);
+// Resultado de cada carga del BPA (solo cambia lo que estaba pendiente o cuyo resultado cambió)
+for (const c of CARGAS) if (c.resultado && (c.estado === "pendiente" || c.resultado.estado !== c.estado))
+  await api("PATCH", `eprac_cargas?id=eq.${c.id}`, { tipo: null, solicitud_id: null, ...c.resultado });
+const conCarga = CARGAS.filter(c => c.resultado);
+if (conCarga.length) console.log(`Cargas del BPA: ${conCarga.map(c => `${c.nombre} → ${c.resultado.estado}`).join(" · ")}`);
 
 // ── 2. Base de conocimiento ─────────────────────────────────────────────────
 const docs = [];

@@ -3,11 +3,13 @@
 // Consultar: se describe un cambio o problema; el agente (Edge Function
 // asesor-cambios) consulta la base de conocimiento del BPA y responde con
 // veredicto, implicaciones, lo que afecta, precedentes y recomendación.
-// Solicitudes de cambio: catálogo de lo pedido a ePRAC, con estado editable.
+// Documentación oficial ePRAC: cargador de documentos (EpracCargador), catálogo de
+// solicitudes de cambio con estado editable y los demás documentos oficiales.
 // Base de conocimiento: qué sabe el asesor y cómo alimentarlo.
 // ═══════════════════════════════════════════════════════════════════════════
 import { useState, useEffect, useCallback, useRef, Fragment } from "react";
 import { supabase } from "../lib/supabaseClient.js";
+import { EpracCargador } from "./EpracCargador.jsx";
 import { DESIGN } from "../data/constants.js";
 import { Markdown } from "../components/MonitoreoBases.jsx";
 
@@ -30,11 +32,16 @@ export function AsesorView() {
   const [verSol, setVerSol] = useState(null);
   return <div>
     <div style={{ display:"flex", gap:4, borderBottom:`1px solid ${DESIGN.border}`, marginBottom:16 }}>
-      {[["consultar", "Consultar"], ["solicitudes", "Solicitudes de cambio"], ["conocimiento", "Base de conocimiento"], ["abstracto", "Conocimiento abstracto"]].map(([id, l]) => <button key={id} onClick={() => setPest(id)}
+      {[["consultar", "Consultar"], ["solicitudes", "Documentación oficial ePRAC"], ["conocimiento", "Base de conocimiento"], ["abstracto", "Conocimiento abstracto"]].map(([id, l]) => <button key={id} onClick={() => setPest(id)}
         style={{ fontSize:14, fontWeight: pest === id ? 700 : 500, color: pest === id ? DESIGN.ink : DESIGN.muted, background:"none", border:"none", borderBottom:`2px solid ${pest === id ? DESIGN.ink : "transparent"}`, padding:"8px 14px", cursor:"pointer", fontFamily:DESIGN.font, marginBottom:-1 }}>{l}</button>)}
     </div>
     {pest === "consultar" && <Consultar onVerSolicitud={id => { setVerSol(id); setPest("solicitudes"); }}/>}
-    {pest === "solicitudes" && <Solicitudes abrir={verSol}/>}
+    {pest === "solicitudes" && <>
+      <EpracCargador onVerSolicitud={id => setVerSol(id)}/>
+      <div style={{ fontSize:15, fontWeight:700, color:DESIGN.ink, margin:"4px 0 8px" }}>Solicitudes de cambio</div>
+      <Solicitudes key={verSol || "todas"} abrir={verSol}/>
+      <OtrosDocumentos/>
+    </>}
     {pest === "conocimiento" && <Conocimiento/>}
     {pest === "abstracto" && <Abstracto/>}
   </div>;
@@ -206,6 +213,23 @@ function Resultado({ r, onVerSolicitud }) {
     </div>
     {verHerr && <ol style={{ margin:"6px 0 0", paddingLeft:20, fontSize:11.5, color:DESIGN.inkSoft }}>{r.herramientas.map((h, k) => <li key={k}><code>{h.herramienta}</code> {JSON.stringify(h.args)}</li>)}</ol>}
   </div>;
+}
+
+// ── Otros documentos oficiales de ePRAC (no son solicitudes) ────────────────
+function OtrosDocumentos() {
+  const [docs, setDocs] = useState(null);
+  useEffect(() => {
+    let vivo = true;
+    supabase.from("asesor_docs").select("id,tipo,titulo,meta").like("id", "estandar:%").order("titulo")
+      .then(({ data }) => { if (vivo) setDocs(data || []); });
+    return () => { vivo = false; };
+  }, []);
+  if (!docs?.length) return null;
+  return <details style={{ marginTop:16, background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:10, padding:"8px 12px" }}>
+    <summary style={{ fontSize:14, fontWeight:700, color:DESIGN.ink, cursor:"pointer" }}>Otros documentos oficiales de ePRAC · {docs.length} <span style={{ fontSize:12.5, fontWeight:500, color:DESIGN.muted }}>(manuales, formatos y documentos que no son solicitudes de cambio)</span></summary>
+    <div style={{ display:"grid", gap:4, marginTop:8 }}>{docs.map(d => <div key={d.id} style={{ fontSize:13, color:DESIGN.ink, display:"flex", gap:8, alignItems:"baseline", flexWrap:"wrap" }}>
+      <b>{d.titulo}</b><span style={{ fontSize:12, color:DESIGN.muted }}>{d.tipo === "estandar" ? "Documento oficial" : "Contexto"} · {d.meta?.fuente || "Carpeta ePRAC"}{d.meta?.archivo ? ` · ${d.meta.archivo}` : ""}</span></div>)}</div>
+  </details>;
 }
 
 // ── Solicitudes de cambio ────────────────────────────────────────────────────
@@ -473,9 +497,9 @@ function Conocimiento() {
     <div style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:10, padding:"14px 16px", fontSize:13, color:DESIGN.inkSoft, lineHeight:1.6 }}>
       <div style={{ fontSize:14, fontWeight:700, color:DESIGN.ink, marginBottom:6 }}>Cómo alimentarlo</div>
       <ol style={{ margin:0, paddingLeft:18, display:"grid", gap:6 }}>
-        <li>Guarda las nuevas solicitudes de cambio (.docx o .pdf, con la plantilla de ePRAC) en la carpeta de solicitudes.</li>
-        <li>Ejecuta <code>node asesor/ingestar.mjs</code> en el equipo del BPA: agrega las solicitudes nuevas y regenera todo lo demás (tablas, pantallas, procesos) con lo último del BPA. No pisa los estados ni las notas que marcaste aquí.</li>
-        <li>Marca el estado real de cada solicitud en la pestaña «Solicitudes de cambio» y anota qué se aplicó: el asesor usa esa información.</li>
+        <li>Carga la documentación de ePRAC (solicitudes de cambio con su plantilla, manuales, formatos, actas; .docx o .pdf) en la pestaña «Documentación oficial ePRAC». También sirve la carpeta de solicitudes del equipo del BPA.</li>
+        <li>El job «Documentación ePRAC cargada» del despachador lo procesa en máximo 15 minutos; también se puede correr <code>node asesor/ingestar.mjs</code> en el equipo del BPA. Agrega lo nuevo y regenera todo lo demás (tablas, pantallas, procesos) con lo último del BPA, sin pisar los estados ni las notas que marcaste aquí.</li>
+        <li>Marca el estado real de cada solicitud en «Documentación oficial ePRAC» y anota qué se aplicó: el asesor usa esa información.</li>
       </ol>
       <div style={{ marginTop:10, fontSize:12, color:DESIGN.muted }}>Las solicitudes, la base de conocimiento y las consultas son visibles solo para administradores.</div>
     </div>

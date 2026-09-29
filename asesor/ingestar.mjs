@@ -46,7 +46,7 @@ async function upsert(tabla, filas, conflicto = "id") {
 }
 
 // ── Documentación ePRAC cargada desde el BPA ────────────────────────────────
-const CARGAS = await api("GET", "eprac_cargas?select=id,nombre,path,estado&order=created_at", null, "count=none");
+const CARGAS = await api("GET", "eprac_cargas?select=id,nombre,path,estado,tipo,mensaje,created_at&order=created_at", null, "count=none");
 const esPendiente = c => c.estado === "pendiente" || c.estado === "procesando"; // «procesando» = corrida anterior que no terminó
 if (SOLO_SI_PENDIENTES && !CARGAS.some(esPendiente)) { console.log("sin cargas pendientes: nada que procesar"); process.exit(0); }
 // el BPA muestra «Procesando» mientras corre
@@ -154,6 +154,22 @@ const tablasConocidas = new Set([...Object.keys(EFW_TABLE_DEFS), ...Object.keys(
 if (snap) for (const [inst, x] of Object.entries(snap.instancias)) for (const [db, b] of Object.entries(x.bases || {}))
   if (!b.error && /EFLOW|WMH/.test(db)) Object.values(b.esquemas).forEach(e => Object.keys(e.tablas).forEach(t => tablasConocidas.add(t.toUpperCase())));
 const pantallasWms = Object.values(WMS.modules).flatMap(m => m.screens.map(s => ({ id: s.id, nombre: s.option, modulo: m.name }))).filter(s => s.nombre && s.nombre.length >= 6);
+// Ficha de un documento de desarrollo: pares «rótulo / valor» de su tabla de información general
+const ROTULOS_FICHA = { "id": "ID", "id desarrollo": "ID", "nombre": "Nombre", "proyecto": "Proyecto", "cliente": "Cliente", "sistema": "Sistema", "modulo": "Módulo",
+  "responsable": "Responsable", "fecha": "Fecha", "version": "Versión", "estado": "Estado" };
+function fichaDe(texto) {
+  const L = texto.split("\n").map(s => s.trim()).filter(Boolean).slice(0, 80), out = {};
+  for (let i = 0; i < L.length - 1; i++) {
+    const k = ROTULOS_FICHA[norm(L[i]).replace(/[:*]/g, "").trim()];
+    const v = L[i + 1];
+    if (k && !out[k] && v && !ROTULOS_FICHA[norm(v).replace(/[:*]/g, "").trim()] && v.length <= 80) { out[k] = v; i++; }
+  }
+  return Object.keys(out).length >= 2 ? out : null;
+}
+// Primeras líneas con contenido (sin índice ni puntos de relleno)
+const extractoDe = (texto) => texto.split("\n").map(s => s.replace(/\s+/g, " ").trim())
+  .filter(s => s.length > 25 && !/tabla de contenido|confidencial/i.test(s) && !/(\.\s?){4,}|…{2,}/.test(s)).slice(0, 4).join(" ").slice(0, 420);
+
 function detectar(texto, titulo) {
   const n = norm(`${titulo}\n${texto}`);
   // solo palabras escritas en MAYÚSCULAS en el documento; una tabla cuenta si tiene "_" o un nombre largo (no palabras comunes)
@@ -188,9 +204,16 @@ for (const { p, rel, nombre, carga } of archivos) {
   // «FORMATO» es la plantilla en blanco: va como estándar, no como solicitud
   const esSolicitud = (/SOLICITUD DE CAMBIO/i.test(texto.slice(0, 400)) || /^ePRAC\s*-\s*\d+/i.test(base)) && !/FORMATO/i.test(base);
   if (!esSolicitud) {
-    const tipo = /documentaci|formato|manual/i.test(rel) ? "estandar" : "contexto";
-    otrosDocs.push({ id: `estandar:${base}`, tipo, ref: base, titulo: base.replace(/_/g, " "), texto: texto.slice(0, 150000), meta: { archivo: rel, fuente: carga ? "Cargado en el BPA" : "Carpeta ePRAC" } });
-    resultadoCarga(carga, { estado: "procesado", tipo, mensaje: "Documento oficial de ePRAC (no es una solicitud de cambio): se agregó a la base de conocimiento." });
+    // Documentación de desarrollos (especificaciones, flujos, diseños) o plantilla / estándar en blanco
+    const plantilla = /plantilla|formato|est[aá]ndar/i.test(base);
+    const titulo = base.replace(/[_]+/g, " ").replace(/\s*-\s*copia$/i, "").trim();
+    otrosDocs.push({ id: `${plantilla ? "estandar" : "desarrollo"}:${base}`, tipo: plantilla ? "estandar" : "desarrollo", ref: base, titulo, texto: texto.slice(0, 150000),
+      meta: { archivo: rel, fuente: carga ? "Cargado en el BPA" : "Carpeta ePRAC", categoria: plantilla ? "plantilla" : "desarrollo",
+        fecha: carga ? carga.created_at : fs.statSync(p).mtime.toISOString(), carga_id: carga?.id || null, carga_path: carga?.path || null,
+        // una plantilla en blanco no tiene ficha ni menciona tablas o procesos reales
+        ficha: plantilla ? null : fichaDe(texto), extracto: extractoDe(texto), entidades: plantilla ? null : detectar(texto, titulo) } });
+    resultadoCarga(carga, { estado: "procesado", tipo: plantilla ? "plantilla" : "desarrollo",
+      mensaje: plantilla ? "Plantilla o estándar de ePRAC: está en Documentación de desarrollos › Plantillas y estándares." : "Documentación de desarrollo: está en la sección Documentación de desarrollos." });
     continue;
   }
   const r = estructurar(texto);
@@ -231,11 +254,19 @@ for (const grupo of Object.values(porTema)) {
   }
 }
 solicitudes.forEach(s => { s.relacion ??= null; });
+// Solicitudes relacionadas con cada documento de desarrollo: palabras del título en común
+const clavesDe = s => new Set(norm(s).split(/[^a-z0-9]+/).filter(w => w.length >= 4 && !/^(solicitud|cambio|olo|eprac|desarrollo|documento|especificacion|tecnica|ejemplo|plantilla|para)$/.test(w)));
+for (const d of otrosDocs) {
+  if (d.meta.categoria !== "desarrollo") { d.meta.solicitudes = []; continue; }
+  const k = clavesDe(`${d.titulo} ${d.meta.ficha?.Nombre || ""}`), tx = norm(d.texto.slice(0, 4000));
+  d.meta.solicitudes = solicitudes.map(s => { const ks = clavesDe(s.titulo); let n = 0; ks.forEach(w => { if (k.has(w)) n += 2; else if (tx.includes(w)) n += 1; }); return { s, n: ks.size ? n / ks.size : 0 }; })
+    .filter(x => x.n >= 0.75).sort((a, b) => b.n - a.n).slice(0, 4).map(x => ({ id: x.s.id, titulo: x.s.titulo }));
+}
 console.log(`Solicitudes: ${solicitudes.length} · otros documentos: ${otrosDocs.length} · con relación: ${solicitudes.filter(s => s.relacion).map(s => `${s.titulo} → ${s.relacion.tipo} de «${s.relacion.titulo}»`).join(" · ")}`);
 // estado y notas no se envían: al re-ingerir se conservan los que se editaron en el BPA
 await upsert("solicitudes_cambio", solicitudes);
 // Resultado de cada carga del BPA (solo cambia lo que estaba pendiente o cuyo resultado cambió)
-for (const c of CARGAS) if (c.resultado && (esPendiente(c) || c.resultado.estado !== c.estado))
+for (const c of CARGAS) if (c.resultado && (esPendiente(c) || c.resultado.estado !== c.estado || (c.resultado.tipo || null) !== (c.tipo || null) || c.resultado.mensaje !== c.mensaje))
   await api("PATCH", `eprac_cargas?id=eq.${c.id}`, { tipo: null, solicitud_id: null, ...c.resultado });
 const conCarga = CARGAS.filter(c => c.resultado);
 if (conCarga.length) console.log(`Cargas del BPA: ${conCarga.map(c => `${c.nombre} → ${c.resultado.estado}`).join(" · ")}`);

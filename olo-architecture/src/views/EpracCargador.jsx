@@ -14,14 +14,14 @@ import { siguiente } from "../lib/frecuencia.js";
 
 const MAX_MB = 20;
 const ESTADO = { pendiente:["Pendiente", "#b45309"], procesando:["Procesando…", "#7c3aed"], procesado:["Procesado", "#15803d"], duplicado:["Duplicado", "#64748b"], error:["Error", "#b91c1c"] };
-const TIPO = { solicitud:"Solicitud de cambio", estandar:"Documento oficial", contexto:"Documento de contexto" };
+const TIPO = { solicitud:"Solicitud de cambio", desarrollo:"Documentación de desarrollo", plantilla:"Plantilla o estándar", estandar:"Plantilla o estándar", contexto:"Documentación de desarrollo" };
 const btn = { fontSize:12.5, fontWeight:700, border:"none", borderRadius:6, padding:"5px 10px", cursor:"pointer", fontFamily:DESIGN.font };
 const seguro = (n) => n.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^A-Za-z0-9._-]+/g, "_").slice(-120);
 const fecha = f => f ? new Date(f).toLocaleString("es-CR", { dateStyle:"medium", timeStyle:"short" }) : "—";
 const hora = d => d.toLocaleTimeString("es-CR", { hour:"2-digit", minute:"2-digit" });
 const faltan = ms => ms <= 60000 ? "en menos de un minuto" : `en ${Math.round(ms / 60000)} min`;
 
-export function EpracCargador({ onVerSolicitud }) {
+export function EpracCargador({ onVerSolicitud, onVerDesarrollos }) {
   const { profile } = useAuth();
   const [cargas, setCargas] = useState(null);
   const [desp, setDesp] = useState(null);        // fila del despachador en bpa_jobs
@@ -83,7 +83,7 @@ export function EpracCargador({ onVerSolicitud }) {
       <div style={{ fontSize:28, lineHeight:1 }}>⇪</div>
       <div style={{ flex:1 }}>
         <div style={{ fontSize:14.5, fontWeight:700, color:DESIGN.ink }}>Cargar documentación de ePRAC</div>
-        <div style={{ fontSize:13, color:DESIGN.inkSoft, lineHeight:1.5, marginTop:2 }}>Arrastra aquí o haz clic para elegir solicitudes de cambio, manuales, formatos o actas de ePRAC (.docx o .pdf, hasta {MAX_MB} MB). Se guardan en un almacenamiento privado y se procesan en la siguiente revisión del despachador (máximo 15 minutos): las solicitudes aparecen en la tabla de abajo y todo pasa a la base de conocimiento del asesor.</div>
+        <div style={{ fontSize:13, color:DESIGN.inkSoft, lineHeight:1.5, marginTop:2 }}>Arrastra aquí o haz clic para elegir solicitudes de cambio, manuales, formatos o actas de ePRAC (.docx o .pdf, hasta {MAX_MB} MB). Se guardan en un almacenamiento privado y se procesan en la siguiente revisión del despachador (máximo 15 minutos): las solicitudes de cambio van a su sección, las especificaciones y documentos de diseño a «Documentación de desarrollos», y todo pasa a la base de conocimiento del asesor.</div>
       </div>
       <input ref={input} type="file" multiple accept=".docx,.pdf" style={{ display:"none" }} onChange={e => { subir(e.target.files); e.target.value = ""; }}/>
     </div>
@@ -116,6 +116,7 @@ export function EpracCargador({ onVerSolicitud }) {
                 </div> : "Espera a que el despachador vuelva a revisar.")
                 : c.estado === "procesando" ? "Procesando ahora: tarda unos segundos." : c.mensaje || "—"}
               {c.solicitud_id && <div><button onClick={() => onVerSolicitud(c.solicitud_id)} style={{ ...btn, padding:0, background:"none", color:"#2563eb" }}>Ver la solicitud ›</button></div>}
+              {c.estado === "procesado" && ["desarrollo", "plantilla", "estandar", "contexto"].includes(c.tipo) && onVerDesarrollos && <div><button onClick={onVerDesarrollos} style={{ ...btn, padding:0, background:"none", color:"#2563eb" }}>Ver en Documentación de desarrollos ›</button></div>}
             </td>
             <td style={{ padding:"6px 8px", borderBottom:`1px solid ${DESIGN.sunken2}`, whiteSpace:"nowrap" }}>
               <button onClick={() => descargar(c)} style={{ ...btn, background:DESIGN.sunken2, color:DESIGN.inkSoft, marginRight:4 }}>Descargar</button>

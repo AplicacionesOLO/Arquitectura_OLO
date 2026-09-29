@@ -36,12 +36,7 @@ export function AsesorView() {
         style={{ fontSize:14, fontWeight: pest === id ? 700 : 500, color: pest === id ? DESIGN.ink : DESIGN.muted, background:"none", border:"none", borderBottom:`2px solid ${pest === id ? DESIGN.ink : "transparent"}`, padding:"8px 14px", cursor:"pointer", fontFamily:DESIGN.font, marginBottom:-1 }}>{l}</button>)}
     </div>
     {pest === "consultar" && <Consultar onVerSolicitud={id => { setVerSol(id); setPest("solicitudes"); }}/>}
-    {pest === "solicitudes" && <>
-      <EpracCargador onVerSolicitud={id => setVerSol(id)}/>
-      <div style={{ fontSize:15, fontWeight:700, color:DESIGN.ink, margin:"4px 0 8px" }}>Solicitudes de cambio</div>
-      <Solicitudes key={verSol || "todas"} abrir={verSol}/>
-      <OtrosDocumentos/>
-    </>}
+    {pest === "solicitudes" && <DocumentacionEprac verSol={verSol} setVerSol={setVerSol}/>}
     {pest === "conocimiento" && <Conocimiento/>}
     {pest === "abstracto" && <Abstracto/>}
   </div>;
@@ -215,21 +210,92 @@ function Resultado({ r, onVerSolicitud }) {
   </div>;
 }
 
-// ── Otros documentos oficiales de ePRAC (no son solicitudes) ────────────────
-function OtrosDocumentos() {
-  const [docs, setDocs] = useState(null);
+// ── Documentación oficial ePRAC: cargador + Solicitudes de cambio | Documentación de desarrollos ──
+function DocumentacionEprac({ verSol, setVerSol }) {
+  const [sec, setSec] = useState("solicitudes");
+  const [n, setN] = useState({});
   useEffect(() => {
     let vivo = true;
-    supabase.from("asesor_docs").select("id,tipo,titulo,meta").like("id", "estandar:%").order("titulo")
-      .then(({ data }) => { if (vivo) setDocs(data || []); });
+    Promise.all([supabase.from("solicitudes_cambio").select("id", { count:"exact", head:true }),
+      supabase.from("asesor_docs").select("id", { count:"exact", head:true }).eq("tipo", "desarrollo")])
+      .then(([a, b]) => { if (vivo) setN({ solicitudes:a.count, desarrollos:b.count }); });
     return () => { vivo = false; };
   }, []);
-  if (!docs?.length) return null;
-  return <details style={{ marginTop:16, background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:10, padding:"8px 12px" }}>
-    <summary style={{ fontSize:14, fontWeight:700, color:DESIGN.ink, cursor:"pointer" }}>Otros documentos oficiales de ePRAC · {docs.length} <span style={{ fontSize:12.5, fontWeight:500, color:DESIGN.muted }}>(manuales, formatos y documentos que no son solicitudes de cambio)</span></summary>
-    <div style={{ display:"grid", gap:4, marginTop:8 }}>{docs.map(d => <div key={d.id} style={{ fontSize:13, color:DESIGN.ink, display:"flex", gap:8, alignItems:"baseline", flexWrap:"wrap" }}>
-      <b>{d.titulo}</b><span style={{ fontSize:12, color:DESIGN.muted }}>{d.tipo === "estandar" ? "Documento oficial" : "Contexto"} · {d.meta?.fuente || "Carpeta ePRAC"}{d.meta?.archivo ? ` · ${d.meta.archivo}` : ""}</span></div>)}</div>
-  </details>;
+  const verSolicitud = (id) => { setVerSol(id); setSec("solicitudes"); };
+  return <div>
+    <EpracCargador onVerSolicitud={verSolicitud} onVerDesarrollos={() => setSec("desarrollos")}/>
+    <div style={{ display:"flex", gap:6, margin:"4px 0 12px" }}>
+      {[["solicitudes", "Solicitudes de cambio", n.solicitudes], ["desarrollos", "Documentación de desarrollos", n.desarrollos]].map(([id, l, c]) => {
+        const on = sec === id;
+        return <button key={id} onClick={() => setSec(id)} style={{ padding:"7px 16px", borderRadius:8, border:`1px solid ${on ? DESIGN.ink : DESIGN.border}`, background:on ? DESIGN.ink : "#fff", color:on ? "#fff" : DESIGN.inkSoft, fontWeight:on ? 700 : 500, fontSize:14, cursor:"pointer", fontFamily:DESIGN.font }}>
+          {l}{c != null && <span style={{ opacity:0.7, marginLeft:6 }}>{c}</span>}</button>;
+      })}
+    </div>
+    {sec === "solicitudes" ? <Solicitudes key={verSol || "todas"} abrir={verSol}/> : <Desarrollos onVerSolicitud={verSolicitud}/>}
+  </div>;
+}
+
+// Documentación de desarrollos de ePRAC: especificaciones, flujos y diseños (y aparte, plantillas y estándares)
+function Desarrollos({ onVerSolicitud }) {
+  const [docs, setDocs] = useState(null);
+  const [abierto, setAbierto] = useState({});   // id → texto completo
+  const [q, setQ] = useState("");
+  useEffect(() => {
+    let vivo = true;
+    supabase.from("asesor_docs").select("id,tipo,titulo,meta").in("tipo", ["desarrollo", "estandar"]).like("id", "%:%")
+      .then(({ data }) => { if (vivo) setDocs((data || []).filter(d => d.id.startsWith("desarrollo:") || d.id.startsWith("estandar:"))
+        .sort((a, b) => String(b.meta?.fecha || "").localeCompare(String(a.meta?.fecha || "")))); });
+    return () => { vivo = false; };
+  }, []);
+  if (docs === null) return <div style={{ color:DESIGN.muted, fontSize:13 }}>Cargando…</div>;
+  const nq = q.trim().toLowerCase();
+  const pasa = d => !nq || JSON.stringify([d.titulo, d.meta?.ficha, d.meta?.extracto, d.meta?.entidades]).toLowerCase().includes(nq);
+  const desarrollos = docs.filter(d => d.tipo === "desarrollo" && pasa(d)), plantillas = docs.filter(d => d.tipo === "estandar" && pasa(d));
+  const verTexto = async (d) => {
+    if (abierto[d.id]) { setAbierto(a => ({ ...a, [d.id]: null })); return; }
+    const { data } = await supabase.from("asesor_docs").select("texto").eq("id", d.id).maybeSingle();
+    setAbierto(a => ({ ...a, [d.id]: data?.texto || "" }));
+  };
+  const descargar = async (d) => {
+    const { data } = await supabase.storage.from("eprac-docs").createSignedUrl(d.meta.carga_path, 300, { download: d.meta.archivo?.split("/").pop() || true });
+    if (data?.signedUrl) window.open(data.signedUrl, "_blank", "noopener");
+  };
+  const chip = (txt, c = DESIGN.inkSoft) => <span style={{ fontSize:11.5, fontWeight:600, color:c, background:c + "14", border:`1px solid ${c}33`, borderRadius:5, padding:"1px 7px" }}>{txt}</span>;
+  const tarjeta = (d) => { const m = d.meta || {}, e = m.entidades || {};
+    const menciona = [...(e.procesos || []), ...(e.pantallas || []), ...(e.tablas || [])];
+    return <div key={d.id} style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:10, padding:"12px 14px" }}>
+      <div style={{ display:"flex", gap:8, alignItems:"baseline", flexWrap:"wrap" }}>
+        <span style={{ fontSize:15, fontWeight:700, color:DESIGN.ink }}>{d.titulo}</span>
+        {m.ficha?.ID && chip(m.ficha.ID, "#7c3aed")}{m.ficha?.Estado && chip(m.ficha.Estado, "#15803d")}
+        <span style={{ fontSize:12, color:DESIGN.muted }}>{m.fuente || "Carpeta ePRAC"}{m.fecha ? ` · ${new Date(m.fecha).toLocaleDateString("es-CR")}` : ""}</span>
+      </div>
+      {m.ficha && <div style={{ display:"flex", gap:14, flexWrap:"wrap", marginTop:6, fontSize:12.5, color:DESIGN.inkSoft }}>
+        {Object.entries(m.ficha).filter(([k]) => !["ID", "Estado"].includes(k)).map(([k, v]) => <span key={k}><b style={{ color:DESIGN.muted, fontWeight:600 }}>{k}:</b> {v}</span>)}</div>}
+      {m.extracto && <p style={{ fontSize:13.5, color:DESIGN.inkSoft, lineHeight:1.55, margin:"8px 0 0" }}>{m.extracto}{m.extracto.length >= 400 ? "…" : ""}</p>}
+      {menciona.length > 0 && <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginTop:8 }}>
+        <span style={{ fontSize:11.5, fontWeight:700, color:DESIGN.muted, textTransform:"uppercase", letterSpacing:"0.05em" }}>Menciona</span>{menciona.slice(0, 8).map(x => <Fragment key={x}>{chip(x)}</Fragment>)}</div>}
+      {m.solicitudes?.length > 0 && <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginTop:8, alignItems:"baseline" }}>
+        <span style={{ fontSize:11.5, fontWeight:700, color:DESIGN.muted, textTransform:"uppercase", letterSpacing:"0.05em" }}>Solicitudes relacionadas</span>
+        {m.solicitudes.map(s => <button key={s.id} onClick={() => onVerSolicitud(s.id)} style={{ fontSize:12.5, fontWeight:700, color:"#2563eb", background:"none", border:"none", padding:0, cursor:"pointer", fontFamily:DESIGN.font }}>{s.titulo} ›</button>)}</div>}
+      <div style={{ display:"flex", gap:6, marginTop:10 }}>
+        <button onClick={() => verTexto(d)} style={{ ...btn, background:DESIGN.sunken2, color:DESIGN.inkSoft, padding:"5px 10px" }}>{abierto[d.id] != null ? "Ocultar texto" : "Ver texto completo"}</button>
+        {m.carga_path && <button onClick={() => descargar(d)} style={{ ...btn, background:DESIGN.sunken2, color:DESIGN.inkSoft, padding:"5px 10px" }}>Descargar</button>}
+        <span style={{ fontSize:12, color:DESIGN.mutedSoft, alignSelf:"center" }}>{m.archivo}</span>
+      </div>
+      {abierto[d.id] != null && <pre style={{ whiteSpace:"pre-wrap", fontSize:12.5, lineHeight:1.5, color:DESIGN.inkSoft, background:DESIGN.sunken, border:`1px solid ${DESIGN.border}`, borderRadius:8, padding:"10px 12px", marginTop:8, maxHeight:420, overflowY:"auto", fontFamily:DESIGN.font }}>{abierto[d.id]}</pre>}
+    </div>; };
+  return <div>
+    <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap", marginBottom:10 }}>
+      <input value={q} onChange={e => setQ(e.target.value)} placeholder="Buscar en la documentación de desarrollos…" style={{ fontSize:13, padding:"7px 10px", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:7, fontFamily:DESIGN.font, width:300 }}/>
+      <span style={{ fontSize:12.5, color:DESIGN.muted }}>Especificaciones técnicas, flujos y documentos de diseño de los desarrollos de ePRAC. El asesor los usa como evidencia al responder.</span>
+    </div>
+    {desarrollos.length ? <div style={{ display:"grid", gap:10 }}>{desarrollos.map(tarjeta)}</div>
+      : <div style={{ fontSize:13.5, color:DESIGN.muted, padding:"10px 0" }}>{nq ? "Ningún documento coincide con la búsqueda." : "Todavía no hay documentación de desarrollos. Cárgala arriba (.docx o .pdf)."}</div>}
+    {plantillas.length > 0 && <details style={{ marginTop:16, background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:10, padding:"8px 12px" }}>
+      <summary style={{ fontSize:14, fontWeight:700, color:DESIGN.ink, cursor:"pointer" }}>Plantillas y estándares · {plantillas.length} <span style={{ fontSize:12.5, fontWeight:500, color:DESIGN.muted }}>(formatos en blanco y guías para documentar un desarrollo)</span></summary>
+      <div style={{ display:"grid", gap:8, marginTop:8 }}>{plantillas.map(tarjeta)}</div>
+    </details>}
+  </div>;
 }
 
 // ── Solicitudes de cambio ────────────────────────────────────────────────────

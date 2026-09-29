@@ -15,6 +15,11 @@ const LOCK = path.join(__dirname, '.lock');
 const LOG = path.join(__dirname, 'despachador.log');
 const log = m => { const l = `[${new Date().toISOString()}] ${m}`; console.log(l); fs.appendFileSync(LOG, l + '\n'); };
 
+// Jobs que no van por reloj sino por condición: corren en cada revisión en que haya trabajo
+const CONDICION = {
+  eprac_docs: async () => (await api('GET', 'eprac_cargas?select=id&estado=in.(pendiente,procesando)&limit=1')).length > 0,
+};
+
 // Qué comando corre cada job según su configuración
 const JOBS = {
   schema_watch: cfg => {
@@ -66,7 +71,8 @@ function correr(args, timeoutMin) {
       // nunca corrió: se toma esta revisión como punto de partida (no corre de golpe al instalarse)
       if (!j.ultima_ejecucion && !j.ejecutar_ahora) { await api('PATCH', `bpa_jobs?id=eq.${j.id}`, { ultima_ejecucion: t0.toISOString() }); continue; }
       const manual = j.ejecutar_ahora;
-      if (!manual && !(cfg.activo && toca(cfg.frecuencia, new Date(j.ultima_ejecucion), t0))) continue;
+      const porCondicion = CONDICION[j.id] ? cfg.activo && await CONDICION[j.id]() : null;
+      if (!manual && (porCondicion === null ? !(cfg.activo && toca(cfg.frecuencia, new Date(j.ultima_ejecucion), t0)) : !porCondicion)) continue;
 
       // tope de gasto del mes
       const mes = new Date(t0.getFullYear(), t0.getMonth(), 1).toISOString();

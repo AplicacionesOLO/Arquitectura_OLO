@@ -47,7 +47,10 @@ async function upsert(tabla, filas, conflicto = "id") {
 
 // ── Documentación ePRAC cargada desde el BPA ────────────────────────────────
 const CARGAS = await api("GET", "eprac_cargas?select=id,nombre,path,estado&order=created_at", null, "count=none");
-if (SOLO_SI_PENDIENTES && !CARGAS.some(c => c.estado === "pendiente")) { console.log("sin cargas pendientes: nada que procesar"); process.exit(0); }
+const esPendiente = c => c.estado === "pendiente" || c.estado === "procesando"; // «procesando» = corrida anterior que no terminó
+if (SOLO_SI_PENDIENTES && !CARGAS.some(esPendiente)) { console.log("sin cargas pendientes: nada que procesar"); process.exit(0); }
+// el BPA muestra «Procesando» mientras corre
+if (CARGAS.some(c => c.estado === "pendiente")) await api("PATCH", "eprac_cargas?estado=eq.pendiente", { estado: "procesando" });
 // Se descargan todas (no solo las pendientes): la base de conocimiento se regenera completa en cada corrida
 const DIR_CARGAS = path.join(os.tmpdir(), "bpa-eprac-cargas");
 fs.mkdirSync(DIR_CARGAS, { recursive: true });
@@ -104,7 +107,15 @@ function leerZip(buf, nombre) {
   }
   throw new Error(`${nombre} no está en el documento`);
 }
-const textoPdf = p => execFileSync("pdftotext", ["-layout", "-enc", "UTF-8", p, "-"], { encoding: "utf8", maxBuffer: 32 * 1024 * 1024 });
+// pdftotext (Poppler): la tarea de Windows del despachador no tiene en su PATH la carpeta de Git
+// donde suele estar, así que se busca en las ubicaciones conocidas (o en la variable PDFTOTEXT).
+const PDFTOTEXT = [process.env.PDFTOTEXT, env.PDFTOTEXT,
+  path.join(os.homedir(), "AppData/Local/Programs/Git/mingw64/bin/pdftotext.exe"),
+  "C:/Program Files/Git/mingw64/bin/pdftotext.exe", "C:/Program Files/poppler/Library/bin/pdftotext.exe"].find(p => p && fs.existsSync(p)) || "pdftotext";
+const textoPdf = p => {
+  try { return execFileSync(PDFTOTEXT, ["-layout", "-enc", "UTF-8", p, "-"], { encoding: "utf8", maxBuffer: 32 * 1024 * 1024, stdio: ["ignore", "pipe", "pipe"] }); }
+  catch (e) { if (e.code === "ENOENT") { const err = new Error("pdftotext no está instalado en el equipo del despachador"); err.sinPdftotext = true; throw err; } throw e; }
+};
 
 // Estructura según la plantilla de ePRAC
 function estructurar(texto) {
@@ -167,7 +178,8 @@ const vistos = new Map(), solicitudes = [], otrosDocs = [];
 const resultadoCarga = (c, cambios) => { if (c) Object.assign(c, { resultado: { ...cambios, procesado_at: new Date().toISOString() } }); };
 for (const { p, rel, nombre, carga } of archivos) {
   let texto;
-  try { texto = /\.pdf$/i.test(p) ? textoPdf(p) : textoDocx(p); } catch (e) { console.log(`  ✗ ${nombre}: ${e.message}`); resultadoCarga(carga, { estado: "error", mensaje: /\.pdf$/i.test(p) ? "No se pudo leer el PDF: está dañado, protegido o no es un PDF válido." : "No se pudo leer el Word: está dañado o no es un .docx válido (los .doc antiguos no se aceptan)." }); continue; }
+  try { texto = /\.pdf$/i.test(p) ? textoPdf(p) : textoDocx(p); } catch (e) { console.log(`  ✗ ${nombre}: ${e.message}`); resultadoCarga(carga, e.sinPdftotext ? { estado: "pendiente", mensaje: "El equipo del despachador no tiene el lector de PDF (pdftotext): el archivo está bien y se procesará cuando se instale." }
+    : { estado: "error", mensaje: /\.pdf$/i.test(p) ? "No se pudo leer el PDF: está dañado, protegido o no es un PDF válido." : "No se pudo leer el Word: está dañado o no es un .docx válido (los .doc antiguos no se aceptan)." }); continue; }
   if (!texto.trim()) { resultadoCarga(carga, { estado: "error", mensaje: "El documento no tiene texto legible (¿PDF escaneado?)." }); continue; }
   const hash = crypto.createHash("sha1").update(texto.replace(/\s+/g, " ")).digest("hex");
   if (vistos.has(hash)) { console.log(`  = ${rel} (duplicado, se omite)`); resultadoCarga(carga, { estado: "duplicado", mensaje: `Es el mismo documento que «${vistos.get(hash)}».` }); continue; }
@@ -223,7 +235,7 @@ console.log(`Solicitudes: ${solicitudes.length} · otros documentos: ${otrosDocs
 // estado y notas no se envían: al re-ingerir se conservan los que se editaron en el BPA
 await upsert("solicitudes_cambio", solicitudes);
 // Resultado de cada carga del BPA (solo cambia lo que estaba pendiente o cuyo resultado cambió)
-for (const c of CARGAS) if (c.resultado && (c.estado === "pendiente" || c.resultado.estado !== c.estado))
+for (const c of CARGAS) if (c.resultado && (esPendiente(c) || c.resultado.estado !== c.estado))
   await api("PATCH", `eprac_cargas?id=eq.${c.id}`, { tipo: null, solicitud_id: null, ...c.resultado });
 const conCarga = CARGAS.filter(c => c.resultado);
 if (conCarga.length) console.log(`Cargas del BPA: ${conCarga.map(c => `${c.nombre} → ${c.resultado.estado}`).join(" · ")}`);

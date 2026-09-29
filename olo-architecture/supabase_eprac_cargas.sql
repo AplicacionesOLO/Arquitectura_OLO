@@ -21,7 +21,7 @@ create table if not exists public.eprac_cargas (
   path         text not null unique,          -- ruta en el bucket eprac-docs
   tamano       int,
   estado       text not null default 'pendiente'
-               check (estado in ('pendiente','procesado','duplicado','error')),
+               check (estado in ('pendiente','procesando','procesado','duplicado','error')),
   tipo         text,                          -- solicitud | estandar | contexto (lo decide la ingesta)
   solicitud_id text,                          -- solicitudes_cambio.id si resultó una solicitud
   mensaje      text,

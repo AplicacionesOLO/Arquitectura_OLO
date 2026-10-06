@@ -110,3 +110,12 @@ alter table public.solicitudes_cambio add column if not exists relacion jsonb;
 -- Conversación (modo chat): las consultas de un mismo hilo comparten este id
 alter table public.asesor_consultas add column if not exists conversacion text;
 create index if not exists asesor_consultas_conv_idx on public.asesor_consultas (conversacion, created_at);
+
+-- Desarrollos verificados en el WMS (lista «Desarrollos OLO 2026» de ePRAC):
+-- la solicitud queda «aplicada» y verificada, con su proforma. Los desarrollos
+-- de la lista que no tienen documento de solicitud se agregan con origen «lista».
+alter table public.solicitudes_cambio add column if not exists proforma text;
+alter table public.solicitudes_cambio add column if not exists verificado boolean not null default false;
+alter table public.solicitudes_cambio add column if not exists verificado_fuente text;
+alter table public.solicitudes_cambio add column if not exists verificado_coincidencia text; -- titulo | contenido | lista
+alter table public.solicitudes_cambio add column if not exists origen text not null default 'documento'; -- documento | lista

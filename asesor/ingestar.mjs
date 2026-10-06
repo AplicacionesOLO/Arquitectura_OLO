@@ -264,7 +264,13 @@ for (const d of otrosDocs) {
 }
 console.log(`Solicitudes: ${solicitudes.length} · otros documentos: ${otrosDocs.length} · con relación: ${solicitudes.filter(s => s.relacion).map(s => `${s.titulo} → ${s.relacion.tipo} de «${s.relacion.titulo}»`).join(" · ")}`);
 // estado y notas no se envían: al re-ingerir se conservan los que se editaron en el BPA
-await upsert("solicitudes_cambio", solicitudes);
+// el número de ePRAC solo se envía si el documento lo trae: no se borra el que vino de la lista de verificados
+// (dos lotes: en un mismo lote todas las filas deben traer las mismas columnas)
+await upsert("solicitudes_cambio", solicitudes.filter(s => s.numero_eprac));
+await upsert("solicitudes_cambio", solicitudes.filter(s => !s.numero_eprac).map(s => { const f = { ...s }; delete f.numero_eprac; return f; }));
+// Para el asesor se usan las filas de la base: incluyen el estado, la verificación en el WMS y
+// los desarrollos verificados que solo vienen de la lista (sin documento)
+const SOLICITUDES_BD = await api("GET", "solicitudes_cambio?select=*", null, "count=none");
 // Resultado de cada carga del BPA (solo cambia lo que estaba pendiente o cuyo resultado cambió)
 for (const c of CARGAS) if (c.resultado && (esPendiente(c) || c.resultado.estado !== c.estado || (c.resultado.tipo || null) !== (c.tipo || null) || c.resultado.mensaje !== c.mensaje))
   await api("PATCH", `eprac_cargas?id=eq.${c.id}`, { tipo: null, solicitud_id: null, ...c.resultado });
@@ -276,14 +282,17 @@ const docs = [];
 const add = (tipo, ref, titulo, texto, meta = {}) => docs.push({ id: `${tipo}:${ref}`, tipo, ref, titulo, texto, meta });
 
 // solicitudes como documentos
-for (const s of solicitudes) add("solicitud", s.id, `Solicitud de cambio · ${s.titulo}`, [
+const ESTADO_TXT = { aplicada: "APLICADA", en_desarrollo: "EN DESARROLLO", pendiente: "PENDIENTE", rechazada: "RECHAZADA", por_definir: "por definir" };
+for (const s of SOLICITUDES_BD) { s.entidades = { tablas: [], reglas: [], pantallas: [], procesos: [], ...(s.entidades || {}) }; add("solicitud", s.id, `Solicitud de cambio · ${s.titulo}`, [
+  `Estado: ${ESTADO_TXT[s.estado] || s.estado}${s.verificado ? ` · VERIFICADO EN EL WMS por ePRAC${s.proforma ? ` (proforma ${s.proforma})` : ""}` : ""}${s.origen === "lista" ? " · solo en la lista de desarrollos verificados (no hay documento de la solicitud)" : ""}`,
+  s.notas && `Notas del BPA: ${s.notas}`,
   `Módulo: ${s.modulo || "—"} · Prioridad: ${s.prioridad || "—"} · Fecha: ${s.fecha || "—"} · Solicitante: ${s.solicitante || "—"}`,
   `Cliente: ${s.cliente || "—"} · Almacén: ${s.almacen || "—"} · Compañía: ${s.compania || "—"}${s.numero_eprac ? ` · N.º ePRAC ${s.numero_eprac}` : ""}`,
   s.relacion && `Relación: ${{ duplicado: "DUPLICADO de", version_anterior: "VERSIÓN ANTERIOR de", relacionada: "relacionada con" }[s.relacion.tipo]} «${s.relacion.titulo}» (${s.relacion.de})${s.relacion.tipo !== "relacionada" ? " — no contarla como precedente aparte" : ""}`,
   s.como && `Como: ${s.como}`, s.necesito && `Necesito: ${s.necesito}`, s.para && `Para: ${s.para}`,
   s.situacion_actual && `Situación actual:\n${s.situacion_actual}`, s.descripcion && `Cambio solicitado:\n${s.descripcion}`,
   `Tablas: ${s.entidades.tablas.join(", ") || "—"} · Reglas/parámetros: ${s.entidades.reglas.join(", ") || "—"} · Pantallas: ${s.entidades.pantallas.join(", ") || "—"} · Procesos: ${s.entidades.procesos.join(", ") || "—"}`,
-].filter(Boolean).join("\n"), { modulo: s.modulo, fecha: s.fecha, archivo: s.archivo });
+].filter(Boolean).join("\n"), { modulo: s.modulo, fecha: s.fecha, archivo: s.archivo, estado: s.estado, verificado: s.verificado || false }); }
 docs.push(...otrosDocs);
 
 // tablas: estructura real (instantánea) + lo mapeado en el BPA

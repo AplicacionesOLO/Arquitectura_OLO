@@ -30,7 +30,7 @@ Profundidad: haz normalmente entre 5 y 10 consultas; usa ver_tabla en las 2–4 
 
 Reglas:
 - No inventes tablas, columnas, pantallas ni solicitudes: si no las encontraste con las herramientas, dilo. Si falta información para decidir, usa el veredicto "falta_informacion" y di qué preguntar.
-- La estructura de las tablas de eFlow es la real de EFLOW_OLO (producción Costa Rica). Venezuela (Beval, Febeca, Sillaca) usa el mismo producto con diferencias puntuales. Softland de Venezuela (SOFTLANDQA) todavía no se puede leer. OLO tiene su propio Softland (compañía OVERSEAS): sus pantallas están documentadas en los documentos «Softland OLO (OVERSEAS)»; el diccionario de tablas de Softland viene del cliente Cofersa (QA CR).
+- La estructura de las tablas de eFlow es la real de EFLOW_OLO (producción Costa Rica). Venezuela (Beval, Febeca, Sillaca) usa el mismo producto con diferencias puntuales. Softland de Venezuela (SOFTLANDQA) todavía no se puede leer. Las solicitudes con verificado = true fueron confirmadas por ePRAC como desarrollos verificados en el WMS (lista «Desarrollos OLO 2026», con su proforma): trátalas como cambios que YA EXISTEN en el sistema y cítalas como precedente firme; las de origen «lista» no tienen documento, solo su nombre. OLO tiene su propio Softland (compañía OVERSEAS): sus pantallas están documentadas en los documentos «Softland OLO (OVERSEAS)»; el diccionario de tablas de Softland viene del cliente Cofersa (QA CR).
 - Los procesos marcados BORRADOR son inferidos: úsalos con cautela.
 - El tipo «abstracto» es conocimiento informal cargado por el equipo (correos, chats, capturas, notas): úsalo como evidencia de lo que pasó o se acordó, citándolo; contrástalo con las fuentes formales y, si las contradice, dilo explícitamente.
 - Una solicitud con relacion.tipo "duplicado" o "version_anterior" es el MISMO cambio que la que indica relacion.de: no la cuentes como precedente independiente; usa la vigente (la que indica relacion.de).
@@ -105,12 +105,12 @@ Deno.serve(async (req) => {
         return data?.length ? data.map(d => ({ ...d, texto: String(d.texto).slice(0, 9000) })) : { error: `No encontré la tabla ${n}. Prueba buscar_conocimiento con tipo "tabla".` };
       }
       if (nombre === "listar_solicitudes") {
-        let q = supa.from("solicitudes_cambio").select("id,titulo,modulo,fecha,estado,compania,prioridad,relacion").order("fecha", { ascending: false }).limit(60);
+        let q = supa.from("solicitudes_cambio").select("id,titulo,modulo,fecha,estado,verificado,proforma,numero_eprac,origen,compania,prioridad,relacion").order("fecha", { ascending: false }).limit(60);
         if (a.filtro) q = q.or(`titulo.ilike.%${String(a.filtro).replace(/[%,()]/g, "")}%,modulo.ilike.%${String(a.filtro).replace(/[%,()]/g, "")}%,descripcion.ilike.%${String(a.filtro).replace(/[%,()]/g, "")}%`);
         const { data } = await q; return data ?? [];
       }
       if (nombre === "ver_solicitud") {
-        const { data } = await supa.from("solicitudes_cambio").select("id,titulo,modulo,fecha,prioridad,cliente,almacen,compania,solicitante,como,necesito,para,situacion_actual,descripcion,estado,notas,entidades,atencion,relacion").eq("id", a.id).maybeSingle();
+        const { data } = await supa.from("solicitudes_cambio").select("id,titulo,modulo,fecha,prioridad,cliente,almacen,compania,solicitante,como,necesito,para,situacion_actual,descripcion,estado,verificado,verificado_fuente,proforma,numero_eprac,origen,notas,entidades,atencion,relacion").eq("id", a.id).maybeSingle();
         return data ? { ...data, descripcion: String(data.descripcion ?? "").slice(0, 12000) } : { error: "No existe esa solicitud." };
       }
       return { error: `Herramienta desconocida: ${nombre}` };

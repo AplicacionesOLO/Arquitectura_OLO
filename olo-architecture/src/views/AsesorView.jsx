@@ -305,6 +305,7 @@ function Solicitudes({ abrir }) {
   const [q, setQ] = useState("");
   const [fEstado, setFEstado] = useState("");
   const [soloVigentes, setSoloVigentes] = useState(true);   // oculta duplicados y versiones anteriores
+  const [fVerif, setFVerif] = useState("");                 // "" | "si" | "no"
   const cargar = useCallback(async () => {
     const { data } = await supabase.from("solicitudes_cambio").select("*").order("fecha", { ascending:false, nullsFirst:false });
     setFilas(data || []);
@@ -318,7 +319,9 @@ function Solicitudes({ abrir }) {
   if (filas === null) return <div style={{ color:DESIGN.muted, fontSize:13 }}>Cargando…</div>;
   const n = s => String(s || "").toLowerCase();
   const superada = f => f.relacion && f.relacion.tipo !== "relacionada";
-  const vis = filas.filter(f => (!soloVigentes || !superada(f)) && (!fEstado || f.estado === fEstado) && (!q || [f.titulo, f.modulo, f.descripcion, f.compania].some(x => n(x).includes(n(q)))));
+  const vis = filas.filter(f => (!soloVigentes || !superada(f)) && (!fEstado || f.estado === fEstado) && (!fVerif || (fVerif === "si") === !!f.verificado)
+    && (!q || [f.titulo, f.modulo, f.descripcion, f.compania, f.numero_eprac, f.proforma].some(x => n(x).includes(n(q)))));
+  const nVerif = filas.filter(f => f.verificado && !superada(f)).length, nSinVerif = filas.filter(f => !f.verificado && !superada(f)).length;
   const cuenta = Object.fromEntries(Object.keys(ESTADOS).map(k => [k, filas.filter(f => f.estado === k).length]));
   return <div>
     <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap", marginBottom:10 }}>
@@ -326,6 +329,8 @@ function Solicitudes({ abrir }) {
       <select value={fEstado} onChange={e => setFEstado(e.target.value)} style={{ fontSize:13, padding:"6px 8px", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:7, fontFamily:DESIGN.font }}>
         <option value="">Todos los estados ({filas.length})</option>{Object.entries(ESTADOS).map(([k, l]) => <option key={k} value={k}>{l} ({cuenta[k]})</option>)}
       </select>
+      <select value={fVerif} onChange={e => setFVerif(e.target.value)} style={{ fontSize:13, padding:"6px 8px", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:7, fontFamily:DESIGN.font }}>
+        <option value="">Verificadas y sin verificar</option><option value="si">✓ Verificadas en el WMS ({nVerif})</option><option value="no">Sin verificar ({nSinVerif})</option></select>
       <label style={{ fontSize:12.5, color:DESIGN.inkSoft, display:"flex", gap:5, alignItems:"center" }}><input type="checkbox" checked={soloVigentes} onChange={e => setSoloVigentes(e.target.checked)}/>Solo vigentes ({filas.filter(f => !superada(f)).length} de {filas.length}: sin duplicados ni versiones anteriores)</label>
       <span style={{ marginLeft:"auto", fontSize:12, color:DESIGN.muted }}>Marca el estado real de cada una: el asesor lo toma en cuenta al responder.</span>
     </div>
@@ -338,6 +343,10 @@ function Solicitudes({ abrir }) {
             <tr onClick={() => setAbierta(open ? null : f.id)} style={{ cursor:"pointer", background: open ? "#f8fafc" : "#fff" }}>
               <td style={{ ...td, whiteSpace:"nowrap" }}>{f.fecha ? new Date(f.fecha + "T12:00").toLocaleDateString("es-CR") : "—"}</td>
               <td style={{ ...td, fontWeight:600, minWidth:220 }}>{open ? "▾" : "▸"} {f.titulo}{f.numero_eprac && <span style={{ fontSize:11, color:DESIGN.muted, fontWeight:400 }}> · ePRAC {f.numero_eprac}</span>}
+                {f.verificado && <div style={{ marginTop:3, display:"flex", gap:6, alignItems:"baseline", flexWrap:"wrap" }}>
+                  <span title={f.verificado_fuente || ""} style={{ fontSize:11, fontWeight:700, color:"#15803d", background:"#15803d14", border:"1px solid #15803d44", borderRadius:4, padding:"0 6px" }}>✓ Verificado en el WMS{f.proforma ? ` · proforma ${f.proforma}` : ""}</span>
+                  {f.origen === "lista" ? <span style={{ fontSize:11, fontWeight:500, color:DESIGN.muted }}>solo en la lista de ePRAC (sin documento)</span>
+                    : f.verificado_coincidencia === "contenido" && <span title="El nombre en la lista de ePRAC es distinto; se emparejó leyendo la solicitud" style={{ fontSize:11, fontWeight:500, color:DESIGN.muted }}>emparejada por contenido</span>}</div>}
                 {f.relacion && <div style={{ fontSize:11, fontWeight:500, color: f.relacion.tipo === "relacionada" ? DESIGN.muted : "#b45309", marginTop:2 }}>{{ duplicado:"Duplicado de", version_anterior:"Versión anterior de", relacionada:"Relacionada con" }[f.relacion.tipo]} «{f.relacion.titulo}»</div>}</td>
               <td style={td}>{f.modulo || "—"}</td><td style={{ ...td, fontSize:12 }}>{f.compania || "—"}</td><td style={{ ...td, fontSize:12 }}>{f.solicitante || "—"}</td>
               <td style={{ ...td, textAlign:"center" }}>{f.prioridad || "—"}</td>
@@ -357,7 +366,8 @@ function Solicitudes({ abrir }) {
 function DetalleSolicitud({ f, onGuardar }) {
   const [notas, setNotas] = useState(f.notas || "");
   const e = f.entidades || {}, at = f.atencion || {};
-  const filas = [["Como", f.como], ["Necesito", f.necesito], ["Para", f.para], ["Cliente · almacén · compañía", [f.cliente, f.almacen, f.compania].filter(Boolean).join(" · ")],
+  const filas = [["Verificación", f.verificado ? `Verificado en el WMS por ePRAC${f.proforma ? ` · proforma ${f.proforma}` : ""}${f.numero_eprac ? ` · ePRAC ${f.numero_eprac}` : ""} · ${f.verificado_coincidencia === "contenido" ? "emparejada por contenido (el nombre en la lista es distinto)" : f.verificado_coincidencia === "lista" ? "sin documento de solicitud: solo está en la lista" : "mismo nombre en la lista"}. Fuente: ${f.verificado_fuente || "—"}` : null],
+    ["Como", f.como], ["Necesito", f.necesito], ["Para", f.para], ["Cliente · almacén · compañía", [f.cliente, f.almacen, f.compania].filter(Boolean).join(" · ")],
     ["Atención de ePRAC", Object.keys(at).length ? [at.fecha && `Fecha ${at.fecha}`, at.atendidoPor && `Atendido por ${at.atendidoPor}`, at.proforma && `Proforma ${at.proforma}`, at.solicitud && `Solicitud ${at.solicitud}`, at.factura && `Factura ${at.factura}`].filter(Boolean).join(" · ") : "Sin datos de atención en el documento"],
     ["Tablas / reglas", [...(e.tablas || []), ...(e.reglas || [])].join(", ")], ["Pantallas", (e.pantallas || []).join(" · ")], ["Procesos del BPA", (e.procesos || []).join(" · ")], ["Archivo", f.archivo]].filter(([, v]) => v);
   const tabla = { width:"100%", borderCollapse:"collapse", background:"#fff", border:`1px solid ${DESIGN.border}` };

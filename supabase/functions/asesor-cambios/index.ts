@@ -19,6 +19,7 @@ const INSTRUCCIONES = `Eres el ASESOR DE CAMBIOS del WMS de OLO Logistics. El WM
 Tu trabajo: ante un cambio que alguien quiere hacer (o una duda sobre un problema), decir si es posible, qué implica, y si es recomendable o no y por qué — con base en evidencia, no en suposiciones.
 
 Método (usa las herramientas antes de concluir):
+0. Memoria: ANTES de investigar, usa consultas_anteriores con las palabras clave del cambio. Si ya se analizó lo mismo o algo equivalente, léelo con ver_consulta y reutiliza esa conclusión: dilo en el resumen («esto ya se analizó el <fecha>») y verifica solo lo que pudo cambiar desde entonces (solicitudes nuevas, aplicadas o verificadas en el WMS, tablas nuevas). No repitas la investigación completa: si una consulta anterior ya responde, haz como máximo 4 consultas más, solo para revisar lo que pudo cambiar (listar_solicitudes o ver_solicitud para estado y verificación en el WMS; ver_tabla solo si se sospecha un cambio de estructura) y concluye. Si la pregunta es distinta o la anterior no alcanza, investiga normalmente. Anota en consultas_previas las que usaste.
 1. Entiende el cambio y reformúlalo en una frase.
 2. Busca precedentes en las solicitudes de cambio a ePRAC (listar_solicitudes / buscar_conocimiento con tipo "solicitud"): ¿ya se pidió algo igual o parecido? ¿qué se definió? Ten en cuenta su estado (aplicada, en desarrollo, pendiente, rechazada, por definir).
 3. Revisa qué partes del sistema toca: tablas y columnas (ver_tabla), pantallas de eFlow y del handheld, reglas o parámetros, procesos del BPA y sus pasos (buscar_conocimiento con tipos "proceso", "pantalla_wms", "regla", "tabla").
@@ -43,7 +44,11 @@ const HERRAMIENTAS = [
   { type: "function", name: "buscar_conocimiento", description: "Búsqueda de texto completo en la base de conocimiento del BPA. Devuelve los documentos más relevantes con un fragmento.",
     parameters: { type: "object", additionalProperties: false, required: ["consulta", "tipos"], properties: {
       consulta: { type: "string", description: "Palabras clave en español (sin frases largas)" },
-      tipos: { type: ["array", "null"], items: { type: "string", enum: ["solicitud", "tabla", "pantalla_wms", "pantalla_hh", "pantalla_wmh", "pantalla_sorter", "pantalla_softland", "proceso", "regla", "contexto", "estandar", "desarrollo", "abstracto"] }, description: "Filtrar por tipo o null para todos" } } }, strict: true },
+      tipos: { type: ["array", "null"], items: { type: "string", enum: ["solicitud", "tabla", "pantalla_wms", "pantalla_hh", "pantalla_wmh", "pantalla_sorter", "pantalla_softland", "proceso", "regla", "contexto", "estandar", "desarrollo", "consulta", "abstracto"] }, description: "Filtrar por tipo o null para todos" } } }, strict: true },
+  { type: "function", name: "consultas_anteriores", description: "Busca en las conversaciones pasadas con el asesor (preguntas ya analizadas con su veredicto, resumen y fecha) para no repetir el mismo análisis.",
+    parameters: { type: "object", additionalProperties: false, required: ["consulta"], properties: { consulta: { type: "string", description: "Palabras clave del cambio" } } }, strict: true },
+  { type: "function", name: "ver_consulta", description: "Análisis completo de una consulta anterior por su número (consulta_id que devuelve consultas_anteriores).",
+    parameters: { type: "object", additionalProperties: false, required: ["id"], properties: { id: { type: "string" } } }, strict: true },
   { type: "function", name: "leer_documento", description: "Lee el texto completo de un documento por su id (el que devuelve buscar_conocimiento).",
     parameters: { type: "object", additionalProperties: false, required: ["id"], properties: { id: { type: "string" } } }, strict: true },
   { type: "function", name: "ver_tabla", description: "Estructura de una tabla por nombre (columnas con tipo, llave, relaciones, procesos y pantallas que la usan).",
@@ -56,7 +61,7 @@ const HERRAMIENTAS = [
 
 const ESQUEMA = {
   type: "object", additionalProperties: false,
-  required: ["reformulacion", "veredicto", "resumen", "analisis", "implicaciones", "afecta", "solicitudes_relacionadas", "recomendacion", "preguntas_abiertas", "fuentes"],
+  required: ["reformulacion", "veredicto", "resumen", "analisis", "implicaciones", "afecta", "solicitudes_relacionadas", "recomendacion", "preguntas_abiertas", "fuentes", "consultas_previas"],
   properties: {
     reformulacion: { type: "string" },
     veredicto: { type: "string", enum: ["viable", "viable_con_riesgos", "no_recomendable", "falta_informacion"] },
@@ -71,6 +76,8 @@ const ESQUEMA = {
     recomendacion: { type: "string" },
     preguntas_abiertas: { type: "array", items: { type: "string" } },
     fuentes: { type: "array", items: { type: "object", additionalProperties: false, required: ["id", "titulo"], properties: { id: { type: "string" }, titulo: { type: "string" } } } },
+    consultas_previas: { type: "array", description: "Consultas anteriores que se reutilizaron (vacío si no hubo)", items: { type: "object", additionalProperties: false, required: ["id", "fecha", "uso"],
+      properties: { id: { type: "string" }, fecha: { type: "string" }, uso: { type: "string", description: "Qué se tomó de ella" } } } },
   },
 };
 
@@ -94,6 +101,17 @@ Deno.serve(async (req) => {
       if (nombre === "buscar_conocimiento") {
         const { data, error } = await supa.rpc("asesor_buscar", { q: a.consulta, tipos: a.tipos ?? null, lim: 8 });
         return error ? { error: error.message } : (data ?? []).map((d: Record<string, unknown>) => ({ id: d.id, tipo: d.tipo, titulo: d.titulo, fragmento: d.fragmento }));
+      }
+      if (nombre === "consultas_anteriores") {
+        const { data, error } = await supa.rpc("asesor_buscar", { q: a.consulta, tipos: ["consulta"], lim: 5 });
+        return error ? { error: error.message } : (data ?? []).map((d: Record<string, unknown>) => { const m = (d.meta ?? {}) as Record<string, unknown>;
+          return { consulta_id: m.consulta_id, fecha: m.fecha, veredicto: m.veredicto, pregunta: d.titulo, fragmento: d.fragmento }; });
+      }
+      if (nombre === "ver_consulta") {
+        const { data } = await supa.from("asesor_consultas").select("id,pregunta,respuesta,created_at").eq("id", Number(a.id)).maybeSingle();
+        if (!data) return { error: "No existe esa consulta (pudo haberse eliminado)." };
+        const r = (data.respuesta ?? {}) as Record<string, unknown>;
+        return { id: data.id, fecha: data.created_at, pregunta: data.pregunta, veredicto: r.veredicto, resumen: r.resumen, analisis: String(r.analisis ?? "").slice(0, 6000), implicaciones: r.implicaciones, afecta: r.afecta, solicitudes_relacionadas: r.solicitudes_relacionadas, recomendacion: r.recomendacion, preguntas_abiertas: r.preguntas_abiertas };
       }
       if (nombre === "leer_documento") {
         const { data } = await supa.from("asesor_docs").select("id,tipo,titulo,texto").eq("id", a.id).maybeSingle();
@@ -157,6 +175,7 @@ Deno.serve(async (req) => {
 
     const duracion = Date.now() - t0;
     const { data: fila } = await supa.from("asesor_consultas").insert({ pregunta, conversacion: typeof conversacion === "string" ? conversacion.slice(0, 64) : null, respuesta: final, modelo: MODELO, tokens_entrada: tokIn, tokens_salida: tokOut, herramientas: registro, duracion_ms: duracion }).select("id").maybeSingle();
+    if (fila?.id) await supa.from("asesor_docs").upsert(docConsulta({ id: fila.id, pregunta, respuesta: final, created_at: new Date().toISOString(), conversacion }));
     return json({ id: fila?.id ?? null, respuesta: final, modelo: MODELO, tokens: { entrada: tokIn, salida: tokOut }, herramientas: registro, duracion_ms: duracion });
   } catch (e) {
     return json({ error: String((e as Error)?.message ?? e) }, 500);
@@ -165,4 +184,23 @@ Deno.serve(async (req) => {
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+}
+
+// Una consulta como documento de la base de conocimiento (tipo «consulta»): así el asesor
+// y el agente de voz la encuentran después. asesor/ingestar.mjs la regenera igual.
+// deno-lint-ignore no-explicit-any
+function docConsulta(c: any) {
+  const r = c.respuesta ?? {}, a = r.afecta ?? {}, fecha = String(c.created_at ?? "").slice(0, 10);
+  const lista = (xs: unknown) => Array.isArray(xs) ? xs.join(", ") : "";
+  const texto = [
+    `Consulta al asesor del ${fecha}: ${c.pregunta}`,
+    `Veredicto: ${r.veredicto ?? "—"}`, r.resumen && `Resumen: ${r.resumen}`, r.recomendacion && `Recomendación: ${r.recomendacion}`,
+    Array.isArray(r.implicaciones) && r.implicaciones.length && `Implicaciones: ${r.implicaciones.map((i: { area?: string; detalle?: string; severidad?: string }) => `${i.area}: ${i.detalle} (${i.severidad})`).join(" · ")}`,
+    `Afecta · tablas: ${lista(a.tablas) || "—"} · pantallas: ${lista(a.pantallas) || "—"} · procesos: ${lista(a.procesos) || "—"} · clientes: ${lista(a.clientes) || "—"}`,
+    Array.isArray(r.solicitudes_relacionadas) && r.solicitudes_relacionadas.length && `Solicitudes relacionadas: ${r.solicitudes_relacionadas.map((s: { titulo?: string; relacion?: string }) => `${s.titulo} (${s.relacion})`).join(" · ")}`,
+    Array.isArray(r.preguntas_abiertas) && r.preguntas_abiertas.length && `Preguntas abiertas: ${r.preguntas_abiertas.join(" · ")}`,
+    r.analisis && `Análisis:\n${String(r.analisis).slice(0, 6000)}`,
+  ].filter(Boolean).join("\n");
+  return { id: `consulta:${c.id}`, tipo: "consulta", ref: String(c.id), titulo: `Consulta al asesor · ${String(c.pregunta).slice(0, 110)}`, texto,
+    meta: { consulta_id: c.id, fecha, veredicto: r.veredicto ?? null, conversacion: c.conversacion ?? null } };
 }

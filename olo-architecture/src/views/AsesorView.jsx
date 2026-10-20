@@ -10,6 +10,7 @@
 import { useState, useEffect, useCallback, useRef, Fragment } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 import { EpracCargador } from "./EpracCargador.jsx";
+import { useAuth } from "../auth/AuthContext.jsx";
 import { AsesorVoz } from "./AsesorVoz.jsx";
 import { DESIGN } from "../data/constants.js";
 import { Markdown } from "../components/MonitoreoBases.jsx";
@@ -55,6 +56,7 @@ function Consultar({ onVerSolicitud }) {
   const [texto, setTexto] = useState("");
   const [modal, setModal] = useState(null);
   const [voz, setVoz] = useState(false);            // conversación de voz abierta
+  const { isAdmin } = useAuth();
   const [hilos, setHilos] = useState([]);
   const [seg, setSeg] = useState(0);
   const finRef = useRef(null);
@@ -101,6 +103,17 @@ function Consultar({ onVerSolicitud }) {
   const abrirHilo = h => { if (cargando) return; setConv(h.id); setModal(null);
     setTurnos(h.rows.map(r => ({ pregunta:r.pregunta, respuesta:r.respuesta, modelo:r.modelo, tokens:{ entrada:r.tokens_entrada, salida:r.tokens_salida }, herramientas:r.herramientas, duracion_ms:r.duracion_ms, created_at:r.created_at }))); };
   const nueva = () => { if (cargando) return; setConv(nuevoId()); setTurnos([]); setTexto(""); };
+  // Eliminar una conversación (solo admin): sus consultas también salen de la base de conocimiento del asesor
+  const eliminarHilo = async (h) => {
+    if (!isAdmin) return;
+    if (!confirm(`¿Eliminar esta conversación (${h.rows.length} mensaje${h.rows.length === 1 ? "" : "s"})?\n\nTambién se quita de la base de conocimiento: el asesor ya no podrá usarla para no repetir ese análisis.`)) return;
+    const ids = h.rows.map(r => r.id).filter(Boolean);
+    const { error } = await supabase.from("asesor_consultas").delete().in("id", ids);
+    if (error) { alert(`No se pudo eliminar: ${error.message}`); return; }
+    await supabase.from("asesor_docs").delete().in("id", ids.map(id => `consulta:${id}`));
+    if (h.id === conv) nueva();
+    cargarHilos();
+  };
 
   return <div style={{ display:"grid", gridTemplateColumns:"minmax(0, 1fr) 290px", gap:16, alignItems:"start" }}>
     <style>{`@keyframes asesorPunto { 0%,80%,100% { opacity:.25 } 40% { opacity:1 } }`}</style>
@@ -145,10 +158,13 @@ function Consultar({ onVerSolicitud }) {
       <div style={{ fontSize:11, fontWeight:700, color:DESIGN.muted, letterSpacing:"0.08em", marginBottom:6 }}>CONVERSACIONES</div>
       {!hilos.length && <div style={{ fontSize:12.5, color:DESIGN.muted }}>Todavía no hay conversaciones.</div>}
       {hilos.map(h => { const v = VEREDICTO[h.ultima.respuesta?.veredicto] || VEREDICTO.falta_informacion, activo = h.id === conv;
-        return <button key={h.id} onClick={() => abrirHilo(h)} style={{ display:"block", width:"100%", textAlign:"left", background: activo ? "#faf5ff" : "none", border:"none", borderRadius:8, borderBottom:`1px solid ${DESIGN.border}`, padding:"8px 6px", cursor:"pointer", fontFamily:DESIGN.font }}>
+        return <div key={h.id} style={{ position:"relative" }}>
+        {isAdmin && <button onClick={() => eliminarHilo(h)} title="Eliminar conversación (solo admin): también sale de la base de conocimiento"
+          style={{ position:"absolute", right:2, top:6, zIndex:1, background:"none", border:"none", color:DESIGN.mutedSoft, cursor:"pointer", fontSize:13, padding:"2px 4px" }}>🗑</button>}
+        <button onClick={() => abrirHilo(h)} style={{ display:"block", width:"100%", textAlign:"left", paddingRight:22, background: activo ? "#faf5ff" : "none", border:"none", borderRadius:8, borderBottom:`1px solid ${DESIGN.border}`, padding:"8px 6px", cursor:"pointer", fontFamily:DESIGN.font }}>
           <div style={{ fontSize:12.5, color:DESIGN.ink, lineHeight:1.35, overflow:"hidden", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", fontWeight: activo ? 700 : 400 }}>{h.rows[0].pregunta}</div>
           <div style={{ fontSize:11, marginTop:3 }}><b style={{ color:v.color }}>{v.label}</b> <span style={{ color:DESIGN.muted }}>· {h.rows.length > 1 ? `${h.rows.length} mensajes · ` : ""}{fecha(h.ultima.created_at)}</span></div>
-        </button>; })}
+        </button></div>; })}
     </aside>
 
     {modal && <div onClick={() => setModal(null)} style={{ position:"fixed", inset:0, background:"rgba(15,23,42,.45)", zIndex:900, display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"4vh 16px", overflowY:"auto" }}>
@@ -209,6 +225,9 @@ function Resultado({ r, onVerSolicitud }) {
         {[["Tablas", a.tablas, "#0e7490"], ["Pantallas", a.pantallas, "#2563eb"], ["Procesos", a.procesos, "#7c3aed"], ["Clientes / compañías", a.clientes, "#b45309"]].filter(([, xs]) => xs?.length).map(([k, xs, c]) =>
           <tr key={k}><td style={{ ...td, width:150, color:DESIGN.muted, fontWeight:600 }}>{k}</td><td style={td}>{chips(xs, c)}</td></tr>)}
       </tbody></table></Caja> : null}
+    {x.consultas_previas?.length > 0 && <Caja titulo="Se apoyó en consultas anteriores (no repitió ese análisis)">
+      <div style={{ display:"grid", gap:4 }}>{x.consultas_previas.map(c => <div key={c.id} style={{ fontSize:12.5, color:DESIGN.inkSoft }}><b style={{ color:DESIGN.ink }}>Consulta del {c.fecha}</b> — {c.uso}</div>)}</div>
+    </Caja>}
     {x.solicitudes_relacionadas?.length > 0 && <Caja titulo="Solicitudes de cambio relacionadas (precedentes)">
       <table style={{ width:"100%", borderCollapse:"collapse", border:`1px solid ${DESIGN.border}` }}>
         <thead><tr>{["Solicitud", "Relación"].map(h => <th key={h} style={th}>{h}</th>)}</tr></thead>

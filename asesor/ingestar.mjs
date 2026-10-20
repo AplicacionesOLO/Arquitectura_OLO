@@ -295,6 +295,24 @@ for (const s of SOLICITUDES_BD) { s.entidades = { tablas: [], reglas: [], pantal
 ].filter(Boolean).join("\n"), { modulo: s.modulo, fecha: s.fecha, archivo: s.archivo, estado: s.estado, verificado: s.verificado || false }); }
 docs.push(...otrosDocs);
 
+// Conversaciones con el asesor como conocimiento (tipo «consulta»): así no se vuelve a analizar
+// lo mismo. Se regeneran desde la base: una conversación eliminada sale también de aquí.
+// (Misma forma que docConsulta() de la función asesor-cambios, que la indexa al momento.)
+const CONSULTAS = await api("GET", "asesor_consultas?select=id,pregunta,respuesta,created_at,conversacion&order=id", null, "count=none");
+for (const c of CONSULTAS) {
+  const r = c.respuesta || {}, a = r.afecta || {}, fecha = String(c.created_at || "").slice(0, 10);
+  const lista = xs => Array.isArray(xs) ? xs.join(", ") : "";
+  add("consulta", String(c.id), `Consulta al asesor · ${String(c.pregunta).slice(0, 110)}`, [
+    `Consulta al asesor del ${fecha}: ${c.pregunta}`,
+    `Veredicto: ${r.veredicto || "—"}`, r.resumen && `Resumen: ${r.resumen}`, r.recomendacion && `Recomendación: ${r.recomendacion}`,
+    r.implicaciones?.length && `Implicaciones: ${r.implicaciones.map(i => `${i.area}: ${i.detalle} (${i.severidad})`).join(" · ")}`,
+    `Afecta · tablas: ${lista(a.tablas) || "—"} · pantallas: ${lista(a.pantallas) || "—"} · procesos: ${lista(a.procesos) || "—"} · clientes: ${lista(a.clientes) || "—"}`,
+    r.solicitudes_relacionadas?.length && `Solicitudes relacionadas: ${r.solicitudes_relacionadas.map(s => `${s.titulo} (${s.relacion})`).join(" · ")}`,
+    r.preguntas_abiertas?.length && `Preguntas abiertas: ${r.preguntas_abiertas.join(" · ")}`,
+    r.analisis && `Análisis:\n${String(r.analisis).slice(0, 6000)}`,
+  ].filter(Boolean).join("\n"), { consulta_id: c.id, fecha, veredicto: r.veredicto || null, conversacion: c.conversacion || null });
+}
+
 // tablas: estructura real (instantánea) + lo mapeado en el BPA
 function docTabla(tabla, cols, pk, fks, fuente, extra = "") {
   const T = tabla.toUpperCase();

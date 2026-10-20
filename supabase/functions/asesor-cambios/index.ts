@@ -30,6 +30,7 @@ Método (usa las herramientas antes de concluir):
 Profundidad: haz normalmente entre 5 y 10 consultas; usa ver_tabla en las 2–4 tablas más importantes. Usa "falta_informacion" solo si de verdad no hay evidencia para decidir; si hay un precedente claro y la estructura lo permite, da un veredicto (viable / viable_con_riesgos / no_recomendable) y deja lo incierto en preguntas_abiertas.
 
 Reglas:
+- Adjuntos: si la pregunta trae archivos (capturas, fotos, fotogramas de un video, PDF, Word, correos), analízalos PRIMERO: describe lo que muestran que importa para el cambio (errores en pantalla, campos, datos, pasos) y úsalos como evidencia junto con las herramientas. Cítalos en fuentes con id «adjunto» y el nombre del archivo como título. Si un adjunto no se ve bien o no alcanza, dilo en preguntas_abiertas.
 - No inventes tablas, columnas, pantallas ni solicitudes: si no las encontraste con las herramientas, dilo. Si falta información para decidir, usa el veredicto "falta_informacion" y di qué preguntar.
 - La estructura de las tablas de eFlow es la real de EFLOW_OLO (producción Costa Rica). Venezuela (Beval, Febeca, Sillaca) usa el mismo producto con diferencias puntuales. Softland de Venezuela (SOFTLANDQA) todavía no se puede leer. Las solicitudes con verificado = true fueron confirmadas por ePRAC como desarrollos verificados en el WMS (lista «Desarrollos OLO 2026», con su proforma): trátalas como cambios que YA EXISTEN en el sistema y cítalas como precedente firme; las de origen «lista» no tienen documento, solo su nombre. OLO tiene su propio Softland (compañía OVERSEAS): sus pantallas están documentadas en los documentos «Softland OLO (OVERSEAS)»; el diccionario de tablas de Softland viene del cliente Cofersa (QA CR).
 - Los procesos marcados BORRADOR son inferidos: úsalos con cautela.
@@ -91,7 +92,7 @@ Deno.serve(async (req) => {
     const { data: rol } = await supa.rpc("current_user_role");
     if (rol !== "admin") return json({ error: "El Asesor de cambios es solo para administradores." }, 403);
 
-    const { pregunta, contexto, historial, conversacion } = await req.json();
+    const { pregunta, contexto, historial, conversacion, adjuntos, adjuntos_meta } = await req.json();
     if (!pregunta || typeof pregunta !== "string") return json({ error: "Falta la pregunta." }, 400);
 
     // herramientas: todas leen con el JWT del usuario (RLS admin)
@@ -141,7 +142,17 @@ Deno.serve(async (req) => {
         Array.isArray(r.fuentes) && r.fuentes.length ? `Fuentes consultadas: ${(r.fuentes as { id: string }[]).map(f => f.id).join(", ")}` : null].filter(Boolean).join("\n");
       return [{ role: "user", content: String(h.pregunta ?? "") }, { role: "assistant", content: conclusion || "(sin conclusión)" }];
     });
-    let entrada: unknown[] = [...previos, { role: "user", content: contexto ? `${pregunta}\n\nContexto adicional: ${contexto}` : pregunta }];
+    // Adjuntos de esta pregunta: texto de documentos e imágenes (fotos, capturas, fotogramas de video, páginas escaneadas)
+    const textoPregunta = contexto ? `${pregunta}\n\nContexto adicional: ${contexto}` : pregunta;
+    const lista = Array.isArray(adjuntos) ? adjuntos.slice(0, 10) : [];
+    let nImg = 0;
+    const contenido = lista.length ? [{ type: "input_text", text: `${textoPregunta}\n\n(La pregunta trae ${lista.length} adjunto${lista.length === 1 ? "" : "s"}.)` },
+      // deno-lint-ignore no-explicit-any
+      ...lista.flatMap((a: any) => [
+        { type: "input_text", text: `Adjunto «${String(a.nombre).slice(0, 120)}» (${a.tipo}${a.nota ? `, ${a.nota}` : ""})${a.texto ? `:\n${String(a.texto).slice(0, 15000)}` : ""}` },
+        ...(Array.isArray(a.imagenes) ? a.imagenes : []).filter((u: unknown) => typeof u === "string" && u.startsWith("data:image/") && nImg++ < 8)
+          .map((u: string) => ({ type: "input_image", image_url: u, detail: "auto" })),])] : textoPregunta;
+    let entrada: unknown[] = [...previos, { role: "user", content: contenido }];
     let anterior: string | null = null, tokIn = 0, tokOut = 0, final: unknown = null;
     for (let vuelta = 0; vuelta < MAX_VUELTAS; vuelta++) {
       const cuerpo: Record<string, unknown> = { model: MODELO, instructions: INSTRUCCIONES, input: entrada, tools: HERRAMIENTAS,
@@ -174,8 +185,9 @@ Deno.serve(async (req) => {
     if (!final) final = { veredicto: "falta_informacion", resumen: "El análisis no terminó dentro del límite de consultas; intenta con una pregunta más concreta." };
 
     const duracion = Date.now() - t0;
-    const { data: fila } = await supa.from("asesor_consultas").insert({ pregunta, conversacion: typeof conversacion === "string" ? conversacion.slice(0, 64) : null, respuesta: final, modelo: MODELO, tokens_entrada: tokIn, tokens_salida: tokOut, herramientas: registro, duracion_ms: duracion }).select("id").maybeSingle();
-    if (fila?.id) await supa.from("asesor_docs").upsert(docConsulta({ id: fila.id, pregunta, respuesta: final, created_at: new Date().toISOString(), conversacion }));
+    const adj = Array.isArray(adjuntos_meta) ? adjuntos_meta.slice(0, 20) : [];
+    const { data: fila } = await supa.from("asesor_consultas").insert({ pregunta, adjuntos: adj, conversacion: typeof conversacion === "string" ? conversacion.slice(0, 64) : null, respuesta: final, modelo: MODELO, tokens_entrada: tokIn, tokens_salida: tokOut, herramientas: registro, duracion_ms: duracion }).select("id").maybeSingle();
+    if (fila?.id) await supa.from("asesor_docs").upsert(docConsulta({ id: fila.id, pregunta, respuesta: final, created_at: new Date().toISOString(), conversacion, adjuntos: adj }));
     return json({ id: fila?.id ?? null, respuesta: final, modelo: MODELO, tokens: { entrada: tokIn, salida: tokOut }, herramientas: registro, duracion_ms: duracion });
   } catch (e) {
     return json({ error: String((e as Error)?.message ?? e) }, 500);
@@ -194,6 +206,7 @@ function docConsulta(c: any) {
   const lista = (xs: unknown) => Array.isArray(xs) ? xs.join(", ") : "";
   const texto = [
     `Consulta al asesor del ${fecha}: ${c.pregunta}`,
+    Array.isArray(c.adjuntos) && c.adjuntos.length && `Adjuntos: ${c.adjuntos.map((x: { nombre?: string; tipo?: string; destino?: string }) => `${x.nombre} (${x.tipo}, guardado en ${x.destino === "oficial" ? "Documentación oficial ePRAC" : "Conocimiento abstracto"})`).join(" · ")}`,
     `Veredicto: ${r.veredicto ?? "—"}`, r.resumen && `Resumen: ${r.resumen}`, r.recomendacion && `Recomendación: ${r.recomendacion}`,
     Array.isArray(r.implicaciones) && r.implicaciones.length && `Implicaciones: ${r.implicaciones.map((i: { area?: string; detalle?: string; severidad?: string }) => `${i.area}: ${i.detalle} (${i.severidad})`).join(" · ")}`,
     `Afecta · tablas: ${lista(a.tablas) || "—"} · pantallas: ${lista(a.pantallas) || "—"} · procesos: ${lista(a.procesos) || "—"} · clientes: ${lista(a.clientes) || "—"}`,

@@ -11,6 +11,8 @@ import { useState, useEffect, useCallback, useRef, Fragment } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 import { EpracCargador } from "./EpracCargador.jsx";
 import { useAuth } from "../auth/AuthContext.jsx";
+import { prepararAdjunto, paraElModelo, guardarAdjunto, DESTINOS, MAX_MB } from "../lib/adjuntos.js";
+const ICONO_ADJ = { imagen:"🖼", video:"🎞", pdf:"📄", docx:"📝", correo:"✉", texto:"📃", otro:"📎" };
 import { AsesorVoz } from "./AsesorVoz.jsx";
 import { DESIGN } from "../data/constants.js";
 import { Markdown } from "../components/MonitoreoBases.jsx";
@@ -56,14 +58,26 @@ function Consultar({ onVerSolicitud }) {
   const [texto, setTexto] = useState("");
   const [modal, setModal] = useState(null);
   const [voz, setVoz] = useState(false);            // conversación de voz abierta
-  const { isAdmin } = useAuth();
+  const { isAdmin, profile } = useAuth();
+  const [adj, setAdj] = useState([]);              // adjuntos de la próxima pregunta (preparados en el navegador)
+  const [arrastre, setArrastre] = useState(false);
+  const inputArchivos = useRef(null);
+  const preparando = adj.some(a => a.preparando);
+  const agregarArchivos = (lista) => {
+    const archivos = [...lista];                    // se copia: el selector se vacía enseguida
+    for (const f of archivos) {
+      const tmp = { id:`${Date.now()}-${f.name}`, nombre:f.name, preparando:true };
+      setAdj(as => [...as, tmp]);
+      prepararAdjunto(f).then(a => setAdj(as => as.map(x => x.id === tmp.id ? a : x)));
+    }
+  };
   const [hilos, setHilos] = useState([]);
   const [seg, setSeg] = useState(0);
   const finRef = useRef(null);
   const cargando = turnos.some(t => t.cargando);
 
   const cargarHilos = useCallback(async () => {
-    const { data } = await supabase.from("asesor_consultas").select("id,conversacion,pregunta,respuesta,modelo,tokens_entrada,tokens_salida,herramientas,duracion_ms,created_at").order("created_at", { ascending:false }).limit(300);
+    const { data } = await supabase.from("asesor_consultas").select("id,conversacion,pregunta,respuesta,modelo,tokens_entrada,tokens_salida,herramientas,duracion_ms,created_at,adjuntos").order("created_at", { ascending:false }).limit(300);
     const g = new Map();
     (data || []).forEach(r => { const k = r.conversacion || `c-${r.id}`; if (!g.has(k)) g.set(k, []); g.get(k).push(r); });
     setHilos([...g.entries()].map(([id, rows]) => ({ id, rows: rows.slice().reverse(), ultima: rows[0] })));
@@ -84,24 +98,34 @@ function Consultar({ onVerSolicitud }) {
   // Una consulta al asesor (escrita o desde la voz): queda como turno del hilo y devuelve la respuesta
   const turnosRef = useRef(turnos);
   useEffect(() => { turnosRef.current = turnos; }, [turnos]);
-  const consultar = async (pregunta, desdeVoz = false) => {
+  const consultar = async (pregunta, desdeVoz = false, adjuntos = []) => {
     const historial = turnosRef.current.filter(t => t.respuesta && !t.error).map(t => ({ pregunta:t.pregunta, respuesta:t.respuesta }));
-    setTurnos(ts => [...ts, { pregunta, cargando:true, voz:desdeVoz, created_at:new Date().toISOString() }]);
-    const { data, error } = await supabase.functions.invoke("asesor-cambios", { body:{ pregunta, historial, conversacion:conv } });
+    setTurnos(ts => [...ts, { pregunta, cargando:true, voz:desdeVoz, created_at:new Date().toISOString(), adjuntos: adjuntos.map(a => ({ nombre:a.nombre, tipo:a.tipo, destino:a.destino })) }]);
+    // 1) cada original se guarda donde va (Documentación oficial ePRAC o Conocimiento abstracto)
+    const meta = [];
+    for (const a of adjuntos) {
+      try { meta.push(await guardarAdjunto(a, { pregunta, perfil: profile })); }
+      catch (e) { meta.push({ nombre:a.nombre, tipo:a.tipo, destino:a.destino, error:e.message }); }
+    }
+    // 2) el asesor responde viendo los adjuntos
+    const { data, error } = await supabase.functions.invoke("asesor-cambios", { body:{ pregunta, historial, conversacion:conv,
+      adjuntos: paraElModelo(adjuntos), adjuntos_meta: meta.filter(m => !m.error) } });
     const fallo = error || data?.error;
     setTurnos(ts => { const i = ts.findLastIndex(t => t.cargando && t.pregunta === pregunta); return ts.map((t, k) => k !== i ? t : fallo
-      ? { ...t, cargando:false, error: data?.error || error?.message || "No se pudo consultar al asesor." }
-      : { ...t, cargando:false, ...data }); });
+      ? { ...t, cargando:false, adjuntos: meta, error: data?.error || error?.message || "No se pudo consultar al asesor." }
+      : { ...t, cargando:false, adjuntos: meta, ...data }); });
     cargarHilos();
     return fallo ? null : data?.respuesta;
   };
   const enviar = async (q = texto) => {
-    const pregunta = q.trim(); if (!pregunta || cargando) return;
-    setTexto("");
-    await consultar(pregunta);
+    const listos = adj.filter(a => !a.error && !a.preparando);
+    const pregunta = q.trim() || (listos.length ? "Analiza los archivos adjuntos: ¿qué muestran y qué implican para el WMS?" : "");
+    if (!pregunta || cargando || preparando) return;
+    setTexto(""); setAdj([]);
+    await consultar(pregunta, false, listos);
   };
   const abrirHilo = h => { if (cargando) return; setConv(h.id); setModal(null);
-    setTurnos(h.rows.map(r => ({ pregunta:r.pregunta, respuesta:r.respuesta, modelo:r.modelo, tokens:{ entrada:r.tokens_entrada, salida:r.tokens_salida }, herramientas:r.herramientas, duracion_ms:r.duracion_ms, created_at:r.created_at }))); };
+    setTurnos(h.rows.map(r => ({ pregunta:r.pregunta, respuesta:r.respuesta, modelo:r.modelo, tokens:{ entrada:r.tokens_entrada, salida:r.tokens_salida }, herramientas:r.herramientas, duracion_ms:r.duracion_ms, created_at:r.created_at, adjuntos:r.adjuntos || [] }))); };
   const nueva = () => { if (cargando) return; setConv(nuevoId()); setTurnos([]); setTexto(""); };
   // Eliminar una conversación (solo admin): sus consultas también salen de la base de conocimiento del asesor
   const eliminarHilo = async (h) => {
@@ -133,7 +157,10 @@ function Consultar({ onVerSolicitud }) {
           </div>
         </div>}
         {turnos.map((t, i) => <Fragment key={i}>
-          <div style={{ alignSelf:"flex-end", maxWidth:"75%", background:"#7c3aed", color:"#fff", borderRadius:"14px 14px 4px 14px", padding:"9px 13px", fontSize:13.5, lineHeight:1.5, whiteSpace:"pre-wrap" }}>{t.pregunta}</div>
+          <div style={{ alignSelf:"flex-end", maxWidth:"75%", background:"#7c3aed", color:"#fff", borderRadius:"14px 14px 4px 14px", padding:"9px 13px", fontSize:13.5, lineHeight:1.5, whiteSpace:"pre-wrap" }}>{t.pregunta}
+            {t.adjuntos?.length > 0 && <div style={{ display:"grid", gap:3, marginTop:6, whiteSpace:"normal" }}>{t.adjuntos.map((a, k) => <div key={k} style={{ fontSize:11.5, background:"rgba(255,255,255,0.16)", borderRadius:6, padding:"3px 7px" }}>
+              {ICONO_ADJ[a.tipo] || "📎"} {a.nombre} <span style={{ opacity:0.85 }}>→ {a.error ? `no se guardó: ${a.error}` : t.cargando && !a.ref ? `guardando en ${DESTINOS[a.destino]}…` : `guardado en ${DESTINOS[a.destino]}`}</span></div>)}</div>}
+          </div>
           {t.cargando ? <div style={{ alignSelf:"flex-start", maxWidth:"80%", background:DESIGN.sunken, border:`1px solid ${DESIGN.border}`, borderRadius:"14px 14px 14px 4px", padding:"10px 14px", fontSize:13, color:DESIGN.inkSoft }}>
               <span style={{ fontWeight:700, color:"#7c3aed" }}>✦ Asesor</span> está revisando solicitudes, tablas, pantallas y procesos
               <span style={{ marginLeft:4 }}>{[0, 1, 2].map(k => <span key={k} style={{ animation:`asesorPunto 1.2s ${k * 0.2}s infinite` }}>•</span>)}</span>
@@ -144,12 +171,30 @@ function Consultar({ onVerSolicitud }) {
         </Fragment>)}
         <div ref={finRef}/>
       </div>
-      <div style={{ borderTop:`1px solid ${DESIGN.border}`, padding:"10px 12px", display:"flex", gap:8, alignItems:"flex-end" }}>
+      {adj.length > 0 && <div style={{ borderTop:`1px solid ${DESIGN.border}`, padding:"8px 12px 0", display:"flex", gap:6, flexWrap:"wrap" }}>
+        {adj.map(a => <div key={a.id} style={{ display:"flex", gap:6, alignItems:"center", fontSize:12.5, background: a.error ? "#fef2f2" : DESIGN.sunken, border:`1px solid ${a.error ? "#fecaca" : DESIGN.border}`, borderRadius:8, padding:"4px 8px", maxWidth:420 }}>
+          <span>{ICONO_ADJ[a.tipo] || "📎"}</span>
+          <span style={{ fontWeight:600, color:DESIGN.ink, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:170 }} title={a.nombre}>{a.nombre}</span>
+          {a.preparando ? <span style={{ color:DESIGN.muted }}>preparando…</span>
+            : a.error ? <span style={{ color:"#b91c1c" }}>{a.error}</span>
+            : <><span style={{ color:DESIGN.muted }}>{a.nota || ""}</span>
+                <select value={a.destino} onChange={e => setAdj(as => as.map(x => x.id === a.id ? { ...x, destino:e.target.value } : x))} title="Dónde se guarda el original"
+                  style={{ fontSize:11.5, padding:"1px 4px", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:5, fontFamily:DESIGN.font }}>
+                  {Object.entries(DESTINOS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></>}
+          <button onClick={() => setAdj(as => as.filter(x => x.id !== a.id))} title="Quitar" style={{ background:"none", border:"none", color:DESIGN.muted, cursor:"pointer", padding:0, fontSize:13 }}>✕</button>
+        </div>)}
+      </div>}
+      <div onDragOver={e => { e.preventDefault(); setArrastre(true); }} onDragLeave={() => setArrastre(false)} onDrop={e => { e.preventDefault(); setArrastre(false); agregarArchivos(e.dataTransfer.files); }}
+        style={{ borderTop:`1px solid ${DESIGN.border}`, padding:"10px 12px", display:"flex", gap:8, alignItems:"flex-end", background: arrastre ? "#faf5ff" : "transparent" }}>
+        <button onClick={() => inputArchivos.current?.click()} disabled={cargando} title={`Adjuntar fotos, capturas, videos cortos, PDF, Word o correos (hasta ${MAX_MB} MB c/u). También puedes arrastrarlos o pegar una captura.`}
+          style={{ ...btn, background:DESIGN.sunken2, color:DESIGN.inkSoft, padding:"10px 12px", fontSize:15 }}>📎</button>
+        <input ref={inputArchivos} type="file" multiple accept="image/*,video/*,.pdf,.docx,.txt,.eml,.md,.csv" style={{ display:"none" }} onChange={e => { agregarArchivos(e.target.files); e.target.value = ""; }}/>
         <textarea value={texto} onChange={e => setTexto(e.target.value)} rows={Math.min(5, Math.max(1, texto.split("\n").length))}
+          onPaste={e => { const imgs = [...(e.clipboardData?.files || [])].filter(f => f.type.startsWith("image/")); if (imgs.length) { e.preventDefault(); agregarArchivos(imgs.map((f, i) => new File([f], `captura-${Date.now()}-${i}.png`, { type:f.type }))); } }}
           onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviar(); } }}
           placeholder={turnos.length ? "Repregunta o afina el cambio… (Enter para enviar, Shift+Enter para salto de línea)" : "Describe el cambio o el problema…"}
           style={{ flex:1, boxSizing:"border-box", fontSize:14, fontFamily:DESIGN.font, padding:"9px 12px", border:`1px solid ${DESIGN.borderStrong}`, borderRadius:10, resize:"none", lineHeight:1.45 }}/>
-        <button onClick={() => enviar()} disabled={cargando || !texto.trim()} style={{ ...btn, color:"#fff", background: cargando || !texto.trim() ? "#c4b5fd" : "#7c3aed", padding:"10px 16px" }}>{cargando ? "…" : "Enviar"}</button>
+        <button onClick={() => enviar()} disabled={cargando || preparando || (!texto.trim() && !adj.some(a => !a.error))} style={{ ...btn, color:"#fff", background: cargando || preparando || (!texto.trim() && !adj.some(a => !a.error)) ? "#c4b5fd" : "#7c3aed", padding:"10px 16px" }}>{cargando ? "…" : preparando ? "Preparando…" : "Enviar"}</button>
       </div>
     </div>
 

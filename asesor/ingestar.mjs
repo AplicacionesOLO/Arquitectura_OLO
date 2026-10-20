@@ -298,12 +298,13 @@ docs.push(...otrosDocs);
 // Conversaciones con el asesor como conocimiento (tipo «consulta»): así no se vuelve a analizar
 // lo mismo. Se regeneran desde la base: una conversación eliminada sale también de aquí.
 // (Misma forma que docConsulta() de la función asesor-cambios, que la indexa al momento.)
-const CONSULTAS = await api("GET", "asesor_consultas?select=id,pregunta,respuesta,created_at,conversacion&order=id", null, "count=none");
+const CONSULTAS = await api("GET", "asesor_consultas?select=id,pregunta,respuesta,created_at,conversacion,adjuntos&order=id", null, "count=none");
 for (const c of CONSULTAS) {
   const r = c.respuesta || {}, a = r.afecta || {}, fecha = String(c.created_at || "").slice(0, 10);
   const lista = xs => Array.isArray(xs) ? xs.join(", ") : "";
   add("consulta", String(c.id), `Consulta al asesor · ${String(c.pregunta).slice(0, 110)}`, [
     `Consulta al asesor del ${fecha}: ${c.pregunta}`,
+    c.adjuntos?.length && `Adjuntos: ${c.adjuntos.map(x => `${x.nombre} (${x.tipo}, guardado en ${x.destino === "oficial" ? "Documentación oficial ePRAC" : "Conocimiento abstracto"})`).join(" · ")}`,
     `Veredicto: ${r.veredicto || "—"}`, r.resumen && `Resumen: ${r.resumen}`, r.recomendacion && `Recomendación: ${r.recomendacion}`,
     r.implicaciones?.length && `Implicaciones: ${r.implicaciones.map(i => `${i.area}: ${i.detalle} (${i.severidad})`).join(" · ")}`,
     `Afecta · tablas: ${lista(a.tablas) || "—"} · pantallas: ${lista(a.pantallas) || "—"} · procesos: ${lista(a.procesos) || "—"} · clientes: ${lista(a.clientes) || "—"}`,

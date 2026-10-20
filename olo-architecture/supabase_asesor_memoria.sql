@@ -30,3 +30,7 @@ drop policy if exists asesor_docs_consulta_crear on public.asesor_docs;
 create policy asesor_docs_consulta_leer on public.asesor_docs for select to authenticated using (tipo = 'consulta' and public.puede_usar_asesor());
 create policy asesor_docs_consulta_crear on public.asesor_docs for insert to authenticated with check (tipo = 'consulta' and public.puede_usar_asesor());
 -- (asesor_docs_admin, ya existente, sigue dando todo al admin, incluido borrar)
+
+-- Adjuntos de cada consulta: [{ nombre, tipo, destino («oficial» | «abstracto»), ref }]
+-- (el original quedó en Documentación oficial ePRAC o en Conocimiento abstracto)
+alter table public.asesor_consultas add column if not exists adjuntos jsonb not null default '[]'::jsonb;

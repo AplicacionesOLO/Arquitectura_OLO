@@ -18,9 +18,10 @@ const usd = n => `US$ ${n < 1 ? n.toFixed(3) : n.toFixed(2)}`;
 // Lo esencial del análisis, para que el agente lo diga en voz (el completo queda en pantalla)
 function resumenParaVoz(x = {}) {
   const txt = v => typeof v === "string" ? v : v?.descripcion || v?.texto || v?.titulo || "";
-  return { veredicto: x.veredicto, resumen: x.resumen, recomendacion: txt(x.recomendacion),
-    implicaciones: (x.implicaciones || []).slice(0, 3).map(txt), precedentes: (x.solicitudes_relacionadas || []).slice(0, 3).map(s => s.titulo),
-    preguntas_abiertas: (x.preguntas_abiertas || []).slice(0, 2) };
+  // corto a propósito: cada token que vuelve al agente se cobra otra vez en cada turno siguiente
+  const corto = (v, n) => String(v || "").slice(0, n);
+  return { veredicto: x.veredicto, resumen: corto(x.resumen, 500), recomendacion: corto(txt(x.recomendacion), 300),
+    riesgo_principal: corto(txt((x.implicaciones || [])[0]), 200), precedentes: (x.solicitudes_relacionadas || []).slice(0, 2).map(s => s.titulo) };
 }
 
 async function mensajeError(error, data) {
@@ -72,8 +73,8 @@ export function AsesorVoz({ onConsultar, onCerrar }) {
         salida = respuesta ? resumenParaVoz(respuesta) : { error: "El asesor no pudo responder; ofrece intentarlo de nuevo." };
       } else if (nombre === "buscar_en_bpa") {
         setFase("buscando");
-        const { data } = await supabase.rpc("asesor_buscar", { q: String(args.consulta || ""), lim: 6 });
-        salida = { resultados: (data || []).map(d => ({ titulo: d.titulo, tipo: d.tipo, fragmento: String(d.fragmento || "").replace(/<[^>]+>/g, "").slice(0, 400) })) };
+        const { data } = await supabase.rpc("asesor_buscar", { q: String(args.consulta || ""), lim: 4 });
+        salida = { resultados: (data || []).map(d => ({ titulo: d.titulo, fragmento: String(d.fragmento || "").replace(/<[^>]+>/g, "").slice(0, 220) })) };
       } else salida = { error: `Herramienta desconocida: ${nombre}` };
     } catch (e) { salida = { error: e.message }; }
     enviar({ type:"conversation.item.create", item:{ type:"function_call_output", call_id: callId, output: JSON.stringify(salida) } });
@@ -116,7 +117,8 @@ export function AsesorVoz({ onConsultar, onCerrar }) {
   useEffect(() => {
     const x = r.current; Object.assign(x, { uso: { ...VACIO }, consultas: 0, turnos: 0, cerrado: false });
     let vivo = true;
-    (async () => {
+    // arranque diferido: en el doble montaje de desarrollo el primero se cancela antes de abrir sesión
+    const arranque = setTimeout(async () => {
       try {
         const { data, error } = await supabase.functions.invoke("asesor-voz", { body:{ accion:"sesion" } });
         if (error || !data?.client_secret) throw new Error(await mensajeError(error, data));
@@ -147,9 +149,9 @@ export function AsesorVoz({ onConsultar, onCerrar }) {
         if (!vivo) return;
         terminar(e.name === "NotAllowedError" ? "El navegador no dio permiso para usar el micrófono." : e.message);
       }
-    })();
+    }, 60);
     // al desmontar (o en el doble montaje de desarrollo) solo se libera: no se cierra el panel
-    return () => { vivo = false; liberar(); };
+    return () => { vivo = false; clearTimeout(arranque); liberar(); };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { r.current.stream?.getAudioTracks().forEach(t => { t.enabled = !mudo; }); }, [mudo]);

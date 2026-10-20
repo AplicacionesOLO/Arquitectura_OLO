@@ -15,13 +15,15 @@ const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 // Valores por defecto; se sobreescriben con bpa_jobs.config del job asesor_voz (editable en Monitor)
 const CFG = {
-  activo: true, modelo: "gpt-realtime", voz: "cedar", transcripcion: "gpt-4o-mini-transcribe",
+  activo: true, modelo: "gpt-realtime-mini", voz: "cedar", transcripcion: "gpt-4o-mini-transcribe",
   limite_mensual_usd: 20, max_minutos: 20,
+  // costo: largo máximo de cada respuesta hablada y cuánto historial se vuelve a enviar (y cobrar) en cada turno
+  max_tokens_respuesta: 300, retencion_historial: 0.5,
   // US$ por millón de tokens (precios de lista de OpenAI; verificar y ajustar en Monitor si cambian)
-  precios_usd_millon: { audio_entrada: 32, audio_entrada_cache: 0.4, texto_entrada: 4, texto_entrada_cache: 0.4, audio_salida: 64, texto_salida: 16, transcripcion_entrada: 3, transcripcion_salida: 5 },
+  precios_usd_millon: { audio_entrada: 10, audio_entrada_cache: 0.3, texto_entrada: 0.6, texto_entrada_cache: 0.06, audio_salida: 20, texto_salida: 2.4, transcripcion_entrada: 3, transcripcion_salida: 5 },
 };
 
-const INSTRUCCIONES = `Eres la voz del ASESOR DE CAMBIOS del BPA de OLO Logistics (operador logístico 3PL de Costa Rica). Conversas por voz con el administrador del BPA, en español de Costa Rica, con tono profesional, cercano y tranquilo. Hablas como en una llamada: frases cortas, sin listas largas, sin leer códigos completos ni URLs.
+const INSTRUCCIONES = `Eres la voz del ASESOR DE CAMBIOS del BPA de OLO Logistics (operador logístico 3PL de Costa Rica). Conversas por voz con el administrador del BPA, en español de Costa Rica, con tono profesional, cercano y tranquilo. Hablas como en una llamada: respuestas de una a tres frases cortas, sin listas, sin leer códigos completos ni URLs. Si quieren más detalle, lo piden.
 El WMS es eFlow (escritorio y handheld), fabricado por ePRAC, con la Torre de Control (WMH), el SORTER CLIRO de Mecalux, el middleware eIntegra y el ERP Softland.
 Cómo trabajas:
 - Si te preguntan si un cambio al WMS es viable, qué implica, qué riesgos tiene o si ya se hizo algo parecido: usa SIEMPRE la herramienta consultar_asesor con la pregunta completa y clara (incluye cliente, módulo y proceso si los mencionaron). Antes de llamarla di algo breve como «Déjame revisarlo con el asesor, tarda un momento». Cuando vuelva, resume en tres a cinco frases: el veredicto, el porqué, el riesgo principal y la recomendación. Di que el análisis completo quedó en pantalla.
@@ -66,14 +68,18 @@ Deno.serve(async (req) => {
       const r = await fetch("https://api.openai.com/v1/realtime/client_secrets", { method: "POST", headers: { Authorization: `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify({ expires_after: { anchor: "created_at", seconds: 120 }, session: {
           type: "realtime", model: cfg.modelo, instructions: INSTRUCCIONES, tools: HERRAMIENTAS, tool_choice: "auto",
+          max_output_tokens: cfg.max_tokens_respuesta,
+          truncation: { type: "retention_ratio", retention_ratio: cfg.retencion_historial },
           audio: { input: { transcription: { model: cfg.transcripcion, language: "es" }, turn_detection: { type: "semantic_vad" } }, output: { voice: cfg.voz } } } }) });
       const s = await r.json().catch(() => ({}));
-      if (!r.ok || !s.value) return json({ error: r.status === 401 ? "La clave de OpenAI del BPA no es válida (se venció, se revocó o se cambió). Un administrador debe actualizar el secreto OPENAI_API_KEY en Supabase (Edge Functions › Secrets)." : `OpenAI no abrió la sesión de voz: ${s?.error?.message || r.status}` }, 502);
+      if (!r.ok || !s.value) return json({ detalle: s?.error?.message || null, error: r.status === 401 ? "La clave de OpenAI del BPA no es válida (se venció, se revocó o se cambió). Un administrador debe actualizar el secreto OPENAI_API_KEY en Supabase (Edge Functions › Secrets)." : `OpenAI no abrió la sesión de voz: ${s?.error?.message || r.status}` }, 502);
 
       const { data: perfil } = await supa.from("profiles").select("nombre,email").eq("id", user.id).maybeSingle();
       const ahora = new Date().toISOString();
       const { data: run } = await adm.from("bpa_job_runs").insert({ job_id: "asesor_voz", inicio: ahora, fin: ahora, duracion_ms: 0, estado: "en_curso", disparo: "manual", modelo: cfg.modelo, costo_usd: 0,
         mensaje: "Conversación de voz en curso", detalle: { usuario: perfil?.nombre || perfil?.email || user.id, voz: cfg.voz } }).select("id").single();
+      // sin registro no hay control de gasto: no se abre la conversación
+      if (!run?.id) return json({ error: "No se pudo registrar la conversación para controlar el gasto; no se abrió." }, 500);
       await adm.from("bpa_jobs").update({ ultima_ejecucion: ahora }).eq("id", "asesor_voz");
       return json({ client_secret: s.value, sesion_id: run?.id, modelo: cfg.modelo, voz: cfg.voz, tope: cfg.limite_mensual_usd, gastado, max_minutos: cfg.max_minutos, precios: cfg.precios_usd_millon });
     }

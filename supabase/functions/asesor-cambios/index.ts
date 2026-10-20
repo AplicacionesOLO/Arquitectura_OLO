@@ -137,7 +137,7 @@ Deno.serve(async (req) => {
       }
       const r = await fetch("https://api.openai.com/v1/responses", { method: "POST", headers: { Authorization: `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify(cuerpo) });
       const b = await r.json();
-      if (!r.ok) return json({ error: `OpenAI: ${b?.error?.message ?? r.status}` }, 502);
+      if (!r.ok) return json({ error: r.status === 401 ? "La clave de OpenAI del BPA no es válida (se venció, se revocó o se cambió). Un administrador debe actualizar el secreto OPENAI_API_KEY en Supabase (Edge Functions › Secrets)." : `OpenAI: ${b?.error?.message ?? r.status}` }, 502);
       anterior = b.id; tokIn += b.usage?.input_tokens ?? 0; tokOut += b.usage?.output_tokens ?? 0;
       const llamadas = (b.output ?? []).filter((o: { type: string }) => o.type === "function_call");
       if (!llamadas.length) {

@@ -100,14 +100,14 @@ function Jobs() {
                 <td style={{ ...td, minWidth:170 }}><div style={{ fontWeight:700 }}>{open ? "▾" : "▸"} {j.nombre}</div><div style={sub}>{j.id}</div></td>
                 <td style={{ ...td, maxWidth:230 }}><div>{j.tipo.replace(" · Programador de tareas", "")}</div><div style={sub}>{j.motor}</div><div style={sub}>Equipo {j.ubicacion?.equipo}</div><div style={sub}><code style={{ fontSize:11 }}>{j.ubicacion?.ruta}</code></div></td>
                 <td style={td}><div>{describir(c.frecuencia)}</div><div style={{ ...sub, color: c.activo ? "#15803d" : "#b91c1c", fontWeight:700 }}>{c.activo ? "Activo" : "Pausado"}</div></td>
-                <td style={td}>{c.modelo ? <><div>{MODELOS[c.modelo] || c.modelo}</div><div style={sub}>{c.solo_si_cambios === false ? "analiza siempre" : "solo si hay cambios"}</div></> : <div style={{ color:DESIGN.muted }}>Sin IA · nativo</div>}</td>
+                <td style={td}>{c.modelo ? <><div>{MODELOS[c.modelo] || c.modelo}</div><div style={sub}>{j.id === "asesor_voz" ? `voz ${c.voz || ""} · tope US$ ${c.limite_mensual_usd ?? "—"}/mes` : c.solo_si_cambios === false ? "analiza siempre" : "solo si hay cambios"}</div></> : <div style={{ color:DESIGN.muted }}>Sin IA · nativo</div>}</td>
                 <td style={{ ...td, whiteSpace:"nowrap" }}>{s.ult ? <><div>{corta(s.ult.inicio)}</div><div style={{ display:"flex", gap:5, alignItems:"center", marginTop:3 }}><Estado e={s.ult.estado}/><span style={sub}>{s.ult.disparo}</span></div></> : <span style={{ color:DESIGN.muted }}>Sin corridas</span>}</td>
                 <td style={{ ...td, whiteSpace:"nowrap" }}><div>Última <b>{dur(s.ult?.duracion_ms)}</b></div><div style={sub}>Promedio {dur(s.prom)}</div></td>
                 <td style={{ ...td, whiteSpace:"nowrap" }}>{c.modelo || s.mes ? <><div>Última <b>{usd(s.ult?.costo_usd)}</b></div><div style={sub}>Mes {usd(s.mes)}{c.limite_mensual_usd ? ` de ${c.limite_mensual_usd}` : ""}</div></> : <span style={{ color:DESIGN.muted }}>US$ 0<div style={sub}>sin IA</div></span>}</td>
                 <td style={{ ...td, whiteSpace:"nowrap" }}>{j.ejecutar_ahora ? <b style={{ color:"#1e40af" }}>En cola</b> : prox ? corta(prox) : <span style={{ color:DESIGN.muted }}>—</span>}</td>
                 <td style={td}><span style={{ fontSize:11.5, fontWeight:700, color:"#92400e", background:"#fffbeb", border:"1px solid #fde68a", borderRadius:4, padding:"1px 7px" }}>{(j.limitaciones || []).length}</span></td>
                 <td style={{ ...td, whiteSpace:"nowrap", paddingRight:14 }} onClick={e => e.stopPropagation()}>
-                  {esAdmin && j.id !== "despachador" && <button onClick={() => ejecutar(j)} disabled={j.ejecutar_ahora} style={{ ...btn, color:"#fff", background: j.ejecutar_ahora ? "#93c5fd" : "#2563eb" }}title="Ejecutar en la próxima revisión del despachador">▶ Ejecutar</button>}
+                  {esAdmin && j.id !== "despachador" && j.id !== "asesor_voz" && <button onClick={() => ejecutar(j)} disabled={j.ejecutar_ahora} style={{ ...btn, color:"#fff", background: j.ejecutar_ahora ? "#93c5fd" : "#2563eb" }}title="Ejecutar en la próxima revisión del despachador">▶ Ejecutar</button>}
                 </td>
               </tr>
               {open && <tr><td colSpan={10} style={{ padding:"4px 14px 16px", background:"#f8fafc", borderBottom:`1px solid ${DESIGN.border}` }}>
@@ -118,7 +118,7 @@ function Jobs() {
       </table>
     </div>
     <div style={{ fontSize:11.5, color:DESIGN.muted, marginTop:8, lineHeight:1.5 }}>
-      El gasto es el que informa Claude Code en cada corrida (con plan de suscripción es el equivalente de la API). Los tiempos se miden desde que el despachador lanza el job hasta que termina.
+      El gasto es el que informa Claude Code en cada corrida (con plan de suscripción es el equivalente de la API). Los tiempos se miden desde que el despachador lanza el job hasta que termina. El asesor por voz no lo corre el despachador: cada conversación (Asesor › Hablar con el asesor) es una corrida, con el costo calculado con los tokens que informa OpenAI y los precios de su configuración.
     </div>
   </div>;
 }

@@ -10,6 +10,7 @@
 import { useState, useEffect, useCallback, useRef, Fragment } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 import { EpracCargador } from "./EpracCargador.jsx";
+import { AsesorVoz } from "./AsesorVoz.jsx";
 import { DESIGN } from "../data/constants.js";
 import { Markdown } from "../components/MonitoreoBases.jsx";
 
@@ -53,6 +54,7 @@ function Consultar({ onVerSolicitud }) {
   const [turnos, setTurnos] = useState([]);          // { pregunta, respuesta, modelo, tokens, herramientas, duracion_ms, created_at, cargando, error }
   const [texto, setTexto] = useState("");
   const [modal, setModal] = useState(null);
+  const [voz, setVoz] = useState(false);            // conversación de voz abierta
   const [hilos, setHilos] = useState([]);
   const [seg, setSeg] = useState(0);
   const finRef = useRef(null);
@@ -77,16 +79,24 @@ function Consultar({ onVerSolicitud }) {
     window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k);
   }, [modal]);
 
+  // Una consulta al asesor (escrita o desde la voz): queda como turno del hilo y devuelve la respuesta
+  const turnosRef = useRef(turnos);
+  useEffect(() => { turnosRef.current = turnos; }, [turnos]);
+  const consultar = async (pregunta, desdeVoz = false) => {
+    const historial = turnosRef.current.filter(t => t.respuesta && !t.error).map(t => ({ pregunta:t.pregunta, respuesta:t.respuesta }));
+    setTurnos(ts => [...ts, { pregunta, cargando:true, voz:desdeVoz, created_at:new Date().toISOString() }]);
+    const { data, error } = await supabase.functions.invoke("asesor-cambios", { body:{ pregunta, historial, conversacion:conv } });
+    const fallo = error || data?.error;
+    setTurnos(ts => { const i = ts.findLastIndex(t => t.cargando && t.pregunta === pregunta); return ts.map((t, k) => k !== i ? t : fallo
+      ? { ...t, cargando:false, error: data?.error || error?.message || "No se pudo consultar al asesor." }
+      : { ...t, cargando:false, ...data }); });
+    cargarHilos();
+    return fallo ? null : data?.respuesta;
+  };
   const enviar = async (q = texto) => {
     const pregunta = q.trim(); if (!pregunta || cargando) return;
-    const historial = turnos.filter(t => t.respuesta && !t.error).map(t => ({ pregunta:t.pregunta, respuesta:t.respuesta }));
     setTexto("");
-    setTurnos(ts => [...ts, { pregunta, cargando:true, created_at:new Date().toISOString() }]);
-    const { data, error } = await supabase.functions.invoke("asesor-cambios", { body:{ pregunta, historial, conversacion:conv } });
-    setTurnos(ts => ts.map((t, i) => i !== ts.length - 1 ? t : (error || data?.error)
-      ? { ...t, cargando:false, error: data?.error || error?.message || "No se pudo consultar al asesor." }
-      : { ...t, cargando:false, ...data }));
-    cargarHilos();
+    await consultar(pregunta);
   };
   const abrirHilo = h => { if (cargando) return; setConv(h.id); setModal(null);
     setTurnos(h.rows.map(r => ({ pregunta:r.pregunta, respuesta:r.respuesta, modelo:r.modelo, tokens:{ entrada:r.tokens_entrada, salida:r.tokens_salida }, herramientas:r.herramientas, duracion_ms:r.duracion_ms, created_at:r.created_at }))); };
@@ -94,7 +104,12 @@ function Consultar({ onVerSolicitud }) {
 
   return <div style={{ display:"grid", gridTemplateColumns:"minmax(0, 1fr) 290px", gap:16, alignItems:"start" }}>
     <style>{`@keyframes asesorPunto { 0%,80%,100% { opacity:.25 } 40% { opacity:1 } }`}</style>
-    <div style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:12, display:"flex", flexDirection:"column", height:"calc(100vh - 230px)", minHeight:460 }}>
+    <div style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:12, display:"flex", flexDirection:"column", height:"calc(100vh - 230px)", minHeight:460, overflow:"hidden" }}>
+      {voz ? <AsesorVoz onConsultar={q => consultar(q, true)} onCerrar={() => setVoz(false)}/>
+        : <div style={{ display:"flex", justifyContent:"flex-end", padding:"8px 12px 0" }}>
+            <button onClick={() => setVoz(true)} title="Conversación de voz en tiempo real con el asesor (micrófono)"
+              style={{ fontSize:13, fontWeight:700, color:"#fff", background:"#7c3aed", border:"none", borderRadius:8, padding:"7px 14px", cursor:"pointer", fontFamily:DESIGN.font }}>🎙 Hablar con el asesor</button>
+          </div>}
       <div style={{ flex:1, overflowY:"auto", padding:"18px 18px 8px", display:"flex", flexDirection:"column", gap:14 }}>
         {!turnos.length && <div style={{ margin:"auto 0", textAlign:"center", color:DESIGN.muted }}>
           <div style={{ fontSize:28, color:"#7c3aed" }}>✦</div>

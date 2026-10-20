@@ -30,13 +30,16 @@ async function mensajeError(error, data) {
   return error?.message || "No se pudo abrir la conversación de voz.";
 }
 
-export function AsesorVoz({ onConsultar, onCerrar }) {
+export function AsesorVoz({ onConsultar, obtenerAdjuntos = () => [], onCerrar }) {
   const [fase, setFase] = useState("conectando");
   const [lineas, setLineas] = useState([]);         // { rol: "tu" | "asesor", texto }
   const [mudo, setMudo] = useState(false);
   const [error, setError] = useState(null);
   const [cuenta, setCuenta] = useState({ costo:0, gastado:0, tope:20, seg:0 });
   const r = useRef({});                             // pc, dc, stream, audio, sesion, uso, consultas, turnos, t0, precios
+  // las funciones del chat cambian en cada render: se usa siempre la última (la conexión se arma una sola vez)
+  const props = useRef({ onConsultar, obtenerAdjuntos });
+  useEffect(() => { props.current = { onConsultar, obtenerAdjuntos }; }, [onConsultar, obtenerAdjuntos]);
 
   const costoDe = (u, p) => Object.entries(p || {}).reduce((a, [k, precio]) => a + (u[k] || 0) * precio / 1e6, 0);
   const registrar = useCallback(async (final = false) => {
@@ -69,8 +72,15 @@ export function AsesorVoz({ onConsultar, onCerrar }) {
     try {
       if (nombre === "consultar_asesor") {
         setFase("consultando"); r.current.consultas++;
-        const respuesta = await onConsultar(String(args.pregunta || ""));
+        const respuesta = await props.current.onConsultar(String(args.pregunta || ""));
         salida = respuesta ? resumenParaVoz(respuesta) : { error: "El asesor no pudo responder; ofrece intentarlo de nuevo." };
+      } else if (nombre === "ver_adjuntos") {
+        // los archivos de esta conversación (enviados o esperando en la caja de texto), al momento
+        const lista = props.current.obtenerAdjuntos();
+        salida = lista.length ? { adjuntos: lista.map(a => ({ nombre: a.nombre, tipo: a.tipo, nota: a.nota || null, enviado: a.enviado,
+          texto: a.texto ? String(a.texto).slice(0, 3500) : null, imagenes: (a.imagenes || []).length,
+          como_analizar_imagenes: (a.imagenes || []).length ? "Para ver lo que muestran las imágenes o el video, usa consultar_asesor: el asesor las recibe." : null })) }
+          : { adjuntos: [], nota: "No hay archivos adjuntos en esta conversación." };
       } else if (nombre === "buscar_en_bpa") {
         setFase("buscando");
         const { data } = await supabase.rpc("asesor_buscar", { q: String(args.consulta || ""), lim: 4 });
@@ -79,7 +89,7 @@ export function AsesorVoz({ onConsultar, onCerrar }) {
     } catch (e) { salida = { error: e.message }; }
     enviar({ type:"conversation.item.create", item:{ type:"function_call_output", call_id: callId, output: JSON.stringify(salida) } });
     enviar({ type:"response.create" });
-  }, [onConsultar]);
+  }, []);
 
   const evento = useCallback((ev) => {
     const x = r.current;
@@ -133,7 +143,14 @@ export function AsesorVoz({ onConsultar, onCerrar }) {
         x.pc.addTrack(x.stream.getAudioTracks()[0], x.stream);
         x.dc = x.pc.createDataChannel("oai-events");
         x.dc.onmessage = e => { try { evento(JSON.parse(e.data)); } catch { /* evento no JSON */ } };
-        x.dc.onopen = () => { setFase("escuchando"); enviar({ type:"response.create", response:{ instructions:"Saluda en una sola frase corta: eres el asesor de cambios del BPA de OLO y preguntas en qué puedes ayudar." } }); };
+        x.dc.onopen = () => {
+          setFase("escuchando");
+          // el agente sabe desde el inicio qué archivos hay en el chat
+          const adjs = props.current.obtenerAdjuntos();
+          if (adjs.length) enviar({ type:"conversation.item.create", item:{ type:"message", role:"system", content:[{ type:"input_text",
+            text:`En este chat hay ${adjs.length} archivo${adjs.length === 1 ? "" : "s"} adjunto${adjs.length === 1 ? "" : "s"}: ${adjs.map(a => `${a.nombre} (${a.tipo})`).join(", ")}. Si preguntan por ellos, léelos con ver_adjuntos; para analizar imágenes o videos usa consultar_asesor.` }] } });
+          enviar({ type:"response.create", response:{ instructions:`Saluda en una sola frase corta: eres el asesor de cambios del BPA de OLO y preguntas en qué puedes ayudar.${adjs.length ? " Menciona que ves los archivos adjuntos del chat." : ""}` } });
+        };
         const oferta = await x.pc.createOffer(); await x.pc.setLocalDescription(oferta);
         const resp = await fetch("https://api.openai.com/v1/realtime/calls", { method:"POST", body: oferta.sdp, headers:{ Authorization:`Bearer ${data.client_secret}`, "Content-Type":"application/sdp" } });
         if (!resp.ok) throw new Error(`OpenAI rechazó la conexión de voz (${resp.status}): ${(await resp.text()).slice(0, 160)}`);

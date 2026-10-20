@@ -30,12 +30,16 @@ Cómo trabajas:
 - Si te preguntan si un cambio al WMS es viable, qué implica, qué riesgos tiene o si ya se hizo algo parecido: usa SIEMPRE la herramienta consultar_asesor con la pregunta completa y clara (incluye cliente, módulo y proceso si los mencionaron). Antes de llamarla di algo breve como «Déjame revisarlo con el asesor, tarda un momento». Cuando vuelva, resume en tres a cinco frases: el veredicto, el porqué, el riesgo principal y la recomendación. Di que el análisis completo quedó en pantalla.
 - Para datos puntuales (qué es una tabla, qué hace una pantalla u opción de Softland, qué dice un proceso, en qué estado está una solicitud de cambio o si un desarrollo ya está verificado en el WMS): usa buscar_en_bpa.
 - No inventes tablas, pantallas, solicitudes ni cifras: si no lo encuentras, dilo y propone qué averiguar.
+- Archivos del chat: si preguntan por un documento, captura, foto o video cargado en la conversación, primero usa ver_adjuntos y responde con lo que dice. Para lo que muestran imágenes o videos, o para un análisis a fondo del archivo, usa consultar_asesor: el asesor recibe todos los adjuntos del chat.
 - Si algo no se entendió, pide que lo repitan. Si te piden terminar, despídete en una frase.`;
 
 const HERRAMIENTAS = [
   { type: "function", name: "consultar_asesor",
     description: "Análisis completo del asesor de cambios (tarda 20 a 60 segundos): veredicto de viabilidad, implicaciones, tablas, pantallas y procesos afectados, precedentes y recomendación, con todo lo que sabe el BPA.",
     parameters: { type: "object", properties: { pregunta: { type: "string", description: "La pregunta completa, clara y autocontenida." } }, required: ["pregunta"] } },
+  { type: "function", name: "ver_adjuntos",
+    description: "Archivos adjuntos en ESTE chat (documentos, capturas, fotos, videos), con el texto de los documentos. Úsala siempre que pregunten por un archivo cargado o algo que dice o muestra.",
+    parameters: { type: "object", properties: {} } },
   { type: "function", name: "buscar_en_bpa",
     description: "Búsqueda rápida en la base de conocimiento del BPA: consultas anteriores al asesor (con fecha y veredicto), solicitudes de cambio (con su estado y si están verificadas en el WMS), tablas, pantallas de eFlow, handheld, Torre de Control, SORTER y Softland, procesos y reglas.",
     parameters: { type: "object", properties: { consulta: { type: "string", description: "Palabras clave en español." } }, required: ["consulta"] } },

@@ -63,6 +63,8 @@ function Consultar({ onVerSolicitud }) {
   const [arrastre, setArrastre] = useState(false);
   const inputArchivos = useRef(null);
   const preparando = adj.some(a => a.preparando);
+  const adjRef = useRef(adj);
+  useEffect(() => { adjRef.current = adj; }, [adj]);
   const agregarArchivos = (lista) => {
     const archivos = [...lista];                    // se copia: el selector se vacía enseguida
     for (const f of archivos) {
@@ -98,8 +100,17 @@ function Consultar({ onVerSolicitud }) {
   // Una consulta al asesor (escrita o desde la voz): queda como turno del hilo y devuelve la respuesta
   const turnosRef = useRef(turnos);
   useEffect(() => { turnosRef.current = turnos; }, [turnos]);
-  const consultar = async (pregunta, desdeVoz = false, adjuntos = []) => {
+  // Adjuntos que ya están en esta conversación (preguntas anteriores), listos para el modelo
+  const adjuntosDeLaConversacion = () => turnosRef.current.flatMap(t => t.adjModelo || []);
+  // Todo lo adjuntado en el chat: lo ya enviado y lo que espera en la caja de texto (para la voz)
+  const todosLosAdjuntos = () => [...adjuntosDeLaConversacion().map(a => ({ ...a, enviado:true })),
+    ...paraElModelo(adjRef.current.filter(a => !a.error && !a.preparando)).map(a => ({ ...a, enviado:false }))];
+  const consultar = async (pregunta, desdeVoz = false, adjuntos = [], extra = []) => {
     const historial = turnosRef.current.filter(t => t.respuesta && !t.error).map(t => ({ pregunta:t.pregunta, respuesta:t.respuesta }));
+    // nuevos primero; los anteriores (y los «extra» que manda la voz) como contexto, con tope total de imágenes
+    const nuevos = paraElModelo(adjuntos);
+    let quedan = Math.max(0, 8 - nuevos.reduce((n, a) => n + a.imagenes.length, 0));
+    const contexto = [...extra, ...adjuntosDeLaConversacion()].map(a => { const imagenes = (a.imagenes || []).slice(0, quedan); quedan -= imagenes.length; return { ...a, imagenes, previo:true }; });
     setTurnos(ts => [...ts, { pregunta, cargando:true, voz:desdeVoz, created_at:new Date().toISOString(), adjuntos: adjuntos.map(a => ({ nombre:a.nombre, tipo:a.tipo, destino:a.destino })) }]);
     // 1) cada original se guarda donde va (Documentación oficial ePRAC o Conocimiento abstracto)
     const meta = [];
@@ -109,11 +120,11 @@ function Consultar({ onVerSolicitud }) {
     }
     // 2) el asesor responde viendo los adjuntos
     const { data, error } = await supabase.functions.invoke("asesor-cambios", { body:{ pregunta, historial, conversacion:conv,
-      adjuntos: paraElModelo(adjuntos), adjuntos_meta: meta.filter(m => !m.error) } });
+      adjuntos: [...nuevos, ...contexto], adjuntos_meta: meta.filter(m => !m.error) } });
     const fallo = error || data?.error;
     setTurnos(ts => { const i = ts.findLastIndex(t => t.cargando && t.pregunta === pregunta); return ts.map((t, k) => k !== i ? t : fallo
-      ? { ...t, cargando:false, adjuntos: meta, error: data?.error || error?.message || "No se pudo consultar al asesor." }
-      : { ...t, cargando:false, adjuntos: meta, ...data }); });
+      ? { ...t, cargando:false, adjuntos: meta, adjModelo: nuevos, error: data?.error || error?.message || "No se pudo consultar al asesor." }
+      : { ...t, cargando:false, adjuntos: meta, adjModelo: nuevos, ...data }); });
     cargarHilos();
     return fallo ? null : data?.respuesta;
   };
@@ -125,7 +136,28 @@ function Consultar({ onVerSolicitud }) {
     await consultar(pregunta, false, listos);
   };
   const abrirHilo = h => { if (cargando) return; setConv(h.id); setModal(null);
-    setTurnos(h.rows.map(r => ({ pregunta:r.pregunta, respuesta:r.respuesta, modelo:r.modelo, tokens:{ entrada:r.tokens_entrada, salida:r.tokens_salida }, herramientas:r.herramientas, duracion_ms:r.duracion_ms, created_at:r.created_at, adjuntos:r.adjuntos || [] }))); };
+    setTurnos(h.rows.map(r => ({ pregunta:r.pregunta, respuesta:r.respuesta, modelo:r.modelo, tokens:{ entrada:r.tokens_entrada, salida:r.tokens_salida }, herramientas:r.herramientas, duracion_ms:r.duracion_ms, created_at:r.created_at, adjuntos:r.adjuntos || [] })));
+    rehidratarAdjuntos(h); };
+  // Texto de los adjuntos de una conversación guardada: el análisis de Conocimiento abstracto o la solicitud procesada
+  const rehidratarAdjuntos = async (h) => {
+    const metas = h.rows.flatMap(r => (r.adjuntos || []).map(m => ({ ...m, consulta:r.id })));
+    if (!metas.length) return;
+    const idsAbs = metas.filter(m => m.destino === "abstracto" && m.ref).map(m => m.ref), idsOf = metas.filter(m => m.destino === "oficial" && m.ref).map(m => m.ref);
+    const [abs, ofi] = await Promise.all([
+      idsAbs.length ? supabase.from("asesor_abstracto").select("id,titulo,contenido,resultado").in("id", idsAbs) : { data: [] },
+      idsOf.length ? supabase.from("eprac_cargas").select("id,nombre,estado,mensaje,solicitud_id").in("id", idsOf) : { data: [] }]);
+    const sids = (ofi.data || []).map(c => c.solicitud_id).filter(Boolean);
+    const { data: sols } = sids.length ? await supabase.from("solicitudes_cambio").select("id,titulo,como,necesito,para,situacion_actual,descripcion").in("id", sids) : { data: [] };
+    const textoDe = (m) => {
+      const a = (abs.data || []).find(x => x.id === m.ref);
+      if (a) { const r = a.resultado || {}; return [r.resumen && `Resumen: ${r.resumen}`, r.texto_extraido && `Texto: ${r.texto_extraido}`, a.contenido].filter(Boolean).join("\n").slice(0, 15000); }
+      const c = (ofi.data || []).find(x => x.id === m.ref), s = c && (sols || []).find(x => x.id === c.solicitud_id);
+      if (s) return [`Solicitud «${s.titulo}»`, s.como && `Como: ${s.como}`, s.necesito && `Necesito: ${s.necesito}`, s.para && `Para: ${s.para}`, s.situacion_actual && `Situación actual: ${s.situacion_actual}`, s.descripcion && `Cambio: ${s.descripcion}`].filter(Boolean).join("\n").slice(0, 15000);
+      return c ? `(Documento en Documentación oficial ePRAC, estado ${c.estado}${c.mensaje ? `: ${c.mensaje}` : ""})` : "(el archivo ya no está guardado)";
+    };
+    setTurnos(ts => ts.map((t, i) => { const r = h.rows[i]; const ms = metas.filter(m => m.consulta === r?.id);
+      return ms.length ? { ...t, adjModelo: ms.map(m => ({ nombre:m.nombre, tipo:m.tipo, nota:null, texto:textoDe(m), imagenes:[] })) } : t; }));
+  };
   const nueva = () => { if (cargando) return; setConv(nuevoId()); setTurnos([]); setTexto(""); };
   // Eliminar una conversación (solo admin): sus consultas también salen de la base de conocimiento del asesor
   const eliminarHilo = async (h) => {
@@ -142,7 +174,7 @@ function Consultar({ onVerSolicitud }) {
   return <div style={{ display:"grid", gridTemplateColumns:"minmax(0, 1fr) 290px", gap:16, alignItems:"start" }}>
     <style>{`@keyframes asesorPunto { 0%,80%,100% { opacity:.25 } 40% { opacity:1 } }`}</style>
     <div style={{ background:"#fff", border:`1px solid ${DESIGN.border}`, borderRadius:12, display:"flex", flexDirection:"column", height:"calc(100vh - 230px)", minHeight:460, overflow:"hidden" }}>
-      {voz ? <AsesorVoz onConsultar={q => consultar(q, true)} onCerrar={() => setVoz(false)}/>
+      {voz ? <AsesorVoz onConsultar={q => consultar(q, true, [], todosLosAdjuntos().filter(a => !a.enviado))} obtenerAdjuntos={todosLosAdjuntos} onCerrar={() => setVoz(false)}/>
         : <div style={{ display:"flex", justifyContent:"flex-end", padding:"8px 12px 0" }}>
             <button onClick={() => setVoz(true)} title="Conversación de voz en tiempo real con el asesor (micrófono)"
               style={{ fontSize:13, fontWeight:700, color:"#fff", background:"#7c3aed", border:"none", borderRadius:8, padding:"7px 14px", cursor:"pointer", fontFamily:DESIGN.font }}>🎙 Hablar con el asesor</button>

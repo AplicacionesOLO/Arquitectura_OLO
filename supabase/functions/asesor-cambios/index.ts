@@ -149,7 +149,7 @@ Deno.serve(async (req) => {
     const contenido = lista.length ? [{ type: "input_text", text: `${textoPregunta}\n\n(La pregunta trae ${lista.length} adjunto${lista.length === 1 ? "" : "s"}.)` },
       // deno-lint-ignore no-explicit-any
       ...lista.flatMap((a: any) => [
-        { type: "input_text", text: `Adjunto «${String(a.nombre).slice(0, 120)}» (${a.tipo}${a.nota ? `, ${a.nota}` : ""})${a.texto ? `:\n${String(a.texto).slice(0, 15000)}` : ""}` },
+        { type: "input_text", text: `${a.previo ? "Adjunto de una pregunta anterior de esta conversación" : "Adjunto"} «${String(a.nombre).slice(0, 120)}» (${a.tipo}${a.nota ? `, ${a.nota}` : ""})${a.texto ? `:\n${String(a.texto).slice(0, 15000)}` : ""}` },
         ...(Array.isArray(a.imagenes) ? a.imagenes : []).filter((u: unknown) => typeof u === "string" && u.startsWith("data:image/") && nImg++ < 8)
           .map((u: string) => ({ type: "input_image", image_url: u, detail: "auto" })),])] : textoPregunta;
     let entrada: unknown[] = [...previos, { role: "user", content: contenido }];
